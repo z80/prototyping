@@ -1,0 +1,12 @@
+
+build
+app
+_build
+_app
+.build
+.app
+*.so
+*.a
+
+
+
