@@ -1,5 +1,7 @@
 SET(PROJECT_NAME examples)
 
+include_directories( "../src" 
+                     "../noiseutils" )
 add_executable(complexplanet complexplanet.cpp)
 ADD_DEFINITIONS( "-I${PROJECT_SOURCE_DIR}/src" )
 ADD_DEFINITIONS( "-I${PROJECT_SOURCE_DIR}/noiseutils" )

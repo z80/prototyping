@@ -1,5 +1,7 @@
 SET(PROJECT_NAME libnoiseutils)
 
+
+include_directories( "../src" )
 add_library(noiseutils SHARED noiseutils.cpp )
 add_library(noiseutils-static STATIC noiseutils.cpp )
 
