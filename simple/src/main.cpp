@@ -64,6 +64,8 @@ void BasicTutorial1::setup()
     // do not forget to call the base first
     ApplicationContext::setup();
     addInputListener(this);
+    // To lock mouse to the window.
+    this->setWindowGrab();
 
     // get a pointer to the already created root
     Root* root = getRoot();
@@ -163,6 +165,10 @@ void BasicTutorial1::setup()
     mTrayManager->showTrays();
 
     this->loadResources();
+
+    OverlaySystem * os = this->getOverlaySystem();
+    mTrayManager->hideFrameStats();
+    scnMgr->addRenderQueueListener( os );
 }
 
 bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
