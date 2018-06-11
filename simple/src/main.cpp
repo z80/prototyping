@@ -102,7 +102,7 @@ void BasicTutorial1::setup()
 
     // Convenience camera control
     cMan = new CameraMan( camNode );
-    //cMan->setStyle( CS_FREELOOK );
+    cMan->setStyle( CS_MANUAL );
     //cMan->
 
     // and tell it to render into the main window
@@ -161,13 +161,11 @@ void BasicTutorial1::setup()
     mTrayManager->showFrameStats( TL_BOTTOMLEFT );
     mTrayManager->showLogo( TL_BOTTOMRIGHT );
     mTrayManager->showAll();
-    mTrayManager->hideCursor();
     mTrayManager->showTrays();
 
     this->loadResources();
 
     OverlaySystem * os = this->getOverlaySystem();
-    mTrayManager->hideFrameStats();
     scnMgr->addRenderQueueListener( os );
 }
 
