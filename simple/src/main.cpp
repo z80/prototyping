@@ -150,7 +150,7 @@ void BasicTutorial1::setup()
     // These doesn't work.
     Ogre::RenderWindow * wnd = getRenderWindow();
     mTrayManager = new TrayManager( "my_tray", wnd, this );
-    mTrayManager->hideCursor();
+    mTrayManager->showCursor();
 
     mAdvancedControls = new AdvancedRenderControls( mTrayManager, cam );
 
@@ -158,7 +158,9 @@ void BasicTutorial1::setup()
 
     mTrayManager->showFrameStats( TL_BOTTOMLEFT );
     mTrayManager->showLogo( TL_BOTTOMRIGHT );
+    mTrayManager->showAll();
     mTrayManager->hideCursor();
+    mTrayManager->showTrays();
 
     this->loadResources();
 }
@@ -220,6 +222,11 @@ bool BasicTutorial1::mousePressed( const MouseButtonEvent & evt )
 {
     if ( mTrayManager->mousePressed( evt ) )
         return true;
+    if ( evt.button == BUTTON_LEFT )
+    {
+        cMan->setStyle( CS_FREELOOK );
+        mTrayManager->hideCursor();
+    }
     cMan->mousePressed( evt );
     mAdvancedControls->mousePressed( evt );
     return true;
@@ -229,6 +236,11 @@ bool BasicTutorial1::mouseReleased( const MouseButtonEvent & evt )
 {
     if ( mTrayManager->mouseReleased( evt ) )
         return true;
+    if ( evt.button == BUTTON_LEFT )
+    {
+        cMan->setStyle( CS_MANUAL );
+        mTrayManager->showCursor();
+    }
     cMan->mouseReleased( evt );
     mAdvancedControls->mouseReleased( evt );
     return true;
