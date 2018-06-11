@@ -3,6 +3,8 @@
 #include "OgreApplicationContext.h"
 #include "OgreInput.h"
 #include "OgreRTShaderSystem.h"
+#include "OgreCameraMan.h"
+#include "OgreTrays.h"
 #include <iostream>
 
 using namespace Ogre;
@@ -11,19 +13,42 @@ using namespace OgreBites;
 class BasicTutorial1
         : public ApplicationContext
         , public InputListener
+        , public TrayListener
 {
 public:
     BasicTutorial1();
     virtual ~BasicTutorial1() {}
 
     void setup();
-    bool keyPressed(const KeyboardEvent& evt);
+    void shutdown();
+
+    bool frameEnded( const Ogre::FrameEvent & evt );
+
+    bool keyPressed( const KeyboardEvent & evt );
+    bool keyReleased( const KeyboardEvent & evt );
+    bool mouseMoved( const MouseMotionEvent & evt );
+    bool mousePressed( const MouseButtonEvent & evt );
+    bool mouseReleased( const MouseButtonEvent & evt );
+
+private:
+    CameraMan * cMan;
+    TrayManager * mTrayManager;
 };
 
 
 BasicTutorial1::BasicTutorial1()
     : ApplicationContext("OgreTutorialApp")
 {
+    cMan = 0;
+    mTrayManager = 0;
+}
+
+void BasicTutorial1::shutdown()
+{
+    if ( cMan )
+        delete cMan;
+    if ( mTrayManager )
+        delete mTrayManager;
 }
 
 
@@ -65,6 +90,11 @@ void BasicTutorial1::setup()
     cam->setAutoAspectRatio(true);
     camNode->attachObject(cam);
     camNode->setPosition(0, 0, 140);
+
+    // Convenience camera control
+    cMan = new CameraMan( camNode );
+    //cMan->setStyle( CS_FREELOOK );
+    //cMan->
 
     // and tell it to render into the main window
     getRenderWindow()->addViewport(cam);
@@ -109,11 +139,19 @@ void BasicTutorial1::setup()
     //! [entity4]
 
     // -- tutorial section end --
+    mTrayManager = new TrayManager( "my_tray", this->getRenderWindow(), this );
+    mTrayManager->hideCursor();
 }
 
+bool BasicTutorial1::frameEnded( const Ogre::FrameEvent & evt )
+{
+    cMan->frameRendered( evt );
+    return true;
+}
 
 bool BasicTutorial1::keyPressed(const KeyboardEvent& evt)
 {
+    cMan->keyPressed( evt );
     if (evt.keysym.sym == SDLK_ESCAPE)
     {
         getRoot()->queueEndRendering();
@@ -121,6 +159,29 @@ bool BasicTutorial1::keyPressed(const KeyboardEvent& evt)
     return true;
 }
 
+bool BasicTutorial1::keyReleased(const KeyboardEvent& evt)
+{
+    cMan->keyReleased( evt );
+    return true;
+}
+
+bool BasicTutorial1::mouseMoved( const MouseMotionEvent & evt )
+{
+    cMan->mouseMoved( evt );
+    return true;
+}
+
+bool BasicTutorial1::mousePressed( const MouseButtonEvent & evt )
+{
+    cMan->mousePressed( evt );
+    return true;
+}
+
+bool BasicTutorial1::mouseReleased( const MouseButtonEvent & evt )
+{
+    cMan->mouseReleased( evt );
+    return true;
+}
 
 int main(int argc, char **argv)
 {

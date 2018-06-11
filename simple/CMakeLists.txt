@@ -32,7 +32,8 @@ include_directories( "./src"
   ${OGRE_INCLUDE_DIRS}
   ${IBASE}/Bites 
   ${IBASE}/RTShaderSystem 
-  ${IBASE} )
+  ${IBASE}
+  ${IBASE}/Overlay )
 
 
 file( GLOB src "./src/*.cpp" )
