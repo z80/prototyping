@@ -5,6 +5,7 @@
 #include "OgreRTShaderSystem.h"
 #include "OgreCameraMan.h"
 #include "OgreTrays.h"
+#include "OgreAdvancedRenderControls.h"
 #include <iostream>
 
 using namespace Ogre;
@@ -22,6 +23,8 @@ public:
     void setup();
     void shutdown();
 
+    bool frameRenderingQueued( const FrameEvent & evt );
+    //bool frameStarted( const Ogre::FrameEvent & evt );
     bool frameEnded( const Ogre::FrameEvent & evt );
 
     bool keyPressed( const KeyboardEvent & evt );
@@ -33,6 +36,7 @@ public:
 private:
     CameraMan * cMan;
     TrayManager * mTrayManager;
+    AdvancedRenderControls * mAdvancedControls;
 };
 
 
@@ -41,12 +45,15 @@ BasicTutorial1::BasicTutorial1()
 {
     cMan = 0;
     mTrayManager = 0;
+    mAdvancedControls = 0;
 }
 
 void BasicTutorial1::shutdown()
 {
     if ( cMan )
         delete cMan;
+    if ( mAdvancedControls )
+        delete mAdvancedControls;
     if ( mTrayManager )
         delete mTrayManager;
 }
@@ -139,19 +146,52 @@ void BasicTutorial1::setup()
     //! [entity4]
 
     // -- tutorial section end --
-    mTrayManager = new TrayManager( "my_tray", this->getRenderWindow(), this );
+
+    // These doesn't work.
+    Ogre::RenderWindow * wnd = getRenderWindow();
+    mTrayManager = new TrayManager( "my_tray", wnd, this );
     mTrayManager->hideCursor();
+
+    mAdvancedControls = new AdvancedRenderControls( mTrayManager, cam );
+
+    this->locateResources();
+
+    mTrayManager->showFrameStats( TL_BOTTOMLEFT );
+    mTrayManager->showLogo( TL_BOTTOMRIGHT );
+    mTrayManager->hideCursor();
+
+    this->loadResources();
 }
+
+bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
+{
+    //return true;
+    mTrayManager->frameRendered( evt );
+    mAdvancedControls->frameRendered( evt );
+    if ( !mTrayManager->isDialogVisible() )
+        cMan->frameRendered( evt );
+    return true;
+}
+
+/*bool BasicTutorial1::frameStarted( const Ogre::FrameEvent & evt )
+{
+    return true;
+}*/
 
 bool BasicTutorial1::frameEnded( const Ogre::FrameEvent & evt )
 {
-    cMan->frameRendered( evt );
+//    mTrayManager->frameRendered( evt );
+    //mAdvancedControls->frameRendered( evt );
+//    if ( !mTrayManager->isDialogVisible() )
+//        cMan->frameRendered( evt );
     return true;
 }
 
 bool BasicTutorial1::keyPressed(const KeyboardEvent& evt)
 {
+    mTrayManager->keyPressed( evt );
     cMan->keyPressed( evt );
+    mAdvancedControls->keyPressed( evt );
     if (evt.keysym.sym == SDLK_ESCAPE)
     {
         getRoot()->queueEndRendering();
@@ -161,25 +201,36 @@ bool BasicTutorial1::keyPressed(const KeyboardEvent& evt)
 
 bool BasicTutorial1::keyReleased(const KeyboardEvent& evt)
 {
+    mTrayManager->keyReleased( evt );
     cMan->keyReleased( evt );
+    mAdvancedControls->keyReleased( evt );
     return true;
 }
 
 bool BasicTutorial1::mouseMoved( const MouseMotionEvent & evt )
 {
+    if ( mTrayManager->mouseMoved( evt ) )
+        return true;
     cMan->mouseMoved( evt );
+    mAdvancedControls->mouseMoved( evt );
     return true;
 }
 
 bool BasicTutorial1::mousePressed( const MouseButtonEvent & evt )
 {
+    if ( mTrayManager->mousePressed( evt ) )
+        return true;
     cMan->mousePressed( evt );
+    mAdvancedControls->mousePressed( evt );
     return true;
 }
 
 bool BasicTutorial1::mouseReleased( const MouseButtonEvent & evt )
 {
+    if ( mTrayManager->mouseReleased( evt ) )
+        return true;
     cMan->mouseReleased( evt );
+    mAdvancedControls->mouseReleased( evt );
     return true;
 }
 
