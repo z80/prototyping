@@ -44,8 +44,8 @@ void Volume2::create()
     //volume->setDualGridVisible( true );
     //volume->setOctreeVisible( true );
 
-    MaterialPtr mh = MaterialManager::getSingleton().getByName( "Examples/CloudySky" );
-    MaterialPtr ml = MaterialManager::getSingleton().getByName( "Examples/CloudySky" );
+    MaterialPtr mh = MaterialManager::getSingleton().getByName( "triplanarReference" );
+    MaterialPtr ml = MaterialManager::getSingleton().getByName( "triplanarReference" );
     volume->setMaterial( mh );
     volume->setMaterialOfLevel( 0, ml );
     volume->setMaterialOfLevel( 1, ml );
