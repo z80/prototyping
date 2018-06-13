@@ -6,6 +6,9 @@
 #include "OgreCameraMan.h"
 #include "OgreTrays.h"
 #include "OgreAdvancedRenderControls.h"
+
+#include "volume.h"
+
 #include <iostream>
 
 using namespace Ogre;
@@ -37,6 +40,7 @@ private:
     CameraMan * cMan;
     TrayManager * mTrayManager;
     AdvancedRenderControls * mAdvancedControls;
+    Volume2 * volume;
 };
 
 
@@ -56,6 +60,7 @@ void BasicTutorial1::shutdown()
         delete mAdvancedControls;
     if ( mTrayManager )
         delete mTrayManager;
+    delete volume;
 }
 
 
@@ -122,30 +127,8 @@ void BasicTutorial1::setup()
     //! [entity1nodeattach]
 
     //! [cameramove]
-    camNode->setPosition(0, 47, 222);
+    camNode->setPosition(0, 0, 222);
     //! [cameramove]
-
-    //! [entity2]
-    Entity* ogreEntity2 = scnMgr->createEntity("ogrehead.mesh");
-    SceneNode* ogreNode2 = scnMgr->getRootSceneNode()->createChildSceneNode(Vector3(84, 48, 0));
-    ogreNode2->attachObject(ogreEntity2);
-    //! [entity2]
-
-    //! [entity3]
-    Entity* ogreEntity3 = scnMgr->createEntity("ogrehead.mesh");
-    SceneNode* ogreNode3 = scnMgr->getRootSceneNode()->createChildSceneNode();
-    ogreNode3->setPosition(0, 104, 0);
-    ogreNode3->setScale(2, 1.2, 1);
-    ogreNode3->attachObject(ogreEntity3);
-    //! [entity3]
-
-    //! [entity4]
-    Entity* ogreEntity4 = scnMgr->createEntity("ogrehead.mesh");
-    SceneNode* ogreNode4 = scnMgr->getRootSceneNode()->createChildSceneNode();
-    ogreNode4->setPosition(-84, 48, 0);
-    ogreNode4->roll(Degree(-90));
-    ogreNode4->attachObject(ogreEntity4);
-    //! [entity4]
 
     // -- tutorial section end --
 
@@ -167,6 +150,9 @@ void BasicTutorial1::setup()
 
     OverlaySystem * os = this->getOverlaySystem();
     scnMgr->addRenderQueueListener( os );
+
+
+    volume = new Volume2( scnMgr );
 }
 
 bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
