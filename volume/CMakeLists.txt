@@ -25,7 +25,7 @@ set( libs ${LBASE}/libOgreMain.so
           ${LBASE}/libOgreProperty.so 
           ${LBASE}/libOgreRTShaderSystem.so 
           ${LBASE}/libOgreTerrain.so 
-           )
+          noiseutils-static noise-static )
 
 
 include_directories( "./src"
@@ -34,7 +34,9 @@ include_directories( "./src"
   ${IBASE}
   ${IBASE}/Bites 
   ${IBASE}/RTShaderSystem 
-  ${IBASE}/Overlay )
+  ${IBASE}/Overlay
+  ${CMAKE_SOURCE_DIR}/3dparty/libnoise/src
+  ${CMAKE_SOURCE_DIR}/3dparty/libnoise/noiseutils )
 
 
 file( GLOB src "./src/*.cpp" )
