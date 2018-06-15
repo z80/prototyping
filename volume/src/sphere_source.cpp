@@ -1654,6 +1654,7 @@ SphereSource::SphereSource(const Real r, const Vector3 &center)
 
 Vector4 SphereSource::getValueAndGradient(const Vector3 &position) const
 {
+    OGRE_LOCK_MUTEX( mutex )
     const Vector3 at = position-mCenter;
     const double dh = finalPlanet.GetValue( at.x, at.y, at.z );
     const double r = mR + dh;
@@ -1669,6 +1670,7 @@ Vector4 SphereSource::getValueAndGradient(const Vector3 &position) const
 
 Real SphereSource::getValue(const Vector3 &position) const
 {
+    OGRE_LOCK_MUTEX( mutex )
     const Vector3 at = position-mCenter;
     const double dh = finalPlanet.GetValue( at.x, at.y, at.z );
     const double r = mR + dh;

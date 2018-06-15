@@ -20,6 +20,7 @@ class SphereSource: public Source
 protected:
     const Real mR;
     const Vector3 mCenter;
+    OGRE_MUTEX( mutex )
 public:
 
     SphereSource(const Real r, const Vector3 &center);
