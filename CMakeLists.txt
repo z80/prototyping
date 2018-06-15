@@ -6,6 +6,7 @@ set( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/_app )
 add_subdirectory( "./3dparty" )
 add_subdirectory( "./simple" )
 add_subdirectory( "./volume" )
+add_subdirectory( "./volume_tree" )
 
 
 
