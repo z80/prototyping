@@ -172,6 +172,19 @@ Tree::Tree( const TreeParams & params )
 
 Tree::~Tree()
 {
+    deleteAllNodes();
+}
+
+bool Tree::buildTree( SceneNode * camNode )
+{
+    removeNode( root );
+    root = newNode();
+    const bool res = root->subdrive( camNode );
+    return res;
+}
+
+bool Tree::buildVolumes()
+{
 
 }
 
@@ -191,6 +204,8 @@ Node * Tree::newNode()
 
 void Tree::removeNode( Node * node )
 {
+    if ( !node )
+        return;
     // First take care of child nodes.
     for ( int i=0; i<8; i++ )
     {
@@ -202,6 +217,25 @@ void Tree::removeNode( Node * node )
         }
     }
     unusedNodes.push_back( node );
+
+    // Delete nodes volume.
+    if ( node->volume )
+    {
+        OGRE_DELETE node->volume;
+        node->volume = 0;
+    }
+}
+
+void Tree::deleteAllNodes()
+{
+    removeNode( root );
+    for ( std::list<Node *>::iterator it=unusedNodes.begin();
+          it!=unusedNodes.end(); it++ )
+    {
+        Node * node = *it;
+        delete node;
+    }
+    unusedNodes.clear();
 }
 
 

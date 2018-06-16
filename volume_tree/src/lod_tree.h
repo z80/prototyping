@@ -75,10 +75,13 @@ public:
     Tree( const TreeParams & params );
     ~Tree();
 
-    Node * newNode();
-    void   removeNode( Node * node );
+    bool buildTree( SceneNode * camNode );
+    bool buildVolumes();
 
 private:
+    Node * newNode();
+    void   removeNode( Node * node );
+    void deleteAllNodes();
     TreeParams   treeParams;
     SceneNode  * sceneNode;
 
