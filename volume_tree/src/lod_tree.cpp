@@ -61,10 +61,62 @@ bool Node::needSubdriven( SceneNode * camNode ) const
     return true;
 }
 
-bool Node::subdrive()
+bool Node::subdrive( SceneNode * camNode )
 {
+    const int newLevel = level+1;
+    if ( newLevel > tree->treeParams.maxLevel )
+        return true;
+    const bool needToBeSubdriven = needSubdriven( camNode );
+    if ( !needToBeSubdriven )
+        return true;
 
+    Real sz = halfSz / 2.0;
+    static const int s[8][3] =
+    {
+        {-1, -1, -1},
+        { 1, -1, -1},
+        {-1,  1, -1},
+        { 1,  1, -1},
+        {-1, -1,  1},
+        { 1, -1,  1},
+        {-1,  1,  1},
+        { 1,  1,  1},
+    };
+
+    for ( int i=0; i<8; i++ )
+    {
+        Node * node = tree->newNode();
+        if ( !node )
+            return false;
+        // Node position and dimensions.
+        node->halfSz = sz;
+        node->at.x = at.x+s[i][0]*sz;
+        node->at.y = at.y+s[i][1]*sz;
+        node->at.z = at.z+s[i][2]*sz;
+
+        // Node parent information.
+        node->parent = this;
+        node->parentIndex = i;
+        nodes[i] = node;
+
+        // Subdrive recursively.
+        const bool ok = node->subdrive( camNode );
+        if ( !ok )
+            return false;
+    }
+
+    return true;
 }
+
+bool Node::hasGeometry() const
+{
+    if ( !chunk )
+        return false;
+    return true;
+}
+
+
+
 
 }
 

@@ -19,12 +19,12 @@ using namespace Ogre;
 namespace LodTree
 {
 
-class TreeParams
+struct TreeParams: public ChunkParameters
 {
 public:
     // Here "baseError" should be for the most rough level.
-    ChunkParameters chunkParams;
-    // Max tree level.
+    // Max tree level. And error fofr max level is
+    // "baseError" / 2^maxLevel
     int  maxLevel;
 };
 
@@ -40,22 +40,27 @@ public:
     const Node & operator=( const Node & inst );
 
     bool needSubdriven( SceneNode * camNode ) const;
-    bool subdrive();
+    bool subdrive( SceneNode * camNode );
+    bool hasGeometry() const;
 
     /// Center.
     Vector3 at;
     /// Half size.
     Real    halfSz;
-    // Level of this node. Root node has level 1. Each
-    // sublevel has level=level+1.
+    /// Level of this node. Root node has level 1. Each
+    /// sublevel has level=level+1.
     int level;
     /// If this one is leaf node.
     bool    leafNode;
     // Subnode pointers.
     Node * nodes[8];
-    // Tree pointer.
+    /// Parent node. It is 0 for root node.
+    Node * parent;
+    /// Index of this node in parent node children array.
+    int    parentIndex;
+    /// Tree pointer.
     Tree * tree;
-    // Volume rendering stuff.
+    /// Volume rendering stuff.
     Chunk        * volume;
     SceneNode    * sceneNode;
 };
@@ -63,11 +68,18 @@ public:
 class Tree
 {
 public:
-    Tree( SceneManager * smgr );
+    Tree( const TreeParams & params );
     ~Tree();
 
+    Node * newNode();
+    void   removeNode( Node * node );
+
 private:
-    SceneManager * smgr;
+    TreeParams   treeParams;
+    SceneNode  * sceneNode;
+
+    Node * root;
+    std::list<Node *> unusedNodes;
 };
 
 }
