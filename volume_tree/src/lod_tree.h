@@ -61,8 +61,12 @@ public:
     /// Tree pointer.
     Tree * tree;
     /// Volume rendering stuff.
+    Real         baseError;
     Chunk        * volume;
     SceneNode    * sceneNode;
+    /// Separate chunk parameters due to
+    /// need custom baseError.
+    ChunkParameters chunkParameters;
 };
 
 class Tree
