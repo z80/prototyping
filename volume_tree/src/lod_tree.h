@@ -12,6 +12,7 @@
 
 #include "volume.h"
 
+#include <functional>
 #include <iostream>
 
 using namespace Ogre;
@@ -28,7 +29,7 @@ public:
     int     maxLevel;
     Real    halfSz;
     Vector3 at;
-    Real    ratio;
+    std::function<Real (int)> baseError;
 };
 
 class Tree;
@@ -68,7 +69,6 @@ public:
     /// Tree pointer.
     Tree * tree;
     /// Volume rendering stuff.
-    Real         baseError;
     Chunk        * volume;
     SceneNode    * sceneNode;
     /// Separate chunk parameters due to

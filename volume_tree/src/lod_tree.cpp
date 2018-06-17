@@ -51,7 +51,6 @@ const Node & Node::operator=( const Node & inst )
 
         tree      = inst.tree;
 
-        baseError = inst.baseError;
         volume    = inst.volume;
         sceneNode = inst.sceneNode;
         chunkParameters = inst.chunkParameters;
@@ -104,7 +103,6 @@ bool Node::subdrive( SceneNode * camNode )
     // Subdriving the node.
 
     const Real sz  = halfSz * 0.5;
-    const Real err = baseError * tree->treeParams.ratio;
     static const int s[8][3] =
     {
         {-1, -1, -1},
@@ -124,7 +122,6 @@ bool Node::subdrive( SceneNode * camNode )
             return false;
         // Node position and dimensions.
         node->level = newLevel;
-        node->baseError = err;
         node->halfSz    = sz;
         node->at.x = at.x+s[i][0]*sz;
         node->at.y = at.y+s[i][1]*sz;
@@ -169,7 +166,7 @@ bool Node::createVolume()
         const Vector3 from( at - this->halfSz );
         const Vector3 to(   at + this->halfSz );
         chunkParameters = tree->treeParams;
-        chunkParameters.baseError = this->baseError;
+        chunkParameters.baseError = tree->treeParams.baseError( level );
         volume->load( tree->sceneNode, from, to, 0, &chunkParameters );
     }
     else
@@ -248,7 +245,6 @@ bool Tree:: buildTree( SceneNode * camNode )
     root->level  = 1;
     root->parent = 0;
     root->parentIndex = -1;
-    root->baseError = treeParams.baseError;
     const bool subdriveOk = root->subdrive( camNode );
     if ( !subdriveOk )
         return false;
@@ -285,6 +281,7 @@ Node * Tree::newNode()
     node->tree      = this;
     node->volume    = 0;
     node->sceneNode = 0;
+    return node;
 }
 
 void Tree::removeNode( Node * node )
