@@ -24,10 +24,11 @@ struct TreeParams: public ChunkParameters
 public:
     // Here "baseError" should be for the most rough level.
     // Max tree level. And error fofr max level is
-    // "baseError" / 2^maxLevel
+    // "baseError" * ratio^maxLevel
     int     maxLevel;
     Real    halfSz;
     Vector3 at;
+    Real    ratio;
 };
 
 class Tree;

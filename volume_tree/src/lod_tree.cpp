@@ -104,7 +104,7 @@ bool Node::subdrive( SceneNode * camNode )
     // Subdriving the node.
 
     const Real sz  = halfSz * 0.5;
-    const Real err = baseError * 0.5;
+    const Real err = baseError * tree->treeParams.ratio;
     static const int s[8][3] =
     {
         {-1, -1, -1},

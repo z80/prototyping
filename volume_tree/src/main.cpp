@@ -158,14 +158,15 @@ void BasicTutorial1::setup()
 
     // ****************************************
     LodTree::TreeParams params;
-    SphereSource        ss( 1000.0, Vector3() );
+    SphereSource        *ss = new SphereSource( 1000.0, Vector3() );
 
     {
         params.at        = Vector3();
         params.halfSz    = 1000.0;
-        params.src       = &ss;
+        params.src       = ss;
         params.baseError = 2500.0;
-        params.maxLevel  = 8;
+        params.maxLevel  = 6;
+        params.ratio     = 0.3;
         params.sceneManager = scnMgr;
         params.errorMultiplicator = (Real)0.9; // The factor between each LOD-level (error = base
         // Error * errorMultiplicator * level)
@@ -174,7 +175,7 @@ void BasicTutorial1::setup()
         // ccure.
         params.scale = 1; // The displayed volume will be scaled by this factor.
         params.maxScreenSpaceError = 30; // The screen space error controlling when the LOD-levels change.
-        params.async = false;
+        params.async = true;
     }
 
     tree = new LodTree::Tree( params );
