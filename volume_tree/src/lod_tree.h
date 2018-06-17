@@ -32,8 +32,9 @@ class Tree;
 
 class Node
 {
-private:
+protected:
     Node();
+    friend class Tree;
 public:
     ~Node();
     Node( const Node & inst );
@@ -42,6 +43,9 @@ public:
     bool needSubdriven( SceneNode * camNode ) const;
     bool subdrive( SceneNode * camNode );
     bool hasGeometry() const;
+    bool createVolume();
+    void destroyVolume();
+    void setMaterial( MaterialPtr m );
 
     /// Center.
     Vector3 at;
@@ -76,9 +80,10 @@ public:
     ~Tree();
 
     bool buildTree( SceneNode * camNode );
-    bool buildVolumes();
+    void setMaterial( MaterialPtr m );
 
-private:
+protected:
+    bool buildVolumes();
     Node * newNode();
     void   removeNode( Node * node );
     void deleteAllNodes();
@@ -87,6 +92,8 @@ private:
 
     Node * root;
     std::list<Node *> unusedNodes;
+
+    friend class Node;
 };
 
 }

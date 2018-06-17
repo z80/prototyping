@@ -61,7 +61,7 @@ const Node & Node::operator=( const Node & inst )
 
 bool Node::needSubdriven( SceneNode * camNode ) const
 {
-    if ( level >= tree->params.maxLevel )
+    if ( level >= tree->treeParams.maxLevel )
         return false;
     static const Real k = 1.4 + 2.0;
     const Vector3 camAt  = camNode->convertLocalToWorldPosition( Vector3() );
@@ -147,9 +147,71 @@ bool Node::hasGeometry() const
     Source * src = tree->treeParams.src;
     // Don't split if nothing is inside.
     Real centerValue = src->getValue( at );
+    const Vector3 from( at - halfSz );
+    const Vector3 to( at + halfSz );
     if ( Math::Abs(centerValue) > (to - from).length() * src->getVolumeSpaceToWorldSpaceFactor() )
         return false;
     return true;
+}
+
+bool Node::createVolume()
+{
+    if ( leafNode )
+    {
+        if ( !hasGeometry() )
+            return true;
+
+        destroyVolume();
+        volume = OGRE_NEW Chunk();
+
+        const Vector3 from( at - this->halfSz );
+        const Vector3 to(   at + this->halfSz );
+        chunkParameters = tree->treeParams;
+        chunkParameters.baseError = this->baseError;
+        volume->load( tree->sceneNode, from, to, 0, &chunkParameters );
+    }
+    else
+    {
+        for ( int i=0; i<8; i++ )
+        {
+            Node * node = nodes[i];
+            if ( !node )
+                continue;
+            const bool volumeOk = node->createVolume();
+            if ( !volumeOk )
+                return false;
+        }
+    }
+    return true;
+}
+
+void Node::destroyVolume()
+{
+    if ( volume )
+    {
+        OGRE_DELETE volume;
+        volume = 0;
+    }
+}
+
+void Node::setMaterial( MaterialPtr m )
+{
+    if ( leafNode )
+    {
+        if ( !volume )
+            return;
+        volume->setMaterial( m );
+    }
+    else
+    {
+        for ( int i=0; i<8; i++ )
+        {
+            Node * node = nodes[i];
+            if ( !node )
+                continue;
+            node->setMaterial( m );
+        }
+    }
 }
 
 
@@ -179,13 +241,28 @@ bool Tree::buildTree( SceneNode * camNode )
 {
     removeNode( root );
     root = newNode();
-    const bool res = root->subdrive( camNode );
-    return res;
+    const bool subdriveOk = root->subdrive( camNode );
+    if ( !subdriveOk )
+        return false;
+    const bool volumesOk = root->createVolume();
+    if ( !volumesOk )
+        return false;
+    return true;
+}
+
+void Tree::setMaterial( MaterialPtr m )
+{
+    if ( root )
+        root->setMaterial( m );
 }
 
 bool Tree::buildVolumes()
 {
+    if ( !root )
+        return false;
 
+    const bool res = root->createVolume();
+    return res;
 }
 
 Node * Tree::newNode()
@@ -209,13 +286,22 @@ void Tree::removeNode( Node * node )
     // First take care of child nodes.
     for ( int i=0; i<8; i++ )
     {
-        Node * node = nodes[i];
-        if ( node )
+        Node * n = node->nodes[i];
+        if ( n )
         {
-            removeNode( node );
-            nodes[i] = 0;
+            removeNode( n );
+            node->nodes[i] = 0;
         }
     }
+    // If node has a parent clear info about in
+    // parent structures.
+    if ( node->parent )
+    {
+        Node * p = node->parent;
+        p->nodes[node->parentIndex] = 0;
+        node->parent = 0;
+    }
+    // Place node to reserve.
     unusedNodes.push_back( node );
 
     // Delete nodes volume.
