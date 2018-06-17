@@ -26,10 +26,10 @@ const int CUR_SEED = 0;
 const double PLANET_CIRCUMFERENCE = 44236800.0;
 
 // Minimum elevation on the planet, in meters.  This value is approximate.
-const double MIN_ELEV = -3.1; //-8192.0;
+const double MIN_ELEV = -100.1; //-8192.0;
 
 // Maximum elevation on the planet, in meters.  This value is approximate.
-const double MAX_ELEV = 3.1; //8192.0;
+const double MAX_ELEV = 10.1; //8192.0;
 
 // Frequency of the planet's continents.  Higher frequency produces smaller,
 // more numerous continents.  This value is measured in radians.
@@ -1654,17 +1654,21 @@ SphereSource::SphereSource(const Real r, const Vector3 &center)
 
 Vector4 SphereSource::getValueAndGradient(const Vector3 &position) const
 {
+    static const Real d = 0.1;
     OGRE_LOCK_MUTEX( mutex )
-    const Vector3 at = position-mCenter;
-    const double dh = finalPlanet.GetValue( at.x, at.y, at.z );
-    const double r = mR + dh;
-    Vector3 pMinCenter = at;
-    Vector3 gradient = pMinCenter;
+    const Vector3 at = position;
+    const Real w = getValue( at );
+    const Real x = getValue( Vector3( at.x+d, at.y, at.z ) ) -
+                   getValue( Vector3( at.x-d, at.y, at.z ) );
+    const Real y = getValue( Vector3( at.x, at.y+d, at.z ) ) -
+                   getValue( Vector3( at.x, at.y-d, at.z ) );
+    const Real z = getValue( Vector3( at.x, at.y, at.z+d ) ) -
+                   getValue( Vector3( at.x, at.y, at.z-d ) );
     return Vector4(
-        gradient.x,
-        gradient.y,
-        gradient.z,
-        r - gradient.normalise()
+        x,
+        y,
+        z,
+        w
         );
 }
 
@@ -1672,10 +1676,22 @@ Real SphereSource::getValue(const Vector3 &position) const
 {
     OGRE_LOCK_MUTEX( mutex )
     const Vector3 at = position-mCenter;
-    const double dh = finalPlanet.GetValue( at.x, at.y, at.z );
-    const double r = mR + dh;
-    Vector3 pMinCenter = at;
-    return r - pMinCenter.length();
+    const double l = at.length();
+    double r;
+    if ( l < 0.1 )
+        r = mR;
+    else
+    {
+        const Vector3 atSurf = at / l;
+        const double dr = finalPlanet.GetValue( atSurf.x, atSurf.y, atSurf.z );
+        r = mR + dr;
+    }
+    double dist = at.length();
+    //dist = dist * dist;
+    //const double r2 = r * r;
+    //const double f = 1.0 - dist / r2;
+    const double f = 1.0 - dist / r;
+    return f;
 }
 
 

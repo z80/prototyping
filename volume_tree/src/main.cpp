@@ -131,7 +131,7 @@ void BasicTutorial1::setup()
     //! [entity1nodeattach]
 
     //! [cameramove]
-    camNode->setPosition(0, 0, 222);
+    camNode->setPosition(0, 5005, 222);
     //! [cameramove]
 
     // -- tutorial section end --
@@ -158,15 +158,15 @@ void BasicTutorial1::setup()
 
     // ****************************************
     LodTree::TreeParams params;
-    SphereSource        *ss = new SphereSource( 1000.0, Vector3() );
+    SphereSource        *ss = new SphereSource( 5000.0, Vector3() );
 
     {
         params.at        = Vector3();
-        params.halfSz    = 1000.0;
+        params.halfSz    = 5000.0;
         params.src       = ss;
-        params.baseError = 2500.0;
-        params.maxLevel  = 6;
-        params.ratio     = 0.3;
+        params.baseError = 3*2500.0;
+        params.maxLevel  = 8;
+        params.ratio     = 0.5;
         params.sceneManager = scnMgr;
         params.errorMultiplicator = (Real)0.9; // The factor between each LOD-level (error = base
         // Error * errorMultiplicator * level)
@@ -180,7 +180,7 @@ void BasicTutorial1::setup()
 
     tree = new LodTree::Tree( params );
     SceneNode * pseudoCamNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    pseudoCamNode->setPosition( 1000.0, 0.0, 0.0 );
+    pseudoCamNode->setPosition( 30.0, 0.0, 5005.0 );
     tree->buildTree( pseudoCamNode );
     tree->setMaterial( MaterialManager::getSingleton().getByName( "triplanarReference" ) );
 }
