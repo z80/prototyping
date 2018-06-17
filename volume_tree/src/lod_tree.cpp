@@ -248,6 +248,7 @@ bool Tree:: buildTree( SceneNode * camNode )
     root->level  = 1;
     root->parent = 0;
     root->parentIndex = -1;
+    root->baseError = treeParams.baseError;
     const bool subdriveOk = root->subdrive( camNode );
     if ( !subdriveOk )
         return false;

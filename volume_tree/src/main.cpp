@@ -158,14 +158,14 @@ void BasicTutorial1::setup()
 
     // ****************************************
     LodTree::TreeParams params;
-    SphereSource        ss( 10.0, Vector3() );
+    SphereSource        ss( 1000.0, Vector3() );
 
     {
         params.at        = Vector3();
-        params.halfSz    = 10.0;
+        params.halfSz    = 1000.0;
         params.src       = &ss;
-        params.baseError = 2.0;
-        params.maxLevel  = 2;
+        params.baseError = 2500.0;
+        params.maxLevel  = 8;
         params.sceneManager = scnMgr;
         params.errorMultiplicator = (Real)0.9; // The factor between each LOD-level (error = base
         // Error * errorMultiplicator * level)
@@ -179,7 +179,7 @@ void BasicTutorial1::setup()
 
     tree = new LodTree::Tree( params );
     SceneNode * pseudoCamNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    pseudoCamNode->setPosition( 10.0, 0.0, 0.0 );
+    pseudoCamNode->setPosition( 1000.0, 0.0, 0.0 );
     tree->buildTree( pseudoCamNode );
     tree->setMaterial( MaterialManager::getSingleton().getByName( "triplanarReference" ) );
 }

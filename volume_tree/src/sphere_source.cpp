@@ -26,10 +26,10 @@ const int CUR_SEED = 0;
 const double PLANET_CIRCUMFERENCE = 44236800.0;
 
 // Minimum elevation on the planet, in meters.  This value is approximate.
-const double MIN_ELEV = -0.1; //-8192.0;
+const double MIN_ELEV = -3.1; //-8192.0;
 
 // Maximum elevation on the planet, in meters.  This value is approximate.
-const double MAX_ELEV = 0.1; //8192.0;
+const double MAX_ELEV = 3.1; //8192.0;
 
 // Frequency of the planet's continents.  Higher frequency produces smaller,
 // more numerous continents.  This value is measured in radians.
