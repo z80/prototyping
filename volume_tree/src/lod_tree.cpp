@@ -14,6 +14,7 @@ Node::Node()
     parent      = 0;
     parentIndex = -1;
     leafNode = true;
+    level = 0;
 }
 
 Node::~Node()
@@ -122,6 +123,7 @@ bool Node::subdrive( SceneNode * camNode )
         if ( !node )
             return false;
         // Node position and dimensions.
+        node->level = newLevel;
         node->baseError = err;
         node->halfSz    = sz;
         node->at.x = at.x+s[i][0]*sz;
@@ -237,10 +239,15 @@ Tree::~Tree()
     deleteAllNodes();
 }
 
-bool Tree::buildTree( SceneNode * camNode )
+bool Tree:: buildTree( SceneNode * camNode )
 {
     removeNode( root );
     root = newNode();
+    root->at     = treeParams.at;
+    root->halfSz = treeParams.halfSz;
+    root->level  = 1;
+    root->parent = 0;
+    root->parentIndex = -1;
     const bool subdriveOk = root->subdrive( camNode );
     if ( !subdriveOk )
         return false;
@@ -300,6 +307,7 @@ void Tree::removeNode( Node * node )
         Node * p = node->parent;
         p->nodes[node->parentIndex] = 0;
         node->parent = 0;
+        node->parentIndex = -1;
     }
     // Place node to reserve.
     unusedNodes.push_back( node );

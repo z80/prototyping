@@ -25,7 +25,9 @@ public:
     // Here "baseError" should be for the most rough level.
     // Max tree level. And error fofr max level is
     // "baseError" / 2^maxLevel
-    int  maxLevel;
+    int     maxLevel;
+    Real    halfSz;
+    Vector3 at;
 };
 
 class Tree;

@@ -8,6 +8,8 @@
 #include "OgreAdvancedRenderControls.h"
 
 #include "volume.h"
+#include "lod_tree.h"
+#include "sphere_source.h"
 
 #include <iostream>
 
@@ -40,7 +42,8 @@ private:
     CameraMan * cMan;
     TrayManager * mTrayManager;
     AdvancedRenderControls * mAdvancedControls;
-    Volume2 * volume;
+    //Volume2 * volume;
+    LodTree::Tree * tree;
 };
 
 
@@ -50,6 +53,7 @@ BasicTutorial1::BasicTutorial1()
     cMan = 0;
     mTrayManager = 0;
     mAdvancedControls = 0;
+    tree = 0;
 }
 
 void BasicTutorial1::shutdown()
@@ -60,7 +64,7 @@ void BasicTutorial1::shutdown()
         delete mAdvancedControls;
     if ( mTrayManager )
         delete mTrayManager;
-    delete volume;
+    delete tree;
 }
 
 
@@ -152,7 +156,32 @@ void BasicTutorial1::setup()
     scnMgr->addRenderQueueListener( os );
 
 
-    volume = new Volume2( scnMgr );
+    // ****************************************
+    LodTree::TreeParams params;
+    SphereSource        ss( 10.0, Vector3() );
+
+    {
+        params.at        = Vector3();
+        params.halfSz    = 10.0;
+        params.src       = &ss;
+        params.baseError = 2.0;
+        params.maxLevel  = 2;
+        params.sceneManager = scnMgr;
+        params.errorMultiplicator = (Real)0.9; // The factor between each LOD-level (error = base
+        // Error * errorMultiplicator * level)
+        params.skirtFactor = (Real)0.7; // Controls how long the skirts are. The lower the numbe
+        // r, the shorter the skirts are. This saves geometry. But if they are too short, cracks might o
+        // ccure.
+        params.scale = 1; // The displayed volume will be scaled by this factor.
+        params.maxScreenSpaceError = 30; // The screen space error controlling when the LOD-levels change.
+        params.async = false;
+    }
+
+    tree = new LodTree::Tree( params );
+    SceneNode * pseudoCamNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+    pseudoCamNode->setPosition( 10.0, 0.0, 0.0 );
+    tree->buildTree( pseudoCamNode );
+    tree->setMaterial( MaterialManager::getSingleton().getByName( "triplanarReference" ) );
 }
 
 bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
