@@ -1,6 +1,61 @@
 
 #include "sphere_source.h"
 
+SphereCache::SphereCache( Source * origSrc )
+{
+    orig = origSrc;
+}
+
+SphereCache::~SphereCache()
+{
+
+}
+
+void SphereCache::setOrigSource( Source * origSource )
+{
+    orig = origSource;
+}
+
+Vector4 SphereCache::getValueAndGradient(const Vector3 &position) const
+{
+    Vector4 v = getFromCache( position );
+    return v;
+}
+
+Real SphereCache::getValue(const Vector3 &position) const
+{
+    Vector4 v = getFromCache( position );
+    return v.w;
+}
+
+const Vector4 SphereCache::getFromCache( const Vector3 & position ) const
+{
+    Hash & h = hash;
+    size_t sz = sizeof( Vector3::x );
+    h.resize( sz * 3 );
+    size_t at = 0;
+    const uchar * d = reinterpret_cast<const uchar *>( &(position.x) );
+    for ( size_t i=0; i<sz; i++ )
+        h[at++] = d[i];
+    d = reinterpret_cast<const uchar *>( &(position.y) );
+    for ( size_t i=0; i<sz; i++ )
+        h[at++] = d[i];
+    d = reinterpret_cast<const uchar *>( &(position.z) );
+    for ( size_t i=0; i<sz; i++ )
+        h[at++] = d[i];
+    std::map<Hash, Vector4>::const_iterator it = cache.find( h );
+    if ( it == cache.end() )
+    {
+        const Vector4 v = orig->getValueAndGradient( position );
+        cache[h] = v;
+        return v;
+    }
+    return it->second;
+}
+
+
+
+
 // Southernmost coordinate of elevation grid.
 const double SOUTH_COORD = -90;
 
@@ -26,10 +81,10 @@ const int CUR_SEED = 0;
 const double PLANET_CIRCUMFERENCE = 44236800.0;
 
 // Minimum elevation on the planet, in meters.  This value is approximate.
-const double MIN_ELEV = -300.1; //-8192.0;
+const double MIN_ELEV = -100.1; //-8192.0;
 
 // Maximum elevation on the planet, in meters.  This value is approximate.
-const double MAX_ELEV = -0.1; //8192.0;
+const double MAX_ELEV = 100.1; //8192.0;
 
 // Frequency of the planet's continents.  Higher frequency produces smaller,
 // more numerous continents.  This value is measured in radians.
@@ -1654,16 +1709,17 @@ SphereSource::SphereSource(const Real r, const Vector3 &center)
 
 Vector4 SphereSource::getValueAndGradient(const Vector3 &position) const
 {
-    static const Real d = 0.1;
+    static const Real d = 0.001;
+    static const Real _2d = 0.5 / d;
     OGRE_LOCK_MUTEX( mutex )
     const Vector3 at = position;
     const Real w = getValue( at );
-    const Real x = getValue( Vector3( at.x+d, at.y, at.z ) ) -
-                   getValue( Vector3( at.x-d, at.y, at.z ) );
-    const Real y = getValue( Vector3( at.x, at.y+d, at.z ) ) -
-                   getValue( Vector3( at.x, at.y-d, at.z ) );
-    const Real z = getValue( Vector3( at.x, at.y, at.z+d ) ) -
-                   getValue( Vector3( at.x, at.y, at.z-d ) );
+    const Real x = ( getValue( Vector3( at.x+d, at.y, at.z ) ) -
+                     getValue( Vector3( at.x-d, at.y, at.z ) ) ) * _2d;
+    const Real y = ( getValue( Vector3( at.x, at.y+d, at.z ) ) -
+                     getValue( Vector3( at.x, at.y-d, at.z ) ) ) * _2d;
+    const Real z = ( getValue( Vector3( at.x, at.y, at.z+d ) ) -
+                     getValue( Vector3( at.x, at.y, at.z-d ) ) ) * _2d;
     return Vector4(
         x,
         y,

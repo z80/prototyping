@@ -147,17 +147,22 @@ void BasicTutorial1::setup()
     SphereSource        *ss = new SphereSource( 4095.0, Vector3() );
 
     {
-        params.at        = Vector3();
+        params.at        = Vector3( 0.0, 0.0, 4095.0 );
         params.halfSz    = 4200.0;
         params.src       = ss;
-        params.maxLevel  = 9;
+        params.maxLevel  = 8;
         params.baseError = [&](int level)
         {
-            const bool big = (level<8);
-            if ( big )
+            if ( level<8 )
                 return 700.0;
             else
-                return 5.5;
+                return 10.0;
+            /*if ( level<2 )
+                return 300.0;
+            else if ( level<4 )
+                return 100.0;
+            else
+                return 2.5;*/
         };
         params.sceneManager = scnMgr;
         params.errorMultiplicator = (Real)0.5; // The factor between each LOD-level (error = base
@@ -172,9 +177,16 @@ void BasicTutorial1::setup()
 
     tree = new LodTree::Tree( params );
     SceneNode * pseudoCamNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    pseudoCamNode->setPosition( 0.0, 0.0, 4096.1 );
+    pseudoCamNode->setPosition( 0.0, 0.0, 4105.1 );
     tree->buildTree( pseudoCamNode );
     tree->setMaterial( MaterialManager::getSingleton().getByName( "triplanarReference" ) );
+
+
+    Entity* ogreEntity = scnMgr->createEntity("ogrehead.mesh");
+    SceneNode* ogreNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+    ogreNode->attachObject(ogreEntity);
+    ogreNode->setPosition( pseudoCamNode->getPosition() );
+    ogreNode->setScale( 0.1, 0.1, 0.1 );
 }
 
 bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )

@@ -15,6 +15,24 @@
 using namespace Ogre;
 using namespace Volume;
 
+class SphereCache: public Source
+{
+public:
+    SphereCache( Source * origSrc );
+    ~SphereCache();
+    void setOrigSource( Source * origSource );
+    virtual Vector4 getValueAndGradient(const Vector3 &position) const;
+    virtual Real getValue(const Vector3 &position) const;
+
+    const Vector4 getFromCache( const Vector3 & position ) const;
+protected:
+    Source * orig;
+    typedef std::basic_string<uchar> Hash;
+    typedef std::map<Hash, Vector4>  Cache;
+    mutable Hash  hash;
+    mutable Cache cache;
+};
+
 class SphereSource: public Source
 {
 protected:

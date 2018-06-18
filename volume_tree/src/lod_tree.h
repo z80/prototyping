@@ -9,8 +9,10 @@
 #include "OgreCameraMan.h"
 #include "OgreTrays.h"
 #include "OgreAdvancedRenderControls.h"
+#include "OgreVolumeCacheSource.h"
 
 #include "volume.h"
+#include "sphere_source.h"
 
 #include <functional>
 #include <iostream>
@@ -74,6 +76,9 @@ public:
     /// Separate chunk parameters due to
     /// need custom baseError.
     ChunkParameters chunkParameters;
+    CSGCubeSource         * cubeSrc;
+    CSGIntersectionSource * andSrc;
+    SphereCache           * cache;
 };
 
 class Tree
@@ -91,7 +96,8 @@ protected:
     void   removeNode( Node * node );
     void deleteAllNodes();
     TreeParams   treeParams;
-    SceneNode  * sceneNode;
+    SphereCache * source;
+    SceneNode   * sceneNode;
 
     Node * root;
     std::list<Node *> unusedNodes;

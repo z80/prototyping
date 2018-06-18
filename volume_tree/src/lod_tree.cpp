@@ -15,6 +15,9 @@ Node::Node()
     parentIndex = -1;
     leafNode = true;
     level = 0;
+    cubeSrc = 0;
+    andSrc  = 0;
+    cache   = 0;
 }
 
 Node::~Node()
@@ -29,6 +32,12 @@ Node::~Node()
         OGRE_DELETE volume;
         volume = 0;
     }
+    if ( cubeSrc )
+        delete cubeSrc;
+    if ( andSrc )
+        delete andSrc;
+    if ( cache )
+        delete cache;
 }
 
 Node::Node( const Node & inst )
@@ -61,9 +70,9 @@ const Node & Node::operator=( const Node & inst )
 
 bool Node::needSubdriven( SceneNode * camNode ) const
 {
-    if ( level >= tree->treeParams.maxLevel )
+    if ( level > tree->treeParams.maxLevel )
         return false;
-    static const Real k = 1.4 + 2.0;
+    static const Real k = 1.4 + 1.0;
     const Vector3 camAt  = camNode->convertLocalToWorldPosition( Vector3() );
     const Vector3 nodeAt = tree->sceneNode->convertLocalToWorldPosition( at );
     const Real d = camAt.distance( nodeAt );
@@ -75,6 +84,7 @@ bool Node::needSubdriven( SceneNode * camNode ) const
 
 bool Node::subdrive( SceneNode * camNode )
 {
+    std::cout << "node level " << level << std::endl;
     // If level is too big.
     const int newLevel = level+1;
     if ( newLevel > tree->treeParams.maxLevel )
@@ -163,11 +173,20 @@ bool Node::createVolume()
         destroyVolume();
         volume = OGRE_NEW Chunk();
 
-        const Vector3 from( at - this->halfSz );
-        const Vector3 to(   at + this->halfSz );
+        const Vector3 from( at - this->halfSz*1.0 );
+        const Vector3 to(   at + this->halfSz*1.0 );
         chunkParameters = tree->treeParams;
         chunkParameters.baseError = tree->treeParams.baseError( level );
-        volume->load( tree->sceneNode, from, to, 0, &chunkParameters );
+        /*Source * src = chunkParameters.src;
+        cubeSrc = new CSGCubeSource( from, to );
+        andSrc  = new CSGIntersectionSource( cubeSrc, src );
+        cache   = new SphereCache( andSrc );
+        chunkParameters.src = cache;*/
+        cache   = new SphereCache( chunkParameters.src );
+        chunkParameters.src = cache;
+        const Vector3 from2( at - this->halfSz*1.0 );
+        const Vector3 to2(   at + this->halfSz*1.0 );
+        volume->load( tree->sceneNode, from2, to2, 0, &chunkParameters );
     }
     else
     {
@@ -234,6 +253,8 @@ Tree::Tree( const TreeParams & params )
 Tree::~Tree()
 {
     deleteAllNodes();
+    if ( treeParams.src )
+        delete treeParams.src;
 }
 
 bool Tree:: buildTree( SceneNode * camNode )
