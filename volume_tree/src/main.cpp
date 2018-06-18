@@ -118,25 +118,12 @@ void BasicTutorial1::setup()
     getRenderWindow()->addViewport(cam);
     //! [camera]
 
-    //! [entity1]
-    //Entity* ogreEntity = scnMgr->createEntity("ogrehead.mesh");
-    //! [entity1]
-
-    //! [entity1node]
-    //SceneNode* ogreNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    //! [entity1node]
-
-    //! [entity1nodeattach]
-    //ogreNode->attachObject(ogreEntity);
-    //! [entity1nodeattach]
-
     //! [cameramove]
-    camNode->setPosition(0, 5005, 222);
+    camNode->setPosition( 0.0, 0.0, 5005.0 );
     //! [cameramove]
 
     // -- tutorial section end --
 
-    // These doesn't work.
     Ogre::RenderWindow * wnd = getRenderWindow();
     mTrayManager = new TrayManager( "my_tray", wnd, this );
     mTrayManager->showCursor();
@@ -146,9 +133,8 @@ void BasicTutorial1::setup()
     this->locateResources();
 
     mTrayManager->showFrameStats( TL_BOTTOMLEFT );
-    mTrayManager->showLogo( TL_BOTTOMRIGHT );
-    mTrayManager->showAll();
-    mTrayManager->showTrays();
+    //mTrayManager->showAll();
+    //mTrayManager->showTrays();
 
     this->loadResources();
 
@@ -165,9 +151,16 @@ void BasicTutorial1::setup()
         params.halfSz    = 4200.0;
         params.src       = ss;
         params.maxLevel  = 9;
-        params.baseError = [&](int level){ return (level<9) ? 700.0 : 1.5; };
+        params.baseError = [&](int level)
+        {
+            const bool big = (level<8);
+            if ( big )
+                return 700.0;
+            else
+                return 5.5;
+        };
         params.sceneManager = scnMgr;
-        params.errorMultiplicator = (Real)0.9; // The factor between each LOD-level (error = base
+        params.errorMultiplicator = (Real)0.5; // The factor between each LOD-level (error = base
         // Error * errorMultiplicator * level)
         params.skirtFactor = (Real)0.7; // Controls how long the skirts are. The lower the numbe
         // r, the shorter the skirts are. This saves geometry. But if they are too short, cracks might o
@@ -179,7 +172,7 @@ void BasicTutorial1::setup()
 
     tree = new LodTree::Tree( params );
     SceneNode * pseudoCamNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    pseudoCamNode->setPosition( 0.0, 0.0, 5010.1 );
+    pseudoCamNode->setPosition( 0.0, 0.0, 4096.1 );
     tree->buildTree( pseudoCamNode );
     tree->setMaterial( MaterialManager::getSingleton().getByName( "triplanarReference" ) );
 }
