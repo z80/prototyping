@@ -7,6 +7,7 @@ add_subdirectory( "./3dparty" )
 add_subdirectory( "./simple" )
 add_subdirectory( "./volume" )
 add_subdirectory( "./volume_tree" )
+add_subdirectory( "./icosphere" )
 
 
 
