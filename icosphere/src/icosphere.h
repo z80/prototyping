@@ -11,6 +11,16 @@ namespace Icosphere
 
 class Icosphere;
 
+Real distanceL1( const Vector3 & a, const Vector3 & b )
+{
+    const Real x = Math::Abs( a.x - b.x );
+    const Real y = Math::Abs( a.y - b.y );
+    const Real z = Math::Abs( a.z - b.z );
+    Real d = ( x <= y ) ? x : y;
+    d = ( d <= z ) ? d : z;
+    return d;
+}
+
 class Vertex
 {
 public:
@@ -18,8 +28,16 @@ public:
     Vector3 norm;
     Vector2 uv;
 
+    // If this vertex is middle point.
+    bool isMidPoint;
+    // If this is middle point 3d position
+    // is mean of 3d positions of the two vertices
+    // with these indices.
+    int32 a, b;
+
     Vertex();
     ~Vertex();
+    Vertex( Real x, Real y, Real z );
     Vertex( const Vertex & inst );
     const Vertex & operator=( const Vertex & inst );
 };
@@ -27,21 +45,22 @@ public:
 class Triangle
 {
 public:
-    size_t vertInds[3];
-    size_t subTris[4];
-    size_t parent;
-    size_t parentInd;
-    int    level;
-    bool   leaf;
+    int32 vertInds[3];
+    int32 subTris[4];
+    int32 parent;
+    int32 parentInd;
+    int   level;
+    bool  leaf;
 
     Triangle();
     ~Triangle();
+    Triangle( int32 n1, int32 n2, int32 n3 );
     Triangle( const Triangle & inst );
     const Triangle & operator=( const Triangle & inst );
     bool subdrive( Icosphere * s );
 };
 
-static const size_t EDGE_HASH_SZ = sizeof(size_t)*2;
+static const int32 EDGE_HASH_SZ = sizeof(int32)*2;
 
 class EdgeHash
 {
@@ -50,9 +69,11 @@ public:
 
     EdgeHash();
     ~EdgeHash();
+    EdgeHash( int32 a, int32 b );
     EdgeHash( const EdgeHash & inst );
     const EdgeHash & operator=( const EdgeHash & inst );
     friend bool operator<( const EdgeHash & a, const EdgeHash & b );
+    friend bool operator==( const EdgeHash & a, const EdgeHash & b );
 };
 
 class Icosphere
@@ -60,7 +81,10 @@ class Icosphere
 public:
     std::vector<Vertex>        verts;
     std::vector<Triangle>      tris;
-    std::map<EdgeHash, Vertex> lookup;
+    std::map<EdgeHash, int32>  lookup;
+    // Leaf triangle qtys. I need this to make a decision
+    // if I should assign this as a mid point or not.
+    std::vector<int32>         vertLeafQtys;
 
     Icosphere();
     ~Icosphere();
