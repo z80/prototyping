@@ -3,8 +3,11 @@
 #define __ICOSPHERE_H_
 
 #include "Ogre.h"
+#include <functional>
 
 using namespace Ogre;
+
+class Source;
 
 namespace Icosphere
 {
@@ -34,6 +37,10 @@ public:
     // is mean of 3d positions of the two vertices
     // with these indices.
     int32 a, b;
+    // These are needed to count maxLevel triangles
+    // containing this vertex.
+    int maxLevel;
+    int trisQty;
 
     Vertex();
     ~Vertex();
@@ -51,13 +58,14 @@ public:
     int32 parentInd;
     int   level;
     bool  leaf;
+    typedef bool (* NeedSubdrive)(const Triangle &);
 
     Triangle();
     ~Triangle();
     Triangle( int32 n1, int32 n2, int32 n3 );
     Triangle( const Triangle & inst );
     const Triangle & operator=( const Triangle & inst );
-    bool subdrive( Icosphere * s );
+    bool subdrive( Icosphere * s, NeedSubdrive needSubdrive );
 };
 
 static const int32 EDGE_HASH_SZ = sizeof(int32)*2;
@@ -76,20 +84,32 @@ public:
     friend bool operator==( const EdgeHash & a, const EdgeHash & b );
 };
 
+class Source
+{
+public:
+    /// Delta height assuming sphere radius is 1.
+    virtual Real dh() = 0;
+};
+
 class Icosphere
 {
 public:
     std::vector<Vertex>        verts;
     std::vector<Triangle>      tris;
     std::map<EdgeHash, int32>  lookup;
-    // Leaf triangle qtys. I need this to make a decision
-    // if I should assign this as a mid point or not.
-    std::vector<int32>         vertLeafQtys;
 
     Icosphere();
     ~Icosphere();
     Icosphere( const Icosphere & inst );
     const Icosphere & operator=( const Icosphere & inst );
+
+    void clear();
+    bool subdrive( Triangle::NeedSubdrive needSubdrive );
+private:
+    void init();
+    void labelMidPoints();
+    void scaleToSphere();
+    void applySource( Source * src );
 };
 
 

@@ -6,7 +6,9 @@ namespace Icosphere
 
 Vertex::Vertex()
 {
-
+    isMidPoint =  true;
+    maxLevel   = -1;
+    trisQty    =  0;
 }
 
 Vertex::~Vertex()
@@ -36,6 +38,9 @@ const Vertex & Vertex::operator=( const Vertex & inst )
         isMidPoint = inst.isMidPoint;
         a    = inst.a;
         b    = inst.b;
+        maxLevel = -1;
+        trisQty  =  0;
+
     }
     return *this;
 }
@@ -98,7 +103,7 @@ const Triangle & Triangle::operator=( const Triangle & inst )
     return *this;
 }
 
-bool Triangle::subdrive( Icosphere * s )
+bool Triangle::subdrive( Icosphere * s, NeedSubdrive needSubdrive )
 {
     if ( !leaf )
     {
@@ -106,14 +111,24 @@ bool Triangle::subdrive( Icosphere * s )
         {
             int32 triInd = this->subTris[i];
             Triangle & tri = s->tris[triInd];
-            const bool subdriveOk = tri.subdrive( s );
+            const bool subdriveOk = tri.subdrive( s, needSubdrive );
             if ( !subdriveOk )
                 return false;
         }
         return true;
     }
 
+    // Check if need subdrive.
+    const bool reallyNeed = needSubdrive( this );
+    // If not return success.
+    if ( !reallyNeed )
+        return true;
 
+
+    const int32 newLevel = this->level + 1;
+    this->leaf = false;
+
+    // If need subdrive subdriving recursively.
     int32 n[3];
     for ( int32 i=0; i<3; i++ )
     {
@@ -134,10 +149,13 @@ bool Triangle::subdrive( Icosphere * s )
             const Vertex & v1 = s->verts[ind1];
             Vertex v;
             v.at = v0.at + v1.at;
-            v.at.normalise();
+            v.at *= 0.5;
             v.norm = v.at;
             v.a    = ind0;
             v.b    = ind1;
+            v.maxLevel = newLevel;
+            v.trisQty  = 3;
+
             s->verts.push_back( v );
             n[i] = ind;
         }
@@ -145,16 +163,39 @@ bool Triangle::subdrive( Icosphere * s )
         {
             const int32 ind = it->second;
             n[i] = ind;
+            // Get vertex from verts array and update it's
+            // triangles qty and max level.
+            Vertex & v = s->verts[ind];
+            if ( v.maxLevel < newLevel )
+            {
+                v.maxLevel = newLevel;
+                v.trisQty  = 3;
+            }
+            else
+                v.trisQty += 3;
         }
     }
-    // Add child triangles.
+    // Process current triangle vertices and also update their
+    // maxLevel and trisQty.
+    // For corner vertices triangles number changes only by 1.
+    for ( int32 i=0; i<3; i++ )
+    {
+        const int32 ind = vertInds[i];
+        Vertex & v = s->verts[ind];
+        if ( v.maxLevel < newLevel )
+        {
+            v.maxLevel = newLevel;
+            v.trisQty  = 1;
+        }
+        else
+            v.trisQty += 1;
+    }
+
+    // Create 4 child triangles.
     Triangle tri1( vertInds[0], n[0], n[2] );
     Triangle tri2( n[0], vertInds[1], n[1] );
     Triangle tri3( n[2], n[1], vertInds[2] );
     Triangle tri4( n[0], n[1], n[2] );
-
-    const int32 newLevel = this->level + 1;
-    this->leaf = false;
 
     tri1.level = newLevel;
     tri1.leaf  = true;
@@ -168,15 +209,26 @@ bool Triangle::subdrive( Icosphere * s )
     tri4.level = newLevel;
     tri4.leaf  = true;
     tri4.parentInd = 3;
-    int32 triN = static_cast<int32>( s->tris.size() );
+    const int32 triN = static_cast<int32>( s->tris.size() );
+    int32 triBase = triN;
     s->tris.push_back( tri1 );
     s->tris.push_back( tri2 );
     s->tris.push_back( tri3 );
     s->tris.push_back( tri4 );
-    this->subTris[0] = triN++;
-    this->subTris[1] = triN++;
-    this->subTris[2] = triN++;
-    this->subTris[3] = triN;
+    this->subTris[0] = triBase++;
+    this->subTris[1] = triBase++;
+    this->subTris[2] = triBase++;
+    this->subTris[3] = triBase;
+
+    // Recursively subdrive.
+    for ( int32 i=0; i<4; i++ )
+    {
+        const int ind = triN + i;
+        Triangle & tri = s->tris[ind];
+        const bool subdriveOk = tri.subdrive( s, needSubdrive );
+        if ( !subdriveOk )
+            return false;
+    }
 
     return true;
 }
@@ -262,6 +314,55 @@ bool operator==( const EdgeHash & a, const EdgeHash & b )
 
 Icosphere::Icosphere()
 {
+    init();
+}
+
+Icosphere::~Icosphere()
+{
+
+}
+
+Icosphere::Icosphere( const Icosphere & inst )
+{
+    *this = inst;
+}
+
+const Icosphere & Icosphere::operator=( const Icosphere & inst )
+{
+    if ( this != &inst )
+    {
+        verts  = inst.verts;
+        tris   = inst.tris;
+        lookup = inst.lookup;
+    }
+    return *this;
+}
+
+void Icosphere::clear()
+{
+    verts.clear();
+    tris.clear();
+    lookup.clear();
+
+    init();
+}
+
+bool Icosphere::subdrive( Triangle::NeedSubdrive needSubdrive )
+{
+    const int32 qty = static_cast<int32>( tris.size() );
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Triangle & tri = tris[i];
+        const bool subdriveOk = tri.subdrive( this, needSubdrive );
+        if ( !subdriveOk )
+            return false;
+    }
+
+    return true;
+}
+
+void Icosphere::init()
+{
     // Initialize with icosahedron vertices and triangles.
     const Real X=0.525731112119133606;
     const Real Z=0.850650808352039932;
@@ -322,26 +423,27 @@ Icosphere::Icosphere()
     tris.push_back( Triangle( 7, 2, 11 ) );
 }
 
-Icosphere::~Icosphere()
+void Icosphere::labelMidPoints()
 {
-
-}
-
-Icosphere::Icosphere( const Icosphere & inst )
-{
-    *this = inst;
-}
-
-const Icosphere & Icosphere::operator=( const Icosphere & inst )
-{
-    if ( this != &inst )
+    const int32 qty = static_cast<int32>( verts.size() );
+    for ( int32 i=0; i<qty; i++ )
     {
-        verts  = inst.verts;
-        tris   = inst.tris;
-        lookup = inst.lookup;
+        Vertex & v = verts[i];
+        if ( v <  )
+        v.isMidPoint
     }
-    return *this;
 }
+
+void Icosphere::scaleToSphere()
+{
+
+}
+
+void Icosphere::applySource( Source * src )
+{
+
+}
+
 
 
 
