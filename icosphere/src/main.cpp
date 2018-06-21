@@ -6,12 +6,10 @@ using namespace IcoHeightmap;
 
 int main( int argc, char * argv[] )
 {
-    DumbSphere subdiv( 2 );
+    DumbSphere subdiv( 5 );
     SphereSource ss;
     Icosphere ico;
     ico.subdrive( &subdiv );
-    ico.labelMidPoints();
-    ico.scaleToSphere();
     ico.applySource( &ss );
 
 

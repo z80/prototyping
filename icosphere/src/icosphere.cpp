@@ -149,13 +149,19 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
             ind1 = 0;
         const int32 vertInd0 = this->vertInds[ind0];
         const int32 vertInd1 = this->vertInds[ind1];
+        if ( ( (vertInd0 == 0) || (vertInd0 == 9) ) &&
+             ( (vertInd1 == 0) || (vertInd1 == 9) ) )
+        {
+            int j=0;
+        }
+
         const EdgeHash hashN( vertInd0, vertInd1 );
         // Check if vertex already exists.
         std::map<EdgeHash, int32>::const_iterator it = s->lookup.find( hashN );
         if ( it == s->lookup.end() )
         {
             const int32 ind = static_cast<int32>( s->verts.size() );
-            s->lookup[hashN] = ind ;
+            s->lookup[hashN] = ind;
 
             // Create this vertex.
             const Vertex & v0 = s->verts[vertInd0];
@@ -175,6 +181,10 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
         else
         {
             const int32 ind = it->second;
+            if ( ind == 15 )
+            {
+                int j = 0;
+            }
             n[i] = ind;
             // Get vertex from verts array and update it's
             // triangles qty and max level.
@@ -194,7 +204,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
     for ( int32 i=0; i<3; i++ )
     {
         const int32 ind = this->vertInds[i];
-        if ( ind == 0 )
+        if ( ind == 15 )
         {
             int j = 0;
         }
@@ -308,6 +318,8 @@ bool operator<( const EdgeHash & a, const EdgeHash & b )
     {
         if ( a.d[i] < b.d[i] )
             return true;
+        else if ( a.d[i] > b.d[i] )
+            return false;
     }
     return false;
 }
@@ -374,6 +386,8 @@ bool Icosphere::subdrive( NeedSubdrive * needSubdrive )
         if ( !subdriveOk )
             return false;
     }
+    labelMidPoints();
+    scaleToSphere();
 
     return true;
 }
