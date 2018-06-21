@@ -3,7 +3,7 @@
 #define __ICOSPHERE_H_
 
 #include "Ogre.h"
-#include <functional>
+//#include <functional>
 
 using namespace Ogre;
 
@@ -14,15 +14,7 @@ namespace Icosphere
 
 class Icosphere;
 
-Real distanceL1( const Vector3 & a, const Vector3 & b )
-{
-    const Real x = Math::Abs( a.x - b.x );
-    const Real y = Math::Abs( a.y - b.y );
-    const Real z = Math::Abs( a.z - b.z );
-    Real d = ( x <= y ) ? x : y;
-    d = ( d <= z ) ? d : z;
-    return d;
-}
+Real distanceL1( const Vector3 & a, const Vector3 & b );
 
 class Vertex
 {
@@ -88,7 +80,7 @@ class Source
 {
 public:
     /// Delta height assuming sphere radius is 1.
-    virtual Real dh() = 0;
+    virtual Real dh( const Vector3 & at ) = 0;
 };
 
 class Icosphere
@@ -105,7 +97,6 @@ public:
 
     void clear();
     bool subdrive( Triangle::NeedSubdrive needSubdrive );
-private:
     void init();
     void labelMidPoints();
     void scaleToSphere();

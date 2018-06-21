@@ -4,6 +4,17 @@
 namespace Icosphere
 {
 
+Real distanceL1( const Vector3 & a, const Vector3 & b )
+{
+    const Real x = Math::Abs( a.x - b.x );
+    const Real y = Math::Abs( a.y - b.y );
+    const Real z = Math::Abs( a.z - b.z );
+    Real d = ( x <= y ) ? x : y;
+    d = ( d <= z ) ? d : z;
+    return d;
+}
+
+
 Vertex::Vertex()
 {
     isMidPoint =  true;
@@ -119,7 +130,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive needSubdrive )
     }
 
     // Check if need subdrive.
-    const bool reallyNeed = needSubdrive( this );
+    const bool reallyNeed = needSubdrive( *this );
     // If not return success.
     if ( !reallyNeed )
         return true;
@@ -138,11 +149,11 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive needSubdrive )
             ind1 = 0;
         const EdgeHash hashN( this->vertInds[ind0], this->vertInds[ind1] );
         // Check if vertex already exists.
-        std::map<EdgeHash, int32>::const_iterator it = lookup.find( hashN3 );
-        if ( it == lookup.end() )
+        std::map<EdgeHash, int32>::const_iterator it = s->lookup.find( hashN );
+        if ( it == s->lookup.end() )
         {
             const int32 ind = static_cast<int32>( s->verts.size() );
-            lookup[ind] = hashN;
+            s->lookup[hashN] = ind ;
 
             // Create this vertex.
             const Vertex & v0 = s->verts[ind0];
@@ -254,13 +265,13 @@ EdgeHash::EdgeHash( int32 a, int32 b )
     uchar * pa, * pb;
     if ( a <= b )
     {
-        pa = &a;
-        pb = &b;
+        pa = reinterpret_cast<uchar *>( &a );
+        pb = reinterpret_cast<uchar *>( &b );
     }
     else
     {
-        pa = &b;
-        pb = &a;
+        pa = reinterpret_cast<uchar *>( &b );
+        pb = reinterpret_cast<uchar *>( &a );
     }
     const int32 sz = sizeof(int32);
     int32 ind = 0;
@@ -429,19 +440,52 @@ void Icosphere::labelMidPoints()
     for ( int32 i=0; i<qty; i++ )
     {
         Vertex & v = verts[i];
-        if ( v <  )
-        v.isMidPoint
+        if ( v.trisQty >= 5  )
+            v.isMidPoint = true;
+        else
+            v.isMidPoint = false;
     }
 }
 
 void Icosphere::scaleToSphere()
 {
-
+    const int32 qty = static_cast<int32>( verts.size() );
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Vertex & v = verts[i];
+        if ( !v.isMidPoint )
+        {
+            v.at.normalise();
+            v.norm = v.at;
+        }
+    }
 }
 
 void Icosphere::applySource( Source * src )
 {
-
+    const int32 qty = static_cast<int32>( verts.size() );
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Vertex & v = verts[i];
+        if ( !v.isMidPoint )
+        {
+            const Real dh = src->dh( v.at );
+            const Real d  = 1.0 + dh;
+        }
+    }
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Vertex & v = verts[i];
+        if ( v.isMidPoint )
+        {
+            const Vertex & a = verts[ v.a ];
+            const Vertex & b = verts[ v.b ];
+            v.at = a.at + b.at;
+            v.at = v.at * 0.5;
+            v.norm = v.at;
+            v.norm.normalise();
+        }
+    }
 }
 
 
