@@ -21,12 +21,14 @@ public:
 class SphereSubdrive: public NeedSubdrive
 {
 public:
-    SphereSubdrive();
+    SphereSubdrive( int32 level1 = 3, int32 level2 = 7, Real d = 0.05 );
     ~SphereSubdrive();
 
     void setCameraAt( const Vector3 & at );
     bool subdrive( const Icosphere * s, const Triangle * tri ) const;
 
+    int32   maxLevel1, maxLevel2;
+    Real    maxD;
     Vector3 camAt;
 };
 

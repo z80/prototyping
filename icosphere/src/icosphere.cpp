@@ -43,14 +43,14 @@ const Vertex & Vertex::operator=( const Vertex & inst )
 {
     if ( this != &inst )
     {
-        at   = inst.at;
-        norm = inst.at;
-        uv   = inst.uv;
+        at       = inst.at;
+        norm     = inst.at;
+        uv       = inst.uv;
         isMidPoint = inst.isMidPoint;
-        a    = inst.a;
-        b    = inst.b;
-        maxLevel = -1;
-        trisQty  =  0;
+        a        = inst.a;
+        b        = inst.b;
+        maxLevel = inst.maxLevel;
+        trisQty  = inst.trisQty;
 
     }
     return *this;
@@ -147,7 +147,9 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
         int32 ind1 = (i+1);
         if ( ind1 > 2 )
             ind1 = 0;
-        const EdgeHash hashN( this->vertInds[ind0], this->vertInds[ind1] );
+        const int32 vertInd0 = this->vertInds[ind0];
+        const int32 vertInd1 = this->vertInds[ind1];
+        const EdgeHash hashN( vertInd0, vertInd1 );
         // Check if vertex already exists.
         std::map<EdgeHash, int32>::const_iterator it = s->lookup.find( hashN );
         if ( it == s->lookup.end() )
@@ -156,14 +158,14 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
             s->lookup[hashN] = ind ;
 
             // Create this vertex.
-            const Vertex & v0 = s->verts[ind0];
-            const Vertex & v1 = s->verts[ind1];
+            const Vertex & v0 = s->verts[vertInd0];
+            const Vertex & v1 = s->verts[vertInd1];
             Vertex v;
             v.at = v0.at + v1.at;
             v.at.normalise();
             v.norm = v.at;
-            v.a    = ind0;
-            v.b    = ind1;
+            v.a    = vertInd0;
+            v.b    = vertInd1;
             v.maxLevel = newLevel;
             v.trisQty  = 3;
 
@@ -182,7 +184,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
                 v.maxLevel = newLevel;
                 v.trisQty  = 3;
             }
-            else
+            else if ( v.maxLevel == newLevel )
                 v.trisQty += 3;
         }
     }
@@ -191,14 +193,18 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
     // For corner vertices triangles number changes only by 1.
     for ( int32 i=0; i<3; i++ )
     {
-        const int32 ind = vertInds[i];
+        const int32 ind = this->vertInds[i];
+        if ( ind == 0 )
+        {
+            int j = 0;
+        }
         Vertex & v = s->verts[ind];
         if ( v.maxLevel < newLevel )
         {
             v.maxLevel = newLevel;
             v.trisQty  = 1;
         }
-        else
+        else if ( v.maxLevel == newLevel )
             v.trisQty += 1;
     }
 

@@ -29,8 +29,14 @@ bool DumbSphere::subdrive( const Icosphere * s, const Triangle * tri ) const
 
 
 
-SphereSubdrive::SphereSubdrive()
+SphereSubdrive::SphereSubdrive( int32 level1, int32 level2, Real d )
+    : maxLevel1( level1 ),
+      maxLevel2( level2 ),
+      maxD( d )
 {
+    camAt.x =  0.0;
+    camAt.y =  0.0;
+    camAt.z = -1.0;
 }
 
 SphereSubdrive::~SphereSubdrive()
@@ -49,9 +55,14 @@ bool SphereSubdrive::subdrive( const Icosphere * s, const Triangle * tri ) const
         const int32 vertInd = tri->vertInds[i];
         const Vertex & v = s->verts[vertInd];
         const Real d = distanceL1( camAt, v.at );
-        if ( d <= 0.05 )
-            return true;
+        if ( d <= maxD )
+        {
+            if ( tri->level < maxLevel2 )
+                return true;
+        }
     }
+    if ( tri->level < maxLevel1 )
+        return true;
     return false;
 }
 
