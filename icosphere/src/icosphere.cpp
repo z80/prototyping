@@ -1,7 +1,7 @@
 
 #include "icosphere.h"
 
-namespace Icosphere
+namespace IcoHeightmap
 {
 
 Real distanceL1( const Vector3 & a, const Vector3 & b )

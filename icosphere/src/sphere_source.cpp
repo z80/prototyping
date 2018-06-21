@@ -5,7 +5,7 @@
 #include "noiseutils.h"
 
 
-namespace Icosphere
+namespace IcoHeightmap
 {
 
 
@@ -20,7 +20,7 @@ DumbSphere::~DumbSphere()
 
 bool DumbSphere::subdrive( const Icosphere * s, const Triangle * tri ) const
 {
-    const bool doThat = ( tri->level <= maxLevel );
+    const bool doThat = ( tri->level < maxLevel );
     return doThat;
 }
 
@@ -46,7 +46,7 @@ bool SphereSubdrive::subdrive( const Icosphere * s, const Triangle * tri ) const
 {
     for ( int32 i=0; i<3; i++ )
     {
-        const int32 vertInd = tri->verts[i];
+        const int32 vertInd = tri->vertInds[i];
         const Vertex & v = s->verts[vertInd];
         const Real d = distanceL1( camAt, v.at );
         if ( d <= 0.05 )

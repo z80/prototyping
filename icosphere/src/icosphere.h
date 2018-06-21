@@ -9,7 +9,7 @@ using namespace Ogre;
 
 class Source;
 
-namespace Icosphere
+namespace IcoHeightmap
 {
 
 class Icosphere;
@@ -27,7 +27,7 @@ class Source
 {
 public:
     /// Delta height assuming sphere radius is 1.
-    virtual Real dh( const Vector3 & at ) = 0;
+    virtual Real dh( const Vector3 & at ) const = 0;
 };
 
 

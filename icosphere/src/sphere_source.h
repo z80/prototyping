@@ -4,10 +4,10 @@
 
 #include "icosphere.h"
 
-namespace Icosphere
+namespace IcoHeightmap
 {
 
-class DumbSphere
+class DumbSphere: public NeedSubdrive
 {
 public:
     DumbSphere( int32 n = 1 );
@@ -18,7 +18,7 @@ public:
     int32 maxLevel;
 };
 
-class SphereSubdrive
+class SphereSubdrive: public NeedSubdrive
 {
 public:
     SphereSubdrive();
