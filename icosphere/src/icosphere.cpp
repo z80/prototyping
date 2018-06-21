@@ -114,13 +114,13 @@ const Triangle & Triangle::operator=( const Triangle & inst )
     return *this;
 }
 
-bool Triangle::subdrive( Icosphere * s, NeedSubdrive needSubdrive )
+bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
 {
     if ( !leaf )
     {
         for ( int32 i=0; i<4; i++ )
         {
-            int32 triInd = this->subTris[i];
+            const int32 triInd = this->subTris[i];
             Triangle & tri = s->tris[triInd];
             const bool subdriveOk = tri.subdrive( s, needSubdrive );
             if ( !subdriveOk )
@@ -130,7 +130,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive needSubdrive )
     }
 
     // Check if need subdrive.
-    const bool reallyNeed = needSubdrive( *this );
+    const bool reallyNeed = needSubdrive->subdrive( s, this );
     // If not return success.
     if ( !reallyNeed )
         return true;
@@ -160,7 +160,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive needSubdrive )
             const Vertex & v1 = s->verts[ind1];
             Vertex v;
             v.at = v0.at + v1.at;
-            v.at *= 0.5;
+            v.at.normalise();
             v.norm = v.at;
             v.a    = ind0;
             v.b    = ind1;
@@ -358,7 +358,7 @@ void Icosphere::clear()
     init();
 }
 
-bool Icosphere::subdrive( Triangle::NeedSubdrive needSubdrive )
+bool Icosphere::subdrive( NeedSubdrive * needSubdrive )
 {
     const int32 qty = static_cast<int32>( tris.size() );
     for ( int32 i=0; i<qty; i++ )
@@ -441,9 +441,9 @@ void Icosphere::labelMidPoints()
     {
         Vertex & v = verts[i];
         if ( v.trisQty >= 5  )
-            v.isMidPoint = true;
-        else
             v.isMidPoint = false;
+        else
+            v.isMidPoint = true;
     }
 }
 
@@ -471,6 +471,7 @@ void Icosphere::applySource( Source * src )
         {
             const Real dh = src->dh( v.at );
             const Real d  = 1.0 + dh;
+            v.at *= d;
         }
     }
     for ( int32 i=0; i<qty; i++ )

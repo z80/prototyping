@@ -13,8 +13,24 @@ namespace Icosphere
 {
 
 class Icosphere;
+class Triangle;
 
 Real distanceL1( const Vector3 & a, const Vector3 & b );
+
+class NeedSubdrive
+{
+public:
+    virtual bool subdrive( const Icosphere * s, const Triangle * tri ) const = 0;
+};
+
+class Source
+{
+public:
+    /// Delta height assuming sphere radius is 1.
+    virtual Real dh( const Vector3 & at ) = 0;
+};
+
+
 
 class Vertex
 {
@@ -50,14 +66,13 @@ public:
     int32 parentInd;
     int   level;
     bool  leaf;
-    typedef bool (* NeedSubdrive)(const Triangle &);
 
     Triangle();
     ~Triangle();
     Triangle( int32 n1, int32 n2, int32 n3 );
     Triangle( const Triangle & inst );
     const Triangle & operator=( const Triangle & inst );
-    bool subdrive( Icosphere * s, NeedSubdrive needSubdrive );
+    bool subdrive( Icosphere * s, NeedSubdrive * needSubdrive );
 };
 
 static const int32 EDGE_HASH_SZ = sizeof(int32)*2;
@@ -76,13 +91,6 @@ public:
     friend bool operator==( const EdgeHash & a, const EdgeHash & b );
 };
 
-class Source
-{
-public:
-    /// Delta height assuming sphere radius is 1.
-    virtual Real dh( const Vector3 & at ) = 0;
-};
-
 class Icosphere
 {
 public:
@@ -96,7 +104,7 @@ public:
     const Icosphere & operator=( const Icosphere & inst );
 
     void clear();
-    bool subdrive( Triangle::NeedSubdrive needSubdrive );
+    bool subdrive( NeedSubdrive * needSubdrive );
     void init();
     void labelMidPoints();
     void scaleToSphere();
