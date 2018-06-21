@@ -6,7 +6,8 @@ using namespace IcoHeightmap;
 
 int main( int argc, char * argv[] )
 {
-    DumbSphere subdiv( 5 );
+    //DumbSphere subdiv( 7 );
+    SphereSubdrive subdiv;
     SphereSource ss;
     Icosphere ico;
     ico.subdrive( &subdiv );

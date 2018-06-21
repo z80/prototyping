@@ -149,11 +149,11 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
             ind1 = 0;
         const int32 vertInd0 = this->vertInds[ind0];
         const int32 vertInd1 = this->vertInds[ind1];
-        if ( ( (vertInd0 == 0) || (vertInd0 == 9) ) &&
-             ( (vertInd1 == 0) || (vertInd1 == 9) ) )
-        {
-            int j=0;
-        }
+//        if ( ( (vertInd0 == 0) || (vertInd0 == 9) ) &&
+//             ( (vertInd1 == 0) || (vertInd1 == 9) ) )
+//        {
+//            int j=0;
+//        }
 
         const EdgeHash hashN( vertInd0, vertInd1 );
         // Check if vertex already exists.
@@ -181,10 +181,10 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
         else
         {
             const int32 ind = it->second;
-            if ( ind == 15 )
-            {
-                int j = 0;
-            }
+//            if ( ind == 15 )
+//            {
+//                int j = 0;
+//            }
             n[i] = ind;
             // Get vertex from verts array and update it's
             // triangles qty and max level.
@@ -204,10 +204,10 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
     for ( int32 i=0; i<3; i++ )
     {
         const int32 ind = this->vertInds[i];
-        if ( ind == 15 )
-        {
-            int j = 0;
-        }
+//        if ( ind == 15 )
+//        {
+//            int j = 0;
+//        }
         Vertex & v = s->verts[ind];
         if ( v.maxLevel < newLevel )
         {
@@ -237,11 +237,19 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
     tri4.leaf  = true;
     tri4.parentInd = 3;
     const int32 triN = static_cast<int32>( s->tris.size() );
+//    if ( triN == 2048 )
+//    {
+//        int j=0;
+//    }
     int32 triBase = triN;
     s->tris.push_back( tri1 );
     s->tris.push_back( tri2 );
     s->tris.push_back( tri3 );
     s->tris.push_back( tri4 );
+//    if ( newLevel == 5 )
+//    {
+//        int j=0;
+//    }
     this->subTris[0] = triBase++;
     this->subTris[1] = triBase++;
     this->subTris[2] = triBase++;
@@ -251,7 +259,10 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
     for ( int32 i=0; i<4; i++ )
     {
         const int ind = triN + i;
-        Triangle & tri = s->tris[ind];
+        // Here it should be not a reference but a value.
+        // It is due to std::vector<> reallocates it's array.
+        // And due to that reference may become invalid.
+        Triangle tri = s->tris[ind];
         const bool subdriveOk = tri.subdrive( s, needSubdrive );
         if ( !subdriveOk )
             return false;
@@ -343,6 +354,8 @@ bool operator==( const EdgeHash & a, const EdgeHash & b )
 
 Icosphere::Icosphere()
 {
+    verts.reserve( 4096 );
+    tris.reserve( 4096 );
     init();
 }
 
