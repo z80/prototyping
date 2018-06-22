@@ -14,7 +14,8 @@ public:
     ManualObject * manual;
     Real r;
     Icosphere      sphere;
-    SphereSubdrive subdiv;
+    DumbSphere     subdiv;
+    //SphereSubdrive subdiv;
     SphereSource ss;
 
 
@@ -23,14 +24,14 @@ public:
     ~PD();
 };
 
-ManualSphere::PD( SceneManager * smgr, Real r )
+ManualSphere::PD::PD( SceneManager * smgr, Real r )
 {
     this->smgr = smgr;
     this->r    = r;
     manual = smgr->createManualObject();
 }
 
-ManualSphere::~PD()
+ManualSphere::PD::~PD()
 {
     smgr->destroyManualObject( manual );
 }
@@ -50,7 +51,7 @@ void ManualSphere::generate()
 {
     pd->sphere.clear();
     pd->sphere.subdrive( &(pd->subdiv) );
-    pd->sphere.applySource( &(pd->ss) );
+    //pd->sphere.applySource( &(pd->ss) );
 }
 
 void ManualSphere::fillAndShow( const String & materialName, SceneNode * sceneNode )
@@ -90,7 +91,7 @@ void ManualSphere::fillAndShow( const String & materialName, SceneNode * sceneNo
             const int32 ind2 = t.vertInds[1];
             const int32 ind3 = t.vertInds[2];
 
-            m->triangle( ind1, ind2, ind3 );
+            m->triangle( ind2, ind1, ind3 );
         }
     }
     m->end();

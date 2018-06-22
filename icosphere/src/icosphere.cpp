@@ -121,8 +121,9 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
         for ( int32 i=0; i<4; i++ )
         {
             const int32 triInd = this->subTris[i];
-            Triangle & tri = s->tris[triInd];
+            Triangle tri = s->tris[triInd];
             const bool subdriveOk = tri.subdrive( s, needSubdrive );
+            s->tris[triInd] = tri;
             if ( !subdriveOk )
                 return false;
         }
@@ -264,6 +265,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
         // And due to that reference may become invalid.
         Triangle tri = s->tris[ind];
         const bool subdriveOk = tri.subdrive( s, needSubdrive );
+        s->tris[ind] = tri;
         if ( !subdriveOk )
             return false;
     }
@@ -394,8 +396,9 @@ bool Icosphere::subdrive( NeedSubdrive * needSubdrive )
     const int32 qty = static_cast<int32>( tris.size() );
     for ( int32 i=0; i<qty; i++ )
     {
-        Triangle & tri = tris[i];
+        Triangle tri = tris[i];
         const bool subdriveOk = tri.subdrive( this, needSubdrive );
+        tris[i] = tri;
         if ( !subdriveOk )
             return false;
     }
