@@ -8,6 +8,7 @@
 #include "OgreAdvancedRenderControls.h"
 
 #include "manual_sphere.h"
+#include "sphere_cam_ctrl.h"
 
 #include <iostream>
 
@@ -37,19 +38,20 @@ public:
     bool mouseReleased( const MouseButtonEvent & evt );
 
 private:
-    CameraMan * cMan;
+    //CameraMan * cMan;
     TrayManager * mTrayManager;
     AdvancedRenderControls * mAdvancedControls;
     //Volume2 * volume;
     //LodTree::Tree * tree;
     IcoHeightmap::ManualSphere * sphere;
+    IcoHeightmap::SphereCamCtrl * camCtrl;
 };
 
 
 BasicTutorial1::BasicTutorial1()
     : ApplicationContext("OgreTutorialApp")
 {
-    cMan = 0;
+    //cMan = 0;
     mTrayManager = 0;
     mAdvancedControls = 0;
     sphere = 0;
@@ -59,8 +61,8 @@ void BasicTutorial1::shutdown()
 {
     if ( sphere )
         delete sphere;
-    if ( cMan )
-        delete cMan;
+    //if ( cMan )
+    //    delete cMan;
     if ( mAdvancedControls )
         delete mAdvancedControls;
     if ( mTrayManager )
@@ -70,6 +72,8 @@ void BasicTutorial1::shutdown()
 
 void BasicTutorial1::setup()
 {
+    static const Real R = 10240.0;
+
     // do not forget to call the base first
     ApplicationContext::setup();
     addInputListener(this);
@@ -91,42 +95,12 @@ void BasicTutorial1::setup()
     scnMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
     //! [turnlights]
 
-    //! [camera]
-    SceneNode* camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-
-    // create the camera
-    Camera* cam = scnMgr->createCamera("myCam");
-    cam->setNearClipDistance(5); // specific to this sample
-    cam->setAutoAspectRatio(true);
-    camNode->attachObject(cam);
-    camNode->setPosition(0, 0, 140);
-
-    // Convenience camera control
-    cMan = new CameraMan( camNode );
-    cMan->setStyle( CS_MANUAL );
-    //cMan->
-
-    // and tell it to render into the main window
-    getRenderWindow()->addViewport(cam);
-    //! [camera]
-
-    //! [cameramove]
-    camNode->setPosition( 0.0, 0.0, 10250.0 );
-    //! [newlight]
-    Light* light = scnMgr->createLight("MainLight");
-    SceneNode* lightNode = camNode->createChildSceneNode();
-    lightNode->attachObject(light);
-    lightNode->setPosition(00, 10, -50);
-    //! [lightpos]
-    //! [cameramove]
 
     // -- tutorial section end --
 
     Ogre::RenderWindow * wnd = getRenderWindow();
     mTrayManager = new TrayManager( "my_tray", wnd, this );
     mTrayManager->showCursor();
-
-    mAdvancedControls = new AdvancedRenderControls( mTrayManager, cam );
 
     this->locateResources();
 
@@ -151,8 +125,49 @@ void BasicTutorial1::setup()
     Entity* ogreEntity = scnMgr->createEntity("ogrehead.mesh");
     SceneNode* ogreNode = scnMgr->getRootSceneNode()->createChildSceneNode();
     ogreNode->attachObject(ogreEntity);
-    ogreNode->setPosition( 0.0, 0.0, 10240.0 );
+    ogreNode->setPosition( 0.0, 0.0, R );
     ogreNode->setScale( 0.1, 0.1, 0.1 );
+
+
+
+
+
+    //! [camera]
+    SceneNode* camNode = sphereNode->createChildSceneNode();
+
+    // create the camera
+    Camera* cam = scnMgr->createCamera("myCam");
+    cam->setNearClipDistance(5); // specific to this sample
+    cam->setAutoAspectRatio(true);
+    camNode->attachObject(cam);
+
+    mAdvancedControls = new AdvancedRenderControls( mTrayManager, cam );
+
+
+    // Convenience camera control
+    //cMan = new CameraMan( camNode );
+    //cMan->setStyle( CS_MANUAL );
+
+    // and tell it to render into the main window
+    getRenderWindow()->addViewport(cam);
+    //! [camera]
+
+    //! [cameramove]
+    camNode->setPosition( 0.0, 0.0, R );
+    //! [newlight]
+    Light* light = scnMgr->createLight("MainLight");
+    light->setDirection( 0.0, 0.0, -1.0 );
+    light->setRenderingDistance( 100000.0 );
+    SceneNode* lightNode = camNode->createChildSceneNode();
+    lightNode->attachObject(light);
+    lightNode->setPosition(0, 2, -50);
+    //! [lightpos]
+    //! [cameramove]
+
+
+    camCtrl = new IcoHeightmap::SphereCamCtrl( sphereNode, sphere, R );
+    camCtrl->setCameraNode( camNode );
+    addInputListener( camCtrl );
 }
 
 bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
@@ -160,8 +175,8 @@ bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
     //return true;
     mTrayManager->frameRendered( evt );
     mAdvancedControls->frameRendered( evt );
-    if ( !mTrayManager->isDialogVisible() )
-        cMan->frameRendered( evt );
+    //if ( !mTrayManager->isDialogVisible() )
+    //    cMan->frameRendered( evt );
     return true;
 }
 
@@ -172,17 +187,13 @@ bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
 
 bool BasicTutorial1::frameEnded( const Ogre::FrameEvent & evt )
 {
-//    mTrayManager->frameRendered( evt );
-    //mAdvancedControls->frameRendered( evt );
-//    if ( !mTrayManager->isDialogVisible() )
-//        cMan->frameRendered( evt );
     return true;
 }
 
 bool BasicTutorial1::keyPressed(const KeyboardEvent& evt)
 {
     mTrayManager->keyPressed( evt );
-    cMan->keyPressed( evt );
+    //cMan->keyPressed( evt );
     mAdvancedControls->keyPressed( evt );
     if (evt.keysym.sym == SDLK_ESCAPE)
     {
@@ -194,7 +205,7 @@ bool BasicTutorial1::keyPressed(const KeyboardEvent& evt)
 bool BasicTutorial1::keyReleased(const KeyboardEvent& evt)
 {
     mTrayManager->keyReleased( evt );
-    cMan->keyReleased( evt );
+    //cMan->keyReleased( evt );
     mAdvancedControls->keyReleased( evt );
     return true;
 }
@@ -203,7 +214,7 @@ bool BasicTutorial1::mouseMoved( const MouseMotionEvent & evt )
 {
     if ( mTrayManager->mouseMoved( evt ) )
         return true;
-    cMan->mouseMoved( evt );
+    //cMan->mouseMoved( evt );
     mAdvancedControls->mouseMoved( evt );
     return true;
 }
@@ -214,10 +225,10 @@ bool BasicTutorial1::mousePressed( const MouseButtonEvent & evt )
         return true;
     if ( evt.button == BUTTON_LEFT )
     {
-        cMan->setStyle( CS_FREELOOK );
+        //cMan->setStyle( CS_FREELOOK );
         mTrayManager->hideCursor();
     }
-    cMan->mousePressed( evt );
+    //cMan->mousePressed( evt );
     mAdvancedControls->mousePressed( evt );
     return true;
 }
@@ -228,10 +239,10 @@ bool BasicTutorial1::mouseReleased( const MouseButtonEvent & evt )
         return true;
     if ( evt.button == BUTTON_LEFT )
     {
-        cMan->setStyle( CS_MANUAL );
+        //cMan->setStyle( CS_MANUAL );
         mTrayManager->showCursor();
     }
-    cMan->mouseReleased( evt );
+    //cMan->mouseReleased( evt );
     mAdvancedControls->mouseReleased( evt );
     return true;
 }

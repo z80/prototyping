@@ -17,6 +17,7 @@ public:
 
     void generate();
     void fillAndShow( const String & materialName, SceneNode * sceneNode );
+    Real localHeight( const Vector3 & at ) const;
 
 private:
     class PD;

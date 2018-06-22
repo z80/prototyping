@@ -100,6 +100,14 @@ void ManualSphere::fillAndShow( const String & materialName, SceneNode * sceneNo
     sceneNode->attachObject( m );
 }
 
+Real ManualSphere::localHeight( const Vector3 & at ) const
+{
+    Vector3 v = at;
+    v.normalise();
+    const Real dh = pd->ss.dh( v );
+    const Real d  = (1.0 + dh) * pd->r;
+    return d;
+}
 
 
 }
