@@ -12,7 +12,7 @@ namespace IcoHeightmap
 class ManualSphere
 {
 public:
-    ManualSphere( SceneManager * smgr, Real r = 5120.0 );
+    ManualSphere( SceneManager * smgr, Real r = 10240.0 );
     ~ManualSphere();
 
     void generate();

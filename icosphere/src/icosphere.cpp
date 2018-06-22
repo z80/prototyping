@@ -9,17 +9,18 @@ Real distanceL1( const Vector3 & a, const Vector3 & b )
     const Real x = Math::Abs( a.x - b.x );
     const Real y = Math::Abs( a.y - b.y );
     const Real z = Math::Abs( a.z - b.z );
-    Real d = ( x <= y ) ? x : y;
-    d = ( d <= z ) ? d : z;
+    Real d = x + y + z;
     return d;
 }
 
 
 Vertex::Vertex()
 {
-    isMidPoint =  true;
-    maxLevel   = -1;
-    trisQty    =  0;
+    isMidPoint = true;
+    maxLevel   = 1;
+    trisQty    = 5;
+    a = 0;
+    b = 0;
 }
 
 Vertex::~Vertex()
@@ -32,6 +33,10 @@ Vertex::Vertex( Real x, Real y, Real z )
     at.x = x;
     at.y = y;
     at.z = z;
+    maxLevel = 1;
+    trisQty  = 5;
+    a = 0;
+    b = 0;
 }
 
 Vertex::Vertex( const Vertex & inst )
@@ -51,7 +56,6 @@ const Vertex & Vertex::operator=( const Vertex & inst )
         b        = inst.b;
         maxLevel = inst.maxLevel;
         trisQty  = inst.trisQty;
-
     }
     return *this;
 }
@@ -402,6 +406,13 @@ bool Icosphere::subdrive( NeedSubdrive * needSubdrive )
         if ( !subdriveOk )
             return false;
     }
+    /*const int i = 0;
+    Triangle tri = tris[i];
+    const bool subdriveOk = tri.subdrive( this, needSubdrive );
+    tris[i] = tri;
+    if ( !subdriveOk )
+        return false;*/
+
     labelMidPoints();
     scaleToSphere();
 

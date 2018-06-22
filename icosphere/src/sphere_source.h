@@ -10,7 +10,7 @@ namespace IcoHeightmap
 class DumbSphere: public NeedSubdrive
 {
 public:
-    DumbSphere( int32 n = 1 );
+    DumbSphere( int32 n = 5 );
     ~DumbSphere();
 
     bool subdrive( const Icosphere * s, const Triangle * tri ) const;
@@ -21,7 +21,7 @@ public:
 class SphereSubdrive: public NeedSubdrive
 {
 public:
-    SphereSubdrive( int32 level1 = 3, int32 level2 = 7, Real d = 0.05 );
+    SphereSubdrive( int32 level1 = 8, int32 level2 = 14, Real d = 0.03 );
     ~SphereSubdrive();
 
     void setCameraAt( const Vector3 & at );

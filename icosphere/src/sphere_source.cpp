@@ -36,7 +36,7 @@ SphereSubdrive::SphereSubdrive( int32 level1, int32 level2, Real d )
 {
     camAt.x =  0.0;
     camAt.y =  0.0;
-    camAt.z = -1.0;
+    camAt.z =  1.0;
 }
 
 SphereSubdrive::~SphereSubdrive()

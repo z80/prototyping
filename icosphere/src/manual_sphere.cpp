@@ -14,8 +14,8 @@ public:
     ManualObject * manual;
     Real r;
     Icosphere      sphere;
-    DumbSphere     subdiv;
-    //SphereSubdrive subdiv;
+    //DumbSphere     subdiv;
+    SphereSubdrive subdiv;
     SphereSource ss;
 
 
@@ -51,7 +51,7 @@ void ManualSphere::generate()
 {
     pd->sphere.clear();
     pd->sphere.subdrive( &(pd->subdiv) );
-    //pd->sphere.applySource( &(pd->ss) );
+    pd->sphere.applySource( &(pd->ss) );
 }
 
 void ManualSphere::fillAndShow( const String & materialName, SceneNode * sceneNode )
@@ -82,7 +82,7 @@ void ManualSphere::fillAndShow( const String & materialName, SceneNode * sceneNo
         m->position( at );
         m->normal( v.norm );
     }
-    for ( int32 i=0; i<trisQty; i++ )
+    for ( int32 i=0; i<fullTrisQty; i++ )
     {
         const Triangle & t = pd->sphere.tris[i];
         if ( t.leaf )

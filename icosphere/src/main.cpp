@@ -89,16 +89,6 @@ void BasicTutorial1::setup()
     scnMgr->setAmbientLight(ColourValue(0.5, 0.5, 0.5));
     //! [turnlights]
 
-    //! [newlight]
-    Light* light = scnMgr->createLight("MainLight");
-    SceneNode* lightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    lightNode->attachObject(light);
-    //! [newlight]
-
-    //! [lightpos]
-    lightNode->setPosition(20, 80, 50);
-    //! [lightpos]
-
     //! [camera]
     SceneNode* camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
 
@@ -119,7 +109,13 @@ void BasicTutorial1::setup()
     //! [camera]
 
     //! [cameramove]
-    camNode->setPosition( 0.0, 0.0, 5005.0 );
+    camNode->setPosition( 0.0, 0.0, 10250.0 );
+    //! [newlight]
+    Light* light = scnMgr->createLight("MainLight");
+    SceneNode* lightNode = camNode->createChildSceneNode();
+    lightNode->attachObject(light);
+    lightNode->setPosition(00, 10, -50);
+    //! [lightpos]
     //! [cameramove]
 
     // -- tutorial section end --
@@ -153,7 +149,7 @@ void BasicTutorial1::setup()
     Entity* ogreEntity = scnMgr->createEntity("ogrehead.mesh");
     SceneNode* ogreNode = scnMgr->getRootSceneNode()->createChildSceneNode();
     ogreNode->attachObject(ogreEntity);
-    ogreNode->setPosition( 0.0, 0.0, -5120.0 );
+    ogreNode->setPosition( 0.0, 0.0, 10240.0 );
     ogreNode->setScale( 0.1, 0.1, 0.1 );
 }
 
