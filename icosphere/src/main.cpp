@@ -80,6 +80,8 @@ void BasicTutorial1::setup()
     Root* root = getRoot();
     SceneManager* scnMgr = root->createSceneManager();
 
+    scnMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
+
     // register our scene with the RTSS
     RTShader::ShaderGenerator* shadergen = RTShader::ShaderGenerator::getSingletonPtr();
     shadergen->addSceneManager(scnMgr);

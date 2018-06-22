@@ -105,9 +105,9 @@ public:
 
     void clear();
     bool subdrive( NeedSubdrive * needSubdrive );
-    void init();
     void applySource( Source * src );
 private:
+    void init();
     void labelMidPoints();
     void scaleToSphere();
 };
