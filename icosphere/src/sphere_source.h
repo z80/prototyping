@@ -21,7 +21,7 @@ public:
 class SphereSubdrive: public NeedSubdrive
 {
 public:
-    SphereSubdrive( int32 level1 = 8, int32 level2 = 14, Real d = 0.03 );
+    SphereSubdrive( int32 level1 = 9, int32 level2 = 14, Real d = 0.03 );
     ~SphereSubdrive();
 
     void setCameraAt( const Vector3 & at );
