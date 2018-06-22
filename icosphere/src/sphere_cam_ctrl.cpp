@@ -14,7 +14,7 @@ public:
     SceneNode    * sphereNode,
                  * camNode;
 
-    bool fwd, bwd, left, right, up, down, fast;
+    bool fwd, bwd, left, right, up, down, fast, fly;
     Real maxSpeed;
     Real acc;
     Real w;
@@ -31,7 +31,8 @@ SphereCamCtrl::PD::PD( SceneNode * sphereNode, ManualSphere * s, Real r )
     this->sphereNode = sphereNode;
     this->sphere = s;
     this->r      = r;
-    maxSpeed     = 150.0;
+    fwd = bwd = left = right = up = down = fast = fly = false;
+    maxSpeed     = 10.0;
     acc          = 20.0;
     w            = 0.0015;
 
@@ -84,7 +85,7 @@ void SphereCamCtrl::frameRendered( const Ogre::FrameEvent & evt )
         accel -= axes.GetColumn(1);
 
     // if accelerating, try to reach top speed in a certain time
-    Ogre::Real topSpeed = pd->fast ? pd->maxSpeed * 20 : pd->maxSpeed;
+    Ogre::Real topSpeed = pd->fast ? pd->maxSpeed * 200 : pd->maxSpeed;
     if (accel.squaredLength() != 0)
     {
         accel.normalise();
@@ -108,15 +109,18 @@ void SphereCamCtrl::frameRendered( const Ogre::FrameEvent & evt )
     if (pd->velocity != Ogre::Vector3::ZERO)
         pd->camNode->translate( pd->velocity * evt.timeSinceLastFrame );
 
-    /*Vector3 at = pd->camNode->getPosition();
-    // Should be normalized.
-    at.normalise();
-    const Vector3 localUp = at;
-    const Real localHeight = pd->sphere->localHeight( at ) + 2.0;
-    at *= localHeight;
-    pd->camNode->setPosition( at );
+    if ( !pd->fly )
+    {
+        Vector3 at = pd->camNode->getPosition();
+        // Should be normalized.
+        at.normalise();
+        const Vector3 localUp = at;
+        const Real localHeight = pd->sphere->localHeight( at ) + 2.0;
+        at *= localHeight;
+        pd->camNode->setPosition( at );
+    }
 
-    const Vector3 currentBack = axes.GetColumn( 2 );
+    /*const Vector3 currentBack = axes.GetColumn( 2 );
     Vector3 currentRight = localUp.crossProduct( currentBack );
     const Real    l2 = currentRight.squaredLength();
     if ( l2 > tooSmall )
@@ -142,6 +146,7 @@ bool SphereCamCtrl::keyPressed(const KeyboardEvent& evt)
     else if (key == SDLK_PAGEUP) pd->up = true;
     else if (key == SDLK_PAGEDOWN) pd->down = true;
     else if (key == SDLK_LSHIFT) pd->fast = true;
+    else if (key == SDLK_SPACE ) pd->fly = true;
 
     return true;
 }
@@ -156,6 +161,7 @@ bool SphereCamCtrl::keyReleased(const KeyboardEvent& evt)
     else if (key == SDLK_PAGEUP) pd->up = false;
     else if (key == SDLK_PAGEDOWN) pd->down = false;
     else if (key == SDLK_LSHIFT) pd->fast = false;
+    else if (key == SDLK_SPACE ) pd->fly = false;
 
     return true;
 }

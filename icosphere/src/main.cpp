@@ -72,7 +72,7 @@ void BasicTutorial1::shutdown()
 
 void BasicTutorial1::setup()
 {
-    static const Real R = 10240.0;
+    static const Real R = 102400.0;
 
     // do not forget to call the base first
     ApplicationContext::setup();
@@ -137,7 +137,7 @@ void BasicTutorial1::setup()
 
     // create the camera
     Camera* cam = scnMgr->createCamera("myCam");
-    cam->setNearClipDistance(5); // specific to this sample
+    cam->setNearClipDistance(1.0); // specific to this sample
     cam->setAutoAspectRatio(true);
     camNode->attachObject(cam);
 
@@ -160,7 +160,7 @@ void BasicTutorial1::setup()
     light->setRenderingDistance( 100000.0 );
     SceneNode* lightNode = camNode->createChildSceneNode();
     lightNode->attachObject(light);
-    lightNode->setPosition(0, 2, -50);
+    lightNode->setPosition(0, 20, -20);
     //! [lightpos]
     //! [cameramove]
 
@@ -175,6 +175,7 @@ bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
     //return true;
     mTrayManager->frameRendered( evt );
     mAdvancedControls->frameRendered( evt );
+    camCtrl->frameRendered( evt );
     //if ( !mTrayManager->isDialogVisible() )
     //    cMan->frameRendered( evt );
     return true;
