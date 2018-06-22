@@ -33,7 +33,7 @@ SphereSubdrive::SphereSubdrive()
 {
     maxLevel1 = 7;
     maxLevel2 = 11;
-    maxLevel3 = 16;
+    maxLevel3 = 18;
 
     maxD2 = 0.09;
     maxD3 = 0.001;

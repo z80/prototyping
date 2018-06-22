@@ -117,7 +117,7 @@ void BasicTutorial1::setup()
     // ****************************************
     //tree->setMaterial( MaterialManager::getSingleton().getByName( "triplanarReference" ) );
     SceneNode * sphereNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-    sphere = new IcoHeightmap::ManualSphere( scnMgr );
+    sphere = new IcoHeightmap::ManualSphere( scnMgr, R );
     sphere->generate();
     sphere->fillAndShow( "triplanarReference", sphereNode );
 
