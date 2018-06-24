@@ -508,6 +508,48 @@ void Icosphere::scaleToSphere()
     }
 }
 
+void Icosphere::computeNormals()
+{
+    const int32 qty = static_cast<int32>( verts.size() );
+    // First zero all normals.
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Vertex & v = verts[i];
+        v.norm = Vector3::ZERO;
+    }
+
+    const int32 trisQty = static_cast<int32>( tris.size() );
+    // Concatenate all normals.
+    for ( int32 i=0; i<trisQty; i++ )
+    {
+        const Triangle & tri = tris[i];
+        if ( !tri.leaf )
+            continue;
+        {
+            const int32 vInd0 = tri.vertInds[0];
+            const int32 vInd1 = tri.vertInds[1];
+            const int32 vInd2 = tri.vertInds[2];
+            Vertex & v0 = verts[vInd0];
+            Vertex & v1 = verts[vInd1];
+            Vertex & v2 = verts[vInd2];
+            const Vector3 a = v1.at - v0.at;
+            const Vector3 b = v2.at - v0.at;
+            Vector3 n = a.crossProduct( b );
+            n.normalise();
+            v0.norm += n;
+            v1.norm += n;
+            v2.norm += n;
+        }
+    }
+
+    // Normalize normals.
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Vertex & v = verts[i];
+        v.norm.normalise();
+    }
+}
+
 void Icosphere::applySource( Source * src )
 {
     const int32 qty = static_cast<int32>( verts.size() );
@@ -530,10 +572,10 @@ void Icosphere::applySource( Source * src )
             const Vertex & b = verts[ v.b ];
             v.at = a.at + b.at;
             v.at = v.at * 0.5;
-            v.norm = v.at;
-            v.norm.normalise();
         }
     }
+
+    computeNormals();
 }
 
 

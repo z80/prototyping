@@ -133,6 +133,7 @@ private:
     void init();
     void labelMidPoints();
     void scaleToSphere();
+    void computeNormals();
 };
 
 

@@ -57,8 +57,8 @@ ManualSphere::PD::~PD()
 {
     if ( Root::getSingletonPtr() )
     {
-        if ( st.isBusy )
-            OGRE_THREAD_SLEEP( 5000 );
+        while ( st.isBusy )
+            OGRE_THREAD_SLEEP( 1 );
         smgr->destroyManualObject( manual );
     }
 }
