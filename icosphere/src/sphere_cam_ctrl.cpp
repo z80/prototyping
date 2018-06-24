@@ -64,6 +64,12 @@ void SphereCamCtrl::setCameraNode( SceneNode * camNode )
     pd->camNode = camNode;
 }
 
+Vector3 SphereCamCtrl::cameraAt() const
+{
+    const Vector3 at = pd->camNode->getPosition();
+    return at;
+}
+
 void SphereCamCtrl::frameRendered( const Ogre::FrameEvent & evt )
 {
     if ( !pd->camNode )

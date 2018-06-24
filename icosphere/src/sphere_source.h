@@ -29,6 +29,19 @@ public:
 
     int32   maxLevel1, maxLevel2, maxLevel3;
     Real    maxD2, maxD3;
+    Vector3 camNormAt;
+};
+
+class SphereRebuild: public NeedRebuild
+{
+public:
+    SphereRebuild();
+    ~SphereRebuild();
+
+    bool rebuild( Source * src, const Vector3 & at );
+
+    Vector3 camAt;
+    bool firstTime;
 };
 
 

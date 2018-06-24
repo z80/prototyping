@@ -118,8 +118,8 @@ void BasicTutorial1::setup()
     //tree->setMaterial( MaterialManager::getSingleton().getByName( "triplanarReference" ) );
     SceneNode * sphereNode = scnMgr->getRootSceneNode()->createChildSceneNode();
     sphere = new IcoHeightmap::ManualSphere( scnMgr, R );
-    sphere->generate();
-    sphere->fillAndShow( "triplanarReference", sphereNode );
+    sphere->setMaterialName("triplanarReference" );
+    sphere->setSceneNode( sphereNode );
 
 
     Entity* ogreEntity = scnMgr->createEntity("ogrehead.mesh");
@@ -176,6 +176,8 @@ bool BasicTutorial1::frameRenderingQueued( const FrameEvent & evt )
     mTrayManager->frameRendered( evt );
     mAdvancedControls->frameRendered( evt );
     camCtrl->frameRendered( evt );
+    const Vector3 at = camCtrl->cameraAt();
+    sphere->setCameraPosition( at );
     //if ( !mTrayManager->isDialogVisible() )
     //    cMan->frameRendered( evt );
     return true;

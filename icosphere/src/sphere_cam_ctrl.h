@@ -22,6 +22,7 @@ public:
 
     void setSphere( ManualSphere * sphere );
     void setCameraNode( SceneNode * camNode );
+    Vector3 cameraAt() const;
 
     void frameRendered(const Ogre::FrameEvent& evt);
     bool keyPressed(const KeyboardEvent& evt);

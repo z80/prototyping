@@ -14,6 +14,7 @@ namespace IcoHeightmap
 
 class Icosphere;
 class Triangle;
+class Source;
 
 Real distanceL1( const Vector3 & a, const Vector3 & b );
 
@@ -21,18 +22,33 @@ class NeedSubdrive
 {
 public:
     Vector3 at;
+
+    NeedSubdrive() {}
+    virtual ~NeedSubdrive() {}
+
+    virtual void setCameraAt( const Vector3 & at )
+    {
+        this->at = at;
+    }
+
     virtual bool subdrive( const Icosphere * s, const Triangle * tri ) const = 0;
 };
 
 class NeedRebuild
 {
 public:
-    virtual bool rebuild( const Vector3 & at ) const = 0;
+    NeedRebuild() {}
+    virtual ~NeedRebuild() {}
+
+    virtual bool rebuild( Source * src, const Vector3 & at ) = 0;
 };
 
 class Source
 {
 public:
+    Source() {}
+    virtual ~Source() {}
+
     /// Delta height assuming sphere radius is 1.
     virtual Real dh( const Vector3 & at ) const = 0;
 };

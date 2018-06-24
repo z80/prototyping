@@ -9,11 +9,25 @@
 namespace IcoHeightmap
 {
 
-struct Request
+struct RequestState
 {
+    // Stuff to work with.
+    ManualSphere * manualSphere;
     Icosphere    * sphere;
     NeedSubdrive * subdrive;
+    NeedRebuild  * rebuild;
     Source       * source;
+    bool         isBusy;
+};
+
+struct Request
+{
+    RequestState * st;
+
+    friend std::ostream& operator<<( std::ostream & o, const Request & r )
+    {
+        return o;
+    }
 };
 
 class IcosphereAsynch: public WorkQueue::RequestHandler, public WorkQueue::ResponseHandler
@@ -23,7 +37,7 @@ public:
     ~IcosphereAsynch();
 
 
-    void handleAsynchResults( const Vector3 & camAt );
+    void handleAsynchResults( RequestState * st, const Vector3 & camAt );
 
     /// Implementation for WorkQueue::RequestHandler
     WorkQueue::Response* handleRequest(const WorkQueue::Request* req, const WorkQueue* srcQ);
@@ -46,13 +60,6 @@ private:
     uint16 workQueueChannel;
 
 
-    // Stuff to work with.
-    ManualSphere * manualSphere;
-    Icosphere    * sphere;
-    NeedSubdrive * subdrive;
-    NeedRebuild  * rebuild;
-    Source       * source;
-    bool         isBusy;
 
 };
 

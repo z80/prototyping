@@ -18,8 +18,10 @@ public:
     ~ManualSphere();
 
     void setSceneNode( SceneNode * sceneNode );
-    void generate();
-    void fillAndShow( const String & materialName, SceneNode * sceneNode );
+    void setMaterialName( const String & name );
+    void setCameraPosition( const Vector3 & at );
+    //void generate();
+    //void fillAndShow( const String & materialName, SceneNode * sceneNode );
     Real localHeight( const Vector3 & at ) const;
     Real radius() const;
 

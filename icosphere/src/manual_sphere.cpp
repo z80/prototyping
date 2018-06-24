@@ -2,6 +2,7 @@
 #include "manual_sphere.h"
 #include "icosphere.h"
 #include "sphere_source.h"
+#include "icosphere_asynch.h"
 
 namespace IcoHeightmap
 {
@@ -18,32 +19,53 @@ public:
     Icosphere      sphere;
     //DumbSphere     subdiv;
     SphereSubdrive subdiv;
-    SphereSource ss;
+    SphereRebuild  rebuild;
+    SphereSource   ss;
+
+    RequestState st;
+
+    IcosphereAsynch * asynch();
 
 
-
-    PD( SceneManager * smgr, Real r );
+    PD( ManualSphere * ms, SceneManager * smgr, Real r );
     ~PD();
 };
 
-ManualSphere::PD::PD( SceneManager * smgr, Real r )
+IcosphereAsynch * ManualSphere::PD::asynch()
+{
+    static IcosphereAsynch a;
+    return &a;
+}
+
+ManualSphere::PD::PD( ManualSphere * ms, SceneManager * smgr, Real r )
 {
     this->smgr = smgr;
     this->r    = r;
     sceneNode = 0;
     manual = smgr->createManualObject();
+
+    st.isBusy       = false;
+    st.manualSphere = ms;
+    st.rebuild      = &rebuild;
+    st.source       = &ss;
+    st.sphere       = &sphere;
+    st.subdrive     = &subdiv;
 }
 
 ManualSphere::PD::~PD()
 {
-    if (  )
-    smgr->destroyManualObject( manual );
+    if ( Root::getSingletonPtr() )
+    {
+        while ( st.isBusy )
+            OGRE_THREAD_SLEEP( 1 );
+        smgr->destroyManualObject( manual );
+    }
 }
 
 
 ManualSphere::ManualSphere( SceneManager * smgr, Real r )
 {
-    pd = new PD( smgr, r );
+    pd = new PD( this, smgr, r );
 }
 
 ManualSphere::~ManualSphere()
@@ -56,7 +78,19 @@ void ManualSphere::setSceneNode( SceneNode * sceneNode )
     pd->sceneNode = sceneNode;
 }
 
-void ManualSphere::generate()
+void ManualSphere::setMaterialName( const String & name )
+{
+    pd->materialName = name;
+}
+
+void ManualSphere::setCameraPosition( const Vector3 & at )
+{
+    const Real r = pd->r;
+    const Vector3 camAt = at / r;
+    pd->asynch()->handleAsynchResults( &(pd->st), camAt );
+}
+
+/*void ManualSphere::generate()
 {
     pd->sphere.clear();
     pd->sphere.subdrive( &(pd->subdiv) );
@@ -107,7 +141,7 @@ void ManualSphere::fillAndShow( const String & materialName, SceneNode * sceneNo
 
     sceneNode->detachObject( m );
     sceneNode->attachObject( m );
-}
+}*/
 
 Real ManualSphere::localHeight( const Vector3 & at ) const
 {
@@ -127,7 +161,6 @@ Real ManualSphere::radius() const
 void ManualSphere::update()
 {
     ManualObject * m = pd->manual;
-    m->clear();
 
     const int32 fullTrisQty = static_cast<int32>( pd->sphere.tris.size() );
     int n = 0;
@@ -145,6 +178,7 @@ void ManualSphere::update()
     //const size_t currentVertQty  = m->getCurrentVertexCount();
     //if ( ( indexQty != currentIndexQty ) || ( vertsQty != currentVertQty ) )
 
+    m->clear();
     m->estimateIndexCount( indsQty );
     m->estimateVertexCount( vertsQty );
 
@@ -171,8 +205,8 @@ void ManualSphere::update()
     }
     m->end();
 
-    sceneNode->detachObject( m );
-    sceneNode->attachObject( m );
+    pd->sceneNode->detachObject( m );
+    pd->sceneNode->attachObject( m );
 }
 
 

@@ -20,25 +20,23 @@ IcosphereAsynch::~IcosphereAsynch()
     }
 }
 
-void IcosphereAsynch::handleAsynchResults( const Vector3 & camAt )
+void IcosphereAsynch::handleAsynchResults( RequestState * st, const Vector3 & camAt )
 {
-    if ( isBusy )
+    if ( st->isBusy )
     {
         workQueue->processResponses();
     }
     else
     {
-        const bool needRebuild = rebuild->rebuild( camAt );
+        const bool needRebuild = st->rebuild->rebuild( st->source, camAt );
         if ( needRebuild )
         {
-            isBusy = true;
-            const Real r = manualSphere->radius();
-            const Vector3 at = camAt / r;
-            this->subdrive->at = at;
+            st->isBusy = true;
+            //const Real r = st->manualSphere->radius();
+            //const Vector3 at = camAt / r;
+            st->subdrive->setCameraAt( camAt );
             Request req;
-            req.source   = this->source;
-            req.sphere   = this->sphere;
-            req.subdrive = this->subdrive;
+            req.st = st;
             Ogre::Any any( req );
             workQueue->addRequest( workQueueChannel, 0, any );
         }
@@ -47,10 +45,11 @@ void IcosphereAsynch::handleAsynchResults( const Vector3 & camAt )
 
 WorkQueue::Response * IcosphereAsynch::handleRequest( const WorkQueue::Request * req, const WorkQueue * srcQ )
 {
-    Request s = any_cast<Request>( req->getData() );
-    s.sphere->clear();
-    s.sphere->subdrive( s.subdrive );
-    s.sphere->applySource( s.source );
+    Request r = any_cast<Request>( req->getData() );
+    RequestState * st = r.st;
+    st->sphere->clear();
+    st->sphere->subdrive( st->subdrive );
+    st->sphere->applySource( st->source );
 
     WorkQueue::Response * resp = OGRE_NEW WorkQueue::Response(req, true, Any());
     return resp;
@@ -61,18 +60,18 @@ void IcosphereAsynch::handleResponse( const WorkQueue::Response * res, const Wor
     if ( (!res) || (!res->succeeded()) )
         return;
 
-    manualSphere->update();
-    isBusy = false;
+    Request r = any_cast<Request>(res->getRequest()->getData());
+    RequestState * st = r.st;
+    st->manualSphere->update();
+    st->isBusy = false;
 }
 
 void IcosphereAsynch::initWorkQueue(void)
 {
     workQueue = Root::getSingleton().getWorkQueue();
     workQueueChannel = workQueue->getChannel( "Ogre/IcoHeightmap" );
-    mWQ->addResponseHandler( workQueueChannel, this );
-    mWQ->addRequestHandler(  workQueueChannel, this );
-
-    isBusy = false;
+    workQueue->addResponseHandler( workQueueChannel, this );
+    workQueue->addRequestHandler(  workQueueChannel, this );
 }
 
 

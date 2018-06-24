@@ -49,7 +49,9 @@ SphereSubdrive::~SphereSubdrive()
 
 void SphereSubdrive::setCameraAt(const Vector3 & camAt )
 {
-    this->at = camAt;
+    NeedSubdrive::setCameraAt( camAt );
+    this->camNormAt = camAt;
+    this->camNormAt.normalise();
 }
 
 bool SphereSubdrive::subdrive( const Icosphere * s, const Triangle * tri ) const
@@ -68,12 +70,68 @@ bool SphereSubdrive::subdrive( const Icosphere * s, const Triangle * tri ) const
                 if ( tri->level < maxLevel3 )
                     return true;
             }
+            const Real dNorm = distanceL1( camNormAt, v.at );
+            if ( dNorm <= maxD3 )
+            {
+                if ( tri->level < maxLevel3 )
+                    return true;
+            }
         }
     }
     if ( tri->level < maxLevel1 )
         return true;
     return false;
 }
+
+SphereRebuild::SphereRebuild()
+{
+    firstTime = true;
+}
+
+SphereRebuild::~SphereRebuild()
+{
+
+}
+
+bool SphereRebuild::rebuild( Source * src, const Vector3 & at )
+{
+    if ( firstTime )
+    {
+        firstTime = false;
+        camAt = at;
+        return true;
+    }
+    Vector3 unitAt = at;
+    unitAt.normalise();
+    const Real h = src->dh( unitAt );
+    const Real r = 1.0 + h;
+    Vector3 surfaceAt = unitAt * r;
+    // Distance to the surface.
+    const Real height = at.distance( surfaceAt );
+    // Distance to previous location.
+    const Real dist   = at.distance( camAt );
+
+    if ( height < 0.01 )
+    {
+        if ( dist > 0.00015 )
+        {
+            camAt = at;
+            return true;
+        }
+        return false;
+    }
+    else if ( height < 0.005 )
+    {
+        if ( dist > 0.0025 )
+        {
+            camAt = at;
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
 
 
 
