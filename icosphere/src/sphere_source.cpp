@@ -32,10 +32,10 @@ bool DumbSphere::subdrive( const Icosphere * s, const Triangle * tri ) const
 SphereSubdrive::SphereSubdrive()
 {
     maxLevel1 = 7;
-    maxLevel2 = 11;
+    maxLevel2 = 14;
     maxLevel3 = 18;
 
-    maxD2 = 0.09;
+    maxD2 = 0.013;
     maxD3 = 0.001;
 
     at.x =  0.0;
