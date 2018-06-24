@@ -20,7 +20,8 @@ public:
     //DumbSphere     subdiv;
     SphereSubdrive subdiv;
     SphereRebuild  rebuild;
-    SphereSource   ss;
+    SphereSource   ss,
+                   ssHeight;
 
     RequestState st;
 
@@ -56,8 +57,8 @@ ManualSphere::PD::~PD()
 {
     if ( Root::getSingletonPtr() )
     {
-        while ( st.isBusy )
-            OGRE_THREAD_SLEEP( 1 );
+        if ( st.isBusy )
+            OGRE_THREAD_SLEEP( 5000 );
         smgr->destroyManualObject( manual );
     }
 }
@@ -147,7 +148,7 @@ Real ManualSphere::localHeight( const Vector3 & at ) const
 {
     Vector3 v = at;
     v.normalise();
-    const Real dh = pd->ss.dh( v );
+    const Real dh = pd->ssHeight.dh( v );
     const Real d  = (1.0 + dh) * pd->r;
     return d;
 }
