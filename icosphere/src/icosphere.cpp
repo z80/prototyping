@@ -456,29 +456,29 @@ void Icosphere::init()
     verts.push_back( Vertex(  Z, -X,  N ) );
     verts.push_back( Vertex( -Z, -X,  N ) );
 
-    tris.push_back( Triangle( 0, 4, 1 ) );
-    tris.push_back( Triangle( 0, 9, 4 ) );
-    tris.push_back( Triangle( 9, 5, 4 ) );
-    tris.push_back( Triangle( 4, 5, 8 ) );
-    tris.push_back( Triangle( 4, 8, 1 ) );
+    tris.push_back( Triangle( 0, 1, 4 ) );
+    tris.push_back( Triangle( 0, 4, 9 ) );
+    tris.push_back( Triangle( 9, 4, 5 ) );
+    tris.push_back( Triangle( 4, 8, 5 ) );
+    tris.push_back( Triangle( 4, 1, 8 ) );
 
-    tris.push_back( Triangle( 8, 10, 1 ) );
-    tris.push_back( Triangle( 8, 3, 10 ) );
-    tris.push_back( Triangle( 5, 3, 8 ) );
-    tris.push_back( Triangle( 5, 2, 3 ) );
-    tris.push_back( Triangle( 2, 7, 3 ) );
+    tris.push_back( Triangle( 8, 1, 10 ) );
+    tris.push_back( Triangle( 8, 10, 3 ) );
+    tris.push_back( Triangle( 5, 8, 3 ) );
+    tris.push_back( Triangle( 5, 3, 2 ) );
+    tris.push_back( Triangle( 2, 3, 7 ) );
 
-    tris.push_back( Triangle( 7, 10, 3 ) );
-    tris.push_back( Triangle( 7, 6, 10 ) );
-    tris.push_back( Triangle( 7, 11, 6 ) );
-    tris.push_back( Triangle( 11, 0, 6 ) );
-    tris.push_back( Triangle( 0, 1, 6 ) );
+    tris.push_back( Triangle( 7, 3, 10 ) );
+    tris.push_back( Triangle( 7, 10, 6 ) );
+    tris.push_back( Triangle( 7, 6, 11 ) );
+    tris.push_back( Triangle( 11, 6, 0 ) );
+    tris.push_back( Triangle( 0, 6, 1 ) );
 
-    tris.push_back( Triangle( 6, 1, 10 ) );
-    tris.push_back( Triangle( 9, 0, 11 ) );
-    tris.push_back( Triangle( 9, 11, 2 ) );
-    tris.push_back( Triangle( 9, 2, 5 ) );
-    tris.push_back( Triangle( 7, 2, 11 ) );
+    tris.push_back( Triangle( 6, 10, 1 ) );
+    tris.push_back( Triangle( 9, 11, 0 ) );
+    tris.push_back( Triangle( 9, 2, 11 ) );
+    tris.push_back( Triangle( 9, 5, 2 ) );
+    tris.push_back( Triangle( 7, 11, 2 ) );
 }
 
 void Icosphere::labelMidPoints()

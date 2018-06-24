@@ -91,7 +91,7 @@ void ManualSphere::fillAndShow( const String & materialName, SceneNode * sceneNo
             const int32 ind2 = t.vertInds[1];
             const int32 ind3 = t.vertInds[2];
 
-            m->triangle( ind2, ind1, ind3 );
+            m->triangle( ind1, ind2, ind3 );
         }
     }
     m->end();
