@@ -38,18 +38,18 @@ SphereSubdrive::SphereSubdrive()
     maxD2 = 0.09;
     maxD3 = 0.001;
 
-    camAt.x =  0.0;
-    camAt.y =  0.0;
-    camAt.z =  1.0;
+    at.x =  0.0;
+    at.y =  0.0;
+    at.z =  1.0;
 }
 
 SphereSubdrive::~SphereSubdrive()
 {
 }
 
-void SphereSubdrive::setCameraAt( const Vector3 & at )
+void SphereSubdrive::setCameraAt(const Vector3 & camAt )
 {
-    this->camAt = at;
+    this->at = camAt;
 }
 
 bool SphereSubdrive::subdrive( const Icosphere * s, const Triangle * tri ) const
@@ -58,7 +58,7 @@ bool SphereSubdrive::subdrive( const Icosphere * s, const Triangle * tri ) const
     {
         const int32 vertInd = tri->vertInds[i];
         const Vertex & v = s->verts[vertInd];
-        const Real d = distanceL1( camAt, v.at );
+        const Real d = distanceL1( at, v.at );
         if ( d <= maxD2 )
         {
             if ( tri->level < maxLevel2 )

@@ -24,12 +24,11 @@ public:
     SphereSubdrive();
     ~SphereSubdrive();
 
-    void setCameraAt( const Vector3 & at );
+    void setCameraAt( const Vector3 & camAt );
     bool subdrive( const Icosphere * s, const Triangle * tri ) const;
 
     int32   maxLevel1, maxLevel2, maxLevel3;
     Real    maxD2, maxD3;
-    Vector3 camAt;
 };
 
 

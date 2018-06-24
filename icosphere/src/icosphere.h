@@ -20,7 +20,14 @@ Real distanceL1( const Vector3 & a, const Vector3 & b );
 class NeedSubdrive
 {
 public:
+    Vector3 at;
     virtual bool subdrive( const Icosphere * s, const Triangle * tri ) const = 0;
+};
+
+class NeedRebuild
+{
+public:
+    virtual bool rebuild( const Vector3 & at ) const = 0;
 };
 
 class Source

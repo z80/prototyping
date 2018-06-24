@@ -11,7 +11,9 @@ class ManualSphere::PD
 {
 public:
     SceneManager * smgr;
+    SceneNode    * sceneNode;
     ManualObject * manual;
+    String         materialName;
     Real r;
     Icosphere      sphere;
     //DumbSphere     subdiv;
@@ -28,11 +30,13 @@ ManualSphere::PD::PD( SceneManager * smgr, Real r )
 {
     this->smgr = smgr;
     this->r    = r;
+    sceneNode = 0;
     manual = smgr->createManualObject();
 }
 
 ManualSphere::PD::~PD()
 {
+    if (  )
     smgr->destroyManualObject( manual );
 }
 
@@ -45,6 +49,11 @@ ManualSphere::ManualSphere( SceneManager * smgr, Real r )
 ManualSphere::~ManualSphere()
 {
     delete pd;
+}
+
+void ManualSphere::setSceneNode( SceneNode * sceneNode )
+{
+    pd->sceneNode = sceneNode;
 }
 
 void ManualSphere::generate()
@@ -107,6 +116,63 @@ Real ManualSphere::localHeight( const Vector3 & at ) const
     const Real dh = pd->ss.dh( v );
     const Real d  = (1.0 + dh) * pd->r;
     return d;
+}
+
+Real ManualSphere::radius() const
+{
+    const Real r = pd->r;
+    return r;
+}
+
+void ManualSphere::update()
+{
+    ManualObject * m = pd->manual;
+    m->clear();
+
+    const int32 fullTrisQty = static_cast<int32>( pd->sphere.tris.size() );
+    int n = 0;
+    for ( int32 i=0; i<fullTrisQty; i++ )
+    {
+        const Triangle & tri = pd->sphere.tris[i];
+        if ( tri.leaf )
+            n += 1;
+    }
+    const int32 trisQty  = n;
+    const int32 indsQty  = trisQty * 3;
+    const int   vertsQty = static_cast<int32>( pd->sphere.verts.size() );
+    const Real  r        = pd->r;
+    //const size_t currentIndexQty = m->getCurrentIndexCount();
+    //const size_t currentVertQty  = m->getCurrentVertexCount();
+    //if ( ( indexQty != currentIndexQty ) || ( vertsQty != currentVertQty ) )
+
+    m->estimateIndexCount( indsQty );
+    m->estimateVertexCount( vertsQty );
+
+    m->begin( pd->materialName );
+
+    for ( int32 i=0; i<vertsQty; i++ )
+    {
+        const Vertex & v = pd->sphere.verts[i];
+        const Vector3 at = v.at * r;
+        m->position( at );
+        m->normal( v.norm );
+    }
+    for ( int32 i=0; i<fullTrisQty; i++ )
+    {
+        const Triangle & t = pd->sphere.tris[i];
+        if ( t.leaf )
+        {
+            const int32 ind1 = t.vertInds[0];
+            const int32 ind2 = t.vertInds[1];
+            const int32 ind3 = t.vertInds[2];
+
+            m->triangle( ind1, ind2, ind3 );
+        }
+    }
+    m->end();
+
+    sceneNode->detachObject( m );
+    sceneNode->attachObject( m );
 }
 
 
