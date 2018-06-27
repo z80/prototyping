@@ -25,6 +25,7 @@ set( libs ${LBASE}/libOgreMain.so
           ${LBASE}/libOgreProperty.so 
           ${LBASE}/libOgreRTShaderSystem.so 
           ${LBASE}/libOgreTerrain.so 
+          ${LBASE}/libzzip.so 
           noiseutils-static noise-static )
 
 

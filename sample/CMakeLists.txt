@@ -25,7 +25,8 @@ set( libs ${LBASE}/libOgreMain.so
           ${LBASE}/libOgreProperty.so 
           ${LBASE}/libOgreRTShaderSystem.so 
           ${LBASE}/libOgreTerrain.so 
-          ${LBASE}/libOgreVolume.so )
+          ${LBASE}/libOgreVolume.so 
+          ${LBASE}/libzzip.so )
 
 
 include_directories( "./src"
