@@ -1,0 +1,7 @@
+# Resource locations to be added to the default path
+[General]
+# Bites uses the next entry to discover the platform shaders
+FileSystem=@OGRE_MEDIA_DIR@
+FileSystem=@PROJECT_SOURCE_DIR@/demo/data
+FileSystem=@PROJECT_SOURCE_DIR@/demo/data/Meshes
+FileSystem=@PROJECT_SOURCE_DIR@/demo/data/Textures
