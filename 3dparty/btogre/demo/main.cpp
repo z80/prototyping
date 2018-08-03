@@ -13,6 +13,7 @@
  * =====================================================================================
  */
 
+#include "btBulletDynamicsCommon.h"
 #include "OgreApplicationContext.h"
 #include "OgreCameraMan.h"
 #include "BtOgrePG.h"
