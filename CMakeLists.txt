@@ -42,6 +42,7 @@ set( BULLET_LIBS
 
 
 add_subdirectory( "./3dparty" )
+add_subdirectory( "./config_reader" )
 add_subdirectory( "./simple" )
 add_subdirectory( "./volume" )
 add_subdirectory( "./volume_tree" )
