@@ -3,7 +3,26 @@ cmake_minimum_required(VERSION 2.8.6)
 #project(BtOgre)
 
 #find_package(Bullet REQUIRED)
-#find_package(OGRE 1.10 REQUIRED)
+
+include( "${CMAKE_SOURCE_DIR}/settings.cmake" )
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+find_package(OGRE 1.11 REQUIRED)
+
+
+set( LBASE ${OGRE_HOME}/lib )
+set( libs ${LBASE}/libOgreMain.so 
+          ${LBASE}/libOgreBites.so 
+          ${LBASE}/libOgreOverlay.so 
+          ${LBASE}/libOgrePaging.so 
+          ${LBASE}/libOgreProperty.so 
+          ${LBASE}/libOgreRTShaderSystem.so 
+          ${LBASE}/libOgreTerrain.so 
+          )
+
+# the search paths
+include_directories( ${OGRE_INCLUDE_DIRS} 
+                     ${OGRE_INCLUDE_DIR}/Bites 
+                     ${OGRE_INCLUDE_DIR}/RTShaderSystem )
 
 option(BUILD_DEMO "build demo application" TRUE)
 
@@ -19,7 +38,7 @@ include_directories(
 
 add_definitions( -DBT_USE_DOUBLE_PRECISION )
 add_library(BtOgre STATIC BtOgre.cpp)
-target_link_libraries(BtOgre ${OGRE_LIBS} BulletDynamics BulletCollision
+target_link_libraries(BtOgre ${libs} BulletDynamics BulletCollision
                                           LinearMath )
 target_compile_features( BtOgre PRIVATE cxx_range_for )
 

@@ -69,8 +69,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 # install include files into /usr/include
-INSTALL( DIRECTORY "${PROJECT_SOURCE_DIR}/src/noise" DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/include" )
+#INSTALL( DIRECTORY "${PROJECT_SOURCE_DIR}/src/noise" DESTINATION
+#  "${CMAKE_INSTALL_PREFIX}/include" )
 
 # install libraries into /lib
 INSTALL( TARGETS noise DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" )

@@ -20,8 +20,8 @@ endif()
 ADD_DEFINITIONS( "-I${PROJECT_SOURCE_DIR}/src" )
 
 # install include files into /usr/include
-INSTALL( FILES "${PROJECT_SOURCE_DIR}/noiseutils/noiseutils.h" DESTINATION
-  "${CMAKE_INSTALL_PREFIX}/include/noise" )
+#INSTALL( FILES "${PROJECT_SOURCE_DIR}/noiseutils/noiseutils.h" DESTINATION
+#  "${CMAKE_INSTALL_PREFIX}/include/noise" )
 
 # install libraries into /lib
 INSTALL( TARGETS noiseutils DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" )

@@ -1,11 +1,11 @@
 cmake_minimum_required (VERSION 2.8.12)
 project(OgreImgui)
 
-set( CMAKE_MODULE_PATH "${OgreImgui_SOURCE_DIR}/cmake" )
-
+#set( CMAKE_MODULE_PATH "${OgreImgui_SOURCE_DIR}/cmake" )
+include( "${CMAKE_SOURCE_DIR}/settings.cmake" )
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 # specify which version you need
-find_package(OGRE REQUIRED)
-
+find_package(OGRE 1.11 REQUIRED)
 find_package(Freetype QUIET)
 
 set( LBASE ${OGRE_HOME}/lib )
