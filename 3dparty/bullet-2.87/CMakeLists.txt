@@ -376,10 +376,12 @@ IF(BUILD_BULLET3)
 
 			OPTION(BUILD_OPENGL3_DEMOS "Set when you want to build the OpenGL3+ demos" OFF)
 		ELSE()
-			OPTION(BUILD_OPENGL3_DEMOS "Set when you want to build the OpenGL3+ demos" ON)
+			OPTION(BUILD_OPENGL3_DEMOS "Set when you want to build the OpenGL3+ demos"
+        OFF)
 		ENDIF()
 	ELSE()
-		OPTION(BUILD_OPENGL3_DEMOS "Set when you want to build Bullet 3 OpenGL3+ demos" ON)
+		OPTION(BUILD_OPENGL3_DEMOS "Set when you want to build Bullet 3 OpenGL3+
+    demos" OFF)
 	ENDIF()
 ELSE(BUILD_BULLET3)
 	unset(BUILD_OPENGL3_DEMOS CACHE)
