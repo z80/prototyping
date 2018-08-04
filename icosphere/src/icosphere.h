@@ -73,7 +73,6 @@ public:
     // containing this vertex.
     int maxLevel;
     int trisQty;
-    int trisQty2;
 
     Vertex();
     ~Vertex();

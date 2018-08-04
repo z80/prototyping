@@ -20,7 +20,6 @@ Vertex::Vertex()
     sourceApplied = false;
     maxLevel   = 1;
     trisQty    = 5;
-    trisQty2   = 5;
     a = 0;
     b = 0;
 }
@@ -39,7 +38,6 @@ Vertex::Vertex( Real x, Real y, Real z )
     at.z = z;
     maxLevel = 1;
     trisQty  = 5;
-    trisQty2 = 5;
     a = 0;
     b = 0;
 }
@@ -184,7 +182,6 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
             v.a    = vertInd0;
             v.b    = vertInd1;
             v.maxLevel = newLevel;
-            v.trisQty  = 3;
 
             s->verts.push_back( v );
             n[i] = ind;
@@ -201,12 +198,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
             // triangles qty and max level.
             Vertex & v = s->verts[ind];
             if ( v.maxLevel < newLevel )
-            {
                 v.maxLevel = newLevel;
-                v.trisQty  = 3;
-            }
-            else if ( v.maxLevel == newLevel )
-                v.trisQty += 3;
         }
     }
     // Process current triangle vertices and also update their
@@ -221,12 +213,7 @@ bool Triangle::subdrive( Icosphere * s, NeedSubdrive * needSubdrive )
 //        }
         Vertex & v = s->verts[ind];
         if ( v.maxLevel < newLevel )
-        {
             v.maxLevel = newLevel;
-            v.trisQty  = 1;
-        }
-        else if ( v.maxLevel == newLevel )
-            v.trisQty += 1;
     }
 
     // Create 4 child triangles.
@@ -489,12 +476,13 @@ void Icosphere::init()
 
 void Icosphere::labelMidPoints()
 {
-    // Debugging.
+    // Count number of triangles per vertex.
+    // And determine if it is mid point vertex or not.
     const int32 qty = static_cast<int32>( verts.size() );
     for ( int32 i=0; i<qty; i++ )
     {
         Vertex & v = verts[i];
-        v.trisQty2 = 0;
+        v.trisQty = 0;
     }
     const int32 triQty = static_cast<int32>( tris.size() );
     for ( int32 i=0; i<triQty; i++ )
@@ -505,11 +493,12 @@ void Icosphere::labelMidPoints()
             for ( int32 j=0; j<3; j++ )
             {
                 Vertex & v = verts[ tri.vertInds[j] ];
-                v.trisQty2 += 1;
+                v.trisQty += 1;
             }
         }
     }
-    for ( int32 i=0; i<qty; i++ )
+
+    /*for ( int32 i=0; i<qty; i++ )
     {
         Vertex & v = verts[i];
         // Actually, quantities should be at least close.
@@ -518,15 +507,7 @@ void Icosphere::labelMidPoints()
         {
             v.trisQty = v.trisQty2;
         }
-    }
-
-
-
-
-
-
-
-
+    }*/
 
 
     for ( int32 i=0; i<qty; i++ )
