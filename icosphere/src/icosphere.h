@@ -64,6 +64,7 @@ public:
 
     // If this vertex is middle point.
     bool isMidPoint;
+    bool sourceApplied;
     // If this is middle point 3d position
     // is mean of 3d positions of the two vertices
     // with these indices.
@@ -72,6 +73,7 @@ public:
     // containing this vertex.
     int maxLevel;
     int trisQty;
+    int trisQty2;
 
     Vertex();
     ~Vertex();
@@ -134,6 +136,7 @@ private:
     void labelMidPoints();
     void scaleToSphere();
     void computeNormals();
+    void applySource( Source * src, Vertex & v );
 };
 
 

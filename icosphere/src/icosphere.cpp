@@ -16,9 +16,11 @@ Real distanceL1( const Vector3 & a, const Vector3 & b )
 
 Vertex::Vertex()
 {
-    isMidPoint = true;
+    isMidPoint    = false;
+    sourceApplied = false;
     maxLevel   = 1;
     trisQty    = 5;
+    trisQty2   = 5;
     a = 0;
     b = 0;
 }
@@ -30,11 +32,14 @@ Vertex::~Vertex()
 
 Vertex::Vertex( Real x, Real y, Real z )
 {
+    isMidPoint    = false;
+    sourceApplied = false;
     at.x = x;
     at.y = y;
     at.z = z;
     maxLevel = 1;
     trisQty  = 5;
+    trisQty2 = 5;
     a = 0;
     b = 0;
 }
@@ -52,6 +57,7 @@ const Vertex & Vertex::operator=( const Vertex & inst )
         norm     = inst.at;
         uv       = inst.uv;
         isMidPoint = inst.isMidPoint;
+        sourceApplied = inst.sourceApplied;
         a        = inst.a;
         b        = inst.b;
         maxLevel = inst.maxLevel;
@@ -483,7 +489,46 @@ void Icosphere::init()
 
 void Icosphere::labelMidPoints()
 {
+    // Debugging.
     const int32 qty = static_cast<int32>( verts.size() );
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Vertex & v = verts[i];
+        v.trisQty2 = 0;
+    }
+    const int32 triQty = static_cast<int32>( tris.size() );
+    for ( int32 i=0; i<qty; i++ )
+    {
+        const Triangle & tri = tris[i];
+        if ( tri.leaf )
+        {
+            for ( int32 j=0; j<3; j++ )
+            {
+                Vertex & v = verts[ tri.vertInds[j] ];
+                v.trisQty2 += 1;
+            }
+        }
+    }
+    for ( int32 i=0; i<qty; i++ )
+    {
+        Vertex & v = verts[i];
+        // Actually, quantities should be at least close.
+        // But right now I can see that they diverge a lot.
+        if ( v.trisQty != v.trisQty2 )
+        {
+            v.trisQty = v.trisQty2;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
     for ( int32 i=0; i<qty; i++ )
     {
         Vertex & v = verts[i];
@@ -556,26 +601,47 @@ void Icosphere::applySource( Source * src )
     for ( int32 i=0; i<qty; i++ )
     {
         Vertex & v = verts[i];
-        if ( !v.isMidPoint )
-        {
-            const Real dh = src->dh( v.at );
-            const Real d  = 1.0 + dh;
-            v.at *= d;
-        }
+        v.sourceApplied = false;
     }
     for ( int32 i=0; i<qty; i++ )
     {
         Vertex & v = verts[i];
-        if ( v.isMidPoint )
-        {
-            const Vertex & a = verts[ v.a ];
-            const Vertex & b = verts[ v.b ];
-            v.at = a.at + b.at;
-            v.at = v.at * 0.5;
-        }
+        applySource( src, v );
     }
 
     computeNormals();
+}
+
+void Icosphere::applySource( Source * src, Vertex & v )
+{
+    if ( v.sourceApplied )
+        return;
+    if ( !v.isMidPoint )
+    {
+        const Real dh = src->dh( v.at );
+        const Real d  = 1.0 + dh;
+        v.at *= d;
+        v.sourceApplied = true;
+    }
+    else
+    {
+        Vertex & a = verts[ v.a ];
+        Vertex & b = verts[ v.b ];
+        if ( !a.sourceApplied )
+            applySource( src, a );
+        if ( !b.sourceApplied )
+            applySource( src, b );
+        v.at = a.at + b.at;
+        v.at = v.at * 0.5;
+        v.sourceApplied = true;
+    }
+
+    // Debugging. Compute norm.
+    const Real l = v.at.length();
+    if ( l < 0.9 )
+    {
+        int i = 0;
+    }
 }
 
 
