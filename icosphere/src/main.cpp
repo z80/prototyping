@@ -78,7 +78,7 @@ void BasicTutorial1::setup()
     ApplicationContext::setup();
     addInputListener(this);
     // To lock mouse to the window.
-    //this->setWindowGrab();
+    this->setWindowGrab();
 
     // get a pointer to the already created root
     Root* root = getRoot();

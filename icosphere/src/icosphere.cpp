@@ -497,7 +497,7 @@ void Icosphere::labelMidPoints()
         v.trisQty2 = 0;
     }
     const int32 triQty = static_cast<int32>( tris.size() );
-    for ( int32 i=0; i<qty; i++ )
+    for ( int32 i=0; i<triQty; i++ )
     {
         const Triangle & tri = tris[i];
         if ( tri.leaf )

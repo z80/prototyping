@@ -17,8 +17,8 @@ public:
     String         materialName;
     Real r;
     Icosphere      sphere;
-    DumbSphere     subdiv;
-    //SphereSubdrive subdiv;
+    //DumbSphere     subdiv;
+    SphereSubdrive subdiv;
     SphereRebuild  rebuild;
     SphereSource   ss,
                    ssHeight;
