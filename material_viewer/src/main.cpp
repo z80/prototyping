@@ -21,6 +21,8 @@ public:
     AdvancedRenderControls * mAdvancedControls;
     CameraMan * cMan;
 
+    //void materialUpdateWindow();
+
 
     ImguiExample() : OgreBites::ApplicationContext("OgreImguiExample")
     {
@@ -35,6 +37,7 @@ public:
             Ogre::Rect(0, 0, getRenderWindow()->getWidth(), getRenderWindow()->getHeight()));
 
         ImGui::ShowTestWindow();
+        materialUpdateWindow();
 
         return true;
     }
@@ -120,18 +123,21 @@ public:
         {
             getRoot()->queueEndRendering();
         }
+        cMan->keyPressed( evt );
+        mAdvancedControls->keyPressed( evt );
         return true;
+    }
+
+    bool keyReleased( const OgreBites::KeyboardEvent & evt )
+    {
+        cMan->keyReleased( evt );
+        mAdvancedControls->keyReleased( evt );
     }
 
     bool mousePressed( const MouseButtonEvent & evt )
     {
         if ( mTrayManager->mousePressed( evt ) )
             return true;
-        if ( evt.button == BUTTON_LEFT )
-        {
-            cMan->setStyle( CS_ORBIT );
-            mTrayManager->hideCursor();
-        }
         cMan->mousePressed( evt );
         mAdvancedControls->mousePressed( evt );
         return true;
@@ -141,11 +147,6 @@ public:
     {
         if ( mTrayManager->mouseReleased( evt ) )
             return true;
-        if ( evt.button == BUTTON_LEFT )
-        {
-            cMan->setStyle( CS_MANUAL );
-            mTrayManager->showCursor();
-        }
         cMan->mouseReleased( evt );
         mAdvancedControls->mouseReleased( evt );
         return true;
@@ -158,6 +159,45 @@ public:
         cMan->mouseMoved( evt );
         mAdvancedControls->mouseMoved( evt );
         return true;
+    }
+
+    bool mouseWheelRolled( const MouseWheelEvent & evt )
+    {
+        if ( mTrayManager->mouseWheelRolled( evt ) )
+            return true;
+        cMan->mouseWheelRolled( evt );
+        mAdvancedControls->mouseWheelRolled( evt );
+        return true;
+    }
+
+
+    void materialUpdateWindow()
+    {
+        ImGui::Begin( "Material update" ); // begin window
+        // Window title text edit
+        //ImGui::InputText("Window title", "Hello window!", 255);
+
+        if ( ImGui::Button( "Update material" ) )
+        {
+            Ogre::MaterialManager::getSingletonPtr()->reloadAll( false );
+        }
+        ImGui::Separator();
+
+        if ( ImGui::Button( "Orbit camera" ) )
+        {
+            cMan->setStyle( CS_ORBIT );
+        }
+        ImGui::SameLine();
+        if ( ImGui::Button( "Manual camera" ) )
+        {
+            cMan->setStyle( CS_MANUAL );
+        }
+        ImGui::SameLine();
+        if ( ImGui::Button( "Freelook camera" ) )
+        {
+            cMan->setStyle( CS_FREELOOK );
+        }
+        ImGui::End(); // end window
     }
 
 };
