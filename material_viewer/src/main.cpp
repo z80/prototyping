@@ -173,11 +173,11 @@ public:
 
     void materialUpdateWindow()
     {
-        ImGui::Begin( "Material update" ); // begin window
+        ImGui::Begin( "Texture view" ); // begin window
         // Window title text edit
         //ImGui::InputText("Window title", "Hello window!", 255);
 
-        if ( ImGui::Button( "Update material" ) )
+        /*if ( ImGui::Button( "Update material" ) )
         {
             Ogre::MaterialManager::getSingletonPtr()->reloadAll( false );
         }
@@ -198,16 +198,16 @@ public:
             cMan->setStyle( CS_FREELOOK );
         }
 
-        ImGui::Separator();
-        TexturePtr t = TextureManager::getSingleton().getByName( "Grass.jpg" );
+        ImGui::Separator();*/
+        ImGui::TextWrapped( "Here I expect to see my texture, but got these :) However, texture size is orrect. But the content is always the default \'font\' one." );
+
+        TexturePtr t = Ogre::TextureManager::getSingleton().load("MyGrass.jpg","My");
+        TexturePtr t2 = TextureManager::getSingleton().getByName( "MyGrass.jpg", "My" );
         ResourceHandle hdl = t->getHandle();
-        int w = 128; //t->getWidth();
-        int h = 128; //t->getHeight();
-        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
-        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
-        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
-        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
-        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
+        int w = t->getWidth();
+        int h = t->getHeight();
+        ImGui::Image( (ImTextureID)hdl, ImVec2( w, h ) );
+        ImGui::ImageButton( (ImTextureID)hdl, ImVec2( w, h ) );
 
         ImGui::End(); // end window
     }
