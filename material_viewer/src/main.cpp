@@ -197,6 +197,18 @@ public:
         {
             cMan->setStyle( CS_FREELOOK );
         }
+
+        ImGui::Separator();
+        TexturePtr t = TextureManager::getSingleton().getByName( "Grass.jpg" );
+        ResourceHandle hdl = t->getHandle();
+        int w = 128; //t->getWidth();
+        int h = 128; //t->getHeight();
+        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
+        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
+        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
+        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
+        ImGui::ImageButton( (void *)hdl, ImVec2( w, h ) );
+
         ImGui::End(); // end window
     }
 
