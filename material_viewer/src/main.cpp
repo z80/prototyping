@@ -1,11 +1,27 @@
 #include <Ogre.h>
 #include <OgreApplicationContext.h>
+#include "OgreInput.h"
+#include "OgreRTShaderSystem.h"
+#include "OgreCameraMan.h"
+#include "OgreTrays.h"
+#include "OgreAdvancedRenderControls.h"
+
 
 #include "ImguiManager.h"
 
-class ImguiExample : public OgreBites::ApplicationContext, public OgreBites::InputListener
+using namespace Ogre;
+using namespace OgreBites;
+
+class ImguiExample : public OgreBites::ApplicationContext,
+                     public OgreBites::InputListener,
+                     public TrayListener
 {
 public:
+    TrayManager            * mTrayManager;
+    AdvancedRenderControls * mAdvancedControls;
+    CameraMan * cMan;
+
+
     ImguiExample() : OgreBites::ApplicationContext("OgreImguiExample")
     {
     }
@@ -23,10 +39,22 @@ public:
         return true;
     }
 
+    void shutdown()
+    {
+        if ( cMan )
+            delete cMan;
+        if ( mAdvancedControls )
+            delete mAdvancedControls;
+        if ( mTrayManager )
+            delete mTrayManager;
+    }
+
     void setup()
     {
         OgreBites::ApplicationContext::setup();
         addInputListener(this);
+        // To hide cursor.
+        //this->setWindowGrab();
 
         Ogre::ImguiManager::createSingleton();
         addInputListener(Ogre::ImguiManager::getSingletonPtr());
@@ -60,6 +88,30 @@ public:
         Ogre::Entity* ent = scnMgr->createEntity("Sinbad.mesh");
         Ogre::SceneNode* node = scnMgr->getRootSceneNode()->createChildSceneNode();
         node->attachObject(ent);
+
+
+        // *************************************************
+        this->locateResources();
+        this->loadResources();
+
+        // Cursor controls and tray management.
+        Ogre::RenderWindow * wnd = getRenderWindow();
+        mTrayManager = new TrayManager( "my_tray", wnd, this );
+        //mTrayManager->showCursor();
+        mTrayManager->showFrameStats( TL_BOTTOMLEFT );
+        //mTrayManager->showAll();
+        //mTrayManager->showTrays();
+
+        OverlaySystem * os = this->getOverlaySystem();
+        scnMgr->addRenderQueueListener( os );
+
+        mAdvancedControls = new AdvancedRenderControls( mTrayManager, cam );
+
+        // Convenience camera control
+        cMan = new CameraMan( camNode );
+        cMan->setStyle( CS_MANUAL );
+
+        scnMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     }
 
     bool keyPressed(const OgreBites::KeyboardEvent& evt)
@@ -70,6 +122,44 @@ public:
         }
         return true;
     }
+
+    bool mousePressed( const MouseButtonEvent & evt )
+    {
+        if ( mTrayManager->mousePressed( evt ) )
+            return true;
+        if ( evt.button == BUTTON_LEFT )
+        {
+            cMan->setStyle( CS_ORBIT );
+            mTrayManager->hideCursor();
+        }
+        cMan->mousePressed( evt );
+        mAdvancedControls->mousePressed( evt );
+        return true;
+    }
+
+    bool mouseReleased( const MouseButtonEvent & evt )
+    {
+        if ( mTrayManager->mouseReleased( evt ) )
+            return true;
+        if ( evt.button == BUTTON_LEFT )
+        {
+            cMan->setStyle( CS_MANUAL );
+            mTrayManager->showCursor();
+        }
+        cMan->mouseReleased( evt );
+        mAdvancedControls->mouseReleased( evt );
+        return true;
+    }
+
+    bool mouseMoved( const MouseMotionEvent & evt )
+    {
+        if ( mTrayManager->mouseMoved( evt ) )
+            return true;
+        cMan->mouseMoved( evt );
+        mAdvancedControls->mouseMoved( evt );
+        return true;
+    }
+
 };
 
 
