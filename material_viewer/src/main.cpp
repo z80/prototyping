@@ -17,7 +17,7 @@ class ImguiExample : public OgreBites::ApplicationContext,
                      public TrayListener
 {
 public:
-    TrayManager            * mTrayManager;
+    //TrayManager            * mTrayManager;
     AdvancedRenderControls * mAdvancedControls;
     CameraMan * cMan;
 
@@ -46,10 +46,10 @@ public:
     {
         if ( cMan )
             delete cMan;
-        if ( mAdvancedControls )
-            delete mAdvancedControls;
-        if ( mTrayManager )
-            delete mTrayManager;
+        //if ( mAdvancedControls )
+        //    delete mAdvancedControls;
+        //if ( mTrayManager )
+        //    delete mTrayManager;
     }
 
     void setup()
@@ -99,16 +99,16 @@ public:
 
         // Cursor controls and tray management.
         Ogre::RenderWindow * wnd = getRenderWindow();
-        mTrayManager = new TrayManager( "my_tray", wnd, this );
+        //mTrayManager = new TrayManager( "my_tray", wnd, this );
         //mTrayManager->showCursor();
-        mTrayManager->showFrameStats( TL_BOTTOMLEFT );
+        //mTrayManager->showFrameStats( TL_BOTTOMLEFT );
         //mTrayManager->showAll();
         //mTrayManager->showTrays();
 
-        OverlaySystem * os = this->getOverlaySystem();
-        scnMgr->addRenderQueueListener( os );
+        //OverlaySystem * os = this->getOverlaySystem();
+        //scnMgr->addRenderQueueListener( os );
 
-        mAdvancedControls = new AdvancedRenderControls( mTrayManager, cam );
+        //mAdvancedControls = new AdvancedRenderControls( mTrayManager, cam );
 
         // Convenience camera control
         cMan = new CameraMan( camNode );
@@ -124,49 +124,49 @@ public:
             getRoot()->queueEndRendering();
         }
         cMan->keyPressed( evt );
-        mAdvancedControls->keyPressed( evt );
+        //mAdvancedControls->keyPressed( evt );
         return true;
     }
 
     bool keyReleased( const OgreBites::KeyboardEvent & evt )
     {
         cMan->keyReleased( evt );
-        mAdvancedControls->keyReleased( evt );
+        //mAdvancedControls->keyReleased( evt );
     }
 
     bool mousePressed( const MouseButtonEvent & evt )
     {
-        if ( mTrayManager->mousePressed( evt ) )
-            return true;
+        //if ( mTrayManager->mousePressed( evt ) )
+        //    return true;
         cMan->mousePressed( evt );
-        mAdvancedControls->mousePressed( evt );
+        //mAdvancedControls->mousePressed( evt );
         return true;
     }
 
     bool mouseReleased( const MouseButtonEvent & evt )
     {
-        if ( mTrayManager->mouseReleased( evt ) )
-            return true;
+        //if ( mTrayManager->mouseReleased( evt ) )
+        //    return true;
         cMan->mouseReleased( evt );
-        mAdvancedControls->mouseReleased( evt );
+        //mAdvancedControls->mouseReleased( evt );
         return true;
     }
 
     bool mouseMoved( const MouseMotionEvent & evt )
     {
-        if ( mTrayManager->mouseMoved( evt ) )
-            return true;
+        //if ( mTrayManager->mouseMoved( evt ) )
+        //    return true;
         cMan->mouseMoved( evt );
-        mAdvancedControls->mouseMoved( evt );
+        //mAdvancedControls->mouseMoved( evt );
         return true;
     }
 
     bool mouseWheelRolled( const MouseWheelEvent & evt )
     {
-        if ( mTrayManager->mouseWheelRolled( evt ) )
-            return true;
+        //if ( mTrayManager->mouseWheelRolled( evt ) )
+        //    return true;
         cMan->mouseWheelRolled( evt );
-        mAdvancedControls->mouseWheelRolled( evt );
+        //mAdvancedControls->mouseWheelRolled( evt );
         return true;
     }
 
@@ -177,7 +177,7 @@ public:
         // Window title text edit
         //ImGui::InputText("Window title", "Hello window!", 255);
 
-        /*if ( ImGui::Button( "Update material" ) )
+        if ( ImGui::Button( "Update material" ) )
         {
             Ogre::MaterialManager::getSingletonPtr()->reloadAll( false );
         }
@@ -198,7 +198,7 @@ public:
             cMan->setStyle( CS_FREELOOK );
         }
 
-        ImGui::Separator();*/
+        /*ImGui::Separator();
         ImGui::TextWrapped( "Here I expect to see my texture, but got these :) However, texture size is orrect. But the content is always the default \'font\' one." );
 
         TexturePtr t = Ogre::TextureManager::getSingleton().load("MyGrass.jpg","My");
@@ -207,7 +207,7 @@ public:
         int w = t->getWidth();
         int h = t->getHeight();
         ImGui::Image( (ImTextureID)hdl, ImVec2( w, h ) );
-        ImGui::ImageButton( (ImTextureID)hdl, ImVec2( w, h ) );
+        ImGui::ImageButton( (ImTextureID)hdl, ImVec2( w, h ) );*/
 
         ImGui::End(); // end window
     }
