@@ -5,6 +5,7 @@ add_subdirectory( "./ogreimgui" )
 add_subdirectory( "./btogre" )
 add_subdirectory( "./basic_demo" )
 add_subdirectory( "./lua-5.1.5" )
+add_subdirectory( "./oggsound" )
 
 
 

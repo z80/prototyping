@@ -1,12 +1,15 @@
-PROJECT(OgreOggSound)
+#PROJECT(OgreOggSound)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+#CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+include( ${CMAKE_SOURCE_DIR}/settings.cmake )
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 
 INCLUDE (CheckIncludeFileCXX)
 
 # define header and source files for the library
 SET (HEADER_FILES
-	include/LocklessQueue.h
+    include/LocklessQueue.h
     include/OgreOggISound.h
     include/OgreOggListener.h
     include/OgreOggSoundCallback.h
@@ -23,7 +26,7 @@ SET (HEADER_FILES
 )
 
 SET (SOURCE_FILES
-	src/OgreOggISound.cpp
+    src/OgreOggISound.cpp
     src/OgreOggListener.cpp
     src/OgreOggSoundFactory.cpp
     src/OgreOggSoundManager.cpp
@@ -69,7 +72,7 @@ ELSE()
     ADD_DEFINITIONS(-DOGGSOUND_THREADED=0)
 ENDIF()
 
-FIND_PACKAGE(OGRE 1.10 REQUIRED)
+FIND_PACKAGE(OGRE REQUIRED)
 FIND_PACKAGE(OpenAL QUIET REQUIRED)
 
 IF (APPLE)
@@ -106,7 +109,8 @@ LINK_LIBRARIES(${OGRE_LIBRARIES}
                ${OGG_LIBRARIES}
                ${VORBISFILE_LIBRARIES})
 
-ADD_LIBRARY(Plugin_OggSound SHARED ${SOURCE_FILES} ${HEADER_FILES})
+ADD_LIBRARY( Plugin_OggSound SHARED ${SOURCE_FILES} ${HEADER_FILES})
+target_compile_features( Plugin_OggSound PRIVATE cxx_range_for )
 # disable "lib" prefix
 set_target_properties(Plugin_OggSound PROPERTIES PREFIX "")
 
@@ -114,3 +118,7 @@ set(CMAKE_INSTALL_PREFIX ${OGRE_PREFIX_DIR} CACHE PATH "plugin must end up in OG
 INSTALL(FILES ${HEADER_FILES} DESTINATION include/OGRE/Plugins/OggSound)
 INSTALL(TARGETS Plugin_OggSound LIBRARY DESTINATION lib/OGRE/ ARCHIVE DESTINATION lib/OGRE/)
 set_property(TARGET Plugin_OggSound PROPERTY INSTALL_RPATH ${OGRE_LIBRARY_DIRS})
+
+
+
+
