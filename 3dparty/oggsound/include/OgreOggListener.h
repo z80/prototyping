@@ -61,31 +61,13 @@ namespace OgreOggSound
 		@remarks
 			Creates a listener object to act as the ears of the user. 
 		 */
-		OgreOggListener(
-			#if OGRE_VERSION_MAJOR == 2
-			Ogre::IdType id, Ogre::SceneManager *scnMgr, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
-			#else
-			Ogre::SceneManager* scnMgr = NULL
-			#endif
-		): 
-			#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0
-				MovableObject(id, objMemMgr, renderQueueId),
-			#elif OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 0
-				MovableObject(id, objMemMgr, scnMgr, renderQueueId),
-			#endif
-			  mPosition(Ogre::Vector3::ZERO)
+		OgreOggListener(): mPosition(Ogre::Vector3::ZERO)
 			, mVelocity(Ogre::Vector3::ZERO)
-			#if OGRE_VERSION_MAJOR == 1
 			, mLocalTransformDirty(false)
-			#endif
-			, mSceneMgr(scnMgr)
+			, mSceneMgr(0)
 		{
-			for (int i=0; i<6; ++i ) mOrientation[i]=0.f;
+			for (int i=0; i<6; ++i ) mOrientation[i]=0.f;	
 			mName = "OgreOggListener";
-			#if OGRE_VERSION_MAJOR == 2
-			setLocalAabb(Ogre::Aabb::BOX_NULL);
-			setQueryFlags(0);
-			#endif
 		};
 		/** Sets the position of the listener.
 		@remarks
@@ -171,42 +153,28 @@ namespace OgreOggSound
 			Overridden function from MovableObject.
 		 */
 		virtual void _updateRenderQueue(Ogre::RenderQueue *queue);
-		#if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
 		/** Renderable callback
 		@remarks
 			Overridden function from MovableObject.
 		 */
 		virtual void visitRenderables(Ogre::Renderable::Visitor* visitor, bool debugRenderables);
-		#endif
 		/** Attach callback
 		@remarks
 			Overridden function from MovableObject.
 		 */
-		virtual void _notifyAttached(
-			Ogre::Node* node
-			#if OGRE_VERSION_MAJOR == 1
-			, bool isTagPoint = false
-			#endif
-		);
-		#if OGRE_VERSION_MAJOR == 1
+		virtual void _notifyAttached(Ogre::Node* node, bool isTagPoint=false);
 		/** Moved callback
 		@remarks
 			Overridden function from MovableObject.
 		 */
 		virtual void _notifyMoved(void);
-		#else
-		/** do nothing but need for derived from MovableObject
-		 */
-		virtual void _updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera, const Ogre::Camera *lodCamera);
-		#endif
 		/** Returns scenemanager which created this listener.
 		 */
 		Ogre::SceneManager* getSceneManager() { return mSceneMgr; }
-		#if OGRE_VERSION_MAJOR == 1
 		/** Sets scenemanager which created this listener.
 		 */
 		void setSceneManager(Ogre::SceneManager& m) { mSceneMgr=&m; }
-		#endif
+		
 	private:
 
 #if OGGSOUND_THREADED
@@ -223,11 +191,7 @@ namespace OgreOggSound
 		Ogre::Vector3 mPosition;		// 3D position
 		Ogre::Vector3 mVelocity;		// 3D velocity
 		float mOrientation[6];			// 3D orientation
-		#if OGRE_VERSION_MAJOR == 2
-		Ogre::Quaternion mOrient;		// 3D orientation as Quaternion
-		#else
 		bool mLocalTransformDirty;		// Dirty transforms flag
-		#endif
 		Ogre::SceneManager* mSceneMgr;	// Creator 
 
 	};

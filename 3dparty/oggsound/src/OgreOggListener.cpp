@@ -127,9 +127,6 @@ namespace OgreOggSound
 		boost::recursive_mutex::scoped_lock lock(mMutex);
 #	endif
 #endif
-		#if OGRE_VERSION_MAJOR == 2
-		mOrient = q;
-		#endif
 		Ogre::Vector3 vDirection = q.zAxis();
 		Ogre::Vector3 vUp = q.yAxis();
 
@@ -158,29 +155,15 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggListener::update()
 	{
-		#if OGRE_VERSION_MAJOR == 1
 		if(mLocalTransformDirty)
 		{
 			if ( mParentNode )
 			{
 				setPosition(mParentNode->_getDerivedPosition());
-				setOrientation(mParentNode->_getDerivedOrientation());
+				setOrientation(mParentNode->_getDerivedOrientation());			 
 			}
 			mLocalTransformDirty=false;
 		}
-		#else
-		if (mParentNode) {
-			Ogre::Vector3    newPos    = mParentNode->_getDerivedPosition();
-			if (newPos != mPosition) {
-				setPosition(newPos);
-			}
-			
-			Ogre::Quaternion newOrient = mParentNode->_getDerivedOrientation();
-			if (newOrient != mOrient) {
-				setOrientation(newOrient);
-			}
-		}
-		#endif
 	}
 	/*/////////////////////////////////////////////////////////////////*/
 	const Ogre::AxisAlignedBox& OgreOggListener::getBoundingBox(void) const
@@ -198,49 +181,32 @@ namespace OgreOggSound
 	{
 		return;
 	}
-	#if OGRE_VERSION_MAJOR == 1 || OGRE_VERSION_MINOR == 0
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggListener::visitRenderables(Ogre::Renderable::Visitor* visitor, bool debugRenderables)
 	{
 		return;
 	}
-	#endif
 	/*/////////////////////////////////////////////////////////////////*/
 	const Ogre::String& OgreOggListener::getMovableType(void) const
 	{
 		return OgreOggSoundFactory::FACTORY_TYPE_NAME;
 	}
 	/*/////////////////////////////////////////////////////////////////*/
-	void OgreOggListener::_notifyAttached(
-		Ogre::Node* node
-		#if OGRE_VERSION_MAJOR == 1
-		, bool isTagPoint
-		#endif
-	)
+	void OgreOggListener::_notifyAttached(Ogre::Node* node, bool isTagPoint)
 	{
 		// Call base class notify
-		Ogre::MovableObject::_notifyAttached(
-			node
-			#if OGRE_VERSION_MAJOR == 1
-			, isTagPoint
-			#endif
-		);
+		Ogre::MovableObject::_notifyAttached(node, isTagPoint);
 
 		// Immediately set position/orientation when attached
 		if (mParentNode)
 		{
-			#if OGRE_VERSION_MAJOR == 1
 			setPosition(mParentNode->_getDerivedPosition());
-			#else
-			setPosition(mParentNode->_getDerivedPositionUpdated());
-			#endif
 			setOrientation(mParentNode->_getDerivedOrientation());
 		}
 
 		return;
 	}
 	/*/////////////////////////////////////////////////////////////////*/
-	#if OGRE_VERSION_MAJOR == 1
 	void OgreOggListener::_notifyMoved(void) 
 	{ 
 		// Call base class notify
@@ -248,8 +214,6 @@ namespace OgreOggSound
 
 		mLocalTransformDirty=true; 
 	}
-	#else
-	void OgreOggListener::_updateRenderQueue(Ogre::RenderQueue *queue, Ogre::Camera *camera, const Ogre::Camera *lodCamera) {
-	}
-	#endif
 }
+
+	

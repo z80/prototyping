@@ -482,13 +482,7 @@ namespace OgreOggSound
 		if ( mListener ) return true;
 
 		// Create a listener
-		return ( (mListener = dynamic_cast<OgreOggListener*>(
-			#if OGRE_VERSION_MAJOR == 2
-				mSceneMgr->createMovableObject(OgreOggSoundFactory::FACTORY_TYPE_NAME, &(mSceneMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0)
-			#else
-				mSceneMgr->createMovableObject("OgreOggSoundListener", OgreOggSoundFactory::FACTORY_TYPE_NAME, 0)
-			#endif
-		)) != 0 );
+		return ( (mListener = dynamic_cast<OgreOggListener*>(mSceneMgr->createMovableObject("OgreOggSoundListener", OgreOggSoundFactory::FACTORY_TYPE_NAME, 0)))!=0);
 	}
 	/*/////////////////////////////////////////////////////////////////*/
 	const StringVector OgreOggSoundManager::getSoundList() const
@@ -520,11 +514,8 @@ namespace OgreOggSound
 		return vol;
 	}
 	/*/////////////////////////////////////////////////////////////////*/
-	OgreOggISound* OgreOggSoundManager::_createSoundImpl(	SceneManager* scnMgr, 
+	OgreOggISound* OgreOggSoundManager::_createSoundImpl(	const SceneManager& scnMgr, 
 															const std::string& name, 
-															#if OGRE_VERSION_MAJOR == 2
-															Ogre::IdType id,
-															#endif
 															const std::string& file, 
 															bool stream, 
 															bool loop, 
@@ -544,19 +535,9 @@ namespace OgreOggSound
 			}
 
 			if(stream)
-				sound = OGRE_NEW_T(OgreOggStreamSound, Ogre::MEMCATEGORY_GENERAL)(
-					name, scnMgr
-					#if OGRE_VERSION_MAJOR == 2
-					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
-					#endif
-				);
+				sound = OGRE_NEW_T(OgreOggStreamSound, Ogre::MEMCATEGORY_GENERAL)(name, scnMgr);
 			else
-				sound = OGRE_NEW_T(OgreOggStaticSound, Ogre::MEMCATEGORY_GENERAL)(
-					name, scnMgr
-					#if OGRE_VERSION_MAJOR == 2
-					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
-					#endif
-				);
+				sound = OGRE_NEW_T(OgreOggStaticSound, Ogre::MEMCATEGORY_GENERAL)(name, scnMgr);
 
 			// Set loop flag
 			sound->loop(loop);
@@ -603,19 +584,9 @@ namespace OgreOggSound
 			}
 
 			if(stream)
-				sound = OGRE_NEW_T(OgreOggStreamWavSound, Ogre::MEMCATEGORY_GENERAL)(
-					name, scnMgr
-					#if OGRE_VERSION_MAJOR == 2
-					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
-					#endif
-				);
+				sound = OGRE_NEW_T(OgreOggStreamWavSound, Ogre::MEMCATEGORY_GENERAL)(name, scnMgr);
 			else
-				sound = OGRE_NEW_T(OgreOggStaticWavSound, Ogre::MEMCATEGORY_GENERAL)(
-					name, scnMgr
-					#if OGRE_VERSION_MAJOR == 2
-					, Ogre::Id::generateNewId<Ogre::MovableObject>(), &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0
-					#endif
-				);
+				sound = OGRE_NEW_T(OgreOggStaticWavSound, Ogre::MEMCATEGORY_GENERAL)(name, scnMgr);
 
 			// Set loop flag
 			sound->loop(loop);
@@ -675,7 +646,6 @@ namespace OgreOggSound
 		params["loop"]		= loop		? "true" : "false";
 		params["preBuffer"]	= preBuffer ? "true" : "false";
 		params["immediate"]	= immediate ? "true" : "false";
-		params["name"]		= name;
 
 		// Get first SceneManager if defined
 		if ( !scnMgr ) 
@@ -692,14 +662,8 @@ namespace OgreOggSound
 		// Catch exception when plugin hasn't been registered
 		try
 		{
-			params["sceneManagerName"] = scnMgr->getName();
-			sound = static_cast<OgreOggISound*>(
-			#if OGRE_VERSION_MAJOR == 2
-				scnMgr->createMovableObject( OgreOggSoundFactory::FACTORY_TYPE_NAME, &(scnMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), &params )
-			#else
-				scnMgr->createMovableObject( name, OgreOggSoundFactory::FACTORY_TYPE_NAME, &params )
-			#endif
-			);
+			params["sceneManagerName"]=scnMgr->getName();
+			sound = static_cast<OgreOggISound*>(scnMgr->createMovableObject( name, OgreOggSoundFactory::FACTORY_TYPE_NAME, &params ));
 		}
 		catch (Exception& e)
 		{
@@ -712,13 +676,10 @@ namespace OgreOggSound
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggListener* OgreOggSoundManager::_createListener()
 	{
-		#if OGRE_VERSION_MAJOR == 2
-		OgreOggListener* l = OGRE_NEW_T(OgreOggListener, Ogre::MEMCATEGORY_GENERAL)(Ogre::Id::generateNewId<Ogre::MovableObject>(), mSceneMgr, &(mSceneMgr->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC)), 0 );
-		#else
-		OgreOggListener* l = OGRE_NEW_T(OgreOggListener, Ogre::MEMCATEGORY_GENERAL)(mSceneMgr);
-		#endif
+		OgreOggListener* l = OGRE_NEW_T(OgreOggListener, Ogre::MEMCATEGORY_GENERAL)();
+		l->setSceneManager(*mSceneMgr);
 		return l;
-	}
+	}		
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggISound* OgreOggSoundManager::getSound(const std::string& name)
 	{

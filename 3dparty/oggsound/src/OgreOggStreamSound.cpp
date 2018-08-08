@@ -38,17 +38,7 @@
 namespace OgreOggSound
 {
 	/*/////////////////////////////////////////////////////////////////*/
-	OgreOggStreamSound::OgreOggStreamSound(
-		const Ogre::String& name, Ogre::SceneManager* scnMgr
-		#if OGRE_VERSION_MAJOR == 2
-		, Ogre::IdType id, Ogre::ObjectMemoryManager *objMemMgr, Ogre::uint8 renderQueueId
-		#endif
-	) : OgreOggISound(
-		name, scnMgr
-		#if OGRE_VERSION_MAJOR == 2
-		, id, objMemMgr, renderQueueId
-		#endif
-	)
+	OgreOggStreamSound::OgreOggStreamSound(const Ogre::String& name, const Ogre::SceneManager& scnMgr) : OgreOggISound(name, scnMgr)
 	,mVorbisInfo(0)
 	,mVorbisComment(0)
 	,mStreamEOF(false)
