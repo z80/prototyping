@@ -44,7 +44,7 @@ OGKScene::~OGKScene()
 Ogre::MovableObject *OGKScene::getTerrainObject()
 {
     // for subclasses
-    return NULL;
+    return 0;
 }
 
 void OGKScene::init()
@@ -52,9 +52,9 @@ void OGKScene::init()
     mSceneManager =  Ogre::Root::getSingletonPtr()->createSceneManager(Ogre::ST_GENERIC, "SceneManager" + mSceneName);
     mSceneManager->addRenderQueueListener(OGKGame::getSingletonPtr()->mOverlaySystem);
     
-#ifdef INCLUDE_RTSHADER_SYSTEM
+//#ifdef INCLUDE_RTSHADER_SYSTEM
     Ogre::RTShader::ShaderGenerator::getSingletonPtr()->addSceneManager(mSceneManager);
-#endif
+//#endif
     
     mOverlay = Ogre::OverlayManager::getSingletonPtr()->create("SceneOverlay" + mSceneName);
     mOverlay->setZOrder(100);
@@ -135,19 +135,12 @@ void OGKScene::onExitTransitionDidStart()
     mRunning = false;
 }
 
-bool OGKScene::keyPressed(const OIS::KeyEvent &keyEventRef) { return true; }
-bool OGKScene::keyReleased(const OIS::KeyEvent &keyEventRef)  { return true; }
+bool OGKScene::keyPressed(const OgreBites::KeyboardEvent &keyEventRef) { return true; }
+bool OGKScene::keyReleased(const OgreBites::KeyboardEvent &keyEventRef)  { return true; }
 
-#ifdef OGRE_IS_IOS
-bool OGKScene::touchMoved(const OIS::MultiTouchEvent &evt)  { return true; }
-bool OGKScene::touchPressed(const OIS::MultiTouchEvent &evt)  { return true; }
-bool OGKScene::touchReleased(const OIS::MultiTouchEvent &evt)  { return true; }
-bool OGKScene::touchCancelled(const OIS::MultiTouchEvent &evt)  { return true; }
-#else
-bool OGKScene::mouseMoved(const OIS::MouseEvent &evt)  { return true; }
-bool OGKScene::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)  { return true; }
-bool OGKScene::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)  { return true; }
-#endif
+bool OGKScene::mouseMoved(const OgreBites::MouseMotionEvent & evt)  { return true; }
+bool OGKScene::mousePressed(const OgreBites::MouseButtonEvent & evt )  { return true; }
+bool OGKScene::mouseReleased(const OgreBites::MouseButtonEvent & evt )  { return true; }
 
 bool OGKScene::rayIntersects(const Ogre::Ray& ray, Ogre::Vector3& hitLocation, Ogre::MovableObject *hitObject, bool terrainOnly)
 {

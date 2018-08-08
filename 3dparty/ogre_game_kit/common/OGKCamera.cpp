@@ -251,85 +251,18 @@ void OGKCamera::setTightness(Ogre::Real tightness)
     mTightness = tightness;
 }
 
-bool OGKCamera::keyPressed(const OIS::KeyEvent &keyEventRef)
+bool OGKCamera::keyPressed(const OgreBites::KeyboardEvent &keyEventRef)
 {
     return TRUE;
 }
 
-bool OGKCamera::keyReleased(const OIS::KeyEvent &keyEventRef)
+bool OGKCamera::keyReleased( const OgreBites::KeyboardEvent & keyEventRef )
 {
     return TRUE;
 }
 
-#ifdef OGRE_IS_IOS
-bool OGKCamera::touchMoved(const OIS::MultiTouchEvent &evt)
-{
-    if(mMode == FREE) {
-        OIS::MultiTouchState state = evt.state;
-        Ogre::Vector2 screenSize = getScreenSize();
-        
-        int origTransX = 0, origTransY = 0;
-    #if !OGRE_NO_VIEWPORT_ORIENTATIONMODE
-        switch(mCamera->getViewport()->getOrientationMode())
-    #else
-        switch(mViewportOrientation)
-    #endif
-        {
-            case Ogre::OR_LANDSCAPELEFT:
-                if (screenSize.x < screenSize.y) {
-                    origTransX = state.X.rel;
-                    origTransY = state.Y.rel;
-                    state.X.rel = origTransY;
-                    state.Y.rel = -origTransX;
-                }
-                else {
-                    state.X.rel = -state.X.rel;
-                    state.Y.rel = -state.Y.rel;
-                }
-                break;
 
-            case Ogre::OR_LANDSCAPERIGHT:
-                if (screenSize.x < screenSize.y) {
-                    origTransX = state.X.rel;
-                    origTransY = state.Y.rel;
-                    state.X.rel = -origTransY;
-                    state.Y.rel = origTransX;
-                }
-                else {
-                    state.X.rel = -state.X.rel;
-                    state.Y.rel = -state.Y.rel;                    
-                }
-                break;
-
-                // Portrait doesn't need any change
-            case Ogre::OR_PORTRAIT:
-            default:
-                break;
-        }
-
-        mCameraNode->yaw(Ogre::Degree(state.X.rel * -0.1),Ogre::SceneNode::TS_WORLD);
-        mCameraNode->pitch(Ogre::Degree(state.Y.rel * -0.1));
-    }
-    return TRUE;
-}
-
-bool OGKCamera::touchPressed(const OIS::MultiTouchEvent &evt)
-{
-    return TRUE;
-}
-
-bool OGKCamera::touchReleased(const OIS::MultiTouchEvent &evt)
-{
-    return TRUE;
-}
-
-bool OGKCamera::touchCancelled(const OIS::MultiTouchEvent &evt)
-{
-    return TRUE;
-}
-
-#else
-bool OGKCamera::mouseMoved(const OIS::MouseEvent &evt)
+bool OGKCamera::mouseMoved( const OgreBites::MouseMotionEvent & evt )
 {
     if(mMode == OGKCamera::FREE) {
         mCameraNode->yaw(Ogre::Degree(evt.state.X.rel * -0.1f),Ogre::SceneNode::TS_WORLD);
@@ -338,24 +271,23 @@ bool OGKCamera::mouseMoved(const OIS::MouseEvent &evt)
     return TRUE;    
 }
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKCamera::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool OGKCamera::mousePressed( const OgreBites::MouseButtonEvent & evt )
 {
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKCamera::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool OGKCamera::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 {
 	return true;
 }
-#endif
 
 void OGKCamera::update(Ogre::Real elapsedTime)
 {
     if(mMode == OGKCamera::FREE) {
         Ogre::Vector3 translateVector(0,0,0);
         Ogre::Real moveScale = mMoveSpeed   * (float)elapsedTime;
-#if !defined(OGRE_IS_IOS)
+
         OIS::Keyboard *keyboard = OGKInputManager::getSingletonPtr()->getKeyboard();
         
         if(keyboard->isKeyDown(OIS::KC_A))
@@ -376,9 +308,6 @@ void OGKCamera::update(Ogre::Real elapsedTime)
         else {
             mCameraNode->translate(translateVector,Ogre::Node::TS_LOCAL);
         }
-#else
-        // @TODO
-#endif
     }
     else if(mMode == OGKCamera::FIRST_PERSON) {
         if(mTargetNode) mTargetNode->_update(true,true);
