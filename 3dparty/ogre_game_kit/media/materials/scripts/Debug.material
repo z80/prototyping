@@ -1,0 +1,33 @@
+
+material OGK/Debug/Yellow
+{
+   technique
+   {
+      pass
+      {
+         lighting off
+         texture_unit
+         {
+            colour_op_ex source1 src_manual src_current 1 1 0
+         }
+      }
+   }
+}
+
+material OGK/Debug/Gray
+{
+   technique
+   {
+      pass
+      {
+        vertex_program_ref OGK/ColorVP
+        {
+        }
+
+        fragment_program_ref OGK/ColorFP
+        {		
+            param_named diffuseColor float3 0.5 0.5 0.5
+        }
+      }
+   }
+}

@@ -1,0 +1,137 @@
+material TerrainMaterial
+{
+  technique
+  {
+    pass
+    {
+      vertex_program_ref Terrain/Programs/TerrainVP
+      {
+		param_named_auto worldViewProj worldviewproj_matrix
+		param_named_auto lodMorph custom 1001
+		param_named_auto ambient ambient_light_colour
+      }
+      
+      fragment_program_ref Terrain/Programs/TerrainFP
+      {		
+		param_named_auto lightDiffuse light_diffuse_colour 0
+		param_named_auto lightSpecular light_specular_colour 0
+		
+		param_named_auto lightPosition light_position_object_space 0
+		param_named_auto eyePosition camera_position_object_space
+		
+		param_named_auto attenuation light_attenuation 0
+              
+		param_named exponent float 63
+        param_named splatScaleX float 256
+		param_named splatScaleZ float 256
+      }
+      
+		texture_unit 0
+		{
+			// first coverage map
+			texture ETcoverage.0.png
+		}
+		texture_unit 1
+		{
+			// second coverage map
+			texture ETcoverage.1.png
+		}
+		texture_unit 2
+		{
+			// third coverage map
+			texture ETcoverage.2.png
+		}
+
+		// splatting textures
+		texture_unit 3
+		{
+			texture splatting0.png
+		}
+		texture_unit 4
+		{
+			texture splatting1.png
+		}
+		texture_unit
+		{
+			texture splatting2.png
+		}
+		texture_unit
+		{
+			texture splatting3.png
+		}
+		texture_unit
+		{
+			texture splatting4.png
+		}
+		texture_unit
+		{
+			texture splatting5.png
+		}
+		texture_unit
+		{
+			texture splatting6.png
+		}
+		texture_unit
+		{
+			texture splatting7.png
+		}
+		texture_unit
+		{
+			texture splatting8.png
+		}	 
+
+		texture_unit 
+		{
+			texture artifexterra3d_colourmap.png
+		}
+		
+		texture_unit 
+		{
+			texture ETlightmap.png
+		}
+    } // pass
+    
+  } // technique
+    
+  technique
+  {
+    pass
+    {
+        depth_bias 1 1
+        iteration_depth_bias 1
+      vertex_program_ref Terrain/Programs/TerrainVPMobile
+      {
+		param_named_auto worldViewProj worldviewproj_matrix
+		param_named_auto lodMorph custom 1001
+        param_named_auto fogParams fog_params
+      }
+      
+      fragment_program_ref Terrain/Programs/TerrainFPMobile
+      {
+		param_named_auto ambient ambient_light_colour
+        param_named_auto fogColour fog_colour
+        param_named splatScaleX float 128.0
+		param_named splatScaleZ float 128.0
+      }
+
+      texture_unit 0
+	  {
+            // normal map
+            tex_address_mode clamp
+	  }
+      texture_unit 1
+	  {
+            // light map
+			texture ETlightmap.png
+            tex_address_mode clamp
+	  }
+      texture_unit 2
+      {
+			texture splatting1_medium_res.png
+	  }
+
+    } // pass
+  } // technique
+
+}
+

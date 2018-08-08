@@ -1,0 +1,77 @@
+material OGK/DefaultSkyBox
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+            fog_override true
+
+            vertex_program_ref OGK/SkyboxVP
+            {
+                param_named_auto worldViewProj worldviewproj_matrix
+            }
+
+            fragment_program_ref OGK/SkyboxFP
+            {
+
+            }
+                        
+			texture_unit 0
+			{
+				cubic_texture sky.png separateUV
+				tex_address_mode clamp
+			}
+		}
+	}
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+            fog_override true
+            
+			texture_unit 0
+			{
+				cubic_texture sky.png separateUV
+				tex_address_mode clamp
+			}
+		}
+	}
+}
+
+fragment_program OGK/TransitionFP glsles
+{
+	source StdQuad_ps.glsles
+    profile glsles
+}
+
+material OGK/SceneTransitionMaterial
+{
+
+    technique
+    {
+        pass
+        {
+   			lighting off
+            scene_blend alpha_blend
+            
+            vertex_program_ref Ogre/Compositor/StdQuad_vp
+            {
+                param_named_auto worldViewProj worldviewproj_matrix
+            }
+
+            fragment_program_ref OGK/TransitionFP
+            {		
+                param_named quadAlpha float 1.0
+            }
+
+            texture_unit 0
+            {
+                tex_address_mode clamp
+            }
+        }
+    }
+}
