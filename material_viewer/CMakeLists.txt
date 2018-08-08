@@ -13,7 +13,7 @@ set( libs ${LBASE}/libOgreMain.so
 include_directories( ${OGRE_INCLUDE_DIRS} 
                      ${OGRE_INCLUDE_DIR} 
                      ${OGRE_INCLUDE_DIR}/Bites 
-                     ${IBASE}/Overlay
+                     ${OGRE_INCLUDE_DIR}/Overlay 
                      ${OGRE_INCLUDE_DIR}/RTShaderSystem )
 link_directories(${OGRE_LIBRARY_DIRS})
 
