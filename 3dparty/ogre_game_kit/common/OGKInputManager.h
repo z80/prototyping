@@ -12,11 +12,19 @@
 #include <Ogre.h>
 #include "OGKStaticPluginLoader.h"
 
-#include <OISEvents.h>
-#include <OISInputManager.h>
-#include <OISKeyboard.h>
-#include <OISMouse.h>
-#include <OISJoyStick.h>
+//#include <OISEvents.h>
+//#include <OISInputManager.h>
+//#include <OISKeyboard.h>
+//#include <OISMouse.h>
+//#include <OISJoyStick.h>
+#include "Ogre.h"
+#include "OgreOverlaySystem.h"
+#include "OgreApplicationContext.h"
+#include "OgreInput.h"
+#include "OgreRTShaderSystem.h"
+#include "OgreCameraMan.h"
+#include "OgreTrays.h"
+#include "OgreAdvancedRenderControls.h"
 
 #ifdef OGRE_IS_IOS
 #include <OISMultiTouch.h>

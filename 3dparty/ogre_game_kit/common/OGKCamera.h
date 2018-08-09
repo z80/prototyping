@@ -13,16 +13,25 @@
 #include "OGKStaticPluginLoader.h"
 
 // input
-#include <OISEvents.h>
-#include <OISInputManager.h>
-#include <OISKeyboard.h>
-#include <OISMouse.h>
+//#include <OISEvents.h>
+//#include <OISInputManager.h>
+//#include <OISKeyboard.h>
+//#include <OISMouse.h>
+#include "Ogre.h"
+#include "OgreOverlaySystem.h"
+#include "OgreApplicationContext.h"
+#include "OgreInput.h"
+#include "OgreRTShaderSystem.h"
+#include "OgreCameraMan.h"
+#include "OgreTrays.h"
+#include "OgreAdvancedRenderControls.h"
 
 #ifdef OGRE_IS_IOS
 #include <OISMultiTouch.h>
 class OGKCamera : public OIS::KeyListener, OIS::MultiTouchListener
 #else
-class OGKCamera : public OIS::KeyListener, OIS::MouseListener
+class OGKCamera //: public OIS::KeyListener, OIS::MouseListener
+        : OgreBites::InputListener
 #endif
 {
 public:
@@ -63,19 +72,13 @@ public:
     
     void update(Ogre::Real elapsedTime);
     
-	bool keyPressed(const OIS::KeyEvent &keyEventRef);
-	bool keyReleased(const OIS::KeyEvent &keyEventRef);
+    bool keyPressed(const OgreBites::KeyboardEvent &keyEventRef);
+    bool keyReleased(const OgreBites::KeyboardEvent &keyEventRef);
     
-#ifdef OGRE_IS_IOS
-	bool touchMoved(const OIS::MultiTouchEvent &evt);
-	bool touchPressed(const OIS::MultiTouchEvent &evt);
-	bool touchReleased(const OIS::MultiTouchEvent &evt);
-	bool touchCancelled(const OIS::MultiTouchEvent &evt);
-#else
-	bool mouseMoved(const OIS::MouseEvent &evt);
-    bool mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
-    bool mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
-#endif
+    bool mouseMoved(const OgreBites::MouseMotionEvent & evt );
+    bool mousePressed(const OgreBites::MouseButtonEvent & evt );
+    bool mouseReleased(const OgreBites::MouseButtonEvent & evt );
+
 private:
     Ogre::Camera *mCamera;
     

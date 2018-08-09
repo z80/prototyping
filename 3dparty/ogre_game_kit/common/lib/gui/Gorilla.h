@@ -32,7 +32,8 @@
 #ifndef GORILLA_H
 #define GORILLA_H
 
-#include "OGRE/Ogre.h"
+#include "Ogre.h"
+#include "OgreRectangle2D.h"
 
 #ifndef GORILLA_USES_EXCEPTIONS
 #  define GORILLA_USES_EXCEPTIONS 0

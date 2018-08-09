@@ -31,7 +31,15 @@
 #include <vector>
 
 #include <Ogre.h>
-#include <OIS.h>
+//#include <OIS.h>
+#include "Ogre.h"
+#include "OgreOverlaySystem.h"
+#include "OgreApplicationContext.h"
+#include "OgreInput.h"
+#include "OgreRTShaderSystem.h"
+#include "OgreCameraMan.h"
+#include "OgreTrays.h"
+#include "OgreAdvancedRenderControls.h"
 
 #include "Gorilla.h"
 
