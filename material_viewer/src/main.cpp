@@ -177,7 +177,7 @@ public:
         // Window title text edit
         //ImGui::InputText("Window title", "Hello window!", 255);
 
-        if ( ImGui::Button( "Update material" ) )
+        /*if ( ImGui::Button( "Update material" ) )
         {
             Ogre::MaterialManager::getSingletonPtr()->reloadAll( false );
         }
@@ -196,10 +196,10 @@ public:
         if ( ImGui::Button( "Freelook camera" ) )
         {
             cMan->setStyle( CS_FREELOOK );
-        }
+        }*/
 
-        /*ImGui::Separator();
-        ImGui::TextWrapped( "Here I expect to see my texture, but got these :) However, texture size is orrect. But the content is always the default \'font\' one." );
+        ImGui::Separator();
+        ImGui::TextWrapped( "Now it shows exactly what expect to see :)" );
 
         TexturePtr t = Ogre::TextureManager::getSingleton().load("MyGrass.jpg","My");
         TexturePtr t2 = TextureManager::getSingleton().getByName( "MyGrass.jpg", "My" );
@@ -207,7 +207,7 @@ public:
         int w = t->getWidth();
         int h = t->getHeight();
         ImGui::Image( (ImTextureID)hdl, ImVec2( w, h ) );
-        ImGui::ImageButton( (ImTextureID)hdl, ImVec2( w, h ) );*/
+        ImGui::ImageButton( (ImTextureID)hdl, ImVec2( w, h ) );
 
         ImGui::End(); // end window
     }
