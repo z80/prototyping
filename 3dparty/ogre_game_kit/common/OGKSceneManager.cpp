@@ -169,20 +169,10 @@ void OGKSceneManager::update(Ogre::Real timeElapsed)
             }
             
             if(mTransitionTextureUnitState) {
-                Ogre::Real fadeAmt = MIN(1.0,MAX(0.0,mTransitionTimeRemaining) / mTransitionTime);
+                Ogre::Real fadeAmt = std::min( Ogre::Real(1.0),
+                                               std::max( Ogre::Real(0.0), mTransitionTimeRemaining ) / mTransitionTime);
                 //OGKLOG("updating fade amt " +  Ogre::StringConverter::toString(fadeAmt) );
-                
-#ifdef OGRE_IS_IOS
-                // Retrieve the shader parameters
-                Ogre::GpuProgramParametersSharedPtr pParams = mTransitionMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-                if ( !pParams.isNull() ) {
-                    if ( pParams->_findNamedConstantDefinition( "quadAlpha" ) ) {
-                        pParams->setNamedConstant( "quadAlpha", fadeAmt );
-                    }
-                }
-#else
                 mTransitionTextureUnitState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT, fadeAmt);
-#endif
                 
 #ifdef INCLUDE_RTSHADER_SYSTEM
                 Ogre::RTShader::ShaderGenerator::getSingletonPtr()->invalidateMaterial(Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, kTransitionMaterialName);

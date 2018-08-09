@@ -10,6 +10,7 @@
 #include "OGKGame.h"
 #include "OGKInputManager.h"
 #include "OgreTerrainMaterialGeneratorA.h"
+#include "OgreTerrainAutoUpdateLod.h"
 //#include "macUtils.h"
 
 #include "OGKTerrainMaterial.h"
@@ -136,10 +137,12 @@ void OGKTerrain::modifyTerrain(Ogre::Terrain *terrain, const Ogre::Vector3& cent
     Ogre::Vector3 tsPos;
     terrain->getTerrainPosition(centrepos, &tsPos);
     
-    OIS::Keyboard *keyboard = OGKInputManager::getSingletonPtr()->getKeyboard();
+    //OIS::Keyboard *keyboard = OGKInputManager::getSingletonPtr()->getKeyboard();
+    OGKInputManager * input = OGKInputManager::getSingletonPtr();
     
-    if (keyboard->isKeyDown(OIS::KC_EQUALS) || keyboard->isKeyDown(OIS::KC_ADD) ||
-        keyboard->isKeyDown(OIS::KC_MINUS) || keyboard->isKeyDown(OIS::KC_SUBTRACT))
+    //if (keyboard->isKeyDown(OIS::KC_EQUALS) || keyboard->isKeyDown(OIS::KC_ADD) ||
+    //    keyboard->isKeyDown(OIS::KC_MINUS) || keyboard->isKeyDown(OIS::KC_SUBTRACT))
+    if ( input->isKeyDown(int('-')) || input->isKeyDown( int('+') ) )
     {
         switch(mMode)
         {
@@ -168,7 +171,7 @@ void OGKTerrain::modifyTerrain(Ogre::Terrain *terrain, const Ogre::Vector3& cent
                         
                         float addedHeight = weight * 0.01 * timeElapsed;
                         float newheight;
-                        if (keyboard->isKeyDown(OIS::KC_EQUALS) || keyboard->isKeyDown(OIS::KC_ADD))
+                        if ( input->isKeyDown( int('+') ) || input->isKeyDown( '=' ) )
                             newheight = terrain->getHeightAtPoint(x, y) + addedHeight;
                         else
                             newheight = terrain->getHeightAtPoint(x, y) - addedHeight;
@@ -208,7 +211,7 @@ void OGKTerrain::modifyTerrain(Ogre::Terrain *terrain, const Ogre::Vector3& cent
                         float paint = weight * timeElapsed;
                         size_t imgY = imgSize - y;
                         float val;
-                        if (keyboard->isKeyDown(OIS::KC_EQUALS) || keyboard->isKeyDown(OIS::KC_ADD))
+                        if ( input->isKeyDown( int('=') ) || input->isKeyDown( int('+') ) )
                             val = layer->getBlendValue(x, imgY) + paint;
                         else
                             val = layer->getBlendValue(x, imgY) - paint;
@@ -295,14 +298,12 @@ void OGKTerrain::setup(Ogre::SceneManager *sceneMgr, Ogre::Light *light)
 
     mTerrainGroup->freeTemporaryResources();
     
-#ifndef OGRE_IS_IOS
     // marker for editing terrain
     mMarker = sceneMgr->createEntity("OGKTerrainMarker", "TerrainMarker.mesh");
     mMarkerSceneNode = sceneMgr->getRootSceneNode()->createChildSceneNode();
     mMarkerSceneNode->attachObject(mMarker);
     mMarkerSceneNode->setScale(0.05,0.05,0.05);
     mMarker->setVisible(false);
-#endif
     
     mTerrainsImported = true;
 }
@@ -314,7 +315,6 @@ void OGKTerrain::setMode(OGKTerrainMode mode)
 
 void OGKTerrain::update(double timeSinceLastFrame)
 {
-#ifndef OGRE_IS_IOS
     if(mTerrainGroup &&
         !mTerrainGroup->isDerivedDataUpdateInProgress()) {        
         Ogre::Terrain *terrain = mTerrainGroup->getTerrain(0, 0);
@@ -328,12 +328,16 @@ void OGKTerrain::update(double timeSinceLastFrame)
 
     if(mMode != MODE_NORMAL) {
         // EDIT MODE
-        OIS::Mouse *mouse = OGKInputManager::getSingletonPtr()->getMouse();
-        if(mouse) {
-            OIS::MouseState state = mouse->getMouseState();
+        //OIS::Mouse *mouse = OGKInputManager::getSingletonPtr()->getMouse();
+        OGKInputManager * input = OGKInputManager::getSingletonPtr();
+        if ( input )
+        {
+            //OIS::MouseState state = mouse->getMouseState();
             
-            Ogre::Real x = (float)state.X.abs / (float)state.width;
-            Ogre::Real y = (float)state.Y.abs / (float)state.height;
+            //Ogre::Real x = (float)state.X.abs / (float)state.width;
+            //Ogre::Real y = (float)state.Y.abs / (float)state.height;
+            Ogre::Real x, y;
+            input->mousePosition( x, y );
             
             OGKScene *scene = OGKGame::getSingletonPtr()->mGameSceneManager->getActiveScene();
             if(scene && scene->mCamera) {
@@ -370,7 +374,6 @@ void OGKTerrain::update(double timeSinceLastFrame)
             mHeightUpdateCountDown = 0;
         }
     }
-#endif
     
 #ifdef OGK_USE_PAGING
     if(mTerrainGroup) {

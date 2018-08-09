@@ -16,6 +16,8 @@ OGKInputManager::OGKInputManager( void )
 {
     mouseDx = 0.0;
     mouseDy = 0.0;
+    mouseX  = 0.0;
+    mouseY  = 0.0;
     windowSzX = 640.0;
     windowSzY = 480.0;
 }
@@ -153,6 +155,8 @@ bool OGKInputManager::keyPressed( const OgreBites::KeyboardEvent & e )
         if(!itKeyListener->second->keyPressed( e ))
 			break;
     }*/
+
+    pressedKeys.insert( e.keysym );
     
     return true;
 }
@@ -165,6 +169,10 @@ bool OGKInputManager::keyReleased( const OgreBites::KeyboardEvent & e )
         if(!itKeyListener->second->keyReleased( e ))
 			break;
     }*/
+
+    std::set< OgreBites::Keycode >::const_iterator it = pressedKeys.find( e.keysym );
+    if ( it != pressedKeys.end() )
+        pressedKeys.erase( it );
     
     return true;
 }
@@ -177,6 +185,11 @@ bool OGKInputManager::mouseMoved( const OgreBites::MouseMotionEvent & e )
         if(!itMouseListener->second->mouseMoved( e ))
 			break;
     }*/
+
+    mouseX  = static_cast<Ogre::Real>( e.x ) / windowSzX;
+    mouseY  = static_cast<Ogre::Real>( e.y ) / windowSzY;
+    mouseDx = static_cast<Ogre::Real>( e.xrel ) / windowSzX;
+    mouseDy = static_cast<Ogre::Real>( e.yrel ) / windowSzY;
     
     return true;
 }
@@ -277,4 +290,25 @@ OGKInputManager * OGKInputManager::getSingletonPtr( void )
     return mInputManager;
 }
 
+
+
+
+bool OGKInputManager::isKeyDown( OgreBites::Keycode key )
+{
+    std::set< OgreBites::Keycode >::const_iterator it = pressedKeys.find( e.keysym );
+    const bool res = ( it != pressedKeys.end() );
+    return res;
+}
+
+void OGKInputManager::mouseMovement( Ogre::Real & dx, Ogre::Real & dy )
+{
+    dx = mouseDx;
+    dy = mouseDy;
+}
+
+void OGKInputManager::mousePosition( Ogre::Real & x, Ogre::Real & y )
+{
+    x = mouseX;
+    y = mouseY;
+}
 

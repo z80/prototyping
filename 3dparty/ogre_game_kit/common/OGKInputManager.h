@@ -30,7 +30,6 @@ class OGKInputManager //: public OIS::KeyListener, public OIS::MouseListener, pu
         : OgreBites::InputListener
 {
 public:
-    OGKInputManager();
     virtual ~OGKInputManager( void );
     
     void initialise( Ogre::RenderWindow *renderWindow, bool showMouseCursor = false );
@@ -86,9 +85,12 @@ private:
 public:
     bool isKeyDown( OgreBites::Keycode key );
     void mouseMovement( Ogre::Real & dx, Ogre::Real & dy );
+    void mousePosition( Ogre::Real & dx, Ogre::Real & dy );
 
     Ogre::Real mouseDx, mouseDy;
+    Ogre::Real mouseX, mouseY;
     Ogre::Real windowSzX, windowSzY;
+    Ogre::set< OgreBites::Keycode > pressedKeys;
 };
 
 #endif /* defined(__OgreGameKit__OGKInputManager__) */

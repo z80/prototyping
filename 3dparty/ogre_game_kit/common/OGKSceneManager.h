@@ -9,8 +9,9 @@
 #ifndef __OgreGameKit__OGKSceneManager__
 #define __OgreGameKit__OGKSceneManager__
 
-#include <Ogre.h>
-#include <OgreOverlaySystem.h>
+#include "Ogre.h"
+#include "OgreOverlaySystem.h"
+#include "OgreOverlay.h"
 
 class OGKScene;
 
