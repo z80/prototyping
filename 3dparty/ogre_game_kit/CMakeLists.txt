@@ -26,6 +26,8 @@ find_package( OGRE REQUIRED )
 include_directories( ${OGRE_INCLUDE_DIRS} )
 include_directories( ${OGRE_INCLUDE_DIR}/Bites
                      ${OGRE_INCLUDE_DIR}/Overlay
+                     ${OGRE_INCLUDE_DIR}/Terrain
+                     ${OGRE_INCLUDE_DIR}/Paging
                      ${OGRE_INCLUDE_DIR}/RTShaderSystem )
 link_directories( ${OGRE_LIBRARY_DIRS} )
 

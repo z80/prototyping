@@ -10,8 +10,9 @@
 #define __OgreGameKit__OGKGame__
 
 // gfx
-#include <Ogre.h>
-#include <OgreOverlaySystem.h>
+#include "Ogre.h"
+#include "OgreOverlaySystem.h"
+#include "OgreApplicationContext.h"
 
 #include "OGKGUIThemes.h"
 
@@ -38,12 +39,8 @@ namespace Gorilla {
 
 #define OGKLOG(m) OGKGame::getSingletonPtr()->mLog->logMessage(m)
 
-#ifdef OGRE_IS_IOS
-#include <OISMultiTouch.h>
-class OGKGame : public Ogre::Singleton<OGKGame>, OIS::KeyListener, OIS::MultiTouchListener
-#else
-class OGKGame : public Ogre::Singleton<OGKGame>, OIS::KeyListener, OIS::MouseListener
-#endif
+class OGKGame //: public Ogre::Singleton<OGKGame>, OIS::KeyListener, OIS::MouseListener
+        : public Ogre::Singleton<OGKGame>, OgreBites::InputListener
 {
 public:
 	OGKGame();
@@ -53,8 +50,8 @@ public:
     
     Ogre::ConfigFile* getGameConfig();
     
-	bool keyPressed(const OIS::KeyEvent &keyEventRef);
-	bool keyReleased(const OIS::KeyEvent &keyEventRef);
+    bool keyPressed( const OgreBites::KeyboardEvent & keyEventRef );
+    bool keyReleased( const OgreBites::KeyboardEvent & keyEventRef );
     
     virtual bool renderOneFrame();
     virtual bool renderOneFrame(double timeSinceLastFrame);
@@ -63,16 +60,9 @@ public:
     virtual void start();
     virtual void update(double timeSinceLastFrame);
     
-#ifdef OGRE_IS_IOS
-	bool touchMoved(const OIS::MultiTouchEvent &evt);
-	bool touchPressed(const OIS::MultiTouchEvent &evt);
-	bool touchReleased(const OIS::MultiTouchEvent &evt);
-	bool touchCancelled(const OIS::MultiTouchEvent &evt);
-#else
-	bool mouseMoved(const OIS::MouseEvent &evt);
-	bool mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
-	bool mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
-#endif
+    bool mouseMoved( const OgreBites::MouseMotionEvent & evt );
+    bool mousePressed( const OgreBites::MouseButtonEvent & evt );
+    bool mouseReleased( const OgreBites::MouseButtonEvent & evt );
 	
 	Ogre::Root*                 mRoot;
 	Ogre::SceneManager*			mSceneManager;
@@ -83,10 +73,6 @@ public:
     Ogre::OverlaySystem*        mOverlaySystem;
     
     OGKSceneManager*            mGameSceneManager;
-    
-#ifdef OGRE_IS_IOS
-    Ogre::OrientationMode       mViewportOrientation;
-#endif
     
     OGKDefaultGUITheme          *mDefaultGUITheme;
     

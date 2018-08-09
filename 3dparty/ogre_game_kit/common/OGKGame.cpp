@@ -8,7 +8,6 @@
 
 #include "OGKGame.h"
 #include "OGKConsole.h"
-#include "macUtils.h"
 
 // scenes
 #include "OGKMenuScene.h"
@@ -28,28 +27,19 @@ namespace Ogre
 
 ////////////////////////////////////////////////////////////////////////////////
 OGKGame::OGKGame() :
-#ifdef OGRE_IS_IOS
-    mViewportOrientation(Ogre::OR_LANDSCAPELEFT),
-#endif
-    mCamera(NULL),
-    mConfig(NULL),
-    mFPS(NULL),
-    mLog(NULL),
-    mRenderWindow(NULL),
-    mRoot(NULL),
-    mSceneManager(NULL),
-    mShutdown(FALSE),
+    mCamera(0),
+    mConfig(0),
+    mFPS(0),
+    mLog(0),
+    mRenderWindow(0),
+    mRoot(0),
+    mSceneManager(0),
+    mShutdown(0),
     mStartTime(0),
-    mTimer(NULL),
+    mTimer(0),
     mTimeSinceLastFrame(0)
 {
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-    mResourcePath = macBundlePath() + "/Contents/Resources/";
-#elif defined(OGRE_IS_IOS)
-    mResourcePath = macBundlePath() + "/";
-#else
     mResourcePath = "";
-#endif
     
     mDefaultGUITheme = OGRE_NEW OGKDefaultGUITheme();
 }
@@ -62,15 +52,16 @@ OGKGame::~OGKGame()
 #ifdef OGRE_STATIC_LIB
     mStaticPluginLoader.unload();
 #endif
-    if(mRoot) delete mRoot;
+    if ( mRoot )
+        delete mRoot;
     
-#ifdef INCLUDE_RTSHADER_SYSTEM
+//#ifdef INCLUDE_RTSHADER_SYSTEM
     destroyRTShaderSystem(mSceneManager);
-#endif
+//#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Ogre::ConfigFile* OGKGame::getGameConfig()
+Ogre::ConfigFile * OGKGame::getGameConfig()
 {
     return mConfig;
 }
@@ -92,9 +83,9 @@ bool OGKGame::renderOneFrame()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::renderOneFrame(double timeSinceLastFrame)
+bool OGKGame::renderOneFrame( double timeSinceLastFrame )
 {
-    if(mShutdown || !Ogre::Root::getSingletonPtr() ||
+    if ( mShutdown || !Ogre::Root::getSingletonPtr() ||
        !Ogre::Root::getSingleton().isInitialised()) {
         return false;
     }
@@ -151,7 +142,6 @@ void OGKGame::start()
 
     mRenderWindow->resetStatistics();
 
-#if !((OGRE_PLATFORM == OGRE_PLATFORM_APPLE) && __LP64__) && !defined(OGRE_IS_IOS)
     mLog->logMessage("Start main loop...", Ogre::LML_TRIVIAL);
 	
 	double timeSinceLastFrame = 0;
@@ -161,9 +151,7 @@ void OGKGame::start()
 	{
 		if(mRenderWindow->isClosed())mShutdown = true;
         
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 		Ogre::WindowEventUtilities::messagePump();
-#endif
 		if(mRenderWindow->isActive()) {
 			startTime = mTimer->getMillisecondsCPU();
             
@@ -204,9 +192,8 @@ void OGKGame::update(double timeSinceLastFrame)
 #pragma mark - Input
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::keyPressed(const OIS::KeyEvent &keyEventRef)
+bool OGKGame::keyPressed(const OgreBites::KeyboardEvent &keyEventRef)
 {
-#if !defined(OGRE_IS_IOS)
     if(OGKConsole::getSingletonPtr() && OGKConsole::getSingletonPtr()->isVisible()) {
         OGKConsole::getSingletonPtr()->onKeyPressed(keyEventRef);
         if(keyEventRef.key == OIS::KC_GRAVE) {
@@ -227,62 +214,33 @@ bool OGKGame::keyPressed(const OIS::KeyEvent &keyEventRef)
             break;
     }
     
-#endif
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::keyReleased(const OIS::KeyEvent &keyEventRef)
+bool OGKGame::keyReleased(const OgreBites::KeyboardEvent &keyEventRef)
 {
 	return true;
 }
 
-#if defined(OGRE_IS_IOS)
-////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::touchMoved(const OIS::MultiTouchEvent &evt)
-{
-	return true;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::touchPressed(const OIS:: MultiTouchEvent &evt)
-{
-#pragma unused(evt)
-	return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::touchReleased(const OIS:: MultiTouchEvent &evt)
-{
-#pragma unused(evt)
-	return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::touchCancelled(const OIS:: MultiTouchEvent &evt)
-{
-#pragma unused(evt)
-	return true;
-}
-#else
-////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::mouseMoved(const OIS::MouseEvent &evt)
+bool OGKGame::mouseMoved(const OgreBites::MouseMotionEvent &evt)
 {
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool OGKGame::mousePressed(const OgreBites::MouseButtonEvent & evt )
 {
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKGame::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool OGKGame::mouseReleased( const OgreBites::MouseButtonEvent &evt )
 {
 	return true;
 }
-#endif
 
 #pragma mark - Private
 
@@ -304,16 +262,7 @@ bool OGKGame::_init(Ogre::String wndTitle)
     pluginsPath = mResourcePath + "plugins.cfg";
 #endif
     
-#ifdef OGRE_IS_IOS
-    Ogre::Vector2 screenSize = getScreenSize();
-    unsigned int height = screenSize.x > screenSize.y ? screenSize.x : screenSize.y;
-    unsigned int width = screenSize.x > screenSize.y ? screenSize.y : screenSize.x;
-    Ogre::String suffix= "-" + Ogre::StringConverter::toString(height);
-    OGKLOG("Loading ogre" + suffix + ".cfg");
-    mRoot = new Ogre::Root(pluginsPath, mResourcePath + "ogre" + suffix + ".cfg");
-#else
     mRoot = new Ogre::Root(pluginsPath, mResourcePath + "ogre.cfg");
-#endif
     // create overlay system BEFORE initializing resources (for fonts)
     mOverlaySystem = new Ogre::OverlaySystem();
 
@@ -326,19 +275,7 @@ bool OGKGame::_init(Ogre::String wndTitle)
     // RENDER SYSTEM
     _initRenderSystem();
     
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-    mRoot->getRenderSystem()->setConfigOption("macAPI","cocoa");
-#endif
-    
-#ifdef OGRE_IS_IOS
-    mRoot->initialise(false);
-    NameValuePairList misc;
-    misc["FSAA"] = "0";
-    misc["contentScalingFactor"] = "2";
-    mRenderWindow = mRoot->createRenderWindow("OGRE GAME KIT", height / 2, width / 2, true, &misc);
-#else
 	mRenderWindow = mRoot->initialise(true, wndTitle);
-#endif
 	mRenderWindow->setActive(true);
     
 	mSceneManager = mRoot->createSceneManager(ST_GENERIC, "SceneManager");
@@ -348,12 +285,11 @@ bool OGKGame::_init(Ogre::String wndTitle)
     _initInput();
     
     // CAMERA (after input)
-    mCamera = OGRE_NEW OGKCamera(mSceneManager, mRenderWindow);
+    mCamera = OGRE_NEW OGKCamera( mSceneManager, mRenderWindow );
     
     // RESOURCES
     _initResources();
     
-#ifndef OGRE_IS_IOS
     // GUI
     OGRE_NEW Gorilla::Silverback();
     Gorilla::Silverback::getSingletonPtr()->loadAtlas("dejavu");
@@ -364,7 +300,6 @@ bool OGKGame::_init(Ogre::String wndTitle)
     
     // CONSOLE
     _initConsole();
-#endif
 
 	mTimer = OGRE_NEW Ogre::Timer();
 	mTimer->reset();
@@ -388,9 +323,6 @@ void OGKGame::_initInput()
     OGKInputManager::getSingletonPtr()->initialise(mRenderWindow);
     
     OGKInputManager::getSingletonPtr()->addKeyListener(this, "OGKGameListener");
-#ifdef OGRE_IS_IOS
-    OGKInputManager::getSingletonPtr()->addMultiTouchListener(this, "OGKGameListener");
-#else
     OGKInputManager::getSingletonPtr()->addMouseListener(this, "OGKGameListener");
 #endif
 }

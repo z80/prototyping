@@ -9,8 +9,8 @@
 #include "OGKTerrain.h"
 #include "OGKGame.h"
 #include "OGKInputManager.h"
-#include <OgreTerrainMaterialGeneratorA.h>
-#include "macUtils.h"
+#include "OgreTerrainMaterialGeneratorA.h"
+//#include "macUtils.h"
 
 #include "OGKTerrainMaterial.h"
 

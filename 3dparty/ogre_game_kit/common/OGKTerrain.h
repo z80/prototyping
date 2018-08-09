@@ -9,9 +9,10 @@
 #ifndef __OgreGameKit__OGKTerrain__
 #define __OgreGameKit__OGKTerrain__
 
-#include <OgreTerrain.h>
-#include <OgreTerrainGroup.h>
-#include <OgreTerrainPaging.h>
+#include "OgreTerrain.h"
+#include "OgreTerrainGroup.h"
+#include "OgreTerrainPaging.h"
+#include "OgrePageManager.h"
 #include "OGKTerrainGenerator.h"
 
 #define OGK_USE_TERRAIN_LAYERS
