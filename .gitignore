@@ -4,6 +4,7 @@ build.release
 app
 _build
 _app
+_temp
 .build
 .app
 *.so

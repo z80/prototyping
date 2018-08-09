@@ -159,16 +159,16 @@ class BtOgreTestApplication : public OgreBites::ApplicationContext, public OgreB
 
 	    //Create Ogre stuff.
 
-	    mNinjaEntity = mSceneMgr->createEntity("ninjaEntity", "Player.mesh");
+        mNinjaEntity = mSceneMgr->createEntity("ninjaEntity", "Player.mesh");
 	    mNinjaNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("ninjaSceneNode", pos, rot);
 	    mNinjaNode->attachObject(mNinjaEntity);
 
 	    //Create shape.
 	    BtOgre::StaticMeshToShapeConverter converter(mNinjaEntity);
-	    mNinjaShape = converter.createSphere();
+        mNinjaShape = converter.createSphere();
 
 	    //Calculate inertia.
-	    btScalar mass = 5;
+        btScalar mass = 5;
 	    btVector3 inertia;
 	    mNinjaShape->calculateLocalInertia(mass, inertia);
 
