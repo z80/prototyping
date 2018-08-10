@@ -1,5 +1,5 @@
 #include <Ogre.h>
-#include "OIS/OIS.h"
+#include "OgreInput.h"
 #include "Gorilla.h"
 
 typedef void (*OGKConsoleFunctionPtr)(Ogre::StringVector&);
@@ -22,7 +22,7 @@ class OGKConsole : public Ogre::Singleton<OGKConsole>, Ogre::FrameListener, Ogre
     virtual bool frameStarted(const Ogre::FrameEvent &evt);
     virtual bool frameEnded(const Ogre::FrameEvent &evt);
     
-    void onKeyPressed(const OIS::KeyEvent &arg);
+    void onKeyPressed(const OgreBites::KeyboardEvent &arg);
     
     void addCommand(const Ogre::String &command, OGKConsoleFunctionPtr);
     void removeCommand(const Ogre::String &command);

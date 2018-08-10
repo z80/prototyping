@@ -62,12 +62,12 @@ Button::~Button()
 }
 
 
-void Button::injectKeyPressed(const OIS::KeyEvent& evt)
+void Button::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
 }
     
 
-void Button::injectKeyReleased(const OIS::KeyEvent& evt)
+void Button::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
 }
 

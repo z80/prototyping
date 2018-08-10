@@ -61,11 +61,11 @@ public:
 
     /** \brief Inject a key pressed. The element can loose the focus.
     */
-    virtual void injectKeyPressed(const OIS::KeyEvent& evt) = 0;
+    virtual void injectKeyPressed(const OgreBites::KeyboardEvent& evt) = 0;
 
     /** \brief Inject a key released. The element can loose the focus.
     */
-    virtual void injectKeyReleased(const OIS::KeyEvent& evt) = 0;
+    virtual void injectKeyReleased(const OgreBites::KeyboardEvent& evt) = 0;
 
     /** \brief Inject a mouse pressed. The element can loose the focus.
     */

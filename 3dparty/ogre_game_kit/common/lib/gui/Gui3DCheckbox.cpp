@@ -51,12 +51,12 @@ Checkbox::~Checkbox()
 }
 
 
-void Checkbox::injectKeyPressed(const OIS::KeyEvent& evt)
+void Checkbox::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
 }
 
 
-void Checkbox::injectKeyReleased(const OIS::KeyEvent& evt)
+void Checkbox::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
 }
 

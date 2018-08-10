@@ -83,7 +83,7 @@ void PanelContainer::removeItem(PanelElement* item)
 }
 
 
-void PanelContainer::injectKeyPressed(const OIS::KeyEvent& evt)
+void PanelContainer::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
     if (mFocusedPanelElement == NULL)
     {
@@ -100,7 +100,7 @@ void PanelContainer::injectKeyPressed(const OIS::KeyEvent& evt)
 }
 
 
-void PanelContainer::injectKeyReleased(const OIS::KeyEvent& evt)
+void PanelContainer::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if (mFocusedPanelElement == NULL)
     {

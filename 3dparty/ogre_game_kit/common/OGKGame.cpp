@@ -55,9 +55,7 @@ OGKGame::~OGKGame()
     if ( mRoot )
         delete mRoot;
     
-//#ifdef INCLUDE_RTSHADER_SYSTEM
-    destroyRTShaderSystem(mSceneManager);
-//#endif
+    //destroyRTShaderSystem(mSceneManager);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +119,7 @@ void OGKGame::setup()
 ////////////////////////////////////////////////////////////////////////////////
 void OGKGame::shutdown()
 {
-    mShutdown = TRUE;
+    mShutdown = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,11 +149,11 @@ void OGKGame::start()
 	{
 		if(mRenderWindow->isClosed())mShutdown = true;
         
-		Ogre::WindowEventUtilities::messagePump();
+        //Ogre::WindowEventUtilities::messagePump();
 		if(mRenderWindow->isActive()) {
 			startTime = mTimer->getMillisecondsCPU();
             
-			updateOgre(timeSinceLastFrame);
+            //updateOgre(timeSinceLastFrame);
 			mRoot->renderOneFrame();
             
 			timeSinceLastFrame = mTimer->getMillisecondsCPU() - startTime;
@@ -171,7 +169,6 @@ void OGKGame::start()
     
 	mLog->logMessage("Main loop quit");
 	mLog->logMessage("Shutdown OGRE...");
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +179,7 @@ void OGKGame::update(double timeSinceLastFrame)
     if(mFPS) {
         std::stringstream s;
         s << "FPS: " <<
-        mRenderWindow->getLastFPS() <<
+        //mRenderWindow->getLastFPS() <<
         ", Batches: " <<
         Ogre::Root::getSingletonPtr()->getRenderSystem()->_getBatchCount() << "\n";
         mFPS->text(s.str());
@@ -194,17 +191,21 @@ void OGKGame::update(double timeSinceLastFrame)
 ////////////////////////////////////////////////////////////////////////////////
 bool OGKGame::keyPressed(const OgreBites::KeyboardEvent &keyEventRef)
 {
-    if(OGKConsole::getSingletonPtr() && OGKConsole::getSingletonPtr()->isVisible()) {
+    if(OGKConsole::getSingletonPtr() && OGKConsole::getSingletonPtr()->isVisible())
+    {
         OGKConsole::getSingletonPtr()->onKeyPressed(keyEventRef);
-        if(keyEventRef.key == OIS::KC_GRAVE) {
+        if(keyEventRef.keysym.sym == int('`') )
+        {
             OGKConsole::getSingletonPtr()->setVisible(false);
         }
         return true;
     }
     
-    switch (keyEventRef.key) {
+    switch (keyEventRef.keysym.sym == int('`') )
+    {
         case OIS::KC_GRAVE:
-            if(OGKConsole::getSingletonPtr()) {
+            if(OGKConsole::getSingletonPtr())
+            {
                 OGKConsole::getSingletonPtr()->setVisible(true);
             }
             break;
@@ -324,7 +325,6 @@ void OGKGame::_initInput()
     
     OGKInputManager::getSingletonPtr()->addKeyListener(this, "OGKGameListener");
     OGKInputManager::getSingletonPtr()->addMouseListener(this, "OGKGameListener");
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -340,7 +340,7 @@ void OGKGame::_initRenderSystem()
     }
     else {
         mLog->logMessage("No available render systems found");
-        mRoot->showConfigDialog();
+        //mRoot->showConfigDialog();
     }
 }
 

@@ -106,11 +106,15 @@ void OGKScene::onEnter()
 
 void OGKScene::onEnterTransitionDidFinish()
 {
-#ifndef OGRE_IS_IOS
     // get the mouse in the right position
-    OIS::MouseEvent evt(NULL, OGKInputManager::getSingletonPtr()->getMouse()->getMouseState());
-    mouseMoved(evt);
-#endif
+    //OIS::MouseEvent evt(NULL, OGKInputManager::getSingletonPtr()->getMouse()->getMouseState());
+    OGKInputManager * input = OGKInputManager::getSingletonPtr();
+    OgreBites::MouseMotionEvent e;
+    e.x = input->mouseX;
+    e.y = input->mouseY;
+    e.xrel = input->mouseDx;
+    e.yrel = input->mouseDy;
+    mouseMoved(e);
 }
 
 void OGKScene::update(Ogre::Real elapsedTime)

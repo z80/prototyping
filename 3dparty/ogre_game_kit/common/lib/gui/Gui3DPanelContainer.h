@@ -83,9 +83,9 @@ public:
     */
     void setFocusedElement(PanelElement* e);
 
-    void injectKeyPressed(const OIS::KeyEvent& evt);
+    void injectKeyPressed(const OgreBites::KeyboardEvent& evt);
 
-    void injectKeyReleased(const OIS::KeyEvent& evt);
+    void injectKeyReleased(const OgreBites::KeyboardEvent& evt);
 
     void injectMousePressed(const OIS::MouseEvent& evt,
                             OIS::MouseButtonID id);

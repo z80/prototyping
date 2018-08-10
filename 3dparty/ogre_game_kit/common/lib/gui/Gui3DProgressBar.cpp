@@ -78,12 +78,12 @@ ProgressBar::~ProgressBar()
 }
 
 
-void ProgressBar::injectKeyPressed(const OIS::KeyEvent& evt)
+void ProgressBar::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
 }
 
 
-void ProgressBar::injectKeyReleased(const OIS::KeyEvent& evt)
+void ProgressBar::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
 }
 

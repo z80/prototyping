@@ -85,12 +85,12 @@ ScrollBar::~ScrollBar()
 }
 
 
-void ScrollBar::injectKeyPressed(const OIS::KeyEvent& evt)
+void ScrollBar::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
 }
 
 
-void ScrollBar::injectKeyReleased(const OIS::KeyEvent& evt)
+void ScrollBar::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
 }
 

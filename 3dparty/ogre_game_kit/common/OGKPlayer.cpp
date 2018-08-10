@@ -93,56 +93,32 @@ void OGKPlayer::init()
     loadFromConfig();
 }
 
-bool OGKPlayer::keyPressed(const OIS::KeyEvent &keyEventRef)
+bool OGKPlayer::keyPressed(const OgreBites::KeyboardEvent &keyEventRef)
 {
     return TRUE;
 }
 
-bool OGKPlayer::keyReleased(const OIS::KeyEvent &keyEventRef)
+bool OGKPlayer::keyReleased(const OgreBites::KeyboardEvent &keyEventRef)
 {
     return TRUE;
 }
 
-#ifdef OGRE_IS_IOS
 
-bool OGKPlayer::touchMoved(const OIS::MultiTouchEvent &evt)
-{
-    return TRUE;
-}
-
-bool OGKPlayer::touchPressed(const OIS::MultiTouchEvent &evt)
-{
-    return TRUE;
-}
-
-bool OGKPlayer::touchReleased(const OIS::MultiTouchEvent &evt)
-{
-    return TRUE;
-}
-
-bool OGKPlayer::touchCancelled(const OIS::MultiTouchEvent &evt)
-{
-    return TRUE;
-}
-
-#else
-
-bool OGKPlayer::mouseMoved(const OIS::MouseEvent &evt)
+bool OGKPlayer::mouseMoved(const OgreBites::MouseMotionEvent &evt)
 {
     return TRUE;
 }
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKPlayer::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool OGKPlayer::mousePressed(const OgreBites::MouseButtonEvent &evt)
 {
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool OGKPlayer::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool OGKPlayer::mouseReleased(const OgreBites::MouseButtonEvent &evt)
 {
 	return true;
 }
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 void OGKPlayer::loadFromConfig()

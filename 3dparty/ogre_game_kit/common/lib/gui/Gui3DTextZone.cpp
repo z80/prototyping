@@ -136,7 +136,7 @@ void TextZone::setPosition(int left, int top)
 }
 
 
-void TextZone::injectKeyPressed(const OIS::KeyEvent& evt)
+void TextZone::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
     if (evt.key == OIS::KC_RIGHT)
         stringCursorEdit.cursorRight();
@@ -158,7 +158,7 @@ void TextZone::injectKeys(vector<OIS::KeyCode>& keys)
 }
 
 
-void TextZone::injectKeyReleased(const OIS::KeyEvent& evt)
+void TextZone::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if (evt.key == OIS::KC_RETURN)
         setFocus(false);

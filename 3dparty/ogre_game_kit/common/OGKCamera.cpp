@@ -253,22 +253,22 @@ void OGKCamera::setTightness(Ogre::Real tightness)
 
 bool OGKCamera::keyPressed(const OgreBites::KeyboardEvent &keyEventRef)
 {
-    return TRUE;
+    return true;
 }
 
 bool OGKCamera::keyReleased( const OgreBites::KeyboardEvent & keyEventRef )
 {
-    return TRUE;
+    return true;
 }
 
 
 bool OGKCamera::mouseMoved( const OgreBites::MouseMotionEvent & evt )
 {
     if(mMode == OGKCamera::FREE) {
-        mCameraNode->yaw(Ogre::Degree(evt.state.X.rel * -0.1f),Ogre::SceneNode::TS_WORLD);
-        mCameraNode->pitch(Ogre::Degree(evt.state.Y.rel * -0.1f));
+        mCameraNode->yaw(Ogre::Degree(evt.xrel * -0.1f),Ogre::SceneNode::TS_WORLD);
+        mCameraNode->pitch(Ogre::Degree(evt.yrel * -0.1f));
     }
-    return TRUE;    
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 bool OGKCamera::mousePressed( const OgreBites::MouseButtonEvent & evt )
@@ -288,42 +288,54 @@ void OGKCamera::update(Ogre::Real elapsedTime)
         Ogre::Vector3 translateVector(0,0,0);
         Ogre::Real moveScale = mMoveSpeed   * (float)elapsedTime;
 
-        OIS::Keyboard *keyboard = OGKInputManager::getSingletonPtr()->getKeyboard();
+        //OIS::Keyboard *keyboard = OGKInputManager::getSingletonPtr()->getKeyboard();
+        OGKInputManager * input = OGKInputManager::getSingletonPtr();
         
-        if(keyboard->isKeyDown(OIS::KC_A))
+        //if(keyboard->isKeyDown(OIS::KC_A))
+        if ( input->isKeyDown( int('a') ) )
             translateVector.x = -moveScale;
         
-        if(keyboard->isKeyDown(OIS::KC_D))
+        //if(keyboard->isKeyDown(OIS::KC_D))
+        if ( input->isKeyDown( int('d') ) )
             translateVector.x = moveScale;
         
-        if(keyboard->isKeyDown(OIS::KC_W))
+        //if(keyboard->isKeyDown(OIS::KC_W))
+        if ( input->isKeyDown( int('w') ) )
             translateVector.z = -moveScale;
         
-        if(keyboard->isKeyDown(OIS::KC_S))
+        //if(keyboard->isKeyDown(OIS::KC_S))
+        if ( input->isKeyDown( int('s') ) )
             translateVector.z = moveScale;
         
-        if(keyboard->isKeyDown(OIS::KC_LSHIFT)) {
+        //if(keyboard->isKeyDown(OIS::KC_LSHIFT))
+        if ( input->isKeyDown( OgreBites::SDLK_LSHIFT ) )
+        {
             mCameraNode->translate(translateVector * 0.1f,Ogre::Node::TS_LOCAL);
         }
-        else {
+        else
+        {
             mCameraNode->translate(translateVector,Ogre::Node::TS_LOCAL);
         }
     }
-    else if(mMode == OGKCamera::FIRST_PERSON) {
+    else if(mMode == OGKCamera::FIRST_PERSON)
+    {
         if(mTargetNode) mTargetNode->_update(true,true);
         mCameraNode->setPosition(mTargetNode->getPosition() + mTargetOffset);
         mCameraNode->setOrientation(mTargetNode->getOrientation());
     }
-    else if(mMode == OGKCamera::THIRD_PERSON && mTargetNode) {
+    else if(mMode == OGKCamera::THIRD_PERSON && mTargetNode)
+    {
         mTargetNode->_update(true,true);
         Ogre::Vector3 translateVector = ((mTargetNode->getPosition() + (mTargetNode->getOrientation() * mTargetOffset)) - mCameraNode->getPosition()) * mTightness;
         mCameraNode->translate(translateVector);
     }
-    else if(mMode == OGKCamera::THIRD_PERSON_INDIRECT && mTargetNode) {
+    else if(mMode == OGKCamera::THIRD_PERSON_INDIRECT && mTargetNode)
+    {
         mTargetNode->_update(true,true);
         mCameraNode->_update(true,true);
         
-        if(mEdgeBuffer < 1.0) {
+        if(mEdgeBuffer < 1.0)
+        {
             // get the target's screen position
             Ogre::Vector3 coords = mCamera->getProjectionMatrix() * mCamera->getViewMatrix() * mTargetNode->getPosition();
             Ogre::Ray ray = mCamera->getCameraToViewportRay(0, 0);

@@ -175,7 +175,7 @@ void OGKMenuScene::update(Ogre::Real elapsedTime)
     OGKScene::update(elapsedTime);
 }
 
-bool OGKMenuScene::keyPressed(const OIS::KeyEvent &keyEventRef)
+bool OGKMenuScene::keyPressed(const OgreBites::KeyboardEvent &keyEventRef)
 {
     switch (keyEventRef.key) {
         case OIS::KC_ESCAPE:

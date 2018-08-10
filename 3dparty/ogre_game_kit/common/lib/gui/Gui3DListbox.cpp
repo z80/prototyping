@@ -66,7 +66,7 @@ Listbox::~Listbox()
 }
 
 
-void Listbox::injectKeyPressed(const OIS::KeyEvent& evt)
+void Listbox::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
     if (evt.key == OIS::KC_LCONTROL ||
         evt.key == OIS::KC_RCONTROL)
@@ -76,7 +76,7 @@ void Listbox::injectKeyPressed(const OIS::KeyEvent& evt)
 }
 
 
-void Listbox::injectKeyReleased(const OIS::KeyEvent& evt)
+void Listbox::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if (evt.key == OIS::KC_LCONTROL ||
         evt.key == OIS::KC_RCONTROL)

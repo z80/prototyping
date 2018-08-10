@@ -147,12 +147,12 @@ bool InlineSelector::goNextElementCallback(PanelElement* e)
 }
 
 
-void InlineSelector::injectKeyPressed(const OIS::KeyEvent& evt)
+void InlineSelector::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
 }
 
 
-void InlineSelector::injectKeyReleased(const OIS::KeyEvent& evt)
+void InlineSelector::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
 }
 

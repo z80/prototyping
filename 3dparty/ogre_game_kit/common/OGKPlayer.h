@@ -11,21 +11,18 @@
 
 #include <Ogre.h>
 #include "OGKStaticPluginLoader.h"
+#include "OgreApplicationContext.h"
 
 // input
-#include <OISEvents.h>
-#include <OISInputManager.h>
-#include <OISKeyboard.h>
-#include <OISMouse.h>
+//#include <OISEvents.h>
+//#include <OISInputManager.h>
+//#include <OISKeyboard.h>
+//#include <OISMouse.h>
 
 class OGKScene;
 
-#ifdef OGRE_IS_IOS
-#include <OISMultiTouch.h>
-class OGKPlayer : public OIS::KeyListener, OIS::MultiTouchListener
-#else
-class OGKPlayer : public OIS::KeyListener, OIS::MouseListener
-#endif
+class OGKPlayer //: public OIS::KeyListener, OIS::MouseListener
+        : public OgreBites::InputListener
 {
 public:
     OGKPlayer(Ogre::SceneManager *sceneManager);
@@ -60,19 +57,12 @@ public:
     void heal(Ogre::Real amount);
     void damage(Ogre::Real amount);
     
-	bool keyPressed(const OIS::KeyEvent &keyEventRef);
-	bool keyReleased(const OIS::KeyEvent &keyEventRef);
+    bool keyPressed(const OgreBites::KeyboardEvent & keyEventRef);
+    bool keyReleased(const OgreBites::KeyboardEvent & keyEventRef);
     
-#ifdef OGRE_IS_IOS
-	bool touchMoved(const OIS::MultiTouchEvent &evt);
-	bool touchPressed(const OIS::MultiTouchEvent &evt);
-	bool touchReleased(const OIS::MultiTouchEvent &evt);
-	bool touchCancelled(const OIS::MultiTouchEvent &evt);
-#else
-	bool mouseMoved(const OIS::MouseEvent &evt);
-    bool mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
-    bool mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id);
-#endif
+    bool mouseMoved(const OgreBites::MouseMotionEvent &evt);
+    bool mousePressed(const OgreBites::MouseButtonEvent &evt);
+    bool mouseReleased(const OgreBites::MouseButtonEvent &evt);
     
     void loadFromConfig();
     

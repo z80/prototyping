@@ -62,12 +62,12 @@ Combobox::~Combobox()
 }
 
 
-void Combobox::injectKeyPressed(const OIS::KeyEvent& evt)
+void Combobox::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
 }
 
 
-void Combobox::injectKeyReleased(const OIS::KeyEvent& evt)
+void Combobox::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
 }
 

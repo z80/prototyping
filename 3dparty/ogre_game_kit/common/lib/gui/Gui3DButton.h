@@ -53,9 +53,9 @@ public:
 
     ~Button();
 
-    void injectKeyPressed(const OIS::KeyEvent& evt);
+    void injectKeyPressed(const OgreBites::KeyboardEvent& evt);
     
-    void injectKeyReleased(const OIS::KeyEvent& evt);
+    void injectKeyReleased(const OgreBites::KeyboardEvent& evt);
 
     void injectKeys(std::vector<OIS::KeyCode>& keys);
 

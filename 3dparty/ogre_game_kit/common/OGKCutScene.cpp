@@ -124,7 +124,7 @@ void OGKCutScene::update(Ogre::Real elapsedTime)
 }
 
 // input
-bool OGKCutScene::keyPressed(const OIS::KeyEvent &keyEventRef)
+bool OGKCutScene::keyPressed(const OgreBites::KeyboardEvent &keyEventRef)
 {
     if(keyEventRef.key == OIS::KC_ESCAPE) {
         OGKGame::getSingletonPtr()->mGameSceneManager->setActiveScene(mNextSceneName,500);

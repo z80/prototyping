@@ -1,4 +1,5 @@
 #include "OGKConsole.h"
+#include "OgreInput.h"
 
 #if OGRE_VERSION < 67584 // 1.8.0
 template<> OGKConsole* Ogre::Singleton<OGKConsole>::ms_Singleton=0;
@@ -79,13 +80,13 @@ void OGKConsole::shutdown()
 }
 
 
-void OGKConsole::onKeyPressed(const OIS::KeyEvent &arg)
+void OGKConsole::onKeyPressed(const OgreBites::KeyboardEvent &arg)
 {
     
     if(!mIsVisible)
         return;
     
-    if (arg.key == OIS::KC_RETURN || arg.key == OIS::KC_NUMPADENTER)
+    if ( arg.key == OgreBites::SDLK_RETURN )
     {
         
         print("%3> " + prompt + "%R");
@@ -109,7 +110,7 @@ void OGKConsole::onKeyPressed(const OIS::KeyEvent &arg)
         }
     }
     
-    else if (arg.key == OIS::KC_BACK)
+    else if (arg.key == 1) //OIS::KC_BACK)
     {
         if (prompt.size())
         {
@@ -117,14 +118,14 @@ void OGKConsole::onKeyPressed(const OIS::KeyEvent &arg)
             mUpdatePrompt = true;
         }
     }
-    else if (arg.key == OIS::KC_PGUP)
+    else if (arg.key == OgreBites::SDLK_PAGEUP) //OIS::KC_PGUP)
     {
         if(mStartline>0)
             mStartline--;
         mUpdateConsole = true;
     }
     
-    else if (arg.key == OIS::KC_PGDOWN)
+    else if (arg.key == OgreBites::SDLK_PAGEDOWN) //OIS::KC_PGDOWN)
     {
         if(mStartline<lines.size())
             mStartline++;

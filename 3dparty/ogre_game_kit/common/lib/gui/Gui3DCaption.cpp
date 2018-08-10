@@ -64,12 +64,12 @@ Caption::~Caption()
 }
 
 
-void Caption::injectKeyPressed(const OIS::KeyEvent& evt)
+void Caption::injectKeyPressed(const OgreBites::KeyboardEvent& evt)
 {
 }
     
 
-void Caption::injectKeyReleased(const OIS::KeyEvent& evt)
+void Caption::injectKeyReleased(const OgreBites::KeyboardEvent& evt)
 {
 }
 
