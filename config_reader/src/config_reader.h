@@ -5,7 +5,7 @@
 #include <string>
 
 
-namespace SSLAM
+namespace Config
 {
 
 /**

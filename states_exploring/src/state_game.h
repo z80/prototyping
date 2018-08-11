@@ -1,15 +1,15 @@
 
-#ifndef __STATE_INTRO_H_
-#define __STATE_INTRO_H_
+#ifndef __STATE_GAME_H_
+#define __STATE_GAME_H_
 
 #include "state.h"
 
-class IntroState: public State,
-                  public Ogre::Singleton<IntroState>
+class GameState: public State,
+                  public Ogre::Singleton<GameState>
 {
 public:
-    IntroState();
-    ~IntroState();
+    GameState();
+    ~GameState();
 
     void enter();
     void exit();
@@ -29,13 +29,12 @@ public:
     bool mouseReleased(const OgreBites::MouseButtonEvent& evt);
 
 private:
-    void startMenuRoot( bool & doExit, bool & toGame );
-
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;
     Ogre::Viewport * mViewport;
     Ogre::Camera * mCamera;
-    bool mExitGame;
+    bool mExitState;
+    bool paused;
 };
 
 
