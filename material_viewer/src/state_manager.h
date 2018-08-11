@@ -10,7 +10,8 @@
 class State;
 
 class StateManager: public OgreBites::ApplicationContext,
-                    public OgreBites::InputListener
+                    public OgreBites::InputListener,
+                    public Ogre::Singleton<StateManager>
 {
 public:
     StateManager();
@@ -19,12 +20,17 @@ public:
     void changeState( State * state );
     void pushState( State * state );
     void popState();
+
+    void setMouseVisible( bool en );
+
+    //static StateManager & getSingleton(void);
+    //static StateManager * getSingletonPtr(void);
 protected:
     void shutdown();
     void setup();
 
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
-    virtual void frameRendered(const Ogre::FrameEvent& evt);
+    virtual bool frameEnded(const Ogre::FrameEvent& evt);
     virtual bool keyPressed(const OgreBites::KeyboardEvent& evt);
     virtual bool keyReleased(const OgreBites::KeyboardEvent& evt);
     virtual bool touchMoved(const OgreBites::TouchFingerEvent& evt);
