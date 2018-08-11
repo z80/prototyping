@@ -48,6 +48,7 @@ add_subdirectory( "./volume" )
 add_subdirectory( "./volume_tree" )
 add_subdirectory( "./icosphere" )
 add_subdirectory( "./material_viewer" )
+add_subdirectory( "./states_exploring" )
 
 
 

@@ -1,12 +1,17 @@
 
 #include "state_intro.h"
 #include "state_manager.h"
+#include "ImguiManager.h"
 
 using namespace Ogre;
+
+static IntroState g_is;
 
 template<> IntroState* Singleton<IntroState>::msSingleton = 0;
 
 IntroState::IntroState()
+    : State(),
+      Ogre::Singleton<IntroState>()
 {
     mRoot     = 0;
     mSceneMgr = 0;
@@ -23,9 +28,9 @@ IntroState::~IntroState()
 void IntroState::enter()
 {
     mRoot = Root::getSingletonPtr();
-    mSceneMgr = mRoot->getSceneManager( BLANKSTRING );
+    mSceneMgr = StateManager::getSingletonPtr()->getSceneManager();
     mCamera = mSceneMgr->createCamera( "IntroCamera" );
-    mViewport = mRoot->getAutoCreatedWindow()->addViewport( mCamera );
+    mViewport = StateManager::getSingletonPtr()->getRenderWindow()->addViewport( mCamera );
     mViewport->setBackgroundColour(ColourValue(1.0, 0.0, 0.0));
     mExitGame = false;
 
@@ -36,7 +41,7 @@ void IntroState::exit()
 {
     mSceneMgr->clearScene();
     mSceneMgr->destroyAllCameras();
-    mRoot->getAutoCreatedWindow()->removeAllViewports();
+    StateManager::getSingletonPtr()->getRenderWindow()->removeAllViewports();
 }
 
 void IntroState::pause()
@@ -51,7 +56,9 @@ void IntroState::resume()
 
 bool IntroState::frameStarted(const Ogre::FrameEvent& evt)
 {
+    ImGui::ShowTestWindow();
 
+    return true;
 }
 
 bool IntroState::frameEnded(const Ogre::FrameEvent& evt)

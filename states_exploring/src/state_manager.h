@@ -21,6 +21,7 @@ public:
     void pushState( State * state );
     void popState();
 
+    Ogre::SceneManager * getSceneManager();
     void setMouseVisible( bool en );
 
     //static StateManager & getSingleton(void);
@@ -42,6 +43,7 @@ protected:
     virtual bool mouseReleased(const OgreBites::MouseButtonEvent& evt);
 private:
     std::list< State * > states;
+    Ogre::SceneManager * scnMgr;
 };
 
 

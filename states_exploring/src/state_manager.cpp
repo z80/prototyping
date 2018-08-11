@@ -7,9 +7,14 @@
 
 using namespace Ogre;
 
+static StateManager g_sm;
+
 template<> StateManager* Singleton<StateManager>::msSingleton = 0;
 
 StateManager::StateManager()
+    : OgreBites::ApplicationContext(),
+      OgreBites::InputListener(),
+      Ogre::Singleton<StateManager>()
 {
 
 }
@@ -22,7 +27,7 @@ StateManager::~StateManager()
 void StateManager::start( State * state )
 {
     // Setup all the resources.
-    setup();
+    //setup();
 
     // Add the first state.
     changeState( state );
@@ -41,7 +46,7 @@ void StateManager::changeState( State * state )
         states.pop_back();
     }
     // store and init the new state
-    states.push_back(state);
+    states.push_back( state );
     states.back()->enter();
 }
 
@@ -53,7 +58,7 @@ void StateManager::pushState( State * state )
         states.back()->pause();
     }
     // store and init the new state
-    states.push_back(state);
+    states.push_back( state );
     states.back()->enter();
 }
 
@@ -72,6 +77,11 @@ void StateManager::popState()
     }
 }
 
+Ogre::SceneManager * StateManager::getSceneManager()
+{
+    return scnMgr;
+}
+
 void StateManager::setMouseVisible( bool en )
 {
     setWindowGrab( !en );
@@ -85,10 +95,7 @@ void StateManager::shutdown()
         states.pop_back();
     }
 
-
-    Root * root = getRoot();
-    if ( root )
-        delete root;
+    destroyRTShaderSystem();
 }
 
 void StateManager::setup()
@@ -101,7 +108,7 @@ void StateManager::setup()
 
     // get a pointer to the already created root
     Ogre::Root* root = getRoot();
-    Ogre::SceneManager* scnMgr = root->createSceneManager();
+    scnMgr = root->createSceneManager();
     Ogre::ImguiManager::getSingleton().init(scnMgr);
 
     // register our scene with the RTSS
