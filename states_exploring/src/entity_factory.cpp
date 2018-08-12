@@ -1,5 +1,6 @@
 
 #include "entity_factory.h"
+#include "entity_world.h"
 #include "entity_part.h"
 #include "entity_planet.h"
 
@@ -12,8 +13,10 @@ template<> EntityFactory * Ogre::Singleton<EntityFactory>::msSingleton = 0;
 class EntityFactory::PD
 {
 public:
+    EntityWorld  * world();
     EntityPart   * cube();
-    EntityPlanet * spherePlanet();
+    EntityPart   * plane();
+    //EntityPlanet * spherePlanet();
 
     PD();
     ~PD();

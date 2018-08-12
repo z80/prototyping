@@ -3,12 +3,18 @@
 #define __ENTITY_WORLD_H_
 
 #include "Ogre.h"
+#include "OgreFrameListener.h"
 
 #include "btBulletDynamicsCommon.h"
 #include "BtOgrePG.h"
 #include "BtOgreGP.h"
 #include "BtOgreExtras.h"
 
+#include "entity.h"
+
+
+namespace Entity
+{
 
 /** This class contains dynamics simulation related objects.
  *
@@ -16,11 +22,16 @@
  *
  */
 
-class EntityWorld: Ogre::Singleton<EntityWorld>
+class EntityWorld: public Entity, public Ogre::Singleton<EntityWorld>
 {
 public:
-    EntityWorld();
+    static bool createWorld();
+    static void deleteWorld();
+
+    EntityWorld( Ogre::SceneManager * scnMgr );
     ~EntityWorld();
+
+    bool frameStarted( const Ogre::FrameEvent & evt );
 
 public:
     btAxisSweep3                        * mBroadphase;
@@ -32,6 +43,7 @@ public:
 };
 
 
+}
 
 
 #endif
