@@ -9,17 +9,17 @@ static EntityWorld * g_ew = 0;
 template<> EntityWorld * Ogre::Singleton<EntityWorld>::msSingleton = 0;
 
 
-bool EntityWorld::createWorld()
+EntityWorld *EntityWorld::createWorld()
 {
     if ( g_ew )
-        return true;
+        return g_ew;
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
     if ( !scnMgr )
-        return false;
+        return 0;
 
     g_ew = new EntityWorld( scnMgr );
-    return true;
+    return g_ew;
 }
 
 void EntityWorld::deleteWorld()

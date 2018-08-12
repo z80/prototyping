@@ -25,7 +25,7 @@ namespace Entity
 class EntityWorld: public Entity, public Ogre::Singleton<EntityWorld>
 {
 public:
-    static bool createWorld();
+    static EntityWorld * createWorld();
     static void deleteWorld();
 
     EntityWorld( Ogre::SceneManager * scnMgr );
