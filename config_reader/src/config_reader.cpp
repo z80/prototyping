@@ -8,7 +8,7 @@
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 
-namespace SSLAM
+namespace Config
 {
 
 class ConfigReader::PD

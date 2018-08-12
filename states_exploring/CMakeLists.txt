@@ -17,7 +17,9 @@ include_directories( ${OGRE_INCLUDE_DIRS}
                      ${OGRE_INCLUDE_DIR} 
                      ${OGRE_INCLUDE_DIR}/Bites 
                      ${OGRE_INCLUDE_DIR}/Overlay 
-                     ${OGRE_INCLUDE_DIR}/RTShaderSystem )
+                     ${OGRE_INCLUDE_DIR}/RTShaderSystem
+                     ${ROOT}/3dparty/bullet-2.87/src
+                     ${ROOT}/3dparty/btogre/include )
 link_directories(${OGRE_LIBRARY_DIRS})
 
 # copy essential config files next to our binary where OGRE autodiscovers them
@@ -44,7 +46,7 @@ file( GLOB src "./src/*.cpp" )
 
 add_executable( ${proj} ${src} ${IMGUI}/imgui/imgui_demo.cpp )
 target_compile_features( ${proj} PRIVATE cxx_range_for )
-target_link_libraries( ${proj} OgreImgui )
+target_link_libraries( ${proj} OgreImgui BtOgre )
 
 if(NOT FREETYPE_FOUND)
     set(FREETYPE_FOUND "FALSE")
@@ -52,6 +54,9 @@ endif()
 message(STATUS "using freetype: ${FREETYPE_FOUND}")
 
 install( TARGETS ${proj} DESTINATION ./ )
+
+add_definitions( -DBT_USE_DOUBLE_PRECISION )
+
 
 
 
