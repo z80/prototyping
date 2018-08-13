@@ -45,7 +45,7 @@ void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
     {
         // build our acceleration vector based on keyboard input composite
         Ogre::Vector3 accel = Ogre::Vector3::ZERO;
-        Ogre::Matrix3 axes = mCamera->getLocalAxes();
+        Ogre::Matrix3 axes = nodeCam->getLocalAxes();
         if ( mGoingForward )
             accel -= axes.GetColumn(2);
         if ( mGoingBack )
@@ -82,7 +82,7 @@ void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
             mVelocity = Ogre::Vector3::ZERO;
 
         if (mVelocity != Ogre::Vector3::ZERO)
-            mCamera->translate(mVelocity * evt.timeSinceLastFrame);
+            nodeCam->translate(mVelocity * evt.timeSinceLastFrame);
     }
 }
 
@@ -136,6 +136,8 @@ bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
 
 bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
 {
+    Ogre::Vector3 mOffset( 0.0, 0.0, 0.0 );
+
     if ( mode == Orbit )
     {
         const Ogre::Real dist = getDistToTarget();
@@ -152,7 +154,7 @@ bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
         }
         else if ( mMoving )  // move the camera along the image plane
         {
-            Ogre::Vector3 delta = mCamera->getOrientation() * Ogre::Vector3(-evt.xrel, evt.yrel, 0);
+            Ogre::Vector3 delta = nodeCam->getOrientation() * Ogre::Vector3(-evt.xrel, evt.yrel, 0);
             // the further the camera is, the faster it moves
             delta *= dist / 1000.0f;
             mOffset += delta;
@@ -173,7 +175,7 @@ bool CameraCtrl::mouseWheelRolled( const OgreBites::MouseWheelEvent & evt )
 {
     if ( mode == Orbit && evt.y != 0 )
     {
-        const Ogre::Real dist = (mCamera->getPosition() - mTarget->_getDerivedPosition()).length();
+        const Ogre::Real dist = (nodeCam->getPosition() - nodeTarget->_getDerivedPosition()).length();
         nodeCam->translate( Ogre::Vector3(0, 0, -evt.y * 0.08f * dist),
                             Ogre::Node::TS_LOCAL );
     }
@@ -207,6 +209,10 @@ bool CameraCtrl::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 
 Ogre::Real CameraCtrl::getDistToTarget() const
 {
+    if ( !nodeCam )
+        return 0.0;
+    if ( !nodeTarget )
+        return 0.0;
     const Ogre::Vector3 offset = nodeCam->getPosition() - nodeTarget->_getDerivedPosition();
     const Ogre::Real d = offset.length();
     return d;

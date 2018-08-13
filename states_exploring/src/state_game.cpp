@@ -42,6 +42,8 @@ void GameState::enter()
         mViewport = StateManager::getSingletonPtr()->getRenderWindow()->getViewport( 0 );
     }
 
+    mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
+
     mViewport->setBackgroundColour(ColourValue(0.7, 0.7, 0.4));
     StateManager::getSingletonPtr()->setMouseVisible( true );
     mExitState = false;
@@ -58,11 +60,14 @@ void GameState::exit()
 
 void GameState::pause()
 {
+    mSceneMgr->setSkyBox( false, "Examples/CloudyNoonSkyBox" );
+
     paused = true;
 }
 
 void GameState::resume()
 {
+    mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     paused = false;
 }
 
