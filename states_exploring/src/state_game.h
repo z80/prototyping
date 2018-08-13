@@ -3,6 +3,9 @@
 #define __STATE_GAME_H_
 
 #include "state.h"
+#include "entity.h"
+#include "entity_world.h"
+#include "entity_part.h"
 
 class GameState: public State,
                   public Ogre::Singleton<GameState>
@@ -35,6 +38,14 @@ private:
     Ogre::Camera * mCamera;
     bool mExitState;
     bool paused;
+
+
+    Entity::EntityWorld * world;
+    Entity::EntityPart  * plane,
+                        * cube;
+
+    void createObjects();
+    void destroyObjects();
 };
 
 

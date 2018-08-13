@@ -5,6 +5,7 @@
 #include "entity_planet.h"
 #include "air_mesh.h"
 #include "state_manager.h"
+#include "name_generator.h"
 
 namespace Entity
 {
@@ -46,12 +47,12 @@ EntityPart   * EntityFactory::PD::cube()
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
-    p->visualEntity = scnMgr->createEntity( "cube", "Cube.mesh" );
-    p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( "cubeSceneNode" );
+    p->visualEntity = scnMgr->createEntity( NameGenerator::Next("cube"), "Cube.mesh" );
+    p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("cubeSceneNode") );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
-    p->collisionShape = converter.createSphere();
+    p->collisionShape = converter.createBox();
     p->bodyState      = new BtOgre::RigidBodyState( p->sceneNode );
     p->bodyState->setWorldTransform( btTransform( btQuaternion( 0.0, 0.0, 0.0, 1.0 ),
                                                   btVector3( 0.0, 0.0, 10.0 ) ) );
@@ -64,11 +65,35 @@ EntityPart   * EntityFactory::PD::cube()
     p->rigidBody = new btRigidBody( mass, p->bodyState, p->collisionShape, inertia );
 
     AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );
+
+    return p;
 }
 
 EntityPart   * EntityFactory::PD::plane()
 {
-    return 0;
+    EntityPart * p = new EntityPart();
+
+    Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
+
+    p->visualEntity = scnMgr->createEntity( NameGenerator::Next("plane"), "Plane.mesh" );
+    p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("planeSceneNode") );
+
+    //Create shape.
+    BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
+    p->collisionShape = new btStaticPlaneShape( btVector3( 0.0, 0.0, 1.0 ), 0.0 );
+    p->bodyState      = new BtOgre::RigidBodyState( p->sceneNode );
+    p->bodyState->setWorldTransform( btTransform( btQuaternion( 0.0, 0.0, 0.0, 1.0 ),
+                                                  btVector3( 0.0, 0.0, 0.0 ) ) );
+
+    //Calculate inertia.
+    const btScalar mass = 0.0;
+    btVector3      inertia( 0.0, 0.0, 0.0 );
+
+    p->rigidBody = new btRigidBody( mass, p->bodyState, p->collisionShape, inertia );
+
+    AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );
+
+    return p;
 }
 
 
@@ -83,10 +108,10 @@ EntityFactory::~EntityFactory()
     delete pd;
 }
 
-Entity * EntityFactory::entityPart( const Ogre::String & name,
-                                    const Ogre::Vector3 & at,
-                                    const Ogre::Quaternion & q,
-                                    Ogre::SceneNode * parentNode )
+Entity * EntityFactory::create( const std::string & name,
+                                const Ogre::Vector3 & at,
+                                const Ogre::Quaternion & q,
+                                Ogre::SceneNode * parentNodew )
 {
     if ( name == "world" )
         return pd->world();

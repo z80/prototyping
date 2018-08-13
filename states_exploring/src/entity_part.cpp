@@ -1,5 +1,7 @@
 
 #include "entity_part.h"
+#include "entity_world.h"
+#include "state_manager.h"
 
 namespace Entity
 {
@@ -22,7 +24,41 @@ EntityPart::EntityPart()
 
 EntityPart::~EntityPart()
 {
+    /*
+            Globals::phyWorld->removeRigidBody(mNinjaBody);
+            delete mNinjaBody->getMotionState();
+            delete mNinjaBody;
+            delete mNinjaShape;
+    */
 
+    if ( rigidBody )
+    {
+        EntityWorld * w = EntityWorld::getSingletonPtr();
+        if ( w && w->phyWorld )
+            w->phyWorld->removeRigidBody( rigidBody );
+    }
+
+    if ( rigidBody )
+    {
+        btMotionState * motionState = rigidBody->getMotionState();
+        if ( motionState )
+            delete motionState;
+
+        delete rigidBody;
+    }
+
+    if ( collisionShape )
+        delete collisionShape;
+
+    Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
+    if ( scnMgr )
+    {
+        if ( visualEntity );
+            scnMgr->destroyEntity( visualEntity );
+
+        if ( sceneNode )
+            scnMgr->destroySceneNode( sceneNode );
+    }
 }
 
 void EntityPart::loadResources()

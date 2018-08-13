@@ -1,6 +1,8 @@
 
 #include "state_game.h"
 #include "state_manager.h"
+#include "entity_factory.h"
+
 #include "ImguiManager.h"
 
 using namespace Ogre;
@@ -19,6 +21,10 @@ GameState::GameState()
     mCamera   = 0;
     mExitState = false;
     paused     = false;
+
+    world = 0;
+    plane = 0;
+    cube  = 0;
 }
 
 GameState::~GameState()
@@ -39,11 +45,15 @@ void GameState::enter()
     mViewport->setBackgroundColour(ColourValue(0.7, 0.7, 0.4));
     StateManager::getSingletonPtr()->setMouseVisible( true );
     mExitState = false;
+
+    createObjects();
 }
 
 void GameState::exit()
 {
     pause();
+
+    destroyObjects();
 }
 
 void GameState::pause()
@@ -59,6 +69,8 @@ void GameState::resume()
 bool GameState::frameStarted(const Ogre::FrameEvent& evt)
 {
     ImGui::ShowTestWindow();
+    if ( world )
+        world->frameStarted( evt );
 
     return true;
 }
@@ -116,6 +128,29 @@ bool GameState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
     return true;
 }
 
+
+
+
+
+void GameState::createObjects()
+{
+    world = dynamic_cast<Entity::EntityWorld *>(
+                Entity::EntityFactory::getSingletonPtr()->create( "world" ) );
+    plane = dynamic_cast<Entity::EntityPart *>(
+                Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
+    cube  = dynamic_cast<Entity::EntityPart *>(
+                Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
+}
+
+void GameState::destroyObjects()
+{
+    if ( cube )
+        delete cube;
+    if ( plane )
+        delete plane;
+    if ( world )
+        Entity::EntityWorld::deleteWorld();
+}
 
 
 
