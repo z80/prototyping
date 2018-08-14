@@ -1,5 +1,6 @@
 
 #include "camera_ctrl.h"
+#include "state_manager.h"
 
 static CameraCtrl g_cc;
 
@@ -88,9 +89,23 @@ void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
 
 bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
 {
+    OgreBites::Keycode key = evt.keysym.sym;
+    // Looping over camera modes.
+    if ( key == 'c' )
+    {
+        if ( mode == Fixed )
+            mode = Orbit;
+        else if ( mode == Orbit )
+        {
+            mode = Free;
+        }
+        else
+            mode = Fixed;
+        StateManager::getSingletonPtr()->setMouseVisible( ( mode != Free ) );
+    }
+    // Camera keyboard controls.
     if ( mode == Free )
     {
-        OgreBites::Keycode key = evt.keysym.sym;
         if ( key == 'w' || key == OgreBites::SDLK_UP )
             mGoingForward = true;
         else if ( key == 's' || key == OgreBites::SDLK_DOWN )
@@ -191,6 +206,8 @@ bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
         else if ( evt.button == OgreBites::BUTTON_RIGHT )
             mMoving = true;
     }
+    if ( mode != Fixed )
+        StateManager::getSingletonPtr()->setMouseVisible( false );
     return true;
 }
 
@@ -203,6 +220,8 @@ bool CameraCtrl::mouseReleased( const OgreBites::MouseButtonEvent & evt )
         else if ( evt.button == OgreBites::BUTTON_RIGHT )
             mMoving = false;
     }
+    if ( mode != Fixed )
+        StateManager::getSingletonPtr()->setMouseVisible( true );
 
     return true;
 }

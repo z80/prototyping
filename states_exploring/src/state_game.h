@@ -32,10 +32,13 @@ public:
     bool mouseReleased(const OgreBites::MouseButtonEvent& evt);
 
 private:
+    void debugOverlay();
+
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;
     Ogre::Viewport * mViewport;
     Ogre::Camera * mCamera;
+    Ogre::SceneNode * mCameraNode;
     bool mExitState;
     bool paused;
 

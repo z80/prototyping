@@ -11,7 +11,7 @@
 #include "BtOgreExtras.h"
 
 #include "entity.h"
-
+#include "entity_part.h"
 
 namespace Entity
 {
@@ -32,6 +32,7 @@ public:
     ~EntityWorld();
 
     bool frameStarted( const Ogre::FrameEvent & evt );
+    void addEntity( EntityPart * part );
 
 public:
     btAxisSweep3                        * mBroadphase;

@@ -45,10 +45,16 @@ EntityPart   * EntityFactory::PD::cube()
 {
     EntityPart * p = new EntityPart();
 
+    Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
+
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
     p->visualEntity = scnMgr->createEntity( NameGenerator::Next("cube"), "Cube.mesh" );
+    Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "MyGrass" );
+    //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
+    p->visualEntity->setMaterial( m );
     p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("cubeSceneNode") );
+    p->sceneNode->attachObject( p->visualEntity );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
@@ -66,6 +72,7 @@ EntityPart   * EntityFactory::PD::cube()
 
     AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );
 
+    EntityWorld::getSingletonPtr()->addEntity( p );
     return p;
 }
 
@@ -76,7 +83,12 @@ EntityPart   * EntityFactory::PD::plane()
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
     p->visualEntity = scnMgr->createEntity( NameGenerator::Next("plane"), "Plane.mesh" );
+    Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "MyGrass" );
+    //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
+    p->visualEntity->setMaterial( m );
     p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("planeSceneNode") );
+    p->sceneNode->attachObject( p->visualEntity );
+    p->sceneNode->setScale( 100.0, 100.0, 100.0 );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
@@ -90,8 +102,11 @@ EntityPart   * EntityFactory::PD::plane()
     btVector3      inertia( 0.0, 0.0, 0.0 );
 
     p->rigidBody = new btRigidBody( mass, p->bodyState, p->collisionShape, inertia );
+    //p->rigidBody->activate( true );
 
     AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );
+
+    EntityWorld::getSingletonPtr()->addEntity( p );
 
     return p;
 }

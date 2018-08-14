@@ -31,6 +31,7 @@ void IntroState::enter()
     mRoot = Root::getSingletonPtr();
     mSceneMgr = StateManager::getSingletonPtr()->getSceneManager();
     mCamera = mSceneMgr->createCamera( "IntroCamera" );
+    mCamera->setNearClipDistance( 0.0001 );
     mViewport = StateManager::getSingletonPtr()->getRenderWindow()->addViewport( mCamera );
     mViewport->setBackgroundColour(ColourValue(0.5, 0.5, 0.5));
     mExitGame = false;

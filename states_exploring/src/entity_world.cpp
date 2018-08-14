@@ -40,7 +40,7 @@ EntityWorld::EntityWorld( Ogre::SceneManager * scnMgr )
     mSolver = new btSequentialImpulseConstraintSolver();
 
     phyWorld = new btDiscreteDynamicsWorld(mDispatcher, mBroadphase, mSolver, mCollisionConfig);
-    phyWorld->setGravity( btVector3( 0.0, 0.0, 0.0 ) );
+    phyWorld->setGravity( btVector3( 0.0, 0.0, -1.0 ) );
 
     dbgdraw = new BtOgre::DebugDrawer( scnMgr->getRootSceneNode(), phyWorld );
     phyWorld->setDebugDrawer( dbgdraw );
@@ -68,6 +68,10 @@ bool EntityWorld::frameStarted( const Ogre::FrameEvent & evt )
     dbgdraw->step();
 }
 
+void EntityWorld::addEntity( EntityPart * part )
+{
+    phyWorld->addRigidBody( part->rigidBody );
+}
 
 
 

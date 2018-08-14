@@ -108,12 +108,23 @@ void StateManager::setup()
 
     // get a pointer to the already created root
     Ogre::Root* root = getRoot();
+    ResourceGroupManager::getSingletonPtr()->initialiseAllResourceGroups();
     scnMgr = root->createSceneManager();
     Ogre::ImguiManager::getSingleton().init(scnMgr);
 
     // register our scene with the RTSS
     Ogre::RTShader::ShaderGenerator* shadergen = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
     shadergen->addSceneManager(scnMgr);
+
+    // Debugging object to see at least something.
+    /*{
+        Ogre::Entity* ogreEntity = scnMgr->createEntity("ogrehead.mesh");
+        Ogre::SceneNode* ogreNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+        ogreNode->attachObject(ogreEntity);
+        ogreNode->setPosition( 0.0, 0.0, -10.0 );
+        ogreNode->setScale( 0.1, 0.1, 0.1 );
+        ogreNode->setVisible( true );
+    }*/
 }
 
 bool StateManager::frameStarted(const Ogre::FrameEvent& evt)
