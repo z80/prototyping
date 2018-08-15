@@ -31,6 +31,19 @@ public:
              radius, height, groundDensity;
 };
 
+class Gravity
+{
+public:
+    Gravity();
+    ~Gravity();
+
+    virtual void gravity( const btScalar m, const btVector3 & r,
+                          btVector3 & g );
+
+    btScalar GM;
+    btScalar radius;
+};
+
 
 class AirMesh
 {
@@ -42,7 +55,8 @@ public:
     AirMesh( const AirMesh & inst );
     const AirMesh & operator=( const AirMesh & inst );
 
-    const btVector3 & forceTorque( btScalar density, const AtmosphereForces & f,
+    const btVector3 & forceTorque( const AtmosphereForces & f,
+                                   const btVector3 & position,
                                    const btVector3 & velocity,
                                    const btQuaternion & orientation,
                                    btVector3 & resF, btVector3 & resP ) const;

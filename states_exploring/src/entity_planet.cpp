@@ -5,6 +5,62 @@ namespace Entity
 {
 
 
+EntityPlanet::EntityPlanet()
+    : Entity()
+{
+    visualEntity   = 0;
+    sceneNode      = 0;
+    rigidBody      = 0;
+    collisionShape = 0;
+    bodyState      = 0;
+}
+
+EntityPlanet::~EntityPlanet()
+{
+    if ( rigidBody )
+    {
+        EntityWorld * w = EntityWorld::getSingletonPtr();
+        if ( w && w->phyWorld )
+            w->phyWorld->removeRigidBody( rigidBody );
+    }
+
+    if ( rigidBody )
+    {
+        btMotionState * motionState = rigidBody->getMotionState();
+        if ( motionState )
+            delete motionState;
+
+        delete rigidBody;
+    }
+
+    if ( collisionShape )
+        delete collisionShape;
+
+    Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
+    if ( scnMgr )
+    {
+        if ( visualEntity );
+            scnMgr->destroyEntity( visualEntity );
+
+        if ( sceneNode )
+            scnMgr->destroySceneNode( sceneNode );
+    }
+}
+
+void EntityPlanet::addForces( EntityPart & part )
+{
+    const btTransform t  = part.rigidBody->getWorldTransform();
+    const btVector3 r    = t.getOrigin();
+    const btQuaternion q = t.getRotation();
+    const btVector3 v = part.rigidBody->getLinearVelocity();
+
+    btVector3 f( 0.0, 0.0, 0.0 );
+    btVector3 p( 0.0, 0.0, 0.0 );
+    part.airMesh.forceTorque( atm, r, v, q, f, p );
+
+}
+
+
 
 
 

@@ -53,6 +53,38 @@ btScalar AtmosphereForces::density( const btVector3 & at ) const
 
 
 
+
+Gravity::Gravity()
+{
+    GM = 1234.0;
+    radius = 100.0;
+}
+
+Gravity::~Gravity()
+{
+
+}
+
+void Gravity::gravity( const btScalar m, const btVector3 & r,
+                      btVector3 & g )
+{
+    const btScalar d = r.length();
+    // To avoid  troubles if the body is inside.
+    if ( d < radius*0.9 )
+    {
+        g = GM * r;
+        return;
+    }
+    g = r * GM / ( d*d*d );
+}
+
+
+
+
+
+
+
+
 bool AirMesh::airMesh( Ogre::Entity * e, AirMesh & a )
 {
     a.tris.clear();
@@ -105,7 +137,7 @@ const AirMesh & AirMesh::operator=( const AirMesh & inst )
     return *this;
 }
 
-const btVector3 & AirMesh::forceTorque( btScalar density, const AtmosphereForces & f,
+const btVector3 & AirMesh::forceTorque(const AtmosphereForces & f, const btVector3 & position,
                                         const btVector3 & velocity,
                                         const btQuaternion & orientation,
                                         btVector3 & resF, btVector3 & resP ) const
@@ -127,8 +159,9 @@ const btVector3 & AirMesh::forceTorque( btScalar density, const AtmosphereForces
     const btQuaternion Pq = orientation * P * orientation.inverse();
     F = btVector3( Fq.x(), Fq.y(), Fq.z() );
     P = btVector3( Pq.x(), Pq.y(), Pq.z() );
-    F *= density;
-    P *= density;
+    const btScalar ro = f.density( position );
+    F *= ro;
+    P *= ro;
     resF += F;
     resP += P;
 }

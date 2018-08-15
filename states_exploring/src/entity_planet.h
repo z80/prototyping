@@ -7,6 +7,7 @@
 #include "air_mesh.h"
 #include "entity_part.h"
 
+
 namespace Config
 {
     class ConfigReader;
@@ -22,7 +23,7 @@ public:
     EntityPlanet();
     ~EntityPlanet();
 
-    void addAirFriction( EntityPart & part );
+    void addForces( EntityPart & part );
 
 public:
     Ogre::Entity     * visualEntity;
@@ -31,6 +32,8 @@ public:
     btCollisionShape * collisionShape;
     BtOgre::RigidBodyState * bodyState;
 
+    AirMesh::AtmosphereForces atm;
+    AirMesh::Gravity          g;
 };
 
 
