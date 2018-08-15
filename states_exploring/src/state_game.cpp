@@ -26,7 +26,7 @@ GameState::GameState()
     paused     = false;
 
     world = 0;
-    plane = 0;
+    //plane = 0;
     cube  = 0;
 }
 
@@ -172,8 +172,8 @@ void GameState::createObjects()
 {
     world = dynamic_cast<Entity::EntityWorld *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "world" ) );
-    plane = dynamic_cast<Entity::EntityPart *>(
-                Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
+    //plane = dynamic_cast<Entity::EntityPart *>(
+    //            Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
     cube  = dynamic_cast<Entity::EntityPart *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
     planet = dynamic_cast<Entity::EntityPlanet *>(
@@ -241,8 +241,8 @@ void GameState::destroyObjects()
         delete planet;
     if ( cube )
         delete cube;
-    if ( plane )
-        delete plane;
+    //if ( plane )
+    //    delete plane;
     if ( world )
         Entity::EntityWorld::deleteWorld();
 }
@@ -272,12 +272,12 @@ void GameState::debugOverlay()
             out << "cube (" << at.x << ", " << at.y << ", " << at.z << ")";
             ImGui::Text( "%s", out.str().c_str() );
         }
-        {
+        /*{
             const Ogre::Vector3 at = plane->sceneNode->getPosition();
             std::ostringstream out;
             out << "plane (" << at.x << ", " << at.y << ", " << at.z << ")";
             ImGui::Text( "%s", out.str().c_str() );
-        }
+        }*/
         {
             const Ogre::Vector3 at = mCameraNode->getPosition();
             std::ostringstream out;

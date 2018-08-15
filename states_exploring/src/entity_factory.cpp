@@ -61,7 +61,7 @@ EntityPart   * EntityFactory::PD::cube()
     p->collisionShape = converter.createBox();
     p->bodyState      = new BtOgre::RigidBodyState( p->sceneNode );
     p->bodyState->setWorldTransform( btTransform( btQuaternion( 0.0, 0.0, 0.0, 1.0 ),
-                                                  btVector3( 0.0, 0.0, 10.0 ) ) );
+                                                  btVector3( 5.0, 10.0, 210.0 ) ) );
 
     //Calculate inertia.
     const btScalar mass = 1.0;
@@ -120,7 +120,7 @@ EntityPlanet * EntityFactory::PD::spherePlanet()
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
-    p->visualEntity = scnMgr->createEntity( NameGenerator::Next("sphere"), "Sphere.mesh" );
+    p->visualEntity = scnMgr->createEntity( NameGenerator::Next("sphere"), "Icosphere.mesh" );
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "Sphere" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     p->visualEntity->setMaterial( m );
@@ -172,7 +172,7 @@ EntityFactory::~EntityFactory()
 Entity * EntityFactory::create( const std::string & name,
                                 const Ogre::Vector3 & at,
                                 const Ogre::Quaternion & q,
-                                Ogre::SceneNode * parentNodew )
+                                Ogre::SceneNode * parentNode )
 {
     if ( name == "world" )
         return pd->world();
@@ -180,6 +180,8 @@ Entity * EntityFactory::create( const std::string & name,
         return pd->cube();
     else if ( name == "plane" )
         return pd->plane();
+    else if ( name == "planet" )
+        return pd->spherePlanet();
     return 0;
 }
 

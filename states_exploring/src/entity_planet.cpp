@@ -51,6 +51,9 @@ EntityPlanet::~EntityPlanet()
 
 void EntityPlanet::addForces( EntityPart & part )
 {
+    part.rigidBody->clearForces();
+    part.rigidBody->activate( true );
+
     const btTransform t  = part.rigidBody->getWorldTransform();
     const btVector3 r    = t.getOrigin();
     const btQuaternion q = t.getRotation();

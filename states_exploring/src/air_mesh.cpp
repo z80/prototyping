@@ -56,7 +56,7 @@ btScalar AtmosphereForces::density( const btVector3 & at ) const
 
 Gravity::Gravity()
 {
-    GM = 1234.0;
+    GM     = 1234.0;
     radius = 100.0;
 }
 
@@ -75,7 +75,7 @@ void Gravity::gravity( const btScalar m, const btVector3 & r,
         g = GM * r;
         return;
     }
-    g = r * GM / ( d*d*d );
+    g = -r * GM / ( d*d*d );
 }
 
 

@@ -45,7 +45,7 @@ private:
 
 
     Entity::EntityWorld * world;
-    Entity::EntityPart  * plane,
+    Entity::EntityPart  //* plane,
                         * cube;
     Entity::EntityPlanet * planet;
 

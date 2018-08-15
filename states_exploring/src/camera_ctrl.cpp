@@ -2,6 +2,8 @@
 #include "camera_ctrl.h"
 #include "state_manager.h"
 
+#include <iostream>
+
 static CameraCtrl g_cc;
 
 template<> CameraCtrl * Ogre::Singleton<CameraCtrl>::msSingleton = 0;
@@ -99,19 +101,7 @@ void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
 bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
 {
     OgreBites::Keycode key = evt.keysym.sym;
-    // Looping over camera modes.
-    if ( key == 'c' )
-    {
-        if ( mode == Fixed )
-            mode = Orbit;
-        else if ( mode == Orbit )
-        {
-            mode = Free;
-        }
-        else
-            mode = Fixed;
-        StateManager::getSingletonPtr()->setMouseVisible( ( mode != Free ) );
-    }
+
     // Camera keyboard controls.
     if ( mode == Free )
     {
@@ -136,9 +126,35 @@ bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
 
 bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
 {
+    const OgreBites::Keycode key = evt.keysym.sym;
+
+    // Looping over camera modes.
+    if ( key == 'c' )
+    {
+        //std::cout << "Switch from " << int(mode) << std::endl;
+        switch ( mode )
+        {
+        case Fixed:
+            mode = Orbit;
+            //std::cout << "    Orbit" << std::endl;
+            break;
+        case Orbit:
+            mode = Free;
+            //std::cout << "    Free" << std::endl;
+            break;
+        case Free:
+            mode = Fixed;
+            //std::cout << "    Fixed" << std::endl;
+            break;
+        default:
+            mode = Free;
+            //std::cout << "    Default Free" << std::endl;
+            break;
+        }
+    }
+
     if ( mode == Free )
     {
-        OgreBites::Keycode key = evt.keysym.sym;
         if ( key == 'w' || key == OgreBites::SDLK_UP )
             mGoingForward = false;
         else if ( key == 's' || key == OgreBites::SDLK_DOWN )
