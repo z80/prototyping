@@ -33,11 +33,20 @@ CameraCtrl::~CameraCtrl()
 void CameraCtrl::setCameraNode( Ogre::SceneNode * nodeCam )
 {
     this->nodeCam = nodeCam;
+    if ( !nodeCam )
+        this->nodeTarget = 0;
 }
 
 void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
 {
     this->nodeTarget = nodeTarget;
+    if ( this->nodeCam && this->nodeTarget )
+    {
+        Ogre::SceneNode * parent = this->nodeCam->getParentSceneNode();
+        if ( parent )
+            parent->removeChild( this->nodeCam );
+        this->nodeTarget->addChild( this->nodeCam );
+    }
 }
 
 void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
@@ -178,8 +187,11 @@ bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
     }
     else if ( mode == Free )
     {
-        nodeCam->yaw( Ogre::Degree( -evt.xrel * 0.15f ), Ogre::Node::TS_PARENT );
-        nodeCam->pitch( Ogre::Degree( -evt.yrel * 0.15f ) );
+        if ( mOrbiting )
+        {
+            nodeCam->yaw( Ogre::Degree( -evt.xrel * 0.15f ), Ogre::Node::TS_PARENT );
+            nodeCam->pitch( Ogre::Degree( -evt.yrel * 0.15f ) );
+        }
     }
 
 
@@ -207,7 +219,11 @@ bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
             mMoving = true;
     }
     if ( mode != Fixed )
+    {
+        if ( evt.button == OgreBites::BUTTON_LEFT )
+            mOrbiting = true;
         StateManager::getSingletonPtr()->setMouseVisible( false );
+    }
     return true;
 }
 
@@ -221,9 +237,24 @@ bool CameraCtrl::mouseReleased( const OgreBites::MouseButtonEvent & evt )
             mMoving = false;
     }
     if ( mode != Fixed )
+    {
+        if ( evt.button == OgreBites::BUTTON_LEFT )
+            mOrbiting = false;
         StateManager::getSingletonPtr()->setMouseVisible( true );
+    }
 
     return true;
+}
+
+std::string CameraCtrl::modeStri() const
+{
+    if ( mode == Free )
+        return "Free";
+    else if ( mode == Orbit )
+        return "Orbit";
+    else if ( mode == Fixed )
+        return "Fixed";
+    return "Weired";
 }
 
 Ogre::Real CameraCtrl::getDistToTarget() const

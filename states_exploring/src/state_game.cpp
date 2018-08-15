@@ -44,6 +44,8 @@ void GameState::enter()
         mCamera = mSceneMgr->getCamera( "IntroCamera" );
         mViewport = StateManager::getSingletonPtr()->getRenderWindow()->getViewport( 0 );
 
+        mCamera->setFixedYawAxis( false );
+
         try
         {
             mCameraNode = mSceneMgr->getSceneNode( "CameraNode" );
@@ -143,6 +145,7 @@ bool GameState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 
 bool GameState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
+    CameraCtrl::getSingletonPtr()->mouseWheelRolled( evt );
     return true;
 }
 
@@ -273,6 +276,10 @@ void GameState::debugOverlay()
             std::ostringstream out;
             out << "cam (" << at.x << ", " << at.y << ", " << at.z << ")";
             ImGui::Text( "%s", out.str().c_str() );
+        }
+        {
+            std::string camMode = CameraCtrl::getSingletonPtr()->modeStri();
+            ImGui::Text( "camera mode: \"%s\"", camMode.c_str() );
         }
     }
     ImGui::End();

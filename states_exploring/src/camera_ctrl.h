@@ -46,6 +46,7 @@ public:
     bool mouseReleased(const OgreBites::MouseButtonEvent& evt);
 
 
+    std::string modeStri() const;
 public:
     Ogre::Real getDistToTarget() const;
 
