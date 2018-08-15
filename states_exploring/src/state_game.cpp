@@ -96,7 +96,10 @@ bool GameState::frameStarted(const Ogre::FrameEvent& evt)
     ImGui::ShowTestWindow();
     debugOverlay();
     if ( world )
+    {
+        planet->addForces( *cube );
         world->frameStarted( evt );
+    }
 
     return true;
 }
@@ -173,6 +176,8 @@ void GameState::createObjects()
                 Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
     cube  = dynamic_cast<Entity::EntityPart *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
+    planet = dynamic_cast<Entity::EntityPlanet *>(
+                Entity::EntityFactory::getSingletonPtr()->create( "planet" ) );
 
     // Debugging object to see at least something.
     {
@@ -232,6 +237,8 @@ void GameState::destroyObjects()
 
     if ( mCameraNode )
         mSceneMgr->destroySceneNode( mCameraNode );
+    if ( planet )
+        delete planet;
     if ( cube )
         delete cube;
     if ( plane )

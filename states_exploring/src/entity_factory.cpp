@@ -19,7 +19,7 @@ public:
     EntityWorld  * world();
     EntityPart   * cube();
     EntityPart   * plane();
-    //EntityPlanet * spherePlanet();
+    EntityPlanet * spherePlanet();
 
     PD();
     ~PD();
@@ -110,6 +110,52 @@ EntityPart   * EntityFactory::PD::plane()
 
     return p;
 }
+
+EntityPlanet * EntityFactory::PD::spherePlanet()
+{
+    const btScalar R = 100.0;
+
+
+    EntityPlanet * p = new EntityPlanet();
+
+    Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
+
+    p->visualEntity = scnMgr->createEntity( NameGenerator::Next("sphere"), "Sphere.mesh" );
+    Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "Sphere" );
+    //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
+    p->visualEntity->setMaterial( m );
+    p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("sphereSceneNode") );
+    p->sceneNode->attachObject( p->visualEntity );
+    p->sceneNode->setScale( R, R, R );
+
+    //Create shape.
+    BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
+    p->collisionShape = converter.createTrimesh();
+    p->bodyState      = new BtOgre::RigidBodyState( p->sceneNode );
+    p->bodyState->setWorldTransform( btTransform( btQuaternion( 0.0, 0.0, 0.0, 1.0 ),
+                                                  btVector3( 0.0, 0.0, 0.0 ) ) );
+
+    //Calculate inertia.
+    const btScalar mass = 0.0;
+    btVector3      inertia( 0.0, 0.0, 0.0 );
+
+    p->rigidBody = new btRigidBody( mass, p->bodyState, p->collisionShape, inertia );
+    //p->rigidBody->activate( true );
+
+    p->atm.radius = R;
+    p->g.radius   = R;
+
+    EntityWorld::getSingletonPtr()->addEntity( p );
+
+    return p;
+
+}
+
+
+
+
+
+
 
 
 

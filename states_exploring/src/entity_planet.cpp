@@ -55,11 +55,16 @@ void EntityPlanet::addForces( EntityPart & part )
     const btVector3 r    = t.getOrigin();
     const btQuaternion q = t.getRotation();
     const btVector3 v = part.rigidBody->getLinearVelocity();
+    const btScalar  m = 1.0 / part.rigidBody->getInvMass();
 
+    btVector3 fg;
+    g.gravity( m, r, fg );
     btVector3 f( 0.0, 0.0, 0.0 );
     btVector3 p( 0.0, 0.0, 0.0 );
     part.airMesh.forceTorque( atm, r, v, q, f, p );
-
+    f += fg;
+    part.rigidBody->applyCentralForce( f );
+    part.rigidBody->applyTorque( p );
 }
 
 

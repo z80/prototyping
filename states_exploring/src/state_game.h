@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "entity_world.h"
 #include "entity_part.h"
+#include "entity_planet.h"
 
 class GameState: public State,
                   public Ogre::Singleton<GameState>
@@ -46,6 +47,7 @@ private:
     Entity::EntityWorld * world;
     Entity::EntityPart  * plane,
                         * cube;
+    Entity::EntityPlanet * planet;
 
     void createObjects();
     void destroyObjects();

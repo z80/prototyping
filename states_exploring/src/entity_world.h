@@ -12,6 +12,7 @@
 
 #include "entity.h"
 #include "entity_part.h"
+#include "entity_planet.h"
 
 namespace Entity
 {
@@ -33,6 +34,7 @@ public:
 
     bool frameStarted( const Ogre::FrameEvent & evt );
     void addEntity( EntityPart * part );
+    void addEntity( EntityPlanet * part );
 
 public:
     btAxisSweep3                        * mBroadphase;
