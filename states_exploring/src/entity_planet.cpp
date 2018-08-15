@@ -1,5 +1,7 @@
 
 #include "entity_planet.h"
+#include "entity_world.h"
+#include "state_manager.h"
 
 namespace Entity
 {

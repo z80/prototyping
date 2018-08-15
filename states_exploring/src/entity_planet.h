@@ -17,7 +17,7 @@ namespace Entity
 {
 
 
-class EntityPlanet
+class EntityPlanet: public Entity
 {
 public:
     EntityPlanet();
