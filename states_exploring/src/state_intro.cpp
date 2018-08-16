@@ -84,7 +84,12 @@ bool IntroState::frameStarted(const Ogre::FrameEvent& evt)
     if ( doExit )
         return false;
     if ( toGame )
-        StateManager::getSingletonPtr()->pushState( GameState::getSingletonPtr() );
+    {
+        if ( instances < 2 )
+            StateManager::getSingletonPtr()->pushState( GameState::getSingletonPtr() );
+        else
+            StateManager::getSingletonPtr()->popState();
+    }
 
     return true;
 }
@@ -104,7 +109,10 @@ bool IntroState::keyPressed(const OgreBites::KeyboardEvent& evt)
     }
     if ( evt.keysym.sym == 27 )
     {
-        mExitGame = true;
+        if ( instances < 2 )
+            mExitGame = true;
+        else
+            StateManager::getSingletonPtr()->popState();
     }
 }
 

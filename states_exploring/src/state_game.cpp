@@ -84,7 +84,7 @@ void GameState::pause()
 void GameState::resume()
 {
     //mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
-    mSceneMgr->setAmbientLight( Ogre::ColourValue( 1.0, 1.0, 1.0 ) );
+    mSceneMgr->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
 
     CameraCtrl::getSingletonPtr()->setCameraNode( mCameraNode );
     CameraCtrl::getSingletonPtr()->setTargetNode( cube->sceneNode );
