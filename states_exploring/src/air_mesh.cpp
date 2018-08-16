@@ -25,16 +25,20 @@ void AtmosphereForces::forceTorque( const Triangle & tri,
                                     const btVector3 & velocity,
                                     btVector3 & F, btVector3 & P ) const
 {
-    const btScalar d = velocity.dot( tri.norm );
-    const btVector3 vNorm = velocity * d;
-    const btVector3 vTang = velocity - vNorm;
-    const btScalar  viscosityNorm = ( (d <= 0.0) ? viscosityFwd : viscosityBwd );
-    const btVector3 fNorm = vNorm * viscosityNorm;
-    const btVector3 fTang = vTang * viscosityLat;
-    const btVector3 f = -(fNorm + fTang) * tri.area;
-    const btVector3 p = tri.at.cross( f );
-    F += f;
-    P += p;
+    const btScalar absV = velocity.length();
+    if ( absV > 0.0001 )
+    {
+        const btScalar d = velocity.dot( tri.norm ) / absV;
+        const btVector3 vNorm = velocity * d;
+        const btVector3 vTang = velocity - vNorm;
+        const btScalar  viscosityNorm = ( (d >= 0.0) ? viscosityFwd : viscosityBwd );
+        const btVector3 fNorm = vNorm * viscosityNorm;
+        const btVector3 fTang = vTang * viscosityLat;
+        const btVector3 f = -(fNorm + fTang) * tri.area;
+        const btVector3 p = tri.at.cross( f );
+        F += f;
+        P += p;
+    }
 }
 
 btScalar AtmosphereForces::density( const btVector3 & at ) const
@@ -74,9 +78,9 @@ void Gravity::gravity( const btScalar m, const btVector3 & r,
 {
     const btScalar d = r.length();
     // To avoid  troubles if the body is inside.
-    if ( d < radius*0.9 )
+    if ( d < radius*0.5 )
     {
-        g = GM * r / (radius*radius*radius);
+        g = btVector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
         return;
     }
     g = -r * GM / ( d*d*d );
@@ -166,6 +170,12 @@ const btVector3 & AirMesh::forceTorque(const AtmosphereForces & f, const btVecto
     const btScalar ro = f.density( position );
     F *= ro;
     P *= ro;
+
+    if ( F.length() > 10.0 )
+    {
+        int i=0;
+    }
+
     resF += F;
     resP += P;
 }

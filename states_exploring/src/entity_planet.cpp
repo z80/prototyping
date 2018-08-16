@@ -3,6 +3,8 @@
 #include "entity_world.h"
 #include "state_manager.h"
 
+#include <iostream>
+
 namespace Entity
 {
 
@@ -65,6 +67,9 @@ void EntityPlanet::addForces( EntityPart & part )
     btVector3 f( 0.0, 0.0, 0.0 );
     btVector3 p( 0.0, 0.0, 0.0 );
     part.airMesh.forceTorque( atm, r, v, q, f, p );
+
+    std::cout << "air friction: " << f.x() << ", " << f.y() << ", " << f.z() << std::endl;
+
     f += fg;
     part.rigidBody->applyCentralForce( f );
     part.rigidBody->applyTorque( p );
