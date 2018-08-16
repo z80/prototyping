@@ -36,6 +36,7 @@ private:
     Ogre::Viewport * mViewport;
     Ogre::Camera * mCamera;
     bool mExitGame;
+    int instances;
 };
 
 

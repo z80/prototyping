@@ -19,6 +19,8 @@ IntroState::IntroState()
     mViewport = 0;
     mCamera   = 0;
     mExitGame = false;
+
+    instances = 0;
 }
 
 IntroState::~IntroState()
@@ -30,20 +32,37 @@ void IntroState::enter()
 {
     mRoot = Root::getSingletonPtr();
     mSceneMgr = StateManager::getSingletonPtr()->getSceneManager();
-    mCamera = mSceneMgr->createCamera( "IntroCamera" );
+    try
+    {
+        mCamera = mSceneMgr->getCamera( "IntroCamera" );
+    }
+    catch ( ... )
+    {
+        mCamera = mSceneMgr->createCamera( "IntroCamera" );
+    }
     mCamera->setNearClipDistance( 0.0001 );
-    mViewport = StateManager::getSingletonPtr()->getRenderWindow()->addViewport( mCamera );
+    if ( StateManager::getSingletonPtr()->getRenderWindow()->getNumViewports() < 1 )
+        mViewport = StateManager::getSingletonPtr()->getRenderWindow()->addViewport( mCamera );
+    else
+        mViewport = StateManager::getSingletonPtr()->getRenderWindow()->getViewport(0);
     mViewport->setBackgroundColour(ColourValue(0.5, 0.5, 0.5));
     mExitGame = false;
 
     StateManager::getSingletonPtr()->setMouseVisible( true );
+
+    instances += 1;
 }
 
 void IntroState::exit()
 {
-    mSceneMgr->clearScene();
-    mSceneMgr->destroyAllCameras();
-    StateManager::getSingletonPtr()->getRenderWindow()->removeAllViewports();
+    instances -= 1;
+
+    if ( instances == 0 )
+    {
+        mSceneMgr->clearScene();
+        mSceneMgr->destroyAllCameras();
+        StateManager::getSingletonPtr()->getRenderWindow()->removeAllViewports();
+    }
 }
 
 void IntroState::pause()

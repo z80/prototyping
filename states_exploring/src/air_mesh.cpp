@@ -76,7 +76,7 @@ void Gravity::gravity( const btScalar m, const btVector3 & r,
     // To avoid  troubles if the body is inside.
     if ( d < radius*0.9 )
     {
-        g = GM * r;
+        g = GM * r / (radius*radius*radius);
         return;
     }
     g = -r * GM / ( d*d*d );

@@ -1,10 +1,10 @@
 
 #include "state_game.h"
 #include "state_manager.h"
+#include "state_intro.h"
+
 #include "entity_factory.h"
-
 #include "camera_ctrl.h"
-
 #include "ImguiManager.h"
 
 using namespace Ogre;
@@ -55,13 +55,14 @@ void GameState::enter()
             mCameraNode = mSceneMgr->getRootSceneNode()->createChildSceneNode( "CameraNode" );
             mCameraNode->attachObject( mCamera );
         }
+
+        createObjects();
     }
 
     mViewport->setBackgroundColour(ColourValue(0.7, 0.7, 0.4));
     StateManager::getSingletonPtr()->setMouseVisible( true );
     mExitState = false;
 
-    createObjects();
 
     resume();
 }
@@ -93,6 +94,9 @@ void GameState::resume()
 
 bool GameState::frameStarted(const Ogre::FrameEvent& evt)
 {
+    if ( paused )
+        return true;
+
     ImGui::ShowTestWindow();
     debugOverlay();
     if ( world )
@@ -115,7 +119,8 @@ bool GameState::keyPressed(const OgreBites::KeyboardEvent& evt)
     CameraCtrl::getSingletonPtr()->keyPressed( evt );
     if ( evt.keysym.sym == 27 )
     {
-        StateManager::getSingletonPtr()->popState();
+        //StateManager::getSingletonPtr()->popState();
+        StateManager::getSingletonPtr()->pushState( IntroState::getSingletonPtr() );
     }
 }
 

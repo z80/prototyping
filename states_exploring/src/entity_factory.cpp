@@ -61,7 +61,7 @@ EntityPart   * EntityFactory::PD::cube()
     p->collisionShape = converter.createBox();
     p->bodyState      = new BtOgre::RigidBodyState( p->sceneNode );
     p->bodyState->setWorldTransform( btTransform( btQuaternion( 0.0, 0.0, 0.0, 1.0 ),
-                                                  btVector3( 5.0, 10.0, 210.0 ) ) );
+                                                  btVector3( 5.0, 10.0, 110.0 ) ) );
 
     //Calculate inertia.
     const btScalar mass = 1.0;
