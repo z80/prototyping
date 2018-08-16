@@ -120,7 +120,7 @@ EntityPlanet * EntityFactory::PD::spherePlanet()
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
-    p->visualEntity = scnMgr->createEntity( NameGenerator::Next("sphere"), "Icosphere.mesh" );
+    p->visualEntity = scnMgr->createEntity( NameGenerator::Next("sphere"), "Sphere.mesh" );
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "Sphere" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     p->visualEntity->setMaterial( m );

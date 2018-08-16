@@ -10,6 +10,10 @@ AtmosphereForces::AtmosphereForces()
     viscosityFwd = 0.2;
     viscosityBwd = 0.1;
     viscosityLat = 0.05;
+
+    radius = 100.0;
+    height = 100.0;
+    groundDensity = 1.0;
 }
 
 AtmosphereForces::~AtmosphereForces()
@@ -27,7 +31,7 @@ void AtmosphereForces::forceTorque( const Triangle & tri,
     const btScalar  viscosityNorm = ( (d <= 0.0) ? viscosityFwd : viscosityBwd );
     const btVector3 fNorm = vNorm * viscosityNorm;
     const btVector3 fTang = vTang * viscosityLat;
-    const btVector3 f = (fNorm + fTang) * tri.area;
+    const btVector3 f = -(fNorm + fTang) * tri.area;
     const btVector3 p = tri.at.cross( f );
     F += f;
     P += p;
@@ -56,7 +60,7 @@ btScalar AtmosphereForces::density( const btVector3 & at ) const
 
 Gravity::Gravity()
 {
-    GM     = 1234.0;
+    GM     = 12345.0;
     radius = 100.0;
 }
 
