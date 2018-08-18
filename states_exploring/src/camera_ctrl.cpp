@@ -27,7 +27,7 @@ CameraCtrl::CameraCtrl()
     mFastMove     = false;
 
 
-    mouseSensitivity      = 0.001;
+    mouseSensitivity      = 0.003;
     mouseWheelSensitivity = 0.8;
     orbitDist        = 10.0;
     orbitKi          = 15.95;
@@ -212,7 +212,7 @@ bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
         if ( evt.button == OgreBites::BUTTON_LEFT )
         {
             mOrbiting = true;
-            //StateManager::getSingletonPtr()->setMouseVisible( false );
+            StateManager::getSingletonPtr()->setMouseVisible( false );
         }
     }
     return true;

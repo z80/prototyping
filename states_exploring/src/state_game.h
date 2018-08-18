@@ -42,6 +42,7 @@ private:
     Ogre::SceneNode * mCameraNode;
     bool mExitState;
     bool paused;
+    bool disableMouseCtrl;
 
 
     Entity::EntityWorld * world;

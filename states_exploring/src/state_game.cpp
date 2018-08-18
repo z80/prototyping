@@ -24,10 +24,12 @@ GameState::GameState()
     mCameraNode = 0;
     mExitState = false;
     paused     = false;
+    disableMouseCtrl = false;
 
-    world = 0;
+    world  = 0;
     //plane = 0;
-    cube  = 0;
+    cube   = 0;
+    planet = 0;
 }
 
 GameState::~GameState()
@@ -116,7 +118,8 @@ bool GameState::frameEnded(const Ogre::FrameEvent& evt)
 
 bool GameState::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
-    CameraCtrl::getSingletonPtr()->keyPressed( evt );
+    if ( !disableMouseCtrl )
+        CameraCtrl::getSingletonPtr()->keyPressed( evt );
     if ( evt.keysym.sym == 27 )
     {
         //StateManager::getSingletonPtr()->popState();
@@ -126,7 +129,8 @@ bool GameState::keyPressed(const OgreBites::KeyboardEvent& evt)
 
 bool GameState::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
-    CameraCtrl::getSingletonPtr()->keyReleased( evt );
+    if ( !disableMouseCtrl )
+        CameraCtrl::getSingletonPtr()->keyReleased( evt );
     return true;
 }
 
@@ -147,25 +151,29 @@ bool GameState::touchReleased(const OgreBites::TouchFingerEvent& evt)
 
 bool GameState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
-    CameraCtrl::getSingletonPtr()->mouseMoved( evt );
+    if ( !disableMouseCtrl )
+        CameraCtrl::getSingletonPtr()->mouseMoved( evt );
     return true;
 }
 
 bool GameState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
-    CameraCtrl::getSingletonPtr()->mouseWheelRolled( evt );
+    if ( !disableMouseCtrl )
+        CameraCtrl::getSingletonPtr()->mouseWheelRolled( evt );
     return true;
 }
 
 bool GameState::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
-    CameraCtrl::getSingletonPtr()->mousePressed( evt );
+    if ( !disableMouseCtrl )
+        CameraCtrl::getSingletonPtr()->mousePressed( evt );
     return true;
 }
 
 bool GameState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
-    CameraCtrl::getSingletonPtr()->mouseReleased( evt );
+    if ( !disableMouseCtrl )
+        CameraCtrl::getSingletonPtr()->mouseReleased( evt );
     return true;
 }
 
@@ -293,6 +301,8 @@ void GameState::debugOverlay()
             std::string camMode = CameraCtrl::getSingletonPtr()->modeStri();
             ImGui::Text( "camera mode: \"%s\"", camMode.c_str() );
         }
+
+        disableMouseCtrl = ImGui::IsAnyWindowHovered();
     }
     ImGui::End();
 
