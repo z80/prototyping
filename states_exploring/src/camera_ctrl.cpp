@@ -25,6 +25,13 @@ CameraCtrl::CameraCtrl()
     mGoingUp      = false;
     mGoingDown    = false;
     mFastMove     = false;
+
+
+    mouseSensitivity      = 0.001;
+    mouseWheelSensitivity = 0.8;
+    orbitDist        = 10.0;
+    orbitKi          = 15.95;
+    orbitAt          = Ogre::Vector3( 0.0, 0.0, 10.0 );
 }
 
 CameraCtrl::~CameraCtrl()
@@ -35,67 +42,28 @@ CameraCtrl::~CameraCtrl()
 void CameraCtrl::setCameraNode( Ogre::SceneNode * nodeCam )
 {
     this->nodeCam = nodeCam;
-    if ( !nodeCam )
-        this->nodeTarget = 0;
+    if ( nodeCam )
+        nodeCam->setInheritOrientation( false );
 }
 
 void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
 {
     this->nodeTarget = nodeTarget;
-    if ( this->nodeCam && this->nodeTarget )
+    /*if ( this->nodeCam && this->nodeTarget )
     {
         Ogre::SceneNode * parent = this->nodeCam->getParentSceneNode();
         if ( parent )
             parent->removeChild( this->nodeCam );
         this->nodeTarget->addChild( this->nodeCam );
-    }
+    }*/
 }
 
 void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
 {
     if ( mode == Free )
-    {
-        // build our acceleration vector based on keyboard input composite
-        Ogre::Vector3 accel = Ogre::Vector3::ZERO;
-        Ogre::Matrix3 axes = nodeCam->getLocalAxes();
-        if ( mGoingForward )
-            accel -= axes.GetColumn(2);
-        if ( mGoingBack )
-            accel += axes.GetColumn(2);
-        if ( mGoingRight )
-            accel += axes.GetColumn(0);
-        if ( mGoingLeft )
-            accel -= axes.GetColumn(0);
-        if ( mGoingUp )
-            accel += axes.GetColumn(1);
-        if ( mGoingDown )
-            accel -= axes.GetColumn(1);
-
-        // if accelerating, try to reach top speed in a certain time
-        const Ogre::Real topSpeed = mFastMove ? mTopSpeed * 20 : mTopSpeed;
-        if (accel.squaredLength() != 0)
-        {
-            accel.normalise();
-            mVelocity += accel * topSpeed * evt.timeSinceLastFrame * 10;
-        }
-        // if not accelerating, try to stop in a certain time
-        else
-            mVelocity -= mVelocity * evt.timeSinceLastFrame * 10;
-
-        const Ogre::Real tooSmall = std::numeric_limits<Ogre::Real>::epsilon();
-
-        // keep camera velocity below top speed and above epsilon
-        if ( mVelocity.squaredLength() > topSpeed * topSpeed )
-        {
-            mVelocity.normalise();
-            mVelocity *= topSpeed;
-        }
-        else if (mVelocity.squaredLength() < tooSmall * tooSmall)
-            mVelocity = Ogre::Vector3::ZERO;
-
-        if (mVelocity != Ogre::Vector3::ZERO)
-            nodeCam->translate(mVelocity * evt.timeSinceLastFrame);
-    }
+        freeMovement( evt );
+    else if ( mode == Orbit )
+        orbitMovement( evt );
 }
 
 bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
@@ -176,7 +144,10 @@ bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
 
 bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
 {
-    Ogre::Vector3 mOffset( 0.0, 0.0, 0.0 );
+    if ( mode == Orbit )
+        orbitAdjustRotation( evt );
+
+    /*Ogre::Vector3 mOffset( 0.0, 0.0, 0.0 );
 
     if ( mode == Orbit )
     {
@@ -208,7 +179,7 @@ bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
             nodeCam->yaw( Ogre::Degree( -evt.xrel * 0.15f ), Ogre::Node::TS_PARENT );
             nodeCam->pitch( Ogre::Degree( -evt.yrel * 0.15f ) );
         }
-    }
+    }*/
 
 
     return true;
@@ -216,12 +187,14 @@ bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
 
 bool CameraCtrl::mouseWheelRolled( const OgreBites::MouseWheelEvent & evt )
 {
-    if ( mode == Orbit && evt.y != 0 )
+    if ( mode == Orbit )
+        orbitAdjustDistance( evt );
+    /*if ( mode == Orbit && evt.y != 0 )
     {
         const Ogre::Real dist = (nodeCam->getPosition() - nodeTarget->_getDerivedPosition()).length();
         nodeCam->translate( Ogre::Vector3(0, 0, -evt.y * 0.08f * dist),
                             Ogre::Node::TS_LOCAL );
-    }
+    }*/
     return true;
 }
 
@@ -237,8 +210,10 @@ bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
     if ( mode != Fixed )
     {
         if ( evt.button == OgreBites::BUTTON_LEFT )
+        {
             mOrbiting = true;
-        StateManager::getSingletonPtr()->setMouseVisible( false );
+            //StateManager::getSingletonPtr()->setMouseVisible( false );
+        }
     }
     return true;
 }
@@ -283,6 +258,91 @@ Ogre::Real CameraCtrl::getDistToTarget() const
     const Ogre::Real d = offset.length();
     return d;
 }
+
+void CameraCtrl::freeMovement( const Ogre::FrameEvent & evt )
+{
+    // build our acceleration vector based on keyboard input composite
+    Ogre::Vector3 accel = Ogre::Vector3::ZERO;
+    Ogre::Matrix3 axes = nodeCam->getLocalAxes();
+    if ( mGoingForward )
+        accel -= axes.GetColumn(2);
+    if ( mGoingBack )
+        accel += axes.GetColumn(2);
+    if ( mGoingRight )
+        accel += axes.GetColumn(0);
+    if ( mGoingLeft )
+        accel -= axes.GetColumn(0);
+    if ( mGoingUp )
+        accel += axes.GetColumn(1);
+    if ( mGoingDown )
+        accel -= axes.GetColumn(1);
+
+    // if accelerating, try to reach top speed in a certain time
+    const Ogre::Real topSpeed = mFastMove ? mTopSpeed * 20 : mTopSpeed;
+    if (accel.squaredLength() != 0)
+    {
+        accel.normalise();
+        mVelocity += accel * topSpeed * evt.timeSinceLastFrame * 10;
+    }
+    // if not accelerating, try to stop in a certain time
+    else
+        mVelocity -= mVelocity * evt.timeSinceLastFrame * 10;
+
+    const Ogre::Real tooSmall = std::numeric_limits<Ogre::Real>::epsilon();
+
+    // keep camera velocity below top speed and above epsilon
+    if ( mVelocity.squaredLength() > topSpeed * topSpeed )
+    {
+        mVelocity.normalise();
+        mVelocity *= topSpeed;
+    }
+    else if (mVelocity.squaredLength() < tooSmall * tooSmall)
+        mVelocity = Ogre::Vector3::ZERO;
+
+    if (mVelocity != Ogre::Vector3::ZERO)
+        nodeCam->translate(mVelocity * evt.timeSinceLastFrame);
+}
+
+void CameraCtrl::orbitMovement( const Ogre::FrameEvent & evt )
+{
+    const Ogre::Real T = 0.1;
+    const Ogre::Real dt = (evt.timeSinceLastFrame < T) ? evt.timeSinceLastFrame : T;
+    const Ogre::Real k = dt * orbitKi;
+    const Ogre::Vector3 sp = nodeTarget->_getDerivedPosition();
+    Ogre::Vector3 & at = orbitAt;
+    const Ogre::Vector3 dr = (sp-at)*k;
+    at += dr;
+    // Derive current setpoint.
+    Ogre::Quaternion q( 0.0, 0.0, 0.0, orbitDist );
+    q = orbitQuat * q * orbitQuat.Inverse();
+    const Ogre::Vector3 camAt( at.x+q.x, at.y+q.y, at.z+q.z );
+    nodeCam->setPosition( camAt );
+    nodeCam->setOrientation( orbitQuat );
+}
+
+void CameraCtrl::orbitAdjustRotation( const OgreBites::MouseMotionEvent & evt )
+{
+    if ( !mOrbiting )
+        return;
+    const Ogre::Real dx = static_cast<Ogre::Real>( evt.xrel ) * mouseSensitivity;
+    const Ogre::Real dy = static_cast<Ogre::Real>( evt.yrel ) * mouseSensitivity;
+    const Ogre::Real l = std::sqrt( dx*dx + dy*dy );
+    const Ogre::Real si_2 = l * 0.5;
+    const Ogre::Real co_2 = 1.0;
+    Ogre::Quaternion dq( co_2, -dy/l*si_2, -dx/l*si_2, 0.0 );
+    orbitQuat = orbitQuat * dq;
+    orbitQuat.normalise();
+}
+
+void CameraCtrl::orbitAdjustDistance( const OgreBites::MouseWheelEvent & evt )
+{
+    if ( evt.y > 0 )
+        orbitDist *= mouseWheelSensitivity;
+    else if ( evt.y < 0 )
+        orbitDist /= mouseWheelSensitivity;
+}
+
+
 
 
 

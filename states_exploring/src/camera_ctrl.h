@@ -49,6 +49,11 @@ public:
     std::string modeStri() const;
 public:
     Ogre::Real getDistToTarget() const;
+    void freeMovement( const Ogre::FrameEvent & evt );
+    void orbitMovement( const Ogre::FrameEvent & evt );
+    void orbitAdjustRotation( const OgreBites::MouseMotionEvent & evt );
+    void orbitAdjustDistance( const OgreBites::MouseWheelEvent & evt );
+
 
     enum Mode { Free, Orbit, Fixed };
 
@@ -68,6 +73,12 @@ public:
     bool mGoingDown;
     bool mFastMove;
 
+    Ogre::Real       mouseSensitivity,
+                     mouseWheelSensitivity,
+                     orbitDist,
+                     orbitKi;
+    Ogre::Quaternion orbitQuat;
+    Ogre::Vector3    orbitAt;
 };
 
 
