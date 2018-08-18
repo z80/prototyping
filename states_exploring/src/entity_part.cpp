@@ -119,6 +119,33 @@ void EntityPart::contextMenuEvent()
 
 }
 
+void EntityPart::speed( Ogre::Vector3 & v )
+{
+    if ( !rigidBody )
+    {
+        v.x = 0.0;
+        v.y = 0.0;
+        v.z = 0.0;
+        return;
+    }
+
+    btVector3 vel = rigidBody->getLinearVelocity();
+    v.x = vel.x();
+    v.y = vel.y();
+    v.z = vel.z();
+}
+
+void EntityPart::speed( Ogre::Real & v )
+{
+    if ( !rigidBody )
+    {
+        v = 0.0;
+        return;
+    }
+
+    btVector3 vel = rigidBody->getLinearVelocity();
+    v = vel.length();
+}
 
 
 

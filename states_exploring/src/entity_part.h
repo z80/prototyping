@@ -37,6 +37,9 @@ public:
     virtual void unselectEvent();
     virtual void contextMenuEvent();
 
+    void speed( Ogre::Vector3 & v );
+    void speed( Ogre::Real & v );
+
 public:
     Ogre::int32 actionGroup;
     bool        isSeleted;
