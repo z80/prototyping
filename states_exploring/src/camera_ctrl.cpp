@@ -11,7 +11,7 @@ template<> CameraCtrl * Ogre::Singleton<CameraCtrl>::msSingleton = 0;
 CameraCtrl::CameraCtrl()
     : Singleton<CameraCtrl>()
 {
-    mode = Free;
+    mode = Orbit;
     nodeCam    = 0;
     nodeTarget = 0;
 
