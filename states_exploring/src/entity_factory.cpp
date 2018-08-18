@@ -50,6 +50,8 @@ EntityPart   * EntityFactory::PD::cube()
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
     p->visualEntity = scnMgr->createEntity( NameGenerator::Next("cube"), "Cube.mesh" );
+    Ogre::UserObjectBindings & uob = p->visualEntity->getUserObjectBindings();
+    uob.setUserAny( Ogre::Any( p ) );
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "MyGrass" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     p->visualEntity->setMaterial( m );
@@ -83,6 +85,8 @@ EntityPart   * EntityFactory::PD::plane()
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
     p->visualEntity = scnMgr->createEntity( NameGenerator::Next("plane"), "Plane.mesh" );
+    Ogre::UserObjectBindings & uob = p->visualEntity->getUserObjectBindings();
+    uob.setUserAny( Ogre::Any( p ) );
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "MyGrass" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     p->visualEntity->setMaterial( m );
@@ -121,6 +125,8 @@ EntityPlanet * EntityFactory::PD::spherePlanet()
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
     p->visualEntity = scnMgr->createEntity( NameGenerator::Next("sphere"), "Sphere.mesh" );
+    Ogre::UserObjectBindings & uob = p->visualEntity->getUserObjectBindings();
+    uob.setUserAny( Ogre::Any( p ) );
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "Sphere" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     p->visualEntity->setMaterial( m );

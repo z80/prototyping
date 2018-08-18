@@ -37,8 +37,8 @@ public:
     virtual void unselectEvent();
     virtual void contextMenuEvent();
 
-    void speed( Ogre::Vector3 & v );
-    void speed( Ogre::Real & v );
+    void speed( Ogre::Vector3 & v ) const;
+    void speed( Ogre::Real & v ) const;
 
 public:
     Ogre::int32 actionGroup;

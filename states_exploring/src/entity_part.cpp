@@ -119,7 +119,7 @@ void EntityPart::contextMenuEvent()
 
 }
 
-void EntityPart::speed( Ogre::Vector3 & v )
+void EntityPart::speed( Ogre::Vector3 & v ) const
 {
     if ( !rigidBody )
     {
@@ -135,7 +135,7 @@ void EntityPart::speed( Ogre::Vector3 & v )
     v.z = vel.z();
 }
 
-void EntityPart::speed( Ogre::Real & v )
+void EntityPart::speed( Ogre::Real & v ) const
 {
     if ( !rigidBody )
     {
