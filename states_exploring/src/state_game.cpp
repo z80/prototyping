@@ -309,7 +309,7 @@ void GameState::debugOverlay()
 
 void GameState::modesOverlay()
 {
-    const ImVec2 wndSz( 170, 60 );
+    const ImVec2 wndSz( 150, 50 );
     ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
     ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
     const ImVec2 windowPos = ImVec2( ImGui::GetIO().DisplaySize.x - wndSz.x - 10,
@@ -327,7 +327,7 @@ void GameState::modesOverlay()
                         ImGuiWindowFlags_NoNav )
        )
     {
-        ImGui::Button( "Shop a vehicle", ImVec2( 130, 30 ) );
+        ImGui::Button( "Workshop", ImVec2( 130, 30 ) );
 
         disableMouseCtrl = ImGui::IsAnyWindowHovered();
     }
