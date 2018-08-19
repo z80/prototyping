@@ -1,5 +1,5 @@
 
-#include "state_game.h"
+#include "state_design.h"
 #include "state_manager.h"
 #include "state_intro.h"
 
@@ -9,13 +9,13 @@
 
 using namespace Ogre;
 
-static GameState g_is;
+static DesignState g_is;
 
-template<> GameState* Singleton<GameState>::msSingleton = 0;
+template<> DesignState* Singleton<DesignState>::msSingleton = 0;
 
-GameState::GameState()
+DesignState::DesignState()
     : State(),
-      Ogre::Singleton<GameState>()
+      Ogre::Singleton<DesignState>()
 {
     mRoot     = 0;
     mSceneMgr = 0;
@@ -32,12 +32,12 @@ GameState::GameState()
     planet = 0;
 }
 
-GameState::~GameState()
+DesignState::~DesignState()
 {
 
 }
 
-void GameState::enter()
+void DesignState::enter()
 {
     if ( !paused )
     {
@@ -45,6 +45,8 @@ void GameState::enter()
         mSceneMgr = StateManager::getSingletonPtr()->getSceneManager();
         mCamera = mSceneMgr->getCamera( "IntroCamera" );
         mViewport = StateManager::getSingletonPtr()->getRenderWindow()->getViewport( 0 );
+
+        mCamera->setFixedYawAxis( false );
 
         try
         {
@@ -67,21 +69,21 @@ void GameState::enter()
     resume();
 }
 
-void GameState::exit()
+void DesignState::exit()
 {
     pause();
 
     destroyObjects();
 }
 
-void GameState::pause()
+void DesignState::pause()
 {
     //mSceneMgr->setSkyBox( false, "Examples/CloudyNoonSkyBox" );
 
     paused = true;
 }
 
-void GameState::resume()
+void DesignState::resume()
 {
     //mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     mSceneMgr->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
@@ -92,14 +94,13 @@ void GameState::resume()
     paused = false;
 }
 
-bool GameState::frameStarted(const Ogre::FrameEvent& evt)
+bool DesignState::frameStarted(const Ogre::FrameEvent& evt)
 {
     if ( paused )
         return true;
 
-    modesOverlay();
-    debugOverlay();
     ImGui::ShowTestWindow();
+    debugOverlay();
     if ( world )
     {
         planet->addForces( *cube );
@@ -109,13 +110,13 @@ bool GameState::frameStarted(const Ogre::FrameEvent& evt)
     return true;
 }
 
-bool GameState::frameEnded(const Ogre::FrameEvent& evt)
+bool DesignState::frameEnded(const Ogre::FrameEvent& evt)
 {
     CameraCtrl::getSingletonPtr()->frameRendered( evt );
     return true;
 }
 
-bool GameState::keyPressed(const OgreBites::KeyboardEvent& evt)
+bool DesignState::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->keyPressed( evt );
@@ -126,50 +127,50 @@ bool GameState::keyPressed(const OgreBites::KeyboardEvent& evt)
     }
 }
 
-bool GameState::keyReleased(const OgreBites::KeyboardEvent& evt)
+bool DesignState::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->keyReleased( evt );
     return true;
 }
 
-bool GameState::touchMoved(const OgreBites::TouchFingerEvent& evt)
+bool DesignState::touchMoved(const OgreBites::TouchFingerEvent& evt)
 {
     return true;
 }
 
-bool GameState::touchPressed(const OgreBites::TouchFingerEvent& evt)
+bool DesignState::touchPressed(const OgreBites::TouchFingerEvent& evt)
 {
     return true;
 }
 
-bool GameState::touchReleased(const OgreBites::TouchFingerEvent& evt)
+bool DesignState::touchReleased(const OgreBites::TouchFingerEvent& evt)
 {
     return true;
 }
 
-bool GameState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
+bool DesignState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mouseMoved( evt );
     return true;
 }
 
-bool GameState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
+bool DesignState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mouseWheelRolled( evt );
     return true;
 }
 
-bool GameState::mousePressed(const OgreBites::MouseButtonEvent& evt)
+bool DesignState::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mousePressed( evt );
     return true;
 }
 
-bool GameState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
+bool DesignState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mouseReleased( evt );
@@ -180,7 +181,7 @@ bool GameState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 
 
 
-void GameState::createObjects()
+void DesignState::createObjects()
 {
     world = dynamic_cast<Entity::EntityWorld *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "world" ) );
@@ -242,7 +243,7 @@ void GameState::createObjects()
     }
 }
 
-void GameState::destroyObjects()
+void DesignState::destroyObjects()
 {
     CameraCtrl::getSingletonPtr()->setCameraNode( 0 );
     CameraCtrl::getSingletonPtr()->setTargetNode( 0 );
@@ -259,7 +260,7 @@ void GameState::destroyObjects()
         Entity::EntityWorld::deleteWorld();
 }
 
-void GameState::debugOverlay()
+void DesignState::debugOverlay()
 {
     const ImVec2 wndSz( 340, 120 );
     ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
@@ -305,33 +306,6 @@ void GameState::debugOverlay()
     }
     ImGui::End();
 
-}
-
-void GameState::modesOverlay()
-{
-    const ImVec2 wndSz( 170, 60 );
-    ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
-    ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
-    const ImVec2 windowPos = ImVec2( ImGui::GetIO().DisplaySize.x - wndSz.x - 10,
-                                      10 );
-    const ImVec2 windowPosPivot = ImVec2( 0, 0 );
-
-    ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
-    if ( ImGui::Begin( "Modes", 0,
-                        ImGuiWindowFlags_NoMove |
-                        ImGuiWindowFlags_NoTitleBar |
-                        ImGuiWindowFlags_NoResize |
-                        ImGuiWindowFlags_AlwaysAutoResize |
-                        ImGuiWindowFlags_NoSavedSettings |
-                        ImGuiWindowFlags_NoFocusOnAppearing |
-                        ImGuiWindowFlags_NoNav )
-       )
-    {
-        ImGui::Button( "Shop a vehicle", ImVec2( 130, 30 ) );
-
-        disableMouseCtrl = ImGui::IsAnyWindowHovered();
-    }
-    ImGui::End();
 }
 
 

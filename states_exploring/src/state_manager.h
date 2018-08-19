@@ -5,7 +5,7 @@
 #include <OgreApplicationContext.h>
 #include "OgreInput.h"
 #include "OgreRTShaderSystem.h"
-
+#include "OgreOggSoundPlugin.h"
 
 class State;
 
@@ -29,6 +29,8 @@ public:
 protected:
     void shutdown();
     void setup();
+    void initSound();
+    void finitSound();
 
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
     virtual bool frameEnded(const Ogre::FrameEvent& evt);
@@ -44,6 +46,7 @@ protected:
 private:
     std::list< State * > states;
     Ogre::SceneManager * scnMgr;
+    OgreOggSound::OgreOggSoundPlugin * soundPlugin;
 };
 
 

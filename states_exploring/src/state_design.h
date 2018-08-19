@@ -1,6 +1,6 @@
 
-#ifndef __STATE_GAME_H_
-#define __STATE_GAME_H_
+#ifndef __STATE_DESIGN_H_
+#define __STATE_DESIGN_H_
 
 #include "state.h"
 #include "entity.h"
@@ -8,12 +8,12 @@
 #include "entity_part.h"
 #include "entity_planet.h"
 
-class GameState: public State,
-                  public Ogre::Singleton<GameState>
+class DesignState: public State,
+                   public Ogre::Singleton<DesignState>
 {
 public:
-    GameState();
-    ~GameState();
+    DesignState();
+    ~DesignState();
 
     void enter();
     void exit();
@@ -34,7 +34,6 @@ public:
 
 private:
     void debugOverlay();
-    void modesOverlay();
 
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;

@@ -16,7 +16,7 @@ StateManager::StateManager()
       OgreBites::InputListener(),
       Ogre::Singleton<StateManager>()
 {
-
+    soundPlugin = 0;
 }
 
 StateManager::~StateManager()
@@ -96,6 +96,8 @@ void StateManager::shutdown()
     }
 
     destroyRTShaderSystem();
+
+    finitSound();
 }
 
 void StateManager::setup()
@@ -125,6 +127,28 @@ void StateManager::setup()
         ogreNode->setScale( 0.1, 0.1, 0.1 );
         ogreNode->setVisible( true );
     }*/
+
+    initSound();
+}
+
+void StateManager::initSound()
+{
+    soundPlugin = OGRE_NEW_T( OgreOggSound::OgreOggSoundPlugin, Ogre::MEMCATEGORY_GENERAL)();
+
+    // Register
+    Root::getSingleton().installPlugin( soundPlugin );
+
+    OgreOggSound::OgreOggSoundManager * m = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+    const bool res = m->init();
+    m->setSceneManager( scnMgr );
+}
+
+void StateManager::finitSound()
+{
+    Root::getSingleton().uninstallPlugin( soundPlugin );
+
+    OGRE_DELETE_T( soundPlugin, OgreOggSound::OgreOggSoundPlugin, Ogre::MEMCATEGORY_GENERAL);
+    soundPlugin = 0;
 }
 
 bool StateManager::frameStarted(const Ogre::FrameEvent& evt)

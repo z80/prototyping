@@ -30,6 +30,9 @@ public:
 
 private:
     void startMenuRoot( bool & doExit, bool & toGame );
+    void initSound();
+    void pauseSound();
+    void resumeSound();
 
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;

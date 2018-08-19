@@ -3,6 +3,7 @@
 #include "state_game.h"
 #include "state_manager.h"
 #include "ImguiManager.h"
+#include "OgreOggSoundManager.h"
 
 using namespace Ogre;
 
@@ -50,6 +51,8 @@ void IntroState::enter()
 
     StateManager::getSingletonPtr()->setMouseVisible( true );
 
+    initSound();
+
     instances += 1;
 }
 
@@ -67,12 +70,12 @@ void IntroState::exit()
 
 void IntroState::pause()
 {
-
+    pauseSound();
 }
 
 void IntroState::resume()
 {
-
+    resumeSound();
 }
 
 bool IntroState::frameStarted(const Ogre::FrameEvent& evt)
@@ -181,6 +184,40 @@ void IntroState::startMenuRoot( bool & doExit, bool & toGame )
         doExit = ImGui::Button( "Exit to OS",          ImVec2( 320, 30 ) );
     }
     ImGui::End();
+}
+
+void IntroState::initSound()
+{
+
+    OgreOggSound::OgreOggSoundManager * m = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+    OgreOggSound::OgreOggISound * s;
+    try
+    {
+        s = m->createSound( "introTheme", "soviet.ogg", false, true, false, mSceneMgr, true );
+        bool ok = m->createListener();
+    }
+    catch ( ... )
+    {
+        s = m->getSound( "introTheme" );
+    }
+    if ( s )
+        s->play( true );
+}
+
+void IntroState::pauseSound()
+{
+    OgreOggSound::OgreOggSoundManager * m = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+    OgreOggSound::OgreOggISound * s = m->getSound( "introTheme" );
+    if ( s )
+        s->pause( true );
+}
+
+void IntroState::resumeSound()
+{
+    OgreOggSound::OgreOggSoundManager * m = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+    OgreOggSound::OgreOggISound * s = m->getSound( "introTheme" );
+    if ( s )
+        s->play( true );
 }
 
 
