@@ -44,7 +44,7 @@ private:
     bool mExitState;
     bool paused;
     bool disableMouseCtrl;
-
+    bool toWorkshopMode;
 
     Entity::EntityWorld * world;
     Entity::EntityPart  //* plane,

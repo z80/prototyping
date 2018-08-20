@@ -1,5 +1,5 @@
 
-#include "state_design.h"
+#include "state_workshop.h"
 #include "state_manager.h"
 #include "state_intro.h"
 
@@ -9,13 +9,13 @@
 
 using namespace Ogre;
 
-static DesignState g_is;
+static WorkshopState g_is;
 
-template<> DesignState* Singleton<DesignState>::msSingleton = 0;
+template<> WorkshopState* Singleton<WorkshopState>::msSingleton = 0;
 
-DesignState::DesignState()
+WorkshopState::WorkshopState()
     : State(),
-      Ogre::Singleton<DesignState>()
+      Ogre::Singleton<WorkshopState>()
 {
     mRoot     = 0;
     mSceneMgr = 0;
@@ -32,12 +32,12 @@ DesignState::DesignState()
     planet = 0;
 }
 
-DesignState::~DesignState()
+WorkshopState::~WorkshopState()
 {
 
 }
 
-void DesignState::enter()
+void WorkshopState::enter()
 {
     if ( !paused )
     {
@@ -69,21 +69,21 @@ void DesignState::enter()
     resume();
 }
 
-void DesignState::exit()
+void WorkshopState::exit()
 {
     pause();
 
     destroyObjects();
 }
 
-void DesignState::pause()
+void WorkshopState::pause()
 {
     //mSceneMgr->setSkyBox( false, "Examples/CloudyNoonSkyBox" );
 
     paused = true;
 }
 
-void DesignState::resume()
+void WorkshopState::resume()
 {
     //mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     mSceneMgr->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
@@ -94,7 +94,7 @@ void DesignState::resume()
     paused = false;
 }
 
-bool DesignState::frameStarted(const Ogre::FrameEvent& evt)
+bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
 {
     if ( paused )
         return true;
@@ -110,13 +110,13 @@ bool DesignState::frameStarted(const Ogre::FrameEvent& evt)
     return true;
 }
 
-bool DesignState::frameEnded(const Ogre::FrameEvent& evt)
+bool WorkshopState::frameEnded(const Ogre::FrameEvent& evt)
 {
     CameraCtrl::getSingletonPtr()->frameRendered( evt );
     return true;
 }
 
-bool DesignState::keyPressed(const OgreBites::KeyboardEvent& evt)
+bool WorkshopState::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->keyPressed( evt );
@@ -127,50 +127,50 @@ bool DesignState::keyPressed(const OgreBites::KeyboardEvent& evt)
     }
 }
 
-bool DesignState::keyReleased(const OgreBites::KeyboardEvent& evt)
+bool WorkshopState::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->keyReleased( evt );
     return true;
 }
 
-bool DesignState::touchMoved(const OgreBites::TouchFingerEvent& evt)
+bool WorkshopState::touchMoved(const OgreBites::TouchFingerEvent& evt)
 {
     return true;
 }
 
-bool DesignState::touchPressed(const OgreBites::TouchFingerEvent& evt)
+bool WorkshopState::touchPressed(const OgreBites::TouchFingerEvent& evt)
 {
     return true;
 }
 
-bool DesignState::touchReleased(const OgreBites::TouchFingerEvent& evt)
+bool WorkshopState::touchReleased(const OgreBites::TouchFingerEvent& evt)
 {
     return true;
 }
 
-bool DesignState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
+bool WorkshopState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mouseMoved( evt );
     return true;
 }
 
-bool DesignState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
+bool WorkshopState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mouseWheelRolled( evt );
     return true;
 }
 
-bool DesignState::mousePressed(const OgreBites::MouseButtonEvent& evt)
+bool WorkshopState::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mousePressed( evt );
     return true;
 }
 
-bool DesignState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
+bool WorkshopState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->mouseReleased( evt );
@@ -181,7 +181,7 @@ bool DesignState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 
 
 
-void DesignState::createObjects()
+void WorkshopState::createObjects()
 {
     world = dynamic_cast<Entity::EntityWorld *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "world" ) );
@@ -243,7 +243,7 @@ void DesignState::createObjects()
     }
 }
 
-void DesignState::destroyObjects()
+void WorkshopState::destroyObjects()
 {
     CameraCtrl::getSingletonPtr()->setCameraNode( 0 );
     CameraCtrl::getSingletonPtr()->setTargetNode( 0 );
@@ -260,7 +260,7 @@ void DesignState::destroyObjects()
         Entity::EntityWorld::deleteWorld();
 }
 
-void DesignState::debugOverlay()
+void WorkshopState::debugOverlay()
 {
     const ImVec2 wndSz( 340, 120 );
     ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background

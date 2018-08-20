@@ -1,6 +1,6 @@
 
-#ifndef __STATE_DESIGN_H_
-#define __STATE_DESIGN_H_
+#ifndef __STATE_WORKSHOP_H_
+#define __STATE_WORKSHOP_H_
 
 #include "state.h"
 #include "entity.h"
@@ -8,12 +8,12 @@
 #include "entity_part.h"
 #include "entity_planet.h"
 
-class DesignState: public State,
-                   public Ogre::Singleton<DesignState>
+class WorkshopState: public State,
+                     public Ogre::Singleton<WorkshopState>
 {
 public:
-    DesignState();
-    ~DesignState();
+    WorkshopState();
+    ~WorkshopState();
 
     void enter();
     void exit();

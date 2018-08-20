@@ -2,6 +2,7 @@
 #include "state_game.h"
 #include "state_manager.h"
 #include "state_intro.h"
+#include "state_workshop.h"
 
 #include "entity_factory.h"
 #include "camera_ctrl.h"
@@ -25,6 +26,7 @@ GameState::GameState()
     mExitState = false;
     paused     = false;
     disableMouseCtrl = false;
+    toWorkshopMode = false;
 
     world  = 0;
     //plane = 0;
@@ -104,6 +106,12 @@ bool GameState::frameStarted(const Ogre::FrameEvent& evt)
     {
         planet->addForces( *cube );
         world->frameStarted( evt );
+    }
+    if ( toWorkshopMode )
+    {
+        toWorkshopMode = false;
+        StateManager::getSingletonPtr()->pushState( WorkshopState::getSingletonPtr() );
+
     }
 
     return true;
