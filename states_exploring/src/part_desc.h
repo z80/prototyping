@@ -3,6 +3,7 @@
 #define __PART_DESC_H_
 
 #include "Ogre.h"
+#include "config_reader.h"
 
 namespace Desc
 {
@@ -73,6 +74,37 @@ struct Parameter
     } Lt;
 };
 
+struct Sound
+{
+    std::string name;
+    std::string fileName;
+
+    Sound( const std::string n, const std::string & fn )
+    {
+        name     = n;
+        fileName = fn;
+    }
+
+    static struct _Lt
+    {
+        bool operator()( const Sound & a, const Sound & b )
+        {
+            const bool res = (a.name < b.name);
+            return res;
+        }
+        bool operator()( const Sound & a, const std::string & b )
+        {
+            const bool res = (a.name < b);
+            return res;
+        }
+        bool operator()( const std::string & a, const Sound & b )
+        {
+            const bool res = (a < b.name);
+            return res;
+        }
+    } Lt;
+};
+
 class PartDesc
 {
 public:
@@ -81,12 +113,16 @@ public:
     PartDesc( const PartDesc & inst );
     const PartDesc & operator=( const PartDesc & inst );
 
-    void setParam( const std::string & name, Ogre::Real value );
-    void finalize();
+    void addParam( const std::string & name, Ogre::Real value );
     bool param( const std::string & name, Ogre::Real & value );
+
+    void addSound( const std::string & name, const std::string & fileName );
+
+    void finalize();
 
     std::vector<Piece>           parts;
     std::vector<ConnectionPoint> connections;
+    std::vector<Sound>           sounds;
     std::vector<Parameter>       params;
     Ogre::Real    mass;
     Ogre::Vector3 inertia;
@@ -97,6 +133,8 @@ public:
     std::string icon;
     int         level;
 };
+
+void luaopen_partdesc( lua_State * L );
 
 
 }
