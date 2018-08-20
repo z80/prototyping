@@ -4,6 +4,11 @@
 
 #include <string>
 
+extern "C"
+{
+    struct lua_State;
+    typedef int (* ScriptFunc) (lua_State *L);
+}
 
 namespace Config
 {
@@ -31,6 +36,8 @@ public:
     bool readString( const char * name, std::string & stri, const char * defValue = 0 );
     bool pathExists( const char * path );
 
+    void funcRegister( const char * funcName, ScriptFunc func );
+    lua_State * luaState();
 private:
     class PD;
     PD * pd;

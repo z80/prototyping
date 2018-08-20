@@ -110,6 +110,8 @@ public:
 ConfigReader::ConfigReader( bool verbose )
 {
     pd = new PD( verbose );
+    pd->L = luaL_newstate();
+    luaL_openlibs( pd->L );
 }
 
 ConfigReader::~ConfigReader()
@@ -119,10 +121,6 @@ ConfigReader::~ConfigReader()
 
 bool ConfigReader::openFile( const char * fname )
 {
-    if ( pd->L )
-        lua_close( pd->L );
-    pd->L = luaL_newstate();
-    luaL_openlibs( pd->L );
     pd->top = lua_gettop( pd->L );
     int err = luaL_dofile( pd->L, fname );
     if ( err )
@@ -254,6 +252,18 @@ bool ConfigReader::pathExists( const char * path )
     pd->toTheRoot();
 
     return res;
+}
+
+void ConfigReader::funcRegister( const char * funcName, ScriptFunc func )
+{
+    lua_pushstring( pd->L, funcName );
+    lua_pushcfunction( pd->L, func );
+    lua_settable( pd->L, LUA_GLOBALSINDEX );
+}
+
+lua_State * ConfigReader::luaState()
+{
+    return pd->L;
 }
 
 

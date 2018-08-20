@@ -8,6 +8,10 @@
 #include "OgreOggSoundPlugin.h"
 
 class State;
+namespace Config
+{
+    class ConfigReader;
+}
 
 class StateManager: public OgreBites::ApplicationContext,
                     public OgreBites::InputListener,
@@ -24,8 +28,7 @@ public:
     Ogre::SceneManager * getSceneManager();
     void setMouseVisible( bool en );
 
-    //static StateManager & getSingleton(void);
-    //static StateManager * getSingletonPtr(void);
+    Config::ConfigReader * configReader();
 protected:
     void shutdown();
     void setup();
@@ -47,6 +50,7 @@ private:
     std::list< State * > states;
     Ogre::SceneManager * scnMgr;
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
+    Config::ConfigReader * confReader;
 };
 
 

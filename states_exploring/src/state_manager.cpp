@@ -4,6 +4,7 @@
 #include "Ogre.h"
 #include "OgreRoot.h"
 #include "ImguiManager.h"
+#include "config_reader.h"
 
 using namespace Ogre;
 
@@ -17,11 +18,12 @@ StateManager::StateManager()
       Ogre::Singleton<StateManager>()
 {
     soundPlugin = 0;
+    confReader = new Config::ConfigReader( true );
 }
 
 StateManager::~StateManager()
 {
-
+    delete confReader;
 }
 
 void StateManager::start( State * state )
@@ -85,6 +87,11 @@ Ogre::SceneManager * StateManager::getSceneManager()
 void StateManager::setMouseVisible( bool en )
 {
     setWindowGrab( !en );
+}
+
+Config::ConfigReader * StateManager::configReader()
+{
+    return confReader;
 }
 
 void StateManager::shutdown()
