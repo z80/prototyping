@@ -123,6 +123,37 @@ bool AirMesh::airMesh( Ogre::Entity * e, AirMesh & a )
     return true;
 }
 
+bool AirMesh::airMesh( Ogre::MeshPtr m, AirMesh & a )
+{
+    a.tris.clear();
+
+    BtOgre::StaticMeshToShapeConverter c;
+    c.addMesh( m );
+    const Ogre::int32 indsQty = c.getIndexCount();
+    const Ogre::Vector3 * verts = c.getVertices();
+    const unsigned int * inds = c.getIndices();
+    for ( int i=0; i<indsQty; i+=3 )
+    {
+        const unsigned int ind0 = inds[i];
+        const unsigned int ind1 = inds[i+1];
+        const unsigned int ind2 = inds[i+2];
+        const Ogre::Vector3 & v0 = verts[ind0];
+        const Ogre::Vector3 & v1 = verts[ind1];
+        const Ogre::Vector3 & v2 = verts[ind2];
+        const Ogre::Vector3 c = (v0 + v1 + v2) * 0.3333333333;
+        const Ogre::Vector3 v01 = v1 - v0;
+        const Ogre::Vector3 v02 = v2 - v0;
+        Ogre::Vector3 n = v01.crossProduct( v02 );
+        Triangle tri;
+        tri.area = 0.5 * n.normalise();
+        tri.norm =  btVector3( n.x, n.y, n.z );
+        tri.at   =  btVector3( c.x, c.y, c.z );
+        a.tris.push_back( tri );
+    }
+
+    return true;
+}
+
 AirMesh::AirMesh()
 {
 

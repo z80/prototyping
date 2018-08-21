@@ -49,6 +49,7 @@ class AirMesh
 {
 public:
     static bool airMesh( Ogre::Entity * e, AirMesh & a );
+    static bool airMesh( Ogre::MeshPtr m, AirMesh & a );
 
     AirMesh();
     ~AirMesh();

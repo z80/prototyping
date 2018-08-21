@@ -32,7 +32,7 @@ public:
     EntityWorld( Ogre::SceneManager * scnMgr );
     ~EntityWorld();
 
-    bool frameStarted( const Ogre::FrameEvent & evt );
+    bool frameStarted( const Ogre::FrameEvent & evt, bool debugDraw = true );
     void addEntity( EntityPart * part );
     void addEntity( EntityPlanet * part );
 

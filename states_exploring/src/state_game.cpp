@@ -23,6 +23,7 @@ GameState::GameState()
     mViewport = 0;
     mCamera   = 0;
     mCameraNode = 0;
+    doDebugDraw = false;
     mExitState = false;
     paused     = false;
     disableMouseCtrl = false;
@@ -105,7 +106,7 @@ bool GameState::frameStarted(const Ogre::FrameEvent& evt)
     if ( world )
     {
         planet->addForces( *cube );
-        world->frameStarted( evt );
+        world->frameStarted( evt, doDebugDraw );
     }
     if ( toWorkshopMode )
     {
@@ -310,8 +311,20 @@ void GameState::debugOverlay()
         }
 
         disableMouseCtrl = ImGui::IsAnyWindowHovered();
+
+        ImGui::End();
     }
-    ImGui::End();
+
+
+    if (ImGui::BeginMainMenuBar())
+    {
+        if ( ImGui::BeginMenu("Debug") )
+        {
+            ImGui::MenuItem( "Debug draw", 0, &doDebugDraw );
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
 
 }
 

@@ -193,8 +193,8 @@ void IntroState::initSound()
     OgreOggSound::OgreOggISound * s;
     try
     {
-        s = m->createSound( "introTheme", "soviet.ogg", false, true, false, mSceneMgr, true );
         bool ok = m->createListener();
+        s = m->createSound( "introTheme", "soviet.ogg", false, true, false, mSceneMgr, true );
     }
     catch ( ... )
     {

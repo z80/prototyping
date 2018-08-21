@@ -1,5 +1,6 @@
 
 #include "part_desc.h"
+#include "entity_world.h"
 #include <vector>
 #include <algorithm>
 
@@ -12,79 +13,6 @@ extern "C"
 
 namespace Desc
 {
-
-PartDesc::PartDesc()
-{
-    level = 0;
-}
-
-PartDesc::~PartDesc()
-{
-
-}
-
-PartDesc::PartDesc( const PartDesc & inst )
-{
-    *this = inst;
-}
-
-const PartDesc & PartDesc::operator=( const PartDesc & inst )
-{
-    if ( this != &inst )
-    {
-        parts       = inst.parts;
-        connections = inst.connections;
-        params      = inst.params;
-        mass        = inst.mass;
-        inertia     = inst.inertia;
-
-        name        = inst.name;
-        desc        = inst.desc;
-        group       = inst.group;
-        icon        = inst.icon;
-        level       = inst.level;
-
-    }
-    return *this;
-}
-
-void PartDesc::addParam( const std::string & name, Ogre::Real value )
-{
-    params.push_back( Parameter( name, value ) );
-    std::push_heap( params.begin(), params.end(), Parameter::Lt );
-}
-
-bool PartDesc::param( const std::string & name, Ogre::Real & value )
-{
-    std::vector<Parameter>::const_iterator it =
-            std::lower_bound( params.begin(), params.end(), name, Parameter::Lt );
-    if ( it == params.end() )
-        return false;
-    value = (*it).value;
-    return true;
-}
-
-void PartDesc::addSound( const std::string & name, const std::string & fileName )
-{
-    sounds.push_back( Sound( name, fileName ) );
-    std::push_heap( sounds.begin(), sounds.end(), Sound::Lt );
-}
-
-void PartDesc::finalize()
-{
-    std::sort_heap( params.begin(), params.end(), Parameter::Lt );
-    std::sort_heap( sounds.begin(), sounds.end(), Sound::Lt );
-}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -128,7 +56,7 @@ static bool readVector( lua_State * L, int ind, Ogre::Vector3 & v )
 
 
 
-
+/*
 static int connPt_create( lua_State * L )
 {
     ConnectionPoint * * p = reinterpret_cast<ConnectionPoint * *>(
@@ -162,7 +90,7 @@ static int connPt_setN( lua_State * L )
     readVector( L, 2, p->dir );
     return 0;
 }
-
+*/
 
 
 

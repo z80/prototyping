@@ -58,14 +58,18 @@ EntityWorld::~EntityWorld()
     delete mBroadphase;
 }
 
-bool EntityWorld::frameStarted( const Ogre::FrameEvent & evt )
+bool EntityWorld::frameStarted( const Ogre::FrameEvent & evt , bool debugDraw )
 {
     //Update Bullet world. Don't forget the debugDrawWorld() part!
     phyWorld->stepSimulation( evt.timeSinceLastFrame, 10 );
-    phyWorld->debugDrawWorld();
 
-    //Shows debug if F3 key down.
-    dbgdraw->step();
+    if ( debugDraw )
+    {
+        //phyWorld->debugDrawWorld();
+
+        //Shows debug if F3 key down.
+        dbgdraw->step();
+    }
 }
 
 void EntityWorld::addEntity( EntityPart * part )

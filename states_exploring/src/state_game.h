@@ -41,6 +41,7 @@ private:
     Ogre::Viewport * mViewport;
     Ogre::Camera * mCamera;
     Ogre::SceneNode * mCameraNode;
+    bool doDebugDraw;
     bool mExitState;
     bool paused;
     bool disableMouseCtrl;
