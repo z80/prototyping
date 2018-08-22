@@ -4,9 +4,8 @@
 
 #include "state.h"
 #include "entity.h"
-#include "entity_world.h"
-#include "entity_part.h"
-#include "entity_planet.h"
+#include "group_item.h"
+#include "ImguiManager.h"
 
 class WorkshopState: public State,
                      public Ogre::Singleton<WorkshopState>
@@ -34,24 +33,26 @@ public:
 
 private:
     void debugOverlay();
+    void backToGameOverlay();
 
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;
     Ogre::Viewport * mViewport;
-    Ogre::Camera * mCamera;
+    Ogre::Camera    * mCamera;
     Ogre::SceneNode * mCameraNode;
     bool mExitState;
     bool paused;
     bool disableMouseCtrl;
 
-
-    Entity::EntityWorld * world;
-    Entity::EntityPart  //* plane,
-                        * cube;
-    Entity::EntityPlanet * planet;
-
     void createObjects();
     void destroyObjects();
+
+    // Externally load all the parameters of groups overlay.
+    bool loadGroups();
+
+    int    level;
+    ImVec2 iconSz;
+    std::vector<Group::Group> groups;
 };
 
 

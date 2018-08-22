@@ -7,6 +7,9 @@
 #include "camera_ctrl.h"
 #include "ImguiManager.h"
 
+#include "config_reader.h"
+#include "lua.hpp"
+
 using namespace Ogre;
 
 static WorkshopState g_is;
@@ -25,11 +28,6 @@ WorkshopState::WorkshopState()
     mExitState = false;
     paused     = false;
     disableMouseCtrl = false;
-
-    world  = 0;
-    //plane = 0;
-    cube   = 0;
-    planet = 0;
 }
 
 WorkshopState::~WorkshopState()
@@ -100,11 +98,13 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
         return true;
 
     ImGui::ShowTestWindow();
+    backToGameOverlay();
     debugOverlay();
-    if ( world )
+
+    if ( mExitState )
     {
-        planet->addForces( *cube );
-        world->frameStarted( evt );
+        StateManager::getSingletonPtr()->popState();
+        mExitState = false;
     }
 
     return true;
@@ -183,81 +183,13 @@ bool WorkshopState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 
 void WorkshopState::createObjects()
 {
-    world = dynamic_cast<Entity::EntityWorld *>(
-                Entity::EntityFactory::getSingletonPtr()->create( "world" ) );
-    //plane = dynamic_cast<Entity::EntityPart *>(
-    //            Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
-    cube  = dynamic_cast<Entity::EntityPart *>(
-                Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
-    planet = dynamic_cast<Entity::EntityPlanet *>(
-                Entity::EntityFactory::getSingletonPtr()->create( "planet" ) );
 
-    // Debugging object to see at least something.
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, 0.0, -10.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, 0.0, 10.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, 10.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, -10.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 10.0, 0.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( -10.0, 0.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
 }
 
 void WorkshopState::destroyObjects()
 {
     CameraCtrl::getSingletonPtr()->setCameraNode( 0 );
     CameraCtrl::getSingletonPtr()->setTargetNode( 0 );
-
-    if ( mCameraNode )
-        mSceneMgr->destroySceneNode( mCameraNode );
-    if ( planet )
-        delete planet;
-    if ( cube )
-        delete cube;
-    //if ( plane )
-    //    delete plane;
-    if ( world )
-        Entity::EntityWorld::deleteWorld();
 }
 
 void WorkshopState::debugOverlay()
@@ -307,6 +239,173 @@ void WorkshopState::debugOverlay()
     ImGui::End();
 
 }
+
+void WorkshopState::backToGameOverlay()
+{
+    const ImVec2 wndSz( 150, 50 );
+    ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
+    ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
+    const ImVec2 windowPos = ImVec2( ImGui::GetIO().DisplaySize.x - wndSz.x - 10,
+                                      10 );
+    const ImVec2 windowPosPivot = ImVec2( 0, 0 );
+
+    ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
+    if ( ImGui::Begin( "Modes", 0,
+                        ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoTitleBar |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_AlwaysAutoResize |
+                        ImGuiWindowFlags_NoSavedSettings |
+                        ImGuiWindowFlags_NoFocusOnAppearing |
+                        ImGuiWindowFlags_NoNav )
+       )
+    {
+        if ( ImGui::Button( "Leave workshop", ImVec2( 130, 30 ) ) )
+        {
+            mExitState = true;
+        }
+
+        disableMouseCtrl = ImGui::IsAnyWindowHovered();
+    }
+    ImGui::End();
+}
+
+
+
+static void getGroupIconSize( lua_State * L, ImVec2 & sz );
+static void getGroupQty( lua_State * L, int & qty );
+static void getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc );
+static void getItemsQty( lua_State * L, int groupInd, int & qty );
+static void getItem( lua_State * L, int groupInd, int itemInd, Group::GroupItem & item );
+static void getLevel( lua_State * L, int & level );
+
+bool WorkshopState::loadGroups()
+{
+    Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
+    const bool res = cr->openFile( "./main.lua" );
+    if ( !res )
+        return false;
+    lua_State * L = cr->luaState();
+
+    getGroupIconSize( L, iconSz );
+
+    int qty;
+    getGroupQty( L, qty );
+    groups.clear();
+    groups.resize( qty );
+    int itemsQty;
+    for ( int i=0; i<qty; i++ )
+    {
+        Group::Group & group = groups[i];
+        getGroup( L, i, group.groupDesc );
+        getItemsQty( L, i, itemsQty );
+        group.items.resize( itemsQty );
+        for ( int j=0; j<itemsQty; j++ )
+            getItem( L, i, j, group.items[j] );
+    }
+
+    getLevel( L, level );
+}
+
+
+
+
+
+
+static void getGroupIconSize( lua_State * L, ImVec2 & sz )
+{
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "getGroupIconSize" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        sz.x = 32;
+        sz.y = 32;
+        lua_settop( L, top );
+        return;
+    }
+    const int res = lua_pcall( L, 0, 2, -1 );
+    if ( res != 0 )
+    {
+        sz.x = 32;
+        sz.y = 32;
+        lua_settop( L, top );
+        return;
+    }
+
+    sz.x = lua_tonumber( L, -2 );
+    sz.y = lua_tonumber( L, -1 );
+    lua_settop( L, top );
+}
+
+static void getGroupQty( lua_State * L, int & qty )
+{
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "getGroupQty" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        qty = 0;
+        lua_settop( L, top );
+        return;
+    }
+    const int res = lua_pcall( L, 0, 1, -1 );
+    if ( res != 0 )
+    {
+        qty = 0;
+        lua_settop( L, top );
+        return;
+    }
+
+    qty = static_cast<int>( lua_tonumber( L, -1 ) );
+    lua_settop( L, top );
+}
+
+static void getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc )
+{
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "getGroup" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        desc.name        = "error";
+        desc.tooltip     = "error";
+        desc.description = "error";
+        lua_settop( L, top );
+        return;
+    }
+    lua_pushinteger( L, groupInd+1 );
+    const int res = lua_pcall( L, 1, 3, -1 );
+    if ( res != 0 )
+    {
+        desc.name        = "error";
+        desc.tooltip     = "error";
+        desc.description = "error";
+        lua_settop( L, top );
+        return;
+    }
+
+    desc.name        = lua_tostring( L, -3 );
+    desc.tooltip     = lua_tostring( L, -2 );
+    desc.description = lua_tostring( L, -1 );
+    lua_settop( L, top );
+}
+
+static void getItemsQty( lua_State * L, int groupInd, int & qty )
+{
+
+}
+
+static void getItem( lua_State * L, int groupInd, int itemInd, Group::GroupItem & item )
+{
+
+}
+
+static void getLevel( lua_State * L, int & level )
+{
+
+}
+
 
 
 

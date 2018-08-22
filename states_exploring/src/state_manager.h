@@ -28,7 +28,7 @@ public:
     Ogre::SceneManager * getSceneManager();
     void setMouseVisible( bool en );
 
-    Config::ConfigReader * configReader();
+    Config::ConfigReader * getConfigReader();
 protected:
     void shutdown();
     void setup();

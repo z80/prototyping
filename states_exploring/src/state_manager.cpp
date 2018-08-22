@@ -89,7 +89,7 @@ void StateManager::setMouseVisible( bool en )
     setWindowGrab( !en );
 }
 
-Config::ConfigReader * StateManager::configReader()
+Config::ConfigReader * StateManager::getConfigReader()
 {
     return confReader;
 }
