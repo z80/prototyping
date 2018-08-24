@@ -348,7 +348,8 @@ void GameState::modesOverlay()
                         ImGuiWindowFlags_NoNav )
        )
     {
-        ImGui::Button( "Workshop", ImVec2( 130, 30 ) );
+        if ( ImGui::Button( "Workshop", ImVec2( 130, 30 ) ) )
+            StateManager::getSingletonPtr()->pushState( WorkshopState::getSingletonPtr() );
 
         disableMouseCtrl = ImGui::IsAnyWindowHovered();
     }

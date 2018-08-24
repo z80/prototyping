@@ -34,6 +34,7 @@ public:
 private:
     void debugOverlay();
     void backToGameOverlay();
+    void panelOverlay();
 
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;

@@ -118,8 +118,8 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
         return true;
 
     ImGui::ShowTestWindow();
+    panelOverlay();
     backToGameOverlay();
-    debugOverlay();
 
     if ( mExitState )
     {
@@ -141,10 +141,7 @@ bool WorkshopState::keyPressed(const OgreBites::KeyboardEvent& evt)
     if ( !disableMouseCtrl )
         CameraCtrl::getSingletonPtr()->keyPressed( evt );
     if ( evt.keysym.sym == 27 )
-    {
-        //StateManager::getSingletonPtr()->popState();
         StateManager::getSingletonPtr()->pushState( IntroState::getSingletonPtr() );
-    }
 }
 
 bool WorkshopState::keyReleased(const OgreBites::KeyboardEvent& evt)
@@ -208,8 +205,6 @@ void WorkshopState::createObjects()
 
 void WorkshopState::destroyObjects()
 {
-    CameraCtrl::getSingletonPtr()->setCameraNode( 0 );
-    CameraCtrl::getSingletonPtr()->setTargetNode( 0 );
 }
 
 void WorkshopState::debugOverlay()
@@ -258,7 +253,7 @@ void WorkshopState::backToGameOverlay()
     const ImVec2 windowPosPivot = ImVec2( 0, 0 );
 
     ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
-    if ( ImGui::Begin( "Modes", 0,
+    if ( ImGui::Begin( "BackToGame", 0,
                         ImGuiWindowFlags_NoMove |
                         ImGuiWindowFlags_NoTitleBar |
                         ImGuiWindowFlags_NoResize |
@@ -269,8 +264,41 @@ void WorkshopState::backToGameOverlay()
        )
     {
         if ( ImGui::Button( "Leave workshop", ImVec2( 130, 30 ) ) )
+            StateManager::getSingletonPtr()->popState();
+
+        disableMouseCtrl = ImGui::IsAnyWindowHovered();
+    }
+    ImGui::End();
+}
+
+void WorkshopState::panelOverlay()
+{
+    const ImVec2 wndSz( 250, ImGui::GetIO().DisplaySize.y );
+    ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
+    ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
+    const ImVec2 windowPos = ImVec2( 0, 0 );
+    const ImVec2 windowPosPivot = ImVec2( 0, 0 );
+
+    ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
+    if ( ImGui::Begin( "Panel", 0,
+                        ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoTitleBar |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_AlwaysAutoResize |
+                        ImGuiWindowFlags_NoSavedSettings |
+                        ImGuiWindowFlags_NoFocusOnAppearing |
+                        ImGuiWindowFlags_NoNav )
+       )
+    {
+        const int groupsQty = static_cast<int>( groups.size() );
+        for ( int i=0; i<groupsQty; i++ )
         {
-            mExitState = true;
+            const Group::Group & group = groups[i];
+            const Group::GroupDesc & desc = group.groupDesc;
+            if ( ImGui::CollapsingHeader( desc.name.c_str() ) )
+            {
+
+            }
         }
 
         disableMouseCtrl = ImGui::IsAnyWindowHovered();
@@ -321,6 +349,7 @@ bool WorkshopState::loadGroups()
     }
 
     getLevel( L, level );
+    return true;
 }
 
 bool WorkshopState::loadLevel()
@@ -449,17 +478,18 @@ static bool getItem( lua_State * L, int groupInd, int itemInd, std::string & ico
     }
     lua_pushinteger( L, groupInd+1 );
     lua_pushinteger( L, itemInd+1 );
-    const int res = lua_pcall( L, 2, 4, 0 );
+    const int res = lua_pcall( L, 2, 5, 0 );
     if ( res != 0 )
     {
         lua_settop( L, top );
         return false;
     }
 
-    item.name        = lua_tostring( L, -4 );
-    item.tooltip     = lua_tostring( L, -3 );
-    item.description = lua_tostring( L, -2 );
-    icon             = lua_tostring( L, -1 );
+    item.name        = lua_tostring( L, -5 );
+    item.tooltip     = lua_tostring( L, -4 );
+    item.description = lua_tostring( L, -3 );
+    icon             = lua_tostring( L, -2 );
+    item.level       = static_cast<int>( lua_tonumber( L, -1 ) );
     lua_settop( L, top );
 
     return true;
