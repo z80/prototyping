@@ -29,6 +29,7 @@ WorkshopState::WorkshopState()
     paused     = false;
     disableMouseCtrl = false;
     groupsInitialized = false;
+    itemsPerLine      = 3;
 }
 
 WorkshopState::~WorkshopState()
@@ -291,19 +292,49 @@ void WorkshopState::panelOverlay()
        )
     {
         const int groupsQty = static_cast<int>( groups.size() );
+        const float w = ImGui::GetContentRegionAvailWidth() / static_cast<float>( itemsPerLine );
         for ( int i=0; i<groupsQty; i++ )
         {
             const Group::Group & group = groups[i];
+            const int itemsQty = static_cast<int>( group.items.size() );
             const Group::GroupDesc & desc = group.groupDesc;
             if ( ImGui::CollapsingHeader( desc.name.c_str() ) )
             {
-
+                for ( int j=0; j<itemsQty; j++ )
+                {
+                    const Group::GroupItem & item = group.items[j];
+                    const bool notLastInRow = ( ( (j+1) % itemsPerLine ) != 0 ) && ( j != 0 );
+                    //ImGui::PushItemWidth( w );
+                    panelItem( item, notLastInRow );
+                }
             }
         }
 
         disableMouseCtrl = ImGui::IsAnyWindowHovered();
     }
     ImGui::End();
+}
+
+void WorkshopState::panelItem( const Group::GroupItem & item, bool notLastInRow )
+{
+    if ( notLastInRow )
+        ImGui::SameLine();
+    ImGui::BeginGroup();
+    {
+        ImGui::Text( "%s", item.name.c_str() );
+        ImGui::ImageButton( (ImTextureID)item.icon, iconSz );
+    }
+    ImGui::EndGroup();
+    if ( ImGui::IsItemHovered() )
+    {
+        ImGui::BeginTooltip();
+        {
+            ImGui::PushTextWrapPos( ImGui::GetFontSize() * 135.0f );
+            ImGui::TextUnformatted( item.tooltip.c_str() );
+            ImGui::PopTextWrapPos();
+        }
+        ImGui::EndTooltip();
+    }
 }
 
 

@@ -35,6 +35,7 @@ private:
     void debugOverlay();
     void backToGameOverlay();
     void panelOverlay();
+    void panelItem( const Group::GroupItem & item, bool notLastInRow );
 
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;
@@ -55,6 +56,8 @@ private:
     int    level;
     bool   groupsInitialized;
     ImVec2 iconSz;
+    int    itemsPerLine;
+
     std::vector<Group::Group> groups;
 };
 

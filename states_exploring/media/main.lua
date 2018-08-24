@@ -1,6 +1,6 @@
 
 function getGroupIconSize()
-    return 32, 32
+    return 64, 64
 end
 
 function getGroupQty()
