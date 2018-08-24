@@ -28,6 +28,7 @@ WorkshopState::WorkshopState()
     mExitState = false;
     paused     = false;
     disableMouseCtrl = false;
+    groupsInitialized = false;
 }
 
 WorkshopState::~WorkshopState()
@@ -86,10 +87,29 @@ void WorkshopState::resume()
     //mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     mSceneMgr->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
 
-    CameraCtrl::getSingletonPtr()->setCameraNode( mCameraNode );
-    CameraCtrl::getSingletonPtr()->setTargetNode( cube->sceneNode );
-
     paused = false;
+
+    if ( !groupsInitialized )
+    {
+        Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
+        if ( cr )
+        {
+            if ( !cr->openFile( "./main.lua" ) )
+            {
+                const char * err;
+                cr->error( &err );
+                Ogre::LogManager::getSingletonPtr()->logMessage( err );
+            }
+            else
+            {
+                if ( loadGroups() )
+                    groupsInitialized = true;
+                else
+                    Ogre::LogManager::getSingletonPtr()->logMessage( "WorkshopState: Failed to load groups" );
+            }
+        }
+    }
+    loadLevel();
 }
 
 bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
@@ -212,18 +232,6 @@ void WorkshopState::debugOverlay()
        )
     {
         {
-            const Ogre::Vector3 at = cube->sceneNode->getPosition();
-            std::ostringstream out;
-            out << "cube (" << at.x << ", " << at.y << ", " << at.z << ")";
-            ImGui::Text( "%s", out.str().c_str() );
-        }
-        /*{
-            const Ogre::Vector3 at = plane->sceneNode->getPosition();
-            std::ostringstream out;
-            out << "plane (" << at.x << ", " << at.y << ", " << at.z << ")";
-            ImGui::Text( "%s", out.str().c_str() );
-        }*/
-        {
             const Ogre::Vector3 at = mCameraNode->getPosition();
             std::ostringstream out;
             out << "cam (" << at.x << ", " << at.y << ", " << at.z << ")";
@@ -272,38 +280,53 @@ void WorkshopState::backToGameOverlay()
 
 
 
-static void getGroupIconSize( lua_State * L, ImVec2 & sz );
-static void getGroupQty( lua_State * L, int & qty );
-static void getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc );
-static void getItemsQty( lua_State * L, int groupInd, int & qty );
-static void getItem( lua_State * L, int groupInd, int itemInd, Group::GroupItem & item );
-static void getLevel( lua_State * L, int & level );
+static bool getGroupIconSize( lua_State * L, ImVec2 & sz );
+static bool getGroupQty( lua_State * L, int & qty );
+static bool getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc );
+static bool getItemsQty( lua_State * L, int groupInd, int & qty );
+static bool getItem( lua_State * L, int groupInd, int itemInd,
+                     std::string & icon, Group::GroupItem & item );
+static bool getLevel( lua_State * L, int & level );
 
 bool WorkshopState::loadGroups()
 {
     Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
-    const bool res = cr->openFile( "./main.lua" );
-    if ( !res )
-        return false;
     lua_State * L = cr->luaState();
 
     getGroupIconSize( L, iconSz );
 
     int qty;
-    getGroupQty( L, qty );
+    if ( !getGroupQty( L, qty ) )
+        return false;
     groups.clear();
     groups.resize( qty );
     int itemsQty;
+    std::string icon;
     for ( int i=0; i<qty; i++ )
     {
         Group::Group & group = groups[i];
-        getGroup( L, i, group.groupDesc );
-        getItemsQty( L, i, itemsQty );
+        if ( !getGroup( L, i, group.groupDesc ) )
+            return false;
+        if ( !getItemsQty( L, i, itemsQty ) )
+            return false;
         group.items.resize( itemsQty );
         for ( int j=0; j<itemsQty; j++ )
-            getItem( L, i, j, group.items[j] );
+        {
+            if ( !getItem( L, i, j, icon, group.items[j] ) )
+                return false;
+            TexturePtr t = TextureManager::getSingleton().getByName( icon );
+            ResourceHandle hdl = t->getHandle();
+            group.items[j].icon = hdl;
+        }
     }
 
+    getLevel( L, level );
+}
+
+bool WorkshopState::loadLevel()
+{
+    Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
+    lua_State * L = cr->luaState();
     getLevel( L, level );
 }
 
@@ -312,7 +335,7 @@ bool WorkshopState::loadGroups()
 
 
 
-static void getGroupIconSize( lua_State * L, ImVec2 & sz )
+static bool getGroupIconSize( lua_State * L, ImVec2 & sz )
 {
     const int top = lua_gettop( L );
     lua_pushstring( L, "getGroupIconSize" );
@@ -322,23 +345,25 @@ static void getGroupIconSize( lua_State * L, ImVec2 & sz )
         sz.x = 32;
         sz.y = 32;
         lua_settop( L, top );
-        return;
+        return false;
     }
-    const int res = lua_pcall( L, 0, 2, -1 );
+    const int res = lua_pcall( L, 0, 2, 0 );
     if ( res != 0 )
     {
         sz.x = 32;
         sz.y = 32;
         lua_settop( L, top );
-        return;
+        return false;
     }
 
     sz.x = lua_tonumber( L, -2 );
     sz.y = lua_tonumber( L, -1 );
     lua_settop( L, top );
+
+    return true;
 }
 
-static void getGroupQty( lua_State * L, int & qty )
+static bool getGroupQty( lua_State * L, int & qty )
 {
     const int top = lua_gettop( L );
     lua_pushstring( L, "getGroupQty" );
@@ -347,63 +372,119 @@ static void getGroupQty( lua_State * L, int & qty )
     {
         qty = 0;
         lua_settop( L, top );
-        return;
+        return false;
     }
-    const int res = lua_pcall( L, 0, 1, -1 );
+    const int res = lua_pcall( L, 0, 1, 0 );
     if ( res != 0 )
     {
         qty = 0;
         lua_settop( L, top );
-        return;
+        return false;
     }
 
     qty = static_cast<int>( lua_tonumber( L, -1 ) );
     lua_settop( L, top );
+
+    return true;
 }
 
-static void getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc )
+static bool getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc )
 {
     const int top = lua_gettop( L );
     lua_pushstring( L, "getGroup" );
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
-        desc.name        = "error";
-        desc.tooltip     = "error";
-        desc.description = "error";
         lua_settop( L, top );
-        return;
+        return false;
     }
     lua_pushinteger( L, groupInd+1 );
-    const int res = lua_pcall( L, 1, 3, -1 );
+    const int res = lua_pcall( L, 1, 3, 0 );
     if ( res != 0 )
     {
-        desc.name        = "error";
-        desc.tooltip     = "error";
-        desc.description = "error";
         lua_settop( L, top );
-        return;
+        return false;
     }
 
     desc.name        = lua_tostring( L, -3 );
     desc.tooltip     = lua_tostring( L, -2 );
     desc.description = lua_tostring( L, -1 );
     lua_settop( L, top );
+
+    return true;
 }
 
-static void getItemsQty( lua_State * L, int groupInd, int & qty )
+static bool getItemsQty( lua_State * L, int groupInd, int & qty )
 {
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "getItemsQty" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        lua_settop( L, top );
+        return false;
+    }
+    lua_pushinteger( L, groupInd+1 );
+    const int res = lua_pcall( L, 1, 1, 0 );
+    if ( res != 0 )
+    {
+        lua_settop( L, top );
+        return false;
+    }
 
+    qty = static_cast<int>( lua_tonumber( L, -1 ) );
+    lua_settop( L, top );
+    return true;
 }
 
-static void getItem( lua_State * L, int groupInd, int itemInd, Group::GroupItem & item )
+static bool getItem( lua_State * L, int groupInd, int itemInd, std::string & icon, Group::GroupItem & item )
 {
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "getItem" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        lua_settop( L, top );
+        return false;
+    }
+    lua_pushinteger( L, groupInd+1 );
+    lua_pushinteger( L, itemInd+1 );
+    const int res = lua_pcall( L, 2, 4, 0 );
+    if ( res != 0 )
+    {
+        lua_settop( L, top );
+        return false;
+    }
 
+    item.name        = lua_tostring( L, -4 );
+    item.tooltip     = lua_tostring( L, -3 );
+    item.description = lua_tostring( L, -2 );
+    icon             = lua_tostring( L, -1 );
+    lua_settop( L, top );
+
+    return true;
 }
 
-static void getLevel( lua_State * L, int & level )
+static bool getLevel( lua_State * L, int & level )
 {
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "getLevel" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        lua_settop( L, top );
+        return false;
+    }
+    const int res = lua_pcall( L, 0, 1, 0 );
+    if ( res != 0 )
+    {
+        lua_settop( L, top );
+        return false;
+    }
 
+    level = static_cast<int>( lua_tonumber( L, -1 ) );
+    lua_settop( L, top );
+    return true;
 }
 
 

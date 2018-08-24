@@ -49,8 +49,10 @@ private:
 
     // Externally load all the parameters of groups overlay.
     bool loadGroups();
+    bool loadLevel();
 
     int    level;
+    bool   groupsInitialized;
     ImVec2 iconSz;
     std::vector<Group::Group> groups;
 };
