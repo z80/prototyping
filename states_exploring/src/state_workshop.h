@@ -56,7 +56,7 @@ private:
     int    level;
     bool   groupsInitialized;
     ImVec2 iconSz;
-    int    itemsPerLine;
+    int    panelWidth, itemsPerLine;
 
     std::vector<Group::Group> groups;
 };

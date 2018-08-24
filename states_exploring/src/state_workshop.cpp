@@ -29,6 +29,7 @@ WorkshopState::WorkshopState()
     paused     = false;
     disableMouseCtrl = false;
     groupsInitialized = false;
+    panelWidth        = 250;
     itemsPerLine      = 3;
 }
 
@@ -339,6 +340,7 @@ void WorkshopState::panelItem( const Group::GroupItem & item, bool notLastInRow 
 
 
 
+static bool getPanelGeometry( lua_State * L, int & width, int & itemsPerLine );
 static bool getGroupIconSize( lua_State * L, ImVec2 & sz );
 static bool getGroupQty( lua_State * L, int & qty );
 static bool getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc );
