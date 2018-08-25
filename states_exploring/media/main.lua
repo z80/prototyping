@@ -1,4 +1,9 @@
 
+
+function getPanelGeometry()
+    return 220, 3
+end
+
 function getGroupIconSize()
     return 64, 64
 end

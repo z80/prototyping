@@ -354,6 +354,7 @@ bool WorkshopState::loadGroups()
     Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
     lua_State * L = cr->luaState();
 
+    getPanelGeometry( L, panelWidth, itemsPerLine );
     getGroupIconSize( L, iconSz );
 
     int qty;
@@ -396,6 +397,32 @@ bool WorkshopState::loadLevel()
 
 
 
+
+
+static bool getPanelGeometry( lua_State * L, int & width, int & itemsPerLine )
+{
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "getPanelGeometry" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        width        = 250;
+        itemsPerLine = 3;
+        lua_settop( L, top );
+        return false;
+    }
+    const int res = lua_pcall( L, 0, 2, 0 );
+    if ( res != 0 )
+    {
+        width        = 250;
+        itemsPerLine = 3;
+        lua_settop( L, top );
+        return false;
+    }
+    width        = static_cast<int>( lua_tonumber( L, -2 ) );
+    itemsPerLine = static_cast<int>( lua_tonumber( L, -1 ) );
+    lua_settop( L, top );
+}
 
 static bool getGroupIconSize( lua_State * L, ImVec2 & sz )
 {

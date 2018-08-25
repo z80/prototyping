@@ -29,6 +29,7 @@ public:
     void setMouseVisible( bool en );
 
     Config::ConfigReader * getConfigReader();
+
 protected:
     void shutdown();
     void setup();
@@ -51,6 +52,13 @@ private:
     Ogre::SceneManager * scnMgr;
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;
+public:
+    /// Callbacks to call by states in order to notify script about
+    /// state transitions.
+    void stateEntered( const std::string & name );
+    void stateLeft( const std::string & name );
+    void statePaused( const std::string & name );
+    void stateResumed( const std::string & name );
 };
 
 

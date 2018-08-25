@@ -5,12 +5,18 @@
 #include "OgreRoot.h"
 #include "ImguiManager.h"
 #include "config_reader.h"
+#include "lua.hpp"
 
 using namespace Ogre;
 
 static StateManager g_sm;
 
 template<> StateManager* Singleton<StateManager>::msSingleton = 0;
+
+int lua_loadSound( lua_State * L );
+int lua_playSound( lua_State * L );
+int lua_isPlaying( lua_State * L );
+int lua_stopSound( lua_State * L );
 
 StateManager::StateManager()
     : OgreBites::ApplicationContext(),
@@ -232,6 +238,52 @@ bool StateManager::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 
 
 
+
+static void luaNotify( lua_State * L, const std::string & callbackName, const std::string & stateName )
+{
+    const int top = lua_gettop( L );
+    lua_pushstring( L, callbackName.c_str() );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        lua_settop( L, top );
+        return;
+    }
+    lua_pushstring( L, stateName.c_str() );
+    const int res = lua_pcall( L, 1, 0, 0 );
+    if ( res != 0 )
+    {
+        lua_settop( L, top );
+        return;
+    }
+    lua_settop( L, top );
+}
+
+
+
+void StateManager::stateEntered( const std::string & name )
+{
+    lua_State * L = confReader->luaState();
+    luaNotify( L, "stateEntered", name );
+}
+
+void StateManager::stateLeft( const std::string & name )
+{
+    lua_State * L = confReader->luaState();
+    luaNotify( L, "stateLeft", name );
+}
+
+void StateManager::statePaused( const std::string & name )
+{
+    lua_State * L = confReader->luaState();
+    luaNotify( L, "statePaused", name );
+}
+
+void StateManager::stateResumed( const std::string & name )
+{
+    lua_State * L = confReader->luaState();
+    luaNotify( L, "stateResumed", name );
+}
 
 
 
