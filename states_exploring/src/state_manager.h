@@ -35,6 +35,8 @@ protected:
     void setup();
     void initSound();
     void finitSound();
+    void initScript();
+    void finitScript();
 
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
     virtual bool frameEnded(const Ogre::FrameEvent& evt);

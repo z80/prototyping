@@ -55,7 +55,7 @@ void StateManager::stateResumed( const std::string & name )
 }
 
 
-int lua_log( lua_State * L )
+static int lua_log( lua_State * L )
 {
     const int top = lua_gettop( L );
     for ( int i=1; i<=top; i++ )
@@ -65,7 +65,7 @@ int lua_log( lua_State * L )
     }
 }
 
-int lua_warning( lua_State * L )
+static int lua_warning( lua_State * L )
 {
     const int top = lua_gettop( L );
     for ( int i=1; i<=top; i++ )
@@ -75,7 +75,7 @@ int lua_warning( lua_State * L )
     }
 }
 
-int lua_err( lua_State * L )
+static int lua_err( lua_State * L )
 {
     const int top = lua_gettop( L );
     for ( int i=1; i<=top; i++ )
@@ -88,7 +88,7 @@ int lua_err( lua_State * L )
 
 
 
-int lua_soundCreate( lua_State * L )
+static int lua_soundCreate( lua_State * L )
 {
     OgreOggSound::OgreOggSoundManager * m =
             OgreOggSound::OgreOggSoundManager::getSingletonPtr();
@@ -135,7 +135,7 @@ int lua_soundCreate( lua_State * L )
     return 1;
 }
 
-int lua_soundGc( lua_State * L )
+static int lua_soundGc( lua_State * L )
 {
     OgreOggSound::OgreOggISound * s = *reinterpret_cast<OgreOggSound::OgreOggISound * *>(
                 lua_touserdata( L, 1 ) );
@@ -145,7 +145,7 @@ int lua_soundGc( lua_State * L )
     return 0;
 }
 
-int lua_soundPlay( lua_State * L )
+static int lua_soundPlay( lua_State * L )
 {
     OgreOggSound::OgreOggISound * s = *reinterpret_cast<OgreOggSound::OgreOggISound * *>(
                 lua_touserdata( L, 1 ) );
@@ -155,7 +155,7 @@ int lua_soundPlay( lua_State * L )
     return 0;
 }
 
-int lua_soundIsPlaying( lua_State * L )
+static int lua_soundIsPlaying( lua_State * L )
 {
     OgreOggSound::OgreOggISound * s = *reinterpret_cast<OgreOggSound::OgreOggISound * *>(
                 lua_touserdata( L, 1 ) );
@@ -164,7 +164,7 @@ int lua_soundIsPlaying( lua_State * L )
     return 1;
 }
 
-int lua_soundStop( lua_State * L )
+static int lua_soundStop( lua_State * L )
 {
     OgreOggSound::OgreOggISound * s = *reinterpret_cast<OgreOggSound::OgreOggISound * *>(
                 lua_touserdata( L, 1 ) );
@@ -174,7 +174,7 @@ int lua_soundStop( lua_State * L )
     return 0;
 }
 
-int lua_soundPause( lua_State * L )
+static int lua_soundPause( lua_State * L )
 {
     OgreOggSound::OgreOggISound * s = *reinterpret_cast<OgreOggSound::OgreOggISound * *>(
                 lua_touserdata( L, 1 ) );
@@ -189,6 +189,55 @@ int lua_soundPause( lua_State * L )
 
 
 
+
+
+static const struct luaL_reg SOUND_META_FUNCS[] = {
+    { "play",       lua_soundPlay },
+    { "isPlaying",  lua_soundIsPlaying },
+    { "stop",       lua_soundStop },
+    { "pause",      lua_soundPause },
+
+    { NULL,            NULL },
+};
+
+static void soundCreateMeta( lua_State * L )
+{
+    const int top = lua_gettop( L );
+    luaL_newmetatable( L, SOUND_META_T_NAME );  // create new metatable for file handles
+    // file methods
+    lua_pushliteral( L, "__index" );
+    lua_pushvalue( L, -2 );  // push metatable
+    lua_rawset( L, -3 );     // metatable.__index = metatable
+
+    lua_pushliteral( L, "__gc" );
+    lua_pushcfunction( L, lua_soundGc );
+    lua_rawset( L, -3 );
+
+    luaL_register( L, NULL, SOUND_META_FUNCS );
+    // Clean stack.
+    lua_settop( L, top );
+
+}
+
+static const struct luaL_reg FUNCS[] =
+{
+    { "log",     lua_log },
+    { "warning", lua_warning },
+    { "err",     lua_err },
+    { "createSound", lua_soundCreate },
+
+    { 0, 0 },
+};
+
+
+
+
+
+int luaopen_core( lua_State * L )
+{
+    soundCreateMeta( L );
+    luaL_register( L, LIB_NAME, FUNCS );
+}
 
 
 

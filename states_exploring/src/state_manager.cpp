@@ -12,6 +12,7 @@ using namespace Ogre;
 static StateManager g_sm;
 
 template<> StateManager* Singleton<StateManager>::msSingleton = 0;
+int luaopen_core( lua_State * L );
 
 StateManager::StateManager()
     : OgreBites::ApplicationContext(),
@@ -19,12 +20,12 @@ StateManager::StateManager()
       Ogre::Singleton<StateManager>()
 {
     soundPlugin = 0;
-    confReader = new Config::ConfigReader( true );
+    initScript();
 }
 
 StateManager::~StateManager()
 {
-    delete confReader;
+    finitScript();
 }
 
 void StateManager::start( State * state )
@@ -157,6 +158,31 @@ void StateManager::finitSound()
 
     OGRE_DELETE_T( soundPlugin, OgreOggSound::OgreOggSoundPlugin, Ogre::MEMCATEGORY_GENERAL);
     soundPlugin = 0;
+}
+
+void StateManager::initScript()
+{
+    confReader = new Config::ConfigReader( true );
+    if ( !confReader->openFile( "./main.lua" ) )
+    {
+        const char * err;
+        confReader->error( &err );
+        Ogre::LogManager::getSingletonPtr()->logMessage( err );
+    }
+    lua_State * L = confReader->luaState();
+    luaopen_core( L );
+}
+
+void StateManager::finitScript()
+{
+    // Perform full collect garbage in order to destroy all the
+    // objets dynamically created in the script.
+    lua_State * L = confReader->luaState();
+    lua_pushstring( L, "collectgarbage" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    lua_pcall( L, 0, 0, 0 );
+    // Delete config reader.
+    delete confReader;
 }
 
 bool StateManager::frameStarted(const Ogre::FrameEvent& evt)

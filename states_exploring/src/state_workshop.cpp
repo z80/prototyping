@@ -96,19 +96,10 @@ void WorkshopState::resume()
         Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
         if ( cr )
         {
-            if ( !cr->openFile( "./main.lua" ) )
-            {
-                const char * err;
-                cr->error( &err );
-                Ogre::LogManager::getSingletonPtr()->logMessage( err );
-            }
+            if ( loadGroups() )
+                groupsInitialized = true;
             else
-            {
-                if ( loadGroups() )
-                    groupsInitialized = true;
-                else
-                    Ogre::LogManager::getSingletonPtr()->logMessage( "WorkshopState: Failed to load groups" );
-            }
+                Ogre::LogManager::getSingletonPtr()->logMessage( "WorkshopState: Failed to load groups" );
         }
     }
     loadLevel();
