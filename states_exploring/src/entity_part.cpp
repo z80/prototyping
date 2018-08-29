@@ -6,7 +6,7 @@
 namespace Entity
 {
 
-
+static void deleteSubshapes( btCollisionShape * s );
 
 EntityPart::EntityPart()
     : Entity()
@@ -48,7 +48,12 @@ EntityPart::~EntityPart()
     }
 
     if ( collisionShape )
+    {
+        const int type = collisionShape->getShapeType();
+        if ( type == COMPOUND_SHAPE_PROXYTYPE )
+            deleteSubshapes( collisionShape );
         delete collisionShape;
+    }
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
     if ( scnMgr )
@@ -312,6 +317,22 @@ bool EntityPart::stopSound( const std::string & name )
 }
 
 
+
+
+
+
+static void deleteSubshapes( btCollisionShape * s )
+{
+    btCompoundShape * cs = dynamic_cast<btCompoundShape *>( s );
+    if ( !cs )
+        return;
+    const int qty = cs->getNumChildShapes();
+    for ( int i=0; i<qty; i++ )
+    {
+        btCollisionShape * ss = cs->getChildShape( i );
+        delete ss;
+    }
+}
 
 
 }
