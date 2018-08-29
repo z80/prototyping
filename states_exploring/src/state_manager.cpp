@@ -5,6 +5,9 @@
 #include "OgreRoot.h"
 #include "ImguiManager.h"
 #include "config_reader.h"
+#include "lua_collision_shapes.h"
+#include "lua_entity_part.h"
+#include "lua_constraints.h"
 #include "lua.hpp"
 
 using namespace Ogre;
@@ -12,7 +15,7 @@ using namespace Ogre;
 static StateManager g_sm;
 
 template<> StateManager* Singleton<StateManager>::msSingleton = 0;
-int luaopen_core( lua_State * L );
+int luaopen_sound( lua_State * L );
 
 StateManager::StateManager()
     : OgreBites::ApplicationContext(),
@@ -170,7 +173,9 @@ void StateManager::initScript()
         Ogre::LogManager::getSingletonPtr()->logMessage( err );
     }
     lua_State * L = confReader->luaState();
-    luaopen_core( L );
+    luaopen_sound( L );
+    luaopen_btShapes( L );
+    luaopen_entityPart( L );
 }
 
 void StateManager::finitScript()

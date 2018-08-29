@@ -1,34 +1,47 @@
 
 #include "lua_collision_shapes.h"
-#include "btBulletCollisionCommon.h"
 #include "config_reader.h"
 #include "lua.hpp"
+
+static void deleteCompound( btCollisionShape * s )
+{
+    btCompoundShape * cs = dynamic_cast<btCompoundShape *>( s );
+    if ( !cs )
+        return;
+    const int qty = cs->getNumChildShapes();
+    for ( int i=0; i<qty; i++ )
+    {
+        btCollisionShape * ss = cs->getChildShape( i );
+        delete ss;
+    }
+}
+
+ShapeWrapper::ShapeWrapper()
+{
+    released = false;
+    s = 0;
+}
+
+ShapeWrapper::~ShapeWrapper()
+{
+    if ( !released )
+    {
+        if ( s )
+        {
+            const int type = s->getShapeType();
+            if ( type == COMPOUND_SHAPE_PROXYTYPE )
+                deleteCompound( s );
+            delete s;
+        }
+    }
+}
+
+
+
 
 static const char LIB_NAME[]                = "core";
 static const char SIMPLESHAPE_META_T_NAME[] = "SS";
 static const char COMPSHAPE_META_T_NAME[]   = "CS";
-
-class ShapeSingle
-{
-public:
-    bool released;
-    btCollisionShape * s;
-
-    ShapeSingle()
-    {
-        released = false;
-        s = 0;
-    }
-
-    ~ShapeSingle()
-    {
-        if ( !released )
-        {
-            if ( s )
-                delete s;
-        }
-    }
-};
 
 static bool luaReadVector( lua_State * L, int at, btVector3 & v )
 {
@@ -87,10 +100,10 @@ static int lua_btSphereCreate( lua_State * L )
     // Read parameters.
     const btScalar r = static_cast<btScalar>( lua_tonumber( L, 1 ) );
 
-    ShapeSingle * s = new ShapeSingle();
+    ShapeWrapper * s = new ShapeWrapper();
     s->s = new btSphereShape( r );
-    ShapeSingle * * p = reinterpret_cast<ShapeSingle * *>(
-                lua_newuserdata( L, sizeof(ShapeSingle *)) );
+    ShapeWrapper * * p = reinterpret_cast<ShapeWrapper * *>(
+                lua_newuserdata( L, sizeof(ShapeWrapper *)) );
     *p = s;
 
     // Get metatable.
@@ -112,10 +125,10 @@ static int lua_btBoxCreate( lua_State * L )
     const btScalar y = static_cast<btScalar>( lua_tonumber( L, 2 ) );
     const btScalar z = static_cast<btScalar>( lua_tonumber( L, 3 ) );
 
-    ShapeSingle * s = new ShapeSingle();
+    ShapeWrapper * s = new ShapeWrapper();
     s->s = new btBoxShape( btVector3( x, y, z ) );
-    ShapeSingle * * p = reinterpret_cast<ShapeSingle * *>(
-                lua_newuserdata( L, sizeof(ShapeSingle *)) );
+    ShapeWrapper * * p = reinterpret_cast<ShapeWrapper * *>(
+                lua_newuserdata( L, sizeof(ShapeWrapper *)) );
     *p = s;
 
     // Get metatable.
@@ -138,10 +151,10 @@ static int lua_btCapsuleCreate( lua_State * L )
     const btScalar r = static_cast<btScalar>( lua_tonumber( L, 1 ) );
     const btScalar h = static_cast<btScalar>( lua_tonumber( L, 2 ) );
 
-    ShapeSingle * s = new ShapeSingle();
+    ShapeWrapper * s = new ShapeWrapper();
     s->s = new btCapsuleShape( r, h );
-    ShapeSingle * * p = reinterpret_cast<ShapeSingle * *>(
-                lua_newuserdata( L, sizeof(ShapeSingle *)) );
+    ShapeWrapper * * p = reinterpret_cast<ShapeWrapper * *>(
+                lua_newuserdata( L, sizeof(ShapeWrapper *)) );
     *p = s;
 
     // Get metatable.
@@ -160,10 +173,10 @@ static int lua_btCompoundCreate( lua_State * L )
 {
     const int top = lua_gettop( L );
 
-    ShapeSingle * s = new ShapeSingle();
+    ShapeWrapper * s = new ShapeWrapper();
     s->s = new btCompoundShape();
-    ShapeSingle * * p = reinterpret_cast<ShapeSingle * *>(
-                lua_newuserdata( L, sizeof(ShapeSingle *)) );
+    ShapeWrapper * * p = reinterpret_cast<ShapeWrapper * *>(
+                lua_newuserdata( L, sizeof(ShapeWrapper *)) );
     *p = s;
 
     // Get metatable.
@@ -181,7 +194,7 @@ static int lua_btCompoundCreate( lua_State * L )
 
 static int lua_simpleShapeGc( lua_State * L )
 {
-    ShapeSingle * s = *reinterpret_cast<ShapeSingle * *>(
+    ShapeWrapper * s = *reinterpret_cast<ShapeWrapper * *>(
                 lua_touserdata( L, 1 ) );
     delete s;
     return 0;
@@ -189,7 +202,7 @@ static int lua_simpleShapeGc( lua_State * L )
 
 static int lua_compShapeGc( lua_State * L )
 {
-    ShapeSingle * s = *reinterpret_cast<ShapeSingle * *>(
+    ShapeWrapper * s = *reinterpret_cast<ShapeWrapper * *>(
                 lua_touserdata( L, 1 ) );
     if ( !s->released )
     {
@@ -207,9 +220,9 @@ static int lua_compShapeGc( lua_State * L )
 
 static int lua_compShapeAddChild( lua_State * L )
 {
-    ShapeSingle * s = *reinterpret_cast<ShapeSingle * *>(
+    ShapeWrapper * s = *reinterpret_cast<ShapeWrapper * *>(
                 lua_touserdata( L, 1 ) );
-    ShapeSingle * c = *reinterpret_cast<ShapeSingle * *>(
+    ShapeWrapper * c = *reinterpret_cast<ShapeWrapper * *>(
                 lua_touserdata( L, 2 ) );
     const int top = lua_gettop( L );
     btVector3    at;

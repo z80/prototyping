@@ -31,39 +31,9 @@ EntityPart::~EntityPart()
             delete mNinjaShape;
     */
 
-    if ( rigidBody )
-    {
-        EntityWorld * w = EntityWorld::getSingletonPtr();
-        if ( w && w->phyWorld )
-            w->phyWorld->removeRigidBody( rigidBody );
-    }
-
-    if ( rigidBody )
-    {
-        btMotionState * motionState = rigidBody->getMotionState();
-        if ( motionState )
-            delete motionState;
-
-        delete rigidBody;
-    }
-
-    if ( collisionShape )
-    {
-        const int type = collisionShape->getShapeType();
-        if ( type == COMPOUND_SHAPE_PROXYTYPE )
-            deleteSubshapes( collisionShape );
-        delete collisionShape;
-    }
-
-    Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
-    if ( scnMgr )
-    {
-        if ( visualEntity );
-            scnMgr->destroyEntity( visualEntity );
-
-        if ( sceneNode )
-            scnMgr->destroySceneNode( sceneNode );
-    }
+    deleteRigidBody();
+    deleteCollisionShape();
+    deleteVisual();
 }
 
 void EntityPart::loadResources()
@@ -155,8 +125,10 @@ void EntityPart::speed( Ogre::Real & v ) const
 
 
 
-bool EntityPart::setEntity( const std::string & mesh, const std::string & material )
+bool EntityPart::setEntity( const char * mesh, const char * material )
 {
+    deleteVisual();
+
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
     if ( !scnMgr )
         return false;
@@ -169,8 +141,29 @@ bool EntityPart::setEntity( const std::string & mesh, const std::string & materi
         visualEntity = scnMgr->createEntity( NameGenerator::Next("entity"), mesh );
         Ogre::UserObjectBindings & uob = visualEntity->getUserObjectBindings();
         uob.setUserAny( Ogre::Any( this ) );
+        if ( material )
+        {
+            Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( material );
+            visualEntity->setMaterial( m );
+        }
+    }
+    catch ( ... )
+    {
+        res = false;
+    }
+    return res;
+}
+
+bool EntityPart::setMaterial( const char * material )
+{
+    if ( !visualEntity )
+        return false;
+    bool res;
+    try
+    {
         Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( material );
         visualEntity->setMaterial( m );
+        res = true;
     }
     catch ( ... )
     {
@@ -212,13 +205,14 @@ void EntityPart::setIntertia( const Ogre::Vector3 & i )
 
 void EntityPart::setCollisionShape( btCollisionShape * shape )
 {
-    if ( collisionShape )
-        delete collisionShape;
+    deleteCollisionShape();
     collisionShape = shape;
 }
 
 void EntityPart::initDynamics()
 {
+    deleteRigidBody();
+
     bodyState      = new BtOgre::RigidBodyState( sceneNode );
     bodyState->setWorldTransform( btTransform( btQuaternion( 0.0, 0.0, 0.0, 1.0 ),
                                                btVector3( 0.0, 0.0, 0.0 ) ) );
@@ -314,6 +308,54 @@ bool EntityPart::stopSound( const std::string & name )
     s->stop( true );
 
     return true;
+}
+
+void EntityPart::deleteRigidBody()
+{
+    if ( rigidBody )
+    {
+        EntityWorld * w = EntityWorld::getSingletonPtr();
+        if ( w && w->phyWorld )
+            w->phyWorld->removeRigidBody( rigidBody );
+        if ( bodyState )
+            delete bodyState;
+
+        delete rigidBody;
+
+        rigidBody = 0;
+        bodyState = 0;
+    }
+}
+
+void EntityPart::deleteCollisionShape()
+{
+    if ( collisionShape )
+    {
+        const int type = collisionShape->getShapeType();
+        if ( type == COMPOUND_SHAPE_PROXYTYPE )
+            deleteSubshapes( collisionShape );
+        delete collisionShape;
+        collisionShape = 0;
+    }
+}
+
+void EntityPart::deleteVisual()
+{
+    Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
+    if ( scnMgr )
+    {
+        if ( visualEntity );
+        {
+            scnMgr->destroyEntity( visualEntity );
+            visualEntity = 0;
+        }
+
+        if ( sceneNode )
+        {
+            scnMgr->destroySceneNode( sceneNode );
+            sceneNode = 0;
+        }
+    }
 }
 
 

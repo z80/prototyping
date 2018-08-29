@@ -106,8 +106,8 @@ static int lua_soundCreate( lua_State * L )
     if ( !exists )
     {
         lua_pushboolean( L, 0 );
-        lua_pushstring( L, "Sound already exists" );
-        return 2;
+        Ogre::LogManager::getSingletonPtr()->logError( "Sound already exists" );
+        return 1;
     }
     try
     {
@@ -116,7 +116,8 @@ static int lua_soundCreate( lua_State * L )
     catch ( ... )
     {
         lua_pushboolean( L, 0 );
-        lua_pushstring( L, "Failed to create sound" );
+        Ogre::LogManager::getSingletonPtr()->logError( "Failed to create sound" );
+        return 1;
     }
 
     OgreOggSound::OgreOggISound * * p = reinterpret_cast<OgreOggSound::OgreOggISound * *>(
@@ -128,7 +129,8 @@ static int lua_soundCreate( lua_State * L )
     if ( !(lua_istable(L, -1) > 0) )
     {
         lua_pushboolean( L, 0 );
-        lua_pushstring( L, "Failed to retrieve metatable" );
+        Ogre::LogManager::getSingletonPtr()->logError( "Failed to retrieve metatable" );
+        return 1;
     }
     lua_setmetatable( L, -2 );
 
@@ -184,6 +186,15 @@ static int lua_soundPause( lua_State * L )
     return 0;
 }
 
+static int lua_soundSetLoop( lua_State * L )
+{
+    OgreOggSound::OgreOggISound * s = *reinterpret_cast<OgreOggSound::OgreOggISound * *>(
+                lua_touserdata( L, 1 ) );
+    const int top = lua_gettop( L );
+    const bool doLoop = (top > 1) ? (lua_toboolean(L, 2) > 0) : true;
+    s->loop( doLoop );
+    return 0;
+}
 
 
 
@@ -196,6 +207,7 @@ static const struct luaL_reg SOUND_META_FUNCS[] = {
     { "isPlaying",  lua_soundIsPlaying },
     { "stop",       lua_soundStop },
     { "pause",      lua_soundPause },
+    { "setLoop",    lua_soundSetLoop },
 
     { NULL,            NULL },
 };
@@ -221,9 +233,9 @@ static void soundCreateMeta( lua_State * L )
 
 static const struct luaL_reg FUNCS[] =
 {
-    { "log",     lua_log },
-    { "warning", lua_warning },
-    { "err",     lua_err },
+    { "log",         lua_log },
+    { "warning",     lua_warning },
+    { "err",         lua_err },
     { "createSound", lua_soundCreate },
 
     { 0, 0 },
@@ -233,7 +245,7 @@ static const struct luaL_reg FUNCS[] =
 
 
 
-int luaopen_core( lua_State * L )
+int luaopen_sound( lua_State * L )
 {
     soundCreateMeta( L );
     luaL_register( L, LIB_NAME, FUNCS );

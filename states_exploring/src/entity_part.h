@@ -80,7 +80,8 @@ public:
 
 
 
-    bool setEntity( const std::string & mesh, const std::string & material );
+    bool setEntity( const char * mesh, const char * material = 0 );
+    bool setMaterial( const char * material );
     bool setAirMesh( const std::string & meshFileName );
     void addConnectionPoint( const ConnectionPoint & pt );
 
@@ -101,6 +102,10 @@ public:
     bool stopSound( const std::string & name );
 
 public:
+    void deleteRigidBody();
+    void deleteCollisionShape();
+    void deleteVisual();
+
     Ogre::int32 actionGroup;
     bool        isSeleted;
     bool        doShowContextMenu;
