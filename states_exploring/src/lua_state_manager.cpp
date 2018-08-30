@@ -28,7 +28,32 @@ static void luaNotify( lua_State * L, const std::string & callbackName, const st
     lua_settop( L, top );
 }
 
+void StateManager::scriptFrameStarted( const Ogre::FrameEvent & evt )
+{
+    lua_State * L = confReader->luaState();
+    if ( !L )
+        return;
 
+    static const char funcName[] = "frameStarted";
+    const int top = lua_gettop( L );
+    lua_pushstring( L, funcName );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        lua_settop( L, top );
+        std::string stri = std::string( funcName ) + " is not defined";
+        Ogre::LogManager::getSingletonPtr()->logWarning( stri );
+        return;
+    }
+    lua_pushnumber( L, evt.timeSinceLastFrame );
+    const int res = lua_pcall( L, 1, 0, 0 );
+    if ( res != 0 )
+    {
+        lua_settop( L, top );
+        return;
+    }
+    lua_settop( L, top );
+}
 
 void StateManager::stateEntered( const std::string & name )
 {

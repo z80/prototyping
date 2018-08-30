@@ -25,6 +25,10 @@ public:
     void pushState( State * state );
     void popState();
 
+    // States may call this in the case it is needed or not
+    // in order to save resources.
+    void scriptFrameStarted( const Ogre::FrameEvent & evt );
+
     Ogre::SceneManager * getSceneManager();
     void setMouseVisible( bool en );
 
