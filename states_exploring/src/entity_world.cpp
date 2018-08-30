@@ -58,7 +58,7 @@ EntityWorld::~EntityWorld()
     delete mBroadphase;
 }
 
-bool EntityWorld::frameStarted( const Ogre::FrameEvent & evt , bool debugDraw )
+bool EntityWorld::frameStarted( const Ogre::FrameEvent & evt, bool debugDraw )
 {
     //Update Bullet world. Don't forget the debugDrawWorld() part!
     phyWorld->stepSimulation( evt.timeSinceLastFrame, 10 );
@@ -70,6 +70,24 @@ bool EntityWorld::frameStarted( const Ogre::FrameEvent & evt , bool debugDraw )
         //Shows debug if F3 key down.
         dbgdraw->step();
     }
+
+    return true;
+}
+
+bool EntityWorld::frameStarted( Ogre::Real dt, bool debugDraw )
+{
+    //Update Bullet world. Don't forget the debugDrawWorld() part!
+    phyWorld->stepSimulation( dt, 10 );
+
+    if ( debugDraw )
+    {
+        //phyWorld->debugDrawWorld();
+
+        //Shows debug if F3 key down.
+        dbgdraw->step();
+    }
+
+    return true;
 }
 
 void EntityWorld::addEntity( EntityPart * part )
@@ -80,6 +98,16 @@ void EntityWorld::addEntity( EntityPart * part )
 void EntityWorld::addEntity( EntityPlanet * part )
 {
     phyWorld->addRigidBody( part->rigidBody );
+}
+
+void EntityWorld::removeEntity( EntityPart * part )
+{
+    phyWorld->removeRigidBody( part->rigidBody );
+}
+
+void EntityWorld::removeEntity( EntityPlanet * part )
+{
+    phyWorld->removeRigidBody( part->rigidBody );
 }
 
 

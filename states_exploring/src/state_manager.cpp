@@ -7,6 +7,7 @@
 #include "config_reader.h"
 #include "lua_collision_shapes.h"
 #include "lua_entity_part.h"
+#include "lua_entity_world.h"
 #include "lua_constraints.h"
 #include "lua.hpp"
 #include "lua_utils.h"
@@ -211,6 +212,7 @@ void StateManager::initScript()
     luaopen_sound( L );
     luaopen_btShapes( L );
     luaopen_entityPart( L );
+    luaopen_entityWorld( L );
 }
 
 void StateManager::finitScript()

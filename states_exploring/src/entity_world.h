@@ -33,8 +33,11 @@ public:
     ~EntityWorld();
 
     bool frameStarted( const Ogre::FrameEvent & evt, bool debugDraw = true );
+    bool frameStarted( Ogre::Real dt, bool debugDraw = true );
     void addEntity( EntityPart * part );
     void addEntity( EntityPlanet * part );
+    void removeEntity( EntityPart * part );
+    void removeEntity( EntityPlanet * part );
 
 public:
     btAxisSweep3                        * mBroadphase;
