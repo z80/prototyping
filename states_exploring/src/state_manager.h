@@ -6,6 +6,7 @@
 #include "OgreInput.h"
 #include "OgreRTShaderSystem.h"
 #include "OgreOggSoundPlugin.h"
+#include "entity_world.h"
 
 class State;
 namespace Config
@@ -29,8 +30,9 @@ public:
     // in order to save resources.
     void scriptFrameStarted( const Ogre::FrameEvent & evt );
 
-    Ogre::SceneManager * getSceneManager();
-    Ogre::Camera       * getCamera();
+    Ogre::SceneManager  * getSceneManager();
+    Ogre::Camera        * getCamera();
+    Entity::EntityWorld * getWorld();
     void setMouseVisible( bool en );
 
     Config::ConfigReader * getConfigReader();
@@ -56,8 +58,9 @@ protected:
     virtual bool mouseReleased(const OgreBites::MouseButtonEvent& evt);
 private:
     std::list< State * > states;
-    Ogre::SceneManager * scnMgr;
-    Ogre::Camera       * mCamera;
+    Ogre::SceneManager  * scnMgr;
+    Ogre::Camera        * mCamera;
+    Entity::EntityWorld * mWorld;
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;
 public:

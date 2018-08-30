@@ -100,6 +100,11 @@ Ogre::Camera * StateManager::getCamera()
     return mCamera;
 }
 
+Entity::EntityWorld * StateManager::getWorld()
+{
+    return mWorld;
+}
+
 void StateManager::setMouseVisible( bool en )
 {
     setWindowGrab( !en );
@@ -122,6 +127,9 @@ void StateManager::shutdown()
         states.back()->exit();
         states.pop_back();
     }
+
+    Entity::EntityWorld::deleteWorld();
+    mWorld = 0;
 
     destroyRTShaderSystem();
     finitSound();
@@ -165,6 +173,8 @@ void StateManager::setup()
     cameraNode->attachObject( mCamera );
 
     initSound();
+
+    mWorld = Entity::EntityWorld::createWorld();
 }
 
 void StateManager::initSound()

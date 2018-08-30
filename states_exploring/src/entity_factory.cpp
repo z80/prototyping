@@ -37,7 +37,7 @@ EntityFactory::PD::~PD()
 
 EntityWorld  * EntityFactory::PD::world()
 {
-    EntityWorld * w = EntityWorld::createWorld();
+    EntityWorld * w = StateManager::getSingleton().getWorld();
     return w;
 }
 
