@@ -15,6 +15,8 @@ public:
     GameState();
     ~GameState();
 
+    const char * stateName();
+
     void enter();
     void exit();
     void pause();

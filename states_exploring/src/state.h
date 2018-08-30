@@ -11,6 +11,8 @@ public:
     State();
     virtual ~State();
 
+    virtual const char * stateName() = 0;
+
     virtual void enter();
     virtual void exit();
     virtual void pause();

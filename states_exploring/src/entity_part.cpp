@@ -245,7 +245,7 @@ void EntityPart::setPosition( const Ogre::Vector3 & at )
     st->setWorldTransform( t );
 }
 
-void EntityPart::setOrientation( const Ogre::Quaternion & q )
+void EntityPart::setRotation( const Ogre::Quaternion & q )
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;

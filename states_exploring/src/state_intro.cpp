@@ -29,6 +29,12 @@ IntroState::~IntroState()
 
 }
 
+const char * IntroState::stateName()
+{
+    static const char name[] = "intro";
+    return name;
+}
+
 void IntroState::enter()
 {
     mRoot = Root::getSingletonPtr();

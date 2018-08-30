@@ -2,6 +2,8 @@
 #include "lua_collision_shapes.h"
 #include "config_reader.h"
 #include "lua.hpp"
+#include "lua_utils.h"
+#include "Ogre.h"
 
 static void deleteCompound( btCollisionShape * s )
 {
@@ -43,56 +45,7 @@ static const char LIB_NAME[]                = "core";
 static const char SIMPLESHAPE_META_T_NAME[] = "SS";
 static const char COMPSHAPE_META_T_NAME[]   = "CS";
 
-static bool luaReadVector( lua_State * L, int at, btVector3 & v )
-{
-    const bool table = ( lua_istable( L, at ) > 0 );
-    if ( !table )
-        return false;
-    lua_pushinteger( L, 1 );
-    lua_gettable( L, at );
-    v.setX( lua_tonumber( L, -1 ) );
-    lua_pop( L, 1 );
 
-    lua_pushinteger( L, 2 );
-    lua_gettable( L, at );
-    v.setY( lua_tonumber( L, -1 ) );
-    lua_pop( L, 1 );
-
-    lua_pushinteger( L, 3 );
-    lua_gettable( L, at );
-    v.setZ( lua_tonumber( L, -1 ) );
-    lua_pop( L, 1 );
-
-    return true;
-}
-
-static bool luaReadQuat( lua_State * L, int at, btQuaternion & v )
-{
-    const bool table = ( lua_istable( L, at ) > 0 );
-    if ( !table )
-        return false;
-    lua_pushinteger( L, 1 );
-    lua_gettable( L, at );
-    v.setW( lua_tonumber( L, -1 ) );
-    lua_pop( L, 1 );
-
-    lua_pushinteger( L, 2 );
-    lua_gettable( L, at );
-    v.setX( lua_tonumber( L, -1 ) );
-    lua_pop( L, 1 );
-
-    lua_pushinteger( L, 3 );
-    lua_gettable( L, at );
-    v.setY( lua_tonumber( L, -1 ) );
-    lua_pop( L, 1 );
-
-    lua_pushinteger( L, 4 );
-    lua_gettable( L, at );
-    v.setZ( lua_tonumber( L, -1 ) );
-    lua_pop( L, 1 );
-
-    return true;
-}
 
 static int lua_btSphereCreate( lua_State * L )
 {
@@ -136,7 +89,8 @@ static int lua_btBoxCreate( lua_State * L )
     if ( !(lua_istable(L, -1) > 0) )
     {
         lua_pushboolean( L, 0 );
-        lua_pushstring( L, "Failed to retrieve metatable" );
+        Ogre::LogManager::getSingletonPtr()->logError( "Failed to retrieve metatable" );
+        return 1;
     }
     lua_setmetatable( L, -2 );
 
@@ -162,7 +116,8 @@ static int lua_btCapsuleCreate( lua_State * L )
     if ( !(lua_istable(L, -1) > 0) )
     {
         lua_pushboolean( L, 0 );
-        lua_pushstring( L, "Failed to retrieve metatable" );
+        Ogre::LogManager::getSingletonPtr()->logError(  "Failed to retrieve metatable" );
+        return 1;
     }
     lua_setmetatable( L, -2 );
 
@@ -184,7 +139,8 @@ static int lua_btCompoundCreate( lua_State * L )
     if ( !(lua_istable(L, -1) > 0) )
     {
         lua_pushboolean( L, 0 );
-        lua_pushstring( L, "Failed to retrieve metatable" );
+        Ogre::LogManager::getSingletonPtr()->logError(  "Failed to retrieve metatable" );
+        return 1;
     }
     lua_setmetatable( L, -2 );
 

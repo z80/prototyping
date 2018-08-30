@@ -38,6 +38,12 @@ WorkshopState::~WorkshopState()
 
 }
 
+const char * WorkshopState::stateName()
+{
+    static const char name[] = "workshop";
+    return name;
+}
+
 void WorkshopState::enter()
 {
     if ( !paused )

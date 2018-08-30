@@ -14,6 +14,8 @@ public:
     WorkshopState();
     ~WorkshopState();
 
+    const char * stateName();
+
     void enter();
     void exit();
     void pause();

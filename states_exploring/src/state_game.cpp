@@ -40,6 +40,12 @@ GameState::~GameState()
 
 }
 
+const char * GameState::stateName()
+{
+    static const char name[] = "game";
+    return name;
+}
+
 void GameState::enter()
 {
     if ( !paused )

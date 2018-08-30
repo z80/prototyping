@@ -94,7 +94,7 @@ public:
     void applyTorque( const Ogre::Vector3 & p );
 
     void setPosition( const Ogre::Vector3 & at );
-    void setOrientation( const Ogre::Quaternion & q );
+    void setRotation( const Ogre::Quaternion & q );
 
     bool addSound( const std::string & fileName, const std::string & name );
     void finalizeSounds();

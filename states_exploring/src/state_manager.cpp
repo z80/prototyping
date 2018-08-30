@@ -49,12 +49,14 @@ void StateManager::changeState( State * state )
     // cleanup the current state
     if ( !states.empty() )
     {
+        stateLeft( states.back()->stateName() );
         states.back()->exit();
         states.pop_back();
     }
     // store and init the new state
     states.push_back( state );
     states.back()->enter();
+    stateEntered( state->stateName() );
 }
 
 void StateManager::pushState( State * state )
@@ -63,10 +65,12 @@ void StateManager::pushState( State * state )
     if ( !states.empty() )
     {
         states.back()->pause();
+        statePaused( states.back()->stateName() );
     }
     // store and init the new state
     states.push_back( state );
     states.back()->enter();
+    stateEntered( states.back()->stateName() );
 }
 
 void StateManager::popState()
@@ -74,6 +78,7 @@ void StateManager::popState()
     // cleanup the current state
     if ( !states.empty() )
     {
+        stateLeft( states.back()->stateName() );
         states.back()->exit();
         states.pop_back();
     }
@@ -81,6 +86,7 @@ void StateManager::popState()
     if ( !states.empty() )
     {
         states.back()->resume();
+        stateResumed( states.back()->stateName() );
     }
 }
 

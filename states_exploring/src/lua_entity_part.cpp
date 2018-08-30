@@ -4,6 +4,7 @@
 #include "config_reader.h"
 #include "lua_collision_shapes.h"
 #include "lua.hpp"
+#include "lua_utils.h"
 
 static const char LIB_NAME[]    = "core";
 static const char META_T_NAME[] = "EP";
@@ -96,12 +97,18 @@ static int lua_setInertia( lua_State * L )
     Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
                 lua_touserdata( L, 1 ) );
 
-    const btScalar x = static_cast<btScalar>( lua_tonumber( L, 2 ) );
-    const btScalar y = static_cast<btScalar>( lua_tonumber( L, 3 ) );
-    const btScalar z = static_cast<btScalar>( lua_tonumber( L, 4 ) );
-    p->setIntertia( btVector3( x, y, z ) );
+    Ogre::Vector3 I;
+    const bool iExists = luaReadVector( L, 2, I );
+    if ( !iExists )
+    {
+        lua_pushboolean( L, 0 );
+        Ogre::LogManager::getSingletonPtr()->logError( "No inertia vector specified" );
+        return 1;
+    }
+    p->setIntertia( I );
 
-    return 0;
+    lua_pushboolean( L, 1 );
+    return 1;
 }
 
 static int lua_initDynamics( lua_State * L )
@@ -113,18 +120,104 @@ static int lua_initDynamics( lua_State * L )
     return 0;
 }
 
+static int lua_applyForce( lua_State * L )
+{
+    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+                lua_touserdata( L, 1 ) );
+    Ogre::Vector3 at;
+    const bool atExists = luaReadVector( L, 2, at );
+    if ( !atExists )
+    {
+        lua_pushboolean( L, 0 );
+        Ogre::LogManager::getSingletonPtr()->logError( "No position vector specified" );
+        return 1;
+    }
+    Ogre::Vector3 f;
+    const bool fExists = luaReadVector( L, 3, f );
+    if ( !fExists )
+    {
+        lua_pushboolean( L, 0 );
+        Ogre::LogManager::getSingletonPtr()->logError( "No force vector specified" );
+        return 1;
+    }
+    p->applyForce( at, f );
+
+    lua_pushboolean( L, 1 );
+    return 1;
+}
+
+static int lua_applyTorque( lua_State * L )
+{
+    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+                lua_touserdata( L, 1 ) );
+    Ogre::Vector3 T;
+    const bool tExists = luaReadVector( L, 2, T );
+    if ( !tExists )
+    {
+        lua_pushboolean( L, 0 );
+        Ogre::LogManager::getSingletonPtr()->logError( "No torque vector specified" );
+        return 1;
+    }
+    p->applyTorque( T );
+
+    lua_pushboolean( L, 1 );
+    return 1;
+}
+
+static int lua_setPosition( lua_State * L )
+{
+    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+                lua_touserdata( L, 1 ) );
+    Ogre::Vector3 at;
+    const bool atExists = luaReadVector( L, 2, at );
+    if ( !atExists )
+    {
+        lua_pushboolean( L, 0 );
+        Ogre::LogManager::getSingletonPtr()->logError( "No position vector specified" );
+        return 1;
+    }
+    p->setPosition( at );
+
+    lua_pushboolean( L, 1 );
+    return 1;
+}
+
+static int lua_setRotation( lua_State * L )
+{
+    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+                lua_touserdata( L, 1 ) );
+    Ogre::Quaternion q;
+    const bool qExists = luaReadQuat( L, 2, q );
+    if ( !qExists )
+    {
+        lua_pushboolean( L, 0 );
+        Ogre::LogManager::getSingletonPtr()->logError( "No quaternion specified" );
+        return 1;
+    }
+    p->setRotation( q );
+
+    lua_pushboolean( L, 1 );
+    return 1;
+}
+
+
 
 
 
 
 
 static const struct luaL_reg META_T_FUNCS[] = {
-    { "setMesh",     lua_setMesh },
-    { "setMaterial", lua_setMaterial },
-    { "setShape",    lua_setCollisionShape },
-    { "setMass",     lua_setMass },
-    { "setInertia",  lua_setInertia },
-    { NULL,            NULL },
+    { "setMesh",      lua_setMesh },
+    { "setMaterial",  lua_setMaterial },
+    { "setShape",     lua_setCollisionShape },
+    { "setMass",      lua_setMass },
+    { "setInertia",   lua_setInertia },
+    { "initDynamics", lua_initDynamics },
+    { "applyForce",   lua_applyForce },
+    { "applyTorque",  lua_applyTorque },
+    { "setPosition",  lua_setPosition },
+    { "setRotation",  lua_setRotation },
+    { NULL,           NULL },
 };
 
 static void partCreateMeta( lua_State * L )
