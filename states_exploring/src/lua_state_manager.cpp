@@ -2,6 +2,7 @@
 #include "state_manager.h"
 #include "config_reader.h"
 #include "lua.hpp"
+#include "lua_utils.h"
 
 static const char LIB_NAME[]          = "core";
 static const char SOUND_META_T_NAME[] = "SND";
@@ -22,6 +23,7 @@ static void luaNotify( lua_State * L, const std::string & callbackName, const st
     const int res = lua_pcall( L, 1, 0, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         lua_settop( L, top );
         return;
     }
@@ -49,6 +51,7 @@ void StateManager::scriptFrameStarted( const Ogre::FrameEvent & evt )
     const int res = lua_pcall( L, 1, 0, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         lua_settop( L, top );
         return;
     }

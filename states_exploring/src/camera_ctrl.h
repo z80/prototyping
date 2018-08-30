@@ -9,10 +9,14 @@
 class CameraCtrl: public Ogre::Singleton<CameraCtrl>
 {
 public:
+    enum Mode { Free, Orbit, Fixed };
+
     CameraCtrl();
     ~CameraCtrl();
     void setCameraNode( Ogre::SceneNode * nodeCam );
     void setTargetNode( Ogre::SceneNode * nodeTarget );
+
+    void setMode( Mode m );
 
     void frameRendered(const Ogre::FrameEvent& evt);
 
@@ -54,8 +58,6 @@ public:
     void orbitAdjustRotation( const OgreBites::MouseMotionEvent & evt );
     void orbitAdjustDistance( const OgreBites::MouseWheelEvent & evt );
 
-
-    enum Mode { Free, Orbit, Fixed };
 
     Mode mode;
     Ogre::SceneNode * nodeCam;

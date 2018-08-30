@@ -9,6 +9,7 @@
 
 #include "config_reader.h"
 #include "lua.hpp"
+#include "lua_utils.h"
 
 using namespace Ogre;
 
@@ -393,6 +394,7 @@ static bool getPanelGeometry( lua_State * L, int & width, int & itemsPerLine )
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "getPanelGeometry() not defined" );
         width        = 250;
         itemsPerLine = 3;
         lua_settop( L, top );
@@ -401,6 +403,7 @@ static bool getPanelGeometry( lua_State * L, int & width, int & itemsPerLine )
     const int res = lua_pcall( L, 0, 2, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         width        = 250;
         itemsPerLine = 3;
         lua_settop( L, top );
@@ -418,6 +421,7 @@ static bool getGroupIconSize( lua_State * L, ImVec2 & sz )
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "getGroupIconSize() not defined" );
         sz.x = 32;
         sz.y = 32;
         lua_settop( L, top );
@@ -426,6 +430,7 @@ static bool getGroupIconSize( lua_State * L, ImVec2 & sz )
     const int res = lua_pcall( L, 0, 2, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         sz.x = 32;
         sz.y = 32;
         lua_settop( L, top );
@@ -446,6 +451,7 @@ static bool getGroupQty( lua_State * L, int & qty )
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "getGroupQty() not defined" );
         qty = 0;
         lua_settop( L, top );
         return false;
@@ -453,6 +459,7 @@ static bool getGroupQty( lua_State * L, int & qty )
     const int res = lua_pcall( L, 0, 1, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         qty = 0;
         lua_settop( L, top );
         return false;
@@ -471,6 +478,7 @@ static bool getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc )
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "getGroup() not defined" );
         lua_settop( L, top );
         return false;
     }
@@ -478,6 +486,7 @@ static bool getGroup( lua_State * L, int groupInd, Group::GroupDesc & desc )
     const int res = lua_pcall( L, 1, 3, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         lua_settop( L, top );
         return false;
     }
@@ -497,6 +506,7 @@ static bool getItemsQty( lua_State * L, int groupInd, int & qty )
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "getItemsQty() not defined" );
         lua_settop( L, top );
         return false;
     }
@@ -504,6 +514,7 @@ static bool getItemsQty( lua_State * L, int groupInd, int & qty )
     const int res = lua_pcall( L, 1, 1, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         lua_settop( L, top );
         return false;
     }
@@ -520,6 +531,7 @@ static bool getItem( lua_State * L, int groupInd, int itemInd, std::string & ico
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "getItem() not defined" );
         lua_settop( L, top );
         return false;
     }
@@ -528,6 +540,7 @@ static bool getItem( lua_State * L, int groupInd, int itemInd, std::string & ico
     const int res = lua_pcall( L, 2, 5, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         lua_settop( L, top );
         return false;
     }
@@ -549,12 +562,14 @@ static bool getLevel( lua_State * L, int & level )
     lua_gettable( L, LUA_GLOBALSINDEX );
     if ( lua_isfunction( L, -1 ) == 0 )
     {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "getLevel() not defined" );
         lua_settop( L, top );
         return false;
     }
     const int res = lua_pcall( L, 0, 1, 0 );
     if ( res != 0 )
     {
+        reportError( L );
         lua_settop( L, top );
         return false;
     }

@@ -103,3 +103,15 @@ bool luaReadQuat( lua_State * L, int at, Ogre::Quaternion & v )
     return true;
 }
 
+void reportError( lua_State * L )
+{
+    const int top = lua_gettop( L );
+    for ( int i=1; i<=top; i++ )
+    {
+        const char * err = lua_tostring( L, i );
+        Ogre::LogManager::getSingletonPtr()->logError( err );
+    }
+}
+
+
+

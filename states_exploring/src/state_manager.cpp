@@ -9,6 +9,7 @@
 #include "lua_entity_part.h"
 #include "lua_constraints.h"
 #include "lua.hpp"
+#include "lua_utils.h"
 
 using namespace Ogre;
 
@@ -222,13 +223,17 @@ void StateManager::finitScript()
 
     lua_pushstring( L, "finit" );
     lua_gettable( L, LUA_GLOBALSINDEX );
-    lua_pcall( L, 0, 0, 0 );
+    const int finitRes = lua_pcall( L, 0, 0, 0 );
+    if ( finitRes != 0 )
+        reportError( L );
 
     lua_settop( L, top );
 
     lua_pushstring( L, "collectgarbage" );
     lua_gettable( L, LUA_GLOBALSINDEX );
-    lua_pcall( L, 0, 0, 0 );
+    const int gcRes = lua_pcall( L, 0, 0, 0 );
+    if ( gcRes != 0 )
+        reportError( L );
 
     lua_settop( L, top );
 

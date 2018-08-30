@@ -58,6 +58,11 @@ void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
     }*/
 }
 
+void CameraCtrl::setMode( Mode m )
+{
+    mode = m;
+}
+
 void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
 {
     if ( mode == Free )
