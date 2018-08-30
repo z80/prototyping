@@ -30,6 +30,7 @@ public:
     void scriptFrameStarted( const Ogre::FrameEvent & evt );
 
     Ogre::SceneManager * getSceneManager();
+    Ogre::Camera       * getCamera();
     void setMouseVisible( bool en );
 
     Config::ConfigReader * getConfigReader();
@@ -56,6 +57,7 @@ protected:
 private:
     std::list< State * > states;
     Ogre::SceneManager * scnMgr;
+    Ogre::Camera       * mCamera;
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;
 public:

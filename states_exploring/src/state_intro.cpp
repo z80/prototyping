@@ -39,14 +39,7 @@ void IntroState::enter()
 {
     mRoot = Root::getSingletonPtr();
     mSceneMgr = StateManager::getSingletonPtr()->getSceneManager();
-    try
-    {
-        mCamera = mSceneMgr->getCamera( "IntroCamera" );
-    }
-    catch ( ... )
-    {
-        mCamera = mSceneMgr->createCamera( "IntroCamera" );
-    }
+    mCamera = StateManager::getSingletonPtr()->getCamera();
     mCamera->setNearClipDistance( 0.0001 );
     if ( StateManager::getSingletonPtr()->getRenderWindow()->getNumViewports() < 1 )
         mViewport = StateManager::getSingletonPtr()->getRenderWindow()->addViewport( mCamera );

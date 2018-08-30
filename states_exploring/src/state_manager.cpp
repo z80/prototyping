@@ -28,7 +28,7 @@ StateManager::StateManager()
 
 StateManager::~StateManager()
 {
-    finitScript();
+
 }
 
 void StateManager::start( State * state )
@@ -95,6 +95,11 @@ Ogre::SceneManager * StateManager::getSceneManager()
     return scnMgr;
 }
 
+Ogre::Camera * StateManager::getCamera()
+{
+    return mCamera;
+}
+
 void StateManager::setMouseVisible( bool en )
 {
     setWindowGrab( !en );
@@ -107,6 +112,11 @@ Config::ConfigReader * StateManager::getConfigReader()
 
 void StateManager::shutdown()
 {
+    // First let script to finalize everything it wants in
+    // the right way.
+    finitScript();
+
+    // Clear states stack.
     while ( !states.empty() )
     {
         states.back()->exit();
@@ -114,8 +124,12 @@ void StateManager::shutdown()
     }
 
     destroyRTShaderSystem();
-
     finitSound();
+
+    scnMgr->destroyAllCameras();
+    scnMgr->destroyAllEntities();
+    scnMgr->destroyAllMovableObjects();
+    scnMgr->destroyAllManualObjects();
 }
 
 void StateManager::setup()
@@ -145,6 +159,10 @@ void StateManager::setup()
         ogreNode->setScale( 0.1, 0.1, 0.1 );
         ogreNode->setVisible( true );
     }*/
+
+    mCamera = scnMgr->createCamera( "Camera" );
+    Ogre::SceneNode * cameraNode = scnMgr->getRootSceneNode()->createChildSceneNode( "CameraNode" );
+    cameraNode->attachObject( mCamera );
 
     initSound();
 }
@@ -189,9 +207,21 @@ void StateManager::finitScript()
     // Perform full collect garbage in order to destroy all the
     // objets dynamically created in the script.
     lua_State * L = confReader->luaState();
+
+    const int top = lua_gettop( L );
+
+    lua_pushstring( L, "finit" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    lua_pcall( L, 0, 0, 0 );
+
+    lua_settop( L, top );
+
     lua_pushstring( L, "collectgarbage" );
     lua_gettable( L, LUA_GLOBALSINDEX );
     lua_pcall( L, 0, 0, 0 );
+
+    lua_settop( L, top );
+
     // Delete config reader.
     delete confReader;
 }

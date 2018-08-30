@@ -50,20 +50,10 @@ void WorkshopState::enter()
     {
         mRoot = Root::getSingletonPtr();
         mSceneMgr = StateManager::getSingletonPtr()->getSceneManager();
-        mCamera = mSceneMgr->getCamera( "IntroCamera" );
+        mCamera = StateManager::getSingletonPtr()->getCamera();
+        mCamera->setNearClipDistance( 0.0001 );
         mViewport = StateManager::getSingletonPtr()->getRenderWindow()->getViewport( 0 );
-
-        mCamera->setFixedYawAxis( false );
-
-        try
-        {
-            mCameraNode = mSceneMgr->getSceneNode( "CameraNode" );
-        }
-        catch ( ... )
-        {
-            mCameraNode = mSceneMgr->getRootSceneNode()->createChildSceneNode( "CameraNode" );
-            mCameraNode->attachObject( mCamera );
-        }
+        mCameraNode = mCamera->getParentSceneNode();
 
         createObjects();
     }
