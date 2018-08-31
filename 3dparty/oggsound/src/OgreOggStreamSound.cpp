@@ -45,7 +45,7 @@ namespace OgreOggSound
 	,mLastOffset(0.f)
 	{
 		mStream=true;															
-		mBuffers.bind(new BufferList(NUM_BUFFERS, AL_NONE));
+        mBuffers.reset(new BufferList(NUM_BUFFERS, AL_NONE));
 	}
 	/*/////////////////////////////////////////////////////////////////*/
 	OgreOggStreamSound::~OgreOggStreamSound()
@@ -118,7 +118,7 @@ namespace OgreOggSound
 			if ((*mBuffers)[i]!=AL_NONE)
 				alDeleteBuffers(1, &(*mBuffers)[i]);
 		}
-		if ( !mAudioStream.isNull() ) ov_clear(&mOggStream);
+        if ( mAudioStream ) ov_clear(&mOggStream);
 		mPlayPosChanged = false;
 		mPlayPos = 0.f;
 	}
@@ -129,7 +129,7 @@ namespace OgreOggSound
 		mLoopOffset=startTime;
 
 		// If loaded check validity
-		if ( !mAudioStream.isNull() )
+        if ( mAudioStream )
 			if ( mLoopOffset>=mPlayTime ) 
 			{
 				Ogre::LogManager::getSingleton().logMessage("**** OgreOggStreamSound::setLoopOffset() ERROR - loop time invalid! ****", Ogre::LML_CRITICAL);
@@ -354,7 +354,7 @@ namespace OgreOggSound
 		memset(data, 0, mBufferSize);
 		
 		// Read only what was asked for
-		while( !mStreamEOF && (static_cast<int>(audioData.size()) < mBufferSize) )
+        while( !mStreamEOF && (static_cast<size_t>(audioData.size()) < mBufferSize) )
 		{
 			int  bytes = 0;
 			// Read up to a buffer's worth of data

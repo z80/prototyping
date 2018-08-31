@@ -2120,7 +2120,7 @@ namespace OgreOggSound
 		for ( StringVector::iterator i=soundList.begin(); i!=soundList.end(); ++i )
 		{
 			OgreOggISound* sound=0;
-			if ( sound=getSound((*i)) ) 
+            if ( (sound=getSound((*i))) )
 				_destroySoundImpl(sound);
 		}
 		soundList.clear();
@@ -2626,7 +2626,7 @@ namespace OgreOggSound
 
 		try
 		{
-			if (groupManager = Ogre::ResourceGroupManager::getSingletonPtr())
+            if ( (groupManager = Ogre::ResourceGroupManager::getSingletonPtr()) )
 			{
 				// Have to use the getter to retrieve the mResourceGroupName member since this function can be called in a separate
 				// thread and the getter has thread safety.
@@ -2645,13 +2645,13 @@ namespace OgreOggSound
 			else
 			{
 				OGRE_EXCEPT(Exception::ERR_FILE_NOT_FOUND, "Unable to find Ogre::ResourceGroupManager", "OgreOggSoundManager::createSound()");
-				result.setNull();
+                result.reset();
 			}
 		}
 		catch (Ogre::Exception& e)
 		{
 			OGRE_EXCEPT(Exception::ERR_FILE_NOT_FOUND, e.getFullDescription(), "OgreOggSoundManager::_createSoundImpl()");
-			result.setNull();
+            result.reset();
 		}
 
 		return result;
