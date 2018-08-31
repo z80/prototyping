@@ -68,12 +68,30 @@ void EntityPlanet::addForces( EntityPart & part )
     btVector3 p( 0.0, 0.0, 0.0 );
     part.airMesh.forceTorque( atm, r, v, q, f, p );
 
-    std::cout << "air friction: " << f.x() << ", " << f.y() << ", " << f.z() << std::endl;
+    //std::cout << "air friction: " << f.x() << ", " << f.y() << ", " << f.z() << std::endl;
 
     f += fg;
     part.rigidBody->applyCentralForce( f );
     part.rigidBody->applyTorque( p );
 }
+
+void EntityPlanet::setPosition( const Ogre::Vector3 & at )
+{
+    const btVector3 r0 = btVector3( at.x, at.y, at.z );
+    btTransform t = rigidBody->getCenterOfMassTransform();
+    t.setOrigin( r0 );
+    rigidBody->setCenterOfMassTransform( t );
+    atm.r0 = r0;
+    g.r0   = r0;
+}
+
+void EntityPlanet::setRotation( const Ogre::Quaternion & q )
+{
+    btTransform t = rigidBody->getCenterOfMassTransform();;
+    t.setRotation(btQuaternion( q.x, q.y, q.z, q.w ) );
+    rigidBody->setCenterOfMassTransform( t );
+}
+
 
 
 

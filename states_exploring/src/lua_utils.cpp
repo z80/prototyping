@@ -109,7 +109,8 @@ void reportError( lua_State * L )
     for ( int i=1; i<=top; i++ )
     {
         const char * err = lua_tostring( L, i );
-        Ogre::LogManager::getSingletonPtr()->logError( err );
+        if ( err )
+            Ogre::LogManager::getSingletonPtr()->logError( err );
     }
 }
 

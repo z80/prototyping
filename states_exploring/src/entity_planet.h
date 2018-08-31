@@ -24,6 +24,8 @@ public:
     ~EntityPlanet();
 
     void addForces( EntityPart & part );
+    void setPosition( const Ogre::Vector3 & at );
+    void setRotation( const Ogre::Quaternion & q );
 
 public:
     Ogre::Entity     * visualEntity;

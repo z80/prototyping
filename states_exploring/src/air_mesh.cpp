@@ -6,6 +6,7 @@ namespace AirMesh
 {
 
 AtmosphereForces::AtmosphereForces()
+    : r0( 0.0, 0.0, 0.0 )
 {
     viscosityFwd = 0.2;
     viscosityBwd = 0.1;
@@ -43,7 +44,8 @@ void AtmosphereForces::forceTorque( const Triangle & tri,
 
 btScalar AtmosphereForces::density( const btVector3 & at ) const
 {
-    const btScalar h = at.length() - radius;
+    const btVector3 dr = at - r0;
+    const btScalar h = dr.length() - radius;
     if ( h < 0.0 )
         return groundDensity;
     else if ( h > height )
@@ -63,6 +65,7 @@ btScalar AtmosphereForces::density( const btVector3 & at ) const
 
 
 Gravity::Gravity()
+    : r0( 0.0, 0.0, 0.0 )
 {
     GM     = 12345.0;
     radius = 100.0;
@@ -74,16 +77,17 @@ Gravity::~Gravity()
 }
 
 void Gravity::gravity( const btScalar m, const btVector3 & r,
-                      btVector3 & g )
+                       btVector3 & g )
 {
-    const btScalar d = r.length();
+    btVector3 dr = r - r0;
+    const btScalar d = dr.length();
     // To avoid  troubles if the body is inside.
     if ( d < radius*0.5 )
     {
         g = btVector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
         return;
     }
-    g = -r * GM / ( d*d*d );
+    g = -dr * GM / ( d*d*d );
 }
 
 

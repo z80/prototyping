@@ -29,6 +29,7 @@ public:
              viscosityBwd,
              viscosityLat,
              radius, height, groundDensity;
+    btVector3 r0;
 };
 
 class Gravity
@@ -40,8 +41,9 @@ public:
     virtual void gravity( const btScalar m, const btVector3 & r,
                           btVector3 & g );
 
-    btScalar GM;
-    btScalar radius;
+    btScalar  GM;
+    btScalar  radius;
+    btVector3 r0;
 };
 
 
