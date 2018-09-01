@@ -124,14 +124,14 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
 
 bool WorkshopState::frameEnded(const Ogre::FrameEvent& evt)
 {
-    CameraCtrl::getSingletonPtr()->frameRendered( evt );
+    StateManager::getSingletonPtr()->getCameraCtrl()->frameRendered( evt );
     return true;
 }
 
 bool WorkshopState::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
     if ( !disableMouseCtrl )
-        CameraCtrl::getSingletonPtr()->keyPressed( evt );
+        StateManager::getSingletonPtr()->getCameraCtrl()->keyPressed( evt );
     if ( evt.keysym.sym == 27 )
         StateManager::getSingletonPtr()->pushState( IntroState::getSingletonPtr() );
 }
@@ -139,7 +139,7 @@ bool WorkshopState::keyPressed(const OgreBites::KeyboardEvent& evt)
 bool WorkshopState::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
     if ( !disableMouseCtrl )
-        CameraCtrl::getSingletonPtr()->keyReleased( evt );
+        StateManager::getSingletonPtr()->getCameraCtrl()->keyReleased( evt );
     return true;
 }
 
@@ -161,28 +161,28 @@ bool WorkshopState::touchReleased(const OgreBites::TouchFingerEvent& evt)
 bool WorkshopState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
     if ( !disableMouseCtrl )
-        CameraCtrl::getSingletonPtr()->mouseMoved( evt );
+        StateManager::getSingletonPtr()->getCameraCtrl()->mouseMoved( evt );
     return true;
 }
 
 bool WorkshopState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
     if ( !disableMouseCtrl )
-        CameraCtrl::getSingletonPtr()->mouseWheelRolled( evt );
+        StateManager::getSingletonPtr()->getCameraCtrl()->mouseWheelRolled( evt );
     return true;
 }
 
 bool WorkshopState::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
     if ( !disableMouseCtrl )
-        CameraCtrl::getSingletonPtr()->mousePressed( evt );
+        StateManager::getSingletonPtr()->getCameraCtrl()->mousePressed( evt );
     return true;
 }
 
 bool WorkshopState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
     if ( !disableMouseCtrl )
-        CameraCtrl::getSingletonPtr()->mouseReleased( evt );
+        StateManager::getSingletonPtr()->getCameraCtrl()->mouseReleased( evt );
     return true;
 }
 
@@ -225,7 +225,7 @@ void WorkshopState::debugOverlay()
             ImGui::Text( "%s", out.str().c_str() );
         }
         {
-            std::string camMode = CameraCtrl::getSingletonPtr()->modeStri();
+            std::string camMode = StateManager::getSingletonPtr()->getCameraCtrl()->modeStri();
             ImGui::Text( "camera mode: \"%s\"", camMode.c_str() );
         }
 

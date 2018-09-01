@@ -6,13 +6,14 @@
 #include "OgreSingleton.h"
 #include "OgreInput.h"
 
-class CameraCtrl: public Ogre::Singleton<CameraCtrl>
+class CameraCtrl
 {
 public:
     enum Mode { Free, Orbit, Fixed };
 
     CameraCtrl();
     ~CameraCtrl();
+    void setEnabled( bool en );
     void setCameraNode( Ogre::SceneNode * nodeCam );
     void setTargetNode( Ogre::SceneNode * nodeTarget );
 
@@ -59,6 +60,7 @@ public:
     void orbitAdjustDistance( const OgreBites::MouseWheelEvent & evt );
 
 
+    bool mEnabled;
     Mode mode;
     Ogre::SceneNode * nodeCam;
     Ogre::SceneNode * nodeTarget;

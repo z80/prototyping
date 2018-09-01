@@ -4,13 +4,9 @@
 
 #include <iostream>
 
-static CameraCtrl g_cc;
-
-template<> CameraCtrl * Ogre::Singleton<CameraCtrl>::msSingleton = 0;
-
 CameraCtrl::CameraCtrl()
-    : Singleton<CameraCtrl>()
 {
+    mEnabled = true;
     mode = Orbit;
     nodeCam    = 0;
     nodeTarget = 0;
@@ -39,6 +35,11 @@ CameraCtrl::~CameraCtrl()
 
 }
 
+void CameraCtrl::setEnabled( bool en )
+{
+    mEnabled = en;
+}
+
 void CameraCtrl::setCameraNode( Ogre::SceneNode * nodeCam )
 {
     this->nodeCam = nodeCam;
@@ -49,13 +50,6 @@ void CameraCtrl::setCameraNode( Ogre::SceneNode * nodeCam )
 void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
 {
     this->nodeTarget = nodeTarget;
-    /*if ( this->nodeCam && this->nodeTarget )
-    {
-        Ogre::SceneNode * parent = this->nodeCam->getParentSceneNode();
-        if ( parent )
-            parent->removeChild( this->nodeCam );
-        this->nodeTarget->addChild( this->nodeCam );
-    }*/
 }
 
 void CameraCtrl::setMode( Mode m )
@@ -65,6 +59,8 @@ void CameraCtrl::setMode( Mode m )
 
 void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
 {
+    if ( !mEnabled )
+        return;
     if ( mode == Free )
         freeMovement( evt );
     else if ( mode == Orbit )
@@ -73,6 +69,9 @@ void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
 
 bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
 {
+    if ( !mEnabled )
+        return true;
+
     OgreBites::Keycode key = evt.keysym.sym;
 
     // Camera keyboard controls.
@@ -99,6 +98,9 @@ bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
 
 bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
 {
+    if ( !mEnabled )
+        return true;
+
     const OgreBites::Keycode key = evt.keysym.sym;
 
     // Looping over camera modes.
@@ -149,49 +151,20 @@ bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
 
 bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
 {
+    if ( !mEnabled )
+        return true;
+
     if ( mode == Orbit )
         orbitAdjustRotation( evt );
-
-    /*Ogre::Vector3 mOffset( 0.0, 0.0, 0.0 );
-
-    if ( mode == Orbit )
-    {
-        const Ogre::Real dist = getDistToTarget();
-
-        if ( mOrbiting )   // yaw around the target, and pitch locally
-        {
-            nodeCam->setPosition( nodeTarget->_getDerivedPosition() + mOffset );
-
-            nodeCam->yaw(Ogre::Degree(-evt.xrel * 0.25f), Ogre::Node::TS_PARENT);
-            nodeCam->pitch(Ogre::Degree(-evt.yrel * 0.25f));
-
-            nodeCam->translate(Ogre::Vector3(0, 0, dist), Ogre::Node::TS_LOCAL);
-            // don't let the camera go over the top or around the bottom of the target
-        }
-        else if ( mMoving )  // move the camera along the image plane
-        {
-            Ogre::Vector3 delta = nodeCam->getOrientation() * Ogre::Vector3(-evt.xrel, evt.yrel, 0);
-            // the further the camera is, the faster it moves
-            delta *= dist / 1000.0f;
-            mOffset += delta;
-            nodeCam->translate( delta );
-        }
-    }
-    else if ( mode == Free )
-    {
-        if ( mOrbiting )
-        {
-            nodeCam->yaw( Ogre::Degree( -evt.xrel * 0.15f ), Ogre::Node::TS_PARENT );
-            nodeCam->pitch( Ogre::Degree( -evt.yrel * 0.15f ) );
-        }
-    }*/
-
 
     return true;
 }
 
 bool CameraCtrl::mouseWheelRolled( const OgreBites::MouseWheelEvent & evt )
 {
+    if ( !mEnabled )
+        return true;
+
     if ( mode == Orbit )
         orbitAdjustDistance( evt );
     /*if ( mode == Orbit && evt.y != 0 )
@@ -205,6 +178,9 @@ bool CameraCtrl::mouseWheelRolled( const OgreBites::MouseWheelEvent & evt )
 
 bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
 {
+    if ( !mEnabled )
+        return true;
+
     if ( mode == Orbit )
     {
         if ( evt.button == OgreBites::BUTTON_LEFT )
@@ -225,6 +201,9 @@ bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
 
 bool CameraCtrl::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 {
+    if ( !mEnabled )
+        return true;
+
     if ( mode == Orbit )
     {
         if ( evt.button == OgreBites::BUTTON_LEFT )

@@ -118,6 +118,11 @@ Config::ConfigReader * StateManager::getConfigReader()
     return confReader;
 }
 
+CameraCtrl * StateManager::getCameraCtrl()
+{
+    return &cameraCtrl;
+}
+
 void StateManager::shutdown()
 {
     // First let script to finalize everything it wants in

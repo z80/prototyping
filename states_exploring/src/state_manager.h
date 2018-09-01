@@ -7,6 +7,7 @@
 #include "OgreRTShaderSystem.h"
 #include "OgreOggSoundPlugin.h"
 #include "entity_world.h"
+#include "camera_ctrl.h"
 
 class State;
 namespace Config
@@ -36,6 +37,7 @@ public:
     void setMouseVisible( bool en );
 
     Config::ConfigReader * getConfigReader();
+    CameraCtrl   * getCameraCtrl();
 
 protected:
     void shutdown();
@@ -63,6 +65,7 @@ private:
     Entity::EntityWorld * mWorld;
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;
+    CameraCtrl             cameraCtrl;
 public:
     /// Callbacks to call by states in order to notify script about
     /// state transitions.
