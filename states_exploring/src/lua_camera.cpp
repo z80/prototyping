@@ -127,11 +127,11 @@ int lua_cameraGetDirection( lua_State * L )
 
 
 static const struct luaL_reg META_T_FUNCS[] = {
-    { "setPosition",    lua_cameraSetPosition },
-    { "setsetRotation", lua_cameraSetRotation },
-    { "getPosition",    lua_cameraGetPosition },
-    { "getRotation",    lua_cameraGetRotation },
-    { "getDirection",   lua_cameraGetDirection },
+    { "setPosition",  lua_cameraSetPosition },
+    { "setRotation",  lua_cameraSetRotation },
+    { "getPosition",  lua_cameraGetPosition },
+    { "getRotation",  lua_cameraGetRotation },
+    { "getDirection", lua_cameraGetDirection },
     { NULL,           NULL },
 };
 
