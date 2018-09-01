@@ -119,7 +119,16 @@ int lua_cameraGetDirection( lua_State * L )
         return 3;
     }
     return 0;
+}
 
+int lua_cameraSetCtrlEnabled( lua_State * L )
+{
+    Ogre::Camera * p = *reinterpret_cast<Ogre::Camera * *>(
+                                    lua_touserdata( L, 1 ) );
+    const int top = lua_gettop( L );
+    const bool en = (top > 1) ? (lua_toboolean(L, 2) > 0) : false;
+    StateManager::getSingletonPtr()->getCameraCtrl()->setEnabled( en );
+    return 0;
 }
 
 
@@ -127,11 +136,12 @@ int lua_cameraGetDirection( lua_State * L )
 
 
 static const struct luaL_reg META_T_FUNCS[] = {
-    { "setPosition",  lua_cameraSetPosition },
-    { "setRotation",  lua_cameraSetRotation },
-    { "getPosition",  lua_cameraGetPosition },
-    { "getRotation",  lua_cameraGetRotation },
-    { "getDirection", lua_cameraGetDirection },
+    { "setPosition",    lua_cameraSetPosition },
+    { "setRotation",    lua_cameraSetRotation },
+    { "getPosition",    lua_cameraGetPosition },
+    { "getRotation",    lua_cameraGetRotation },
+    { "getDirection",   lua_cameraGetDirection },
+    { "setCtrlEnabled", lua_cameraSetCtrlEnabled },
     { NULL,           NULL },
 };
 
