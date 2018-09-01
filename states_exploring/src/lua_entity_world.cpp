@@ -134,7 +134,7 @@ static const struct luaL_reg META_T_FUNCS[] = {
     { NULL,           NULL },
 };
 
-static void partCreateMeta( lua_State * L )
+static void worldCreateMeta( lua_State * L )
 {
     const int top = lua_gettop( L );
     luaL_newmetatable( L, META_T_NAME );  // create new metatable for file handles
@@ -165,7 +165,7 @@ static const struct luaL_reg FUNCS[] =
 
 int luaopen_entityWorld( lua_State * L )
 {
-    partCreateMeta( L );
+    worldCreateMeta( L );
     luaL_register( L, LIB_NAME, FUNCS );
     return 0;
 }
