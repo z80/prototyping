@@ -8,6 +8,7 @@
 #include "lua_collision_shapes.h"
 #include "lua_entity_part.h"
 #include "lua_entity_world.h"
+#include "lua_camera.h"
 #include "lua_constraints.h"
 #include "lua.hpp"
 #include "lua_utils.h"
@@ -215,6 +216,7 @@ void StateManager::initScript()
     luaopen_btShapes( L );
     luaopen_entityPart( L );
     luaopen_entityWorld( L );
+    luaopen_camera( L );
 }
 
 void StateManager::finitScript()
