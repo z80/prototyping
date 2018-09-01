@@ -83,6 +83,7 @@ void StateManager::stateResumed( const std::string & name )
 }
 
 
+
 static int lua_log( lua_State * L )
 {
     const int top = lua_gettop( L );

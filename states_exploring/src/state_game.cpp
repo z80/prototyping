@@ -101,6 +101,9 @@ bool GameState::frameStarted(const Ogre::FrameEvent& evt)
     modesOverlay();
     debugOverlay();
     ImGui::ShowTestWindow();
+
+    StateManager::getSingletonPtr()->scriptFrameStarted( evt );
+
     if ( world )
     {
         planet->addForces( *cube );
@@ -110,7 +113,6 @@ bool GameState::frameStarted(const Ogre::FrameEvent& evt)
     {
         toWorkshopMode = false;
         StateManager::getSingletonPtr()->pushState( WorkshopState::getSingletonPtr() );
-
     }
 
     return true;

@@ -37,7 +37,8 @@ private:
     void debugOverlay();
     void backToGameOverlay();
     void panelOverlay();
-    void panelItem( const Group::GroupItem & item, bool notLastInRow );
+    void panelItem( const Group::GroupItem & item, int groupInd,
+                    int itemInd, bool notLastInRow );
 
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;

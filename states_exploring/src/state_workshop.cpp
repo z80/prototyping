@@ -111,6 +111,8 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
     panelOverlay();
     backToGameOverlay();
 
+    StateManager::getSingletonPtr()->scriptFrameStarted( evt );
+
     if ( mExitState )
     {
         StateManager::getSingletonPtr()->popState();
@@ -294,7 +296,7 @@ void WorkshopState::panelOverlay()
                     const Group::GroupItem & item = group.items[j];
                     const bool notLastInRow = ( ( (j+1) % itemsPerLine ) != 0 ) && ( j != 0 );
                     //ImGui::PushItemWidth( w );
-                    panelItem( item, notLastInRow );
+                    panelItem( item, i, j, notLastInRow );
                 }
             }
         }
@@ -304,14 +306,23 @@ void WorkshopState::panelOverlay()
     ImGui::End();
 }
 
-void WorkshopState::panelItem( const Group::GroupItem & item, bool notLastInRow )
+static void itemClicked( lua_State * L, int group, int item );
+
+void WorkshopState::panelItem( const Group::GroupItem & item, int groupInd, int itemInd,
+                               bool notLastInRow )
 {
     if ( notLastInRow )
         ImGui::SameLine();
     ImGui::BeginGroup();
     {
         ImGui::Text( "%s", item.name.c_str() );
-        ImGui::ImageButton( (ImTextureID)item.icon, iconSz );
+        const bool clicked = ImGui::ImageButton( (ImTextureID)item.icon, iconSz );
+        if ( clicked )
+        {
+            Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
+            lua_State * L = cr->luaState();
+            itemClicked( L, groupInd+1, itemInd+1 );
+        }
     }
     ImGui::EndGroup();
     if ( ImGui::IsItemHovered() )
@@ -365,8 +376,15 @@ bool WorkshopState::loadGroups()
             if ( !getItem( L, i, j, icon, group.items[j] ) )
                 return false;
             TexturePtr t = TextureManager::getSingleton().getByName( icon );
-            ResourceHandle hdl = t->getHandle();
-            group.items[j].icon = hdl;
+            if ( !t )
+                t = TextureManager::getSingleton().create( icon, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME );
+            if ( t )
+            {
+                ResourceHandle hdl = t->getHandle();
+                group.items[j].icon = hdl;
+            }
+            else
+                group.items[j].icon = -1;
         }
     }
 
@@ -577,6 +595,31 @@ static bool getLevel( lua_State * L, int & level )
     level = static_cast<int>( lua_tonumber( L, -1 ) );
     lua_settop( L, top );
     return true;
+}
+
+static void itemClicked( lua_State * L, int group, int item )
+{
+    const int top = lua_gettop( L );
+    lua_pushstring( L, "itemClicked" );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        Ogre::LogManager::getSingletonPtr()->logWarning(  "itemClicked() not defined" );
+        lua_settop( L, top );
+        return;
+    }
+    lua_pushinteger( L, group );
+    lua_pushinteger( L, item );
+    const int res = lua_pcall( L, 2, 0, 0 );
+    if ( res != 0 )
+    {
+        reportError( L );
+        lua_settop( L, top );
+        return;
+    }
+
+    lua_settop( L, top );
+    return;
 }
 
 

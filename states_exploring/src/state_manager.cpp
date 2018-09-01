@@ -169,6 +169,8 @@ void StateManager::setup()
         ogreNode->setScale( 0.1, 0.1, 0.1 );
         ogreNode->setVisible( true );
     }*/
+    Ogre::ResourceGroupManager::getSingletonPtr()->initialiseResourceGroup( ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME );
+    Ogre::ResourceGroupManager::getSingletonPtr()->loadResourceGroup( ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME );
 
     mCamera = scnMgr->createCamera( "Camera" );
     Ogre::SceneNode * cameraNode = scnMgr->getRootSceneNode()->createChildSceneNode( "CameraNode" );
