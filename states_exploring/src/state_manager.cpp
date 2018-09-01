@@ -26,6 +26,7 @@ StateManager::StateManager()
       Ogre::Singleton<StateManager>()
 {
     soundPlugin = 0;
+    mouseAtX = mouseAtY = 0;
     initScript();
 }
 
@@ -123,6 +124,46 @@ CameraCtrl * StateManager::getCameraCtrl()
     return &cameraCtrl;
 }
 
+//Ogre::RaySceneQuery   * getRaySceneQuery();
+bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * ent, Ogre::uint32 mask )
+{
+    raySceneQuery->setRay( ray );
+    raySceneQuery->setQueryMask( mask );
+    Ogre::RaySceneQueryResult & res = raySceneQuery->execute();
+    Ogre::RaySceneQueryResult::iterator it;
+    for ( it=res.begin(); it!=res.end(); it++ )
+    {
+        const RaySceneQueryResultEntry & e = *it;
+        if ( !e.movable )
+            continue;
+        const Ogre::Any & a = e.movable->getUserObjectBindings().getUserAny();
+        if ( a.has_value() )
+        {
+            const Entity::Entity * entity = a.get<Entity::Entity *>();
+            if ( entity )
+            {
+                ent = const_cast<Entity::Entity *>( entity );
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool StateManager::mouseQuery( Entity::Entity * e, Ogre::uint32 mask )
+{
+    Ogre::Viewport * v = mCamera->getViewport();
+    int left, top, width, height;
+    v->getActualDimensions( left, top, width, height );
+    const Ogre::Real x = static_cast<Ogre::Real>( mouseAtX - left ) /
+            static_cast<Ogre::Real>( width );
+    const Ogre::Real y = static_cast<Ogre::Real>( mouseAtY - top ) /
+            static_cast<Ogre::Real>( height );
+    Ogre::Ray ray = mCamera->getCameraToViewportRay( x, y );
+    const bool res = rayQuery( ray, e, mask );
+    return res;
+}
+
 void StateManager::shutdown()
 {
     // First let script to finalize everything it wants in
@@ -146,6 +187,7 @@ void StateManager::shutdown()
     scnMgr->destroyAllEntities();
     scnMgr->destroyAllMovableObjects();
     scnMgr->destroyAllManualObjects();
+    scnMgr->destroyQuery( raySceneQuery );
 }
 
 void StateManager::setup()
@@ -181,6 +223,8 @@ void StateManager::setup()
     mCamera = scnMgr->createCamera( "Camera" );
     Ogre::SceneNode * cameraNode = scnMgr->getRootSceneNode()->createChildSceneNode( "CameraNode" );
     cameraNode->attachObject( mCamera );
+
+    raySceneQuery = scnMgr->createRayQuery( Ogre::Ray() );
 
     initSound();
 
@@ -302,6 +346,8 @@ bool StateManager::touchReleased(const OgreBites::TouchFingerEvent& evt)
 
 bool StateManager::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
+    mouseAtX = evt.x;
+    mouseAtY = evt.y;
     const bool res = states.back()->mouseMoved( evt );
     return res;
 }

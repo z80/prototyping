@@ -172,6 +172,15 @@ bool EntityPart::setMaterial( const char * material )
     return res;
 }
 
+bool EntityPart::setMask( Ogre::uint32 mask )
+{
+    if ( !visualEntity )
+        return false;
+
+    visualEntity->setQueryFlags( mask );
+    return true;
+}
+
 bool EntityPart::setAirMesh( const std::string & meshFileName )
 {
     bool res = true;

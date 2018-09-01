@@ -82,6 +82,7 @@ public:
 
     bool setEntity( const char * mesh, const char * material = 0 );
     bool setMaterial( const char * material );
+    bool setMask( Ogre::uint32 mask );
     bool setAirMesh( const std::string & meshFileName );
     void addConnectionPoint( const ConnectionPoint & pt );
 

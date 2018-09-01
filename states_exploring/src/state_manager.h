@@ -38,6 +38,8 @@ public:
 
     Config::ConfigReader * getConfigReader();
     CameraCtrl   * getCameraCtrl();
+    bool rayQuery( const Ogre::Ray & ray, Entity::Entity * e, Ogre::uint32 mask = 0xFFFFFFFF );
+    bool mouseQuery( Entity::Entity * e, Ogre::uint32 mask = 0xFFFFFFFF );
 
 protected:
     void shutdown();
@@ -66,6 +68,8 @@ private:
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;
     CameraCtrl             cameraCtrl;
+    Ogre::RaySceneQuery  * raySceneQuery;
+    int                  mouseAtX, mouseAtY;
 public:
     /// Callbacks to call by states in order to notify script about
     /// state transitions.
