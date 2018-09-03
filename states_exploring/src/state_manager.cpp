@@ -27,7 +27,8 @@ StateManager::StateManager()
 {
     soundPlugin = 0;
     mouseAtX = mouseAtY = 0;
-    initScript();
+    windowGrab = false;
+    scriptArgsQty = 0;
 }
 
 StateManager::~StateManager()
@@ -111,6 +112,7 @@ Entity::EntityWorld * StateManager::getWorld()
 
 void StateManager::setMouseVisible( bool en )
 {
+    windowGrab = en;
     setWindowGrab( !en );
 }
 
@@ -139,7 +141,7 @@ bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * ent, Ogre::
         const Ogre::Any & a = e.movable->getUserObjectBindings().getUserAny();
         if ( a.has_value() )
         {
-            const Entity::Entity * entity = a.get<Entity::Entity *>();
+            const Entity::Entity * entity = Ogre::any_cast<Entity::Entity *>( a );
             if ( entity )
             {
                 ent = const_cast<Entity::Entity *>( entity );
@@ -152,6 +154,19 @@ bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * ent, Ogre::
 
 bool StateManager::mouseQuery( Entity::Entity * e, Ogre::uint32 mask )
 {
+    Ogre::Ray ray;
+    const bool rayExists = mouseRay( ray );
+    if ( !rayExists )
+        return false;
+    const bool res = rayQuery( ray, e, mask );
+    return res;
+}
+
+bool StateManager::mouseRay( Ogre::Ray & ray )
+{
+    const bool grab = windowGrab;
+    if ( grab )
+        return false;
     Ogre::Viewport * v = mCamera->getViewport();
     int left, top, width, height;
     v->getActualDimensions( left, top, width, height );
@@ -159,9 +174,8 @@ bool StateManager::mouseQuery( Entity::Entity * e, Ogre::uint32 mask )
             static_cast<Ogre::Real>( width );
     const Ogre::Real y = static_cast<Ogre::Real>( mouseAtY - top ) /
             static_cast<Ogre::Real>( height );
-    Ogre::Ray ray = mCamera->getCameraToViewportRay( x, y );
-    const bool res = rayQuery( ray, e, mask );
-    return res;
+    ray = mCamera->getCameraToViewportRay( x, y );
+    return true;
 }
 
 void StateManager::shutdown()
@@ -229,6 +243,10 @@ void StateManager::setup()
     initSound();
 
     mWorld = Entity::EntityWorld::createWorld();
+
+
+    // After all needed objects are created init script.
+    initScript();
 }
 
 void StateManager::initSound()
@@ -258,7 +276,9 @@ void StateManager::initScript()
     {
         const char * err;
         confReader->error( &err );
-        Ogre::LogManager::getSingletonPtr()->logMessage( err );
+        Ogre::LogManager * lm = Ogre::LogManager::getSingletonPtr();
+        if ( lm )
+            lm->logMessage( err );
     }
     lua_State * L = confReader->luaState();
     luaopen_sound( L );

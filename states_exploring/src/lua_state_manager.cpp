@@ -58,6 +58,68 @@ void StateManager::scriptFrameStarted( const Ogre::FrameEvent & evt )
     lua_settop( L, top );
 }
 
+bool StateManager::pushFunc( const char * funcName )
+{
+    lua_State * L = confReader->luaState();
+    if ( !L )
+        return false;
+
+    const int top = lua_gettop( L );
+    lua_pushstring( L, funcName );
+    lua_gettable( L, LUA_GLOBALSINDEX );
+    if ( lua_isfunction( L, -1 ) == 0 )
+    {
+        lua_settop( L, top );
+        std::string stri = std::string( funcName ) + " is not defined";
+        Ogre::LogManager::getSingletonPtr()->logWarning( stri );
+        return false;
+    }
+    scriptArgsQty = 0;
+
+    return true;
+}
+
+bool StateManager::pushString( const char * stri )
+{
+    lua_State * L = confReader->luaState();
+    lua_pushstring( L, stri );
+    scriptArgsQty += 1;
+    return true;
+}
+
+bool StateManager::pushInt( int val )
+{
+    lua_State * L = confReader->luaState();
+    lua_pushinteger( L, val );
+    scriptArgsQty += 1;
+    return true;
+}
+
+bool StateManager::pushBool( bool val )
+{
+    lua_State * L = confReader->luaState();
+    lua_pushboolean( L, val ? 1 : 0 );
+    scriptArgsQty += 1;
+    return true;
+}
+
+bool StateManager::callFunc()
+{
+    lua_State * L = confReader->luaState();
+    const int res = lua_pcall( L, scriptArgsQty, 0, 0 );
+    scriptArgsQty = 0;
+    if ( res != 0 )
+    {
+        reportError( L );
+        lua_settop( L, 0 );
+        return false;
+    }
+    lua_settop( L, 0 );
+    return true;
+}
+
+
+
 void StateManager::stateEntered( const std::string & name )
 {
     lua_State * L = confReader->luaState();

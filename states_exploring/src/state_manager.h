@@ -30,6 +30,12 @@ public:
     // States may call this in the case it is needed or not
     // in order to save resources.
     void scriptFrameStarted( const Ogre::FrameEvent & evt );
+    // Arbitrary callbacks by name.
+    bool pushFunc( const char * funcName );
+    bool pushString( const char * stri );
+    bool pushInt( int val );
+    bool pushBool( bool val );
+    bool callFunc();
 
     Ogre::SceneManager  * getSceneManager();
     Ogre::Camera        * getCamera();
@@ -40,6 +46,7 @@ public:
     CameraCtrl   * getCameraCtrl();
     bool rayQuery( const Ogre::Ray & ray, Entity::Entity * e, Ogre::uint32 mask = 0xFFFFFFFF );
     bool mouseQuery( Entity::Entity * e, Ogre::uint32 mask = 0xFFFFFFFF );
+    bool mouseRay( Ogre::Ray & ray );
 
 protected:
     void shutdown();
@@ -70,6 +77,8 @@ private:
     CameraCtrl             cameraCtrl;
     Ogre::RaySceneQuery  * raySceneQuery;
     int                  mouseAtX, mouseAtY;
+    bool                 windowGrab;
+    int scriptArgsQty;
 public:
     /// Callbacks to call by states in order to notify script about
     /// state transitions.
