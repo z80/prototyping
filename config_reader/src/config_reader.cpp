@@ -133,8 +133,6 @@ bool ConfigReader::openFile( const char * fname )
             out << stri << std::endl;
         }
         lua_pop( pd->L, top );
-        lua_close( pd->L );
-        pd->L = 0;
 
         pd->lastError = out.str();
 

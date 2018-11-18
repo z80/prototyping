@@ -272,7 +272,7 @@ void StateManager::finitSound()
 void StateManager::initScript()
 {
     confReader = new Config::ConfigReader( true );
-    if ( !confReader->openFile( "./main.lua" ) )
+    if ( !confReader->openFile( "./resources/lua/main.lua" ) )
     {
         const char * err;
         confReader->error( &err );

@@ -58,7 +58,7 @@ endif()
 message(STATUS "using freetype: ${FREETYPE_FOUND}")
 
 install( TARGETS ${proj} DESTINATION ./ )
-install( DIRECTORY "./media/" DESTINATION ./my )
+install( DIRECTORY "./resources/" DESTINATION ./resources )
 
 add_definitions( -DBT_USE_DOUBLE_PRECISION )
 

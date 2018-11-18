@@ -2,7 +2,7 @@
 groups = {
     {
         name    = "group 1", 
-        tooltip = "Tooltip 1", 
+        tooltip = "This is a tooltip placeholder for group 1", 
         description = "Description 1"
     }, 
     {
@@ -21,7 +21,10 @@ function getGroupIconSize()
 end
 
 function getGroupQty()
-    return #groups
+    qty = #groups
+    core.log( "Number of groups: " .. tonumber( qty ) )
+
+    return qty
 end
 
 function getGroup( index )
@@ -34,6 +37,7 @@ function getItemsQty( groupInd )
     return qty
 end
 
+
 function getItem( groupInd, itemInd )
     if ( groupInd < 2 ) then
         return "This is " .. tostring(itemInd), "item tooltip", "item description", "SphereTexture.png", 1
@@ -41,23 +45,6 @@ function getItem( groupInd, itemInd )
     return "This is " .. tostring(itemInd), "item tooltip", "item description", "Another.png", 1
 end
 
-function stateEntered( name )
-    core.log( "Entered " .. name )
-end
-function stateLeft( name )
-    core.log( "Left " .. name )
-end
-function statePaused( name )
-    core.log( "Paused " .. name )
-end
-function stateResumed( name )
-    core.log( "Resumed " .. name )
-end
-
-
-function frameStarted( dt )
-    core.log( "dt = " .. tostring( dt ) )
-end
 
 
 
