@@ -2,6 +2,7 @@
 set( proj states_exploring )
 
 
+
 set( LBASE ${OGRE_HOME}/lib )
 set( libs ${LBASE}/libOgreMain.so 
           ${LBASE}/libOgreBites.so 
@@ -39,7 +40,7 @@ if(FREETYPE_FOUND)
   list(APPEND IMGUI_SRCS ${IMGUI}/imgui/misc/freetype/imgui_freetype.cpp)
 endif()
 
-include_directories(${IMGUI} ${IMGUI}/imgui/ ./src)
+include_directories( ${IMGUI} ${IMGUI}/imgui/ )
 
 if(FREETYPE_FOUND)
     target_compile_definitions(OgreImgui PRIVATE -DUSE_FREETYPE)
@@ -47,6 +48,15 @@ if(FREETYPE_FOUND)
 endif()
 
 file( GLOB src "./src/*.cpp" )
+
+include_directories( ./src
+                     ./src/bindings 
+                     ./src/entity_base 
+                     ./src/entity_impl 
+                     ./src/panel_contructor 
+                     ./src/states_base 
+                     ./src/states_impl 
+                     ./src/utils )
 
 add_executable( ${proj} ${src} ${IMGUI}/imgui/imgui_demo.cpp )
 target_compile_features( ${proj} PRIVATE cxx_range_for )
