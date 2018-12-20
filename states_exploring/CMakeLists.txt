@@ -47,13 +47,13 @@ if(FREETYPE_FOUND)
     target_include_directories(OgreImgui PRIVATE ${FREETYPE_INCLUDE_DIRS})
 endif()
 
-file( GLOB src "./src/*.cpp" )
+file( GLOB_RECURSE src "./src/*.cpp" )
 
 include_directories( ./src
                      ./src/bindings 
                      ./src/entity_base 
                      ./src/entity_impl 
-                     ./src/panel_contructor 
+                     ./src/panel_constructor 
                      ./src/states_base 
                      ./src/states_impl 
                      ./src/utils )
