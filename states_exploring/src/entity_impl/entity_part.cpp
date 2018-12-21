@@ -207,7 +207,7 @@ void EntityPart::setMass( Ogre::Real & m )
     mass = m;
 }
 
-void EntityPart::setIntertia( const Ogre::Vector3 & i )
+void EntityPart::setInertia( const Ogre::Vector3 & i )
 {
     inertia = i;
 }

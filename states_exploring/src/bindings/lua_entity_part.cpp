@@ -105,7 +105,7 @@ static int lua_setInertia( lua_State * L )
         Ogre::LogManager::getSingletonPtr()->logError( "No inertia vector specified" );
         return 1;
     }
-    p->setIntertia( I );
+    p->setInertia( I );
 
     lua_pushboolean( L, 1 );
     return 1;

@@ -92,6 +92,83 @@ void EntityPlanet::setRotation( const Ogre::Quaternion & q )
     rigidBody->setCenterOfMassTransform( t );
 }
 
+void EntityPlanet::integrateKinematics( Ogre::Real t_sec )
+{
+    // Absolute rotation.
+    rotTime += t_sec;
+    if ( rotTime > rotPeriod )
+        rotTime -= rotPeriod;
+    const Ogre::Real rotAng_2 = 3.1415926535 * rotTime / rotPeriod;
+    const Ogre::Real r_co2 = std::cos( rotAng_2 );
+    const Ogre::Real r_si2 = std::sin( rotAng_2 );
+    const Ogre::Quaternion rotSelfQ( r_co2, 0.0, r_si2, 0.0 );
+    const Ogre::Quaternion rotQ = rotQuat * rotSelfQ;
+
+    setRotation( rotQ );
+
+
+    // Position relative to parent (but in absolute ref. frame).
+    orbitTime += t_sec;
+    if ( orbitTime > orbitPeriod )
+        orbitTime -= orbitPeriod;
+    const Ogre::Real orbAng_2 = 3.1415926535 * orbitTime / orbitPeriod;
+    const Ogre::Real o_co2 = std::cos( orbAng_2 );
+    const Ogre::Real o_si2 = std::sin( orbAng_2 );
+    const Ogre::Quaternion orbitSelfR( 0.0, orbitRadius, 0.0, 0.0 );
+    const Ogre::Quaternion orbitSelfQ( o_co2, 0.0, o_si2, 0.0 );
+    const Ogre::Quaternion orbitR = orbitQuat * orbitSelfQ *
+                                        orbitSelfR *
+                                    orbitSelfQ.Inverse() * orbitQuat.Inverse();
+
+    const Ogre::Vector3 p_at = ( parent ) ?
+                parent->sceneNode->_getDerivedPosition() : Ogre::Vector3();
+    const Ogre::Vector3 at( p_at.x + orbitR.x,
+                            p_at.x + orbitR.y,
+                            p_at.x + orbitR.z );
+    setPosition( at );
+}
+
+Ogre::Vector3 EntityPlanet::velocity( bool includingParent ) const
+{
+    //const Ogre::Vector4 v = p_v;
+
+    // Need to compute velocity with respect to it's parent.
+    const Ogre::Real w = 1.0/orbitPeriod;
+    const Ogre::Vector3 v_w( 0.0, w, 0.0 );
+    const Ogre::Real orbAng_2 = 3.1415926535 * orbitTime / orbitPeriod;
+    const Ogre::Real o_co2 = std::cos( orbAng_2 );
+    const Ogre::Real o_si2 = std::sin( orbAng_2 );
+    const Ogre::Quaternion orbitSelfR( 0.0, orbitRadius, 0.0, 0.0 );
+    const Ogre::Quaternion orbitSelfQ( o_co2, 0.0, o_si2, 0.0 );
+    const Ogre::Quaternion orbitRQ = orbitSelfQ *
+                                     orbitSelfR *
+                                     orbitSelfQ.Inverse();
+    const Ogre::Vector3 v_r( orbitRQ.x, orbitRQ.y, orbitRQ.z );
+    Ogre::Vector3 v = v_w.crossProduct( v_r );
+    // Need to apply orbit quaternion to have velocity in the right plane.
+    const Ogre::Quaternion q_v( 0.0, v.x, v.y, v.z );
+    const Ogre::Quaternion q_v_rotated = orbitQuat * q_v * orbitQuat.Inverse();
+    v = Ogre::Vector3( q_v_rotated.x, q_v_rotated.y, q_v_rotated.z );
+
+    if ( includingParent && parent )
+    {
+        const Ogre::Vector3 v_parent = parent->velocity( includingParent );
+        v = v_parent + v;
+        return v;
+    }
+
+    return v;
+}
+
+Ogre::Vector3 EntityPlanet::velocityAt( const Ogre::Vector3 & at ) const
+{
+    const Ogre::Real w = 1.0/rotPeriod;
+    Ogre::Quaternion qw( 0.0, 0.0, w, 0.0 );
+    qw = rotQuat * qw * rotQuat.Inverse();
+    Ogre::Vector3 vw( qw.x, qw.y, qw.z );
+    Ogre::Vector3 v = vw.crossProduct( at );
+    return v;
+}
 
 
 

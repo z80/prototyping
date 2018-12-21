@@ -56,6 +56,8 @@ include_directories( ./src
                      ./src/panel_constructor 
                      ./src/states_base 
                      ./src/states_impl 
+                     ./src/air_dynamics 
+                     ./src/camera 
                      ./src/utils )
 
 add_executable( ${proj} ${src} ${IMGUI}/imgui/imgui_demo.cpp )

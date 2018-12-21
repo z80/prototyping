@@ -87,7 +87,7 @@ public:
     void addConnectionPoint( const ConnectionPoint & pt );
 
     void setMass( Ogre::Real & m );
-    void setIntertia( const Ogre::Vector3 & i );
+    void setInertia( const Ogre::Vector3 & i );
     void setCollisionShape( btCollisionShape * shape );
     void initDynamics();
 
