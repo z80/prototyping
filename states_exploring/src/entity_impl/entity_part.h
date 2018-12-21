@@ -55,6 +55,7 @@ struct ConnectionPoint
     std::string   name;
 };
 
+class EntityPlanet;
 
 class EntityPart: public Entity
 {
@@ -95,7 +96,10 @@ public:
     void applyTorque( const Ogre::Vector3 & p );
 
     void setPosition( const Ogre::Vector3 & at );
+    Ogre::Vector3 position() const;
     void setRotation( const Ogre::Quaternion & q );
+    Ogre::Quaternion rotation() const;
+    void setParent( EntityPlanet * planet, bool nearSurface=false );
 
     bool addSound( const std::string & fileName, const std::string & name );
     void finalizeSounds();
@@ -118,6 +122,13 @@ public:
     BtOgre::RigidBodyState * bodyState;
 
     AirMesh::AirMesh   airMesh;
+
+    EntityPlanet * parent;
+    /// It rotates with planet. If true, only
+    /// relative to the surface velocity matters.
+    /// If false, just moves with respect to it's
+    /// parent planet.
+    bool           nearSurface;
 
     std::vector<ConnectionPoint>  connections;
     std::vector<Sound>            sounds;

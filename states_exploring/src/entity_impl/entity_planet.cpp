@@ -17,6 +17,14 @@ EntityPlanet::EntityPlanet()
     rigidBody      = 0;
     collisionShape = 0;
     bodyState      = 0;
+
+    parent    = 0;
+    rotPeriod = 60.0;
+    rotTime   = 0.0;
+
+    orbitRadius = 100.0;
+    orbitPeriod = 180.0;
+    orbitTime   = 0.0;
 }
 
 EntityPlanet::~EntityPlanet()
@@ -98,11 +106,7 @@ void EntityPlanet::integrateKinematics( Ogre::Real t_sec )
     rotTime += t_sec;
     if ( rotTime > rotPeriod )
         rotTime -= rotPeriod;
-    const Ogre::Real rotAng_2 = 3.1415926535 * rotTime / rotPeriod;
-    const Ogre::Real r_co2 = std::cos( rotAng_2 );
-    const Ogre::Real r_si2 = std::sin( rotAng_2 );
-    const Ogre::Quaternion rotSelfQ( r_co2, 0.0, r_si2, 0.0 );
-    const Ogre::Quaternion rotQ = rotQuat * rotSelfQ;
+    const Ogre::Quaternion rotQ = rotation();
 
     setRotation( rotQ );
 
@@ -168,6 +172,17 @@ Ogre::Vector3 EntityPlanet::velocityAt( const Ogre::Vector3 & at ) const
     Ogre::Vector3 vw( qw.x, qw.y, qw.z );
     Ogre::Vector3 v = vw.crossProduct( at );
     return v;
+}
+
+Ogre::Quaternion EntityPlanet::rotation() const
+{
+    // Absolute rotation.
+    const Ogre::Real rotAng_2 = 3.1415926535 * rotTime / rotPeriod;
+    const Ogre::Real r_co2 = std::cos( rotAng_2 );
+    const Ogre::Real r_si2 = std::sin( rotAng_2 );
+    const Ogre::Quaternion rotSelfQ( r_co2, 0.0, r_si2, 0.0 );
+    const Ogre::Quaternion rotQ = rotQuat * rotSelfQ;
+    return rotQ;
 }
 
 

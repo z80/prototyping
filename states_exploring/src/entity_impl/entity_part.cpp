@@ -1,5 +1,6 @@
 
 #include "entity_part.h"
+#include "entity_planet.h"
 #include "entity_world.h"
 #include "state_manager.h"
 
@@ -20,6 +21,9 @@ EntityPart::EntityPart()
     rigidBody      = 0;
     collisionShape = 0;
     bodyState      = 0;
+
+    parent      = 0;
+    nearSurface = true;
 }
 
 EntityPart::~EntityPart()
@@ -254,6 +258,16 @@ void EntityPart::setPosition( const Ogre::Vector3 & at )
     st->setWorldTransform( t );
 }
 
+Ogre::Vector3 EntityPart::position() const
+{
+    btMotionState * st = rigidBody->getMotionState();
+    btTransform t;
+    st->getWorldTransform( t );
+    const btVector3 at = t.getOrigin();
+    const Ogre::Vector3 v( at.x(), at.y(), at.z() );
+    return v;
+}
+
 void EntityPart::setRotation( const Ogre::Quaternion & q )
 {
     btMotionState * st = rigidBody->getMotionState();
@@ -261,6 +275,34 @@ void EntityPart::setRotation( const Ogre::Quaternion & q )
     st->getWorldTransform( t );
     t.setRotation( btQuaternion( q.x, q.y, q.z, q.w ) );
     st->setWorldTransform( t );
+}
+
+Ogre::Quaternion EntityPart::rotation() const
+{
+    btMotionState * st = rigidBody->getMotionState();
+    btTransform t;
+    st->getWorldTransform( t );
+    const btQuaternion bq = t.getRotation();
+    const Ogre::Quaternion q( bq.w(), bq.x(), bq.y(), bq.z() );
+    return q;
+}
+
+void EntityPart::setParent( EntityPlanet * planet, bool nearSurface )
+{
+    if ( parent!=planet )
+    {
+        if ( parent )
+        {
+            Ogre::Vector3 parentV = parent->velocity( true );
+            if ( this->nearSurface )
+            {
+
+                const Ogre::Vector3 surfV = parent->velocityAt( at );
+            }
+        }
+    }
+
+
 }
 
 bool EntityPart::addSound( const std::string & fileName, const std::string & name )

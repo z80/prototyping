@@ -28,11 +28,12 @@ public:
     void setRotation( const Ogre::Quaternion & q );
 
     void integrateKinematics( Ogre::Real t_sec );
-    // Translational velocity caused by orbital movement.
+    /// Translational velocity caused by orbital movement.
     Ogre::Vector3 velocity( bool includingParent=false ) const;
-    // Velocity caused by self rotation.
+    /// Velocity caused by self rotation.
     Ogre::Vector3 velocityAt( const Ogre::Vector3 & at ) const;
-
+    /// Orientation.
+    Ogre::Quaternion rotation() const;
 public:
     Ogre::Entity     * visualEntity;
     Ogre::SceneNode  * sceneNode;
