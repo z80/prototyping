@@ -76,10 +76,6 @@ public:
     virtual void unselectEvent();
     virtual void contextMenuEvent();
 
-    Ogre::Vector3 speed() const;
-    void          speed( Ogre::Real & v ) const;
-    void setSpeed( Ogre::Vector3 & v );
-
     bool setEntity( const char * mesh, const char * material = 0 );
     bool setMaterial( const char * material );
     bool setMask( Ogre::uint32 mask );
@@ -98,7 +94,14 @@ public:
     Ogre::Vector3 position() const;
     void setRotation( const Ogre::Quaternion & q );
     Ogre::Quaternion rotation() const;
-    void setParent( EntityPlanet * planet, bool nearSurface=false );
+    Ogre::Vector3 speed() const;
+    void          speed( Ogre::Real & v ) const;
+    void setSpeed( Ogre::Vector3 & v );
+    Ogre::Vector3 w() const;
+    void setW( const Ogre::Vector3 & w );
+
+    void setParent( EntityPlanet * planet );
+    void setParentSurface( EntityPlanet * planet );
 
     bool addSound( const std::string & fileName, const std::string & name );
     void finalizeSounds();

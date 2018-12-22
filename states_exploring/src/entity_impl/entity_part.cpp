@@ -134,6 +134,18 @@ void EntityPart::setSpeed( Ogre::Vector3 & v )
     rigidBody->setLinearVelocity( vel );
 }
 
+Ogre::Vector3 EntityPart::w() const
+{
+    const btVector3 wb = rigidBody->getAngularVelocity();
+    const Ogre::Vector3 wv( wb.x(), wb.y(), wb.z() );
+    return wv;
+}
+void EntityPart::setW( const Ogre::Vector3 & w )
+{
+    rigidBody->setAngularVelocity( btVector3( w.x, w.y, w.z ) );
+}
+
+
 
 
 
@@ -295,22 +307,49 @@ Ogre::Quaternion EntityPart::rotation() const
     return q;
 }
 
-void EntityPart::setParent( EntityPlanet * planet, bool nearSurface )
+void EntityPart::setParent( EntityPlanet * planet )
 {
+    if ( !sceneNode )
+        return;
+
+    sceneNode->setInheritOrientation( false );
+    sceneNode->setInheritScale( false );
     if ( parent!=planet )
     {
+        Ogre::Vector3    r = absoluteR();
+        Ogre::Quaternion q = absoluteQ();
+        Ogre::Vector3    v = absoluteV();
+        Ogre::Vector3    w = absoluteW();
+        sceneNode->getParentSceneNode()->removeChild( sceneNode );
         if ( parent )
         {
-            Ogre::Vector3 parentV = parent->absoluteV();
-            if ( this->nearSurface )
-            {
+            const Ogre::Vector3    parentR = parent->absoluteR();
+            const Ogre::Quaternion parentQ = parent->absoluteQ();
+            const Ogre::Vector3    parentV = parent->absoluteV();
+            // Due to not near surface, "w" is not added up.
+            //const Ogre::Vector3    parentW = parent->absoluteW();
 
-                //const Ogre::Vector3 surfV = parent->rotV( at );
-            }
+            r = r - parentR;
+            q = parentQ.Inverse() * q;
+            v = v - parentV;
+            //w = w - parentW;
+
+            setPosition( r );
+            setRotation( q );
+            setSpeed( v );
+        }
+
+        if ( planet )
+            planet->sceneNode->addChild( sceneNode );
+        else
+        {
+            Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
+            scnMgr->getRootSceneNode()->addChild( sceneNode );
         }
     }
 
-
+    parent = planet;
+    nearSurface = false;
 }
 
 bool EntityPart::addSound( const std::string & fileName, const std::string & name )
