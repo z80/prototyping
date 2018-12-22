@@ -83,21 +83,24 @@ void EntityPlanet::addForces( EntityPart & part )
     part.rigidBody->applyTorque( p );
 }
 
-void EntityPlanet::setPosition( const Ogre::Vector3 & at )
+void EntityPlanet::setR( const Ogre::Vector3 & at )
 {
-    const btVector3 r0 = btVector3( at.x, at.y, at.z );
+    /*const btVector3 r0 = btVector3( at.x, at.y, at.z );
     btTransform t = rigidBody->getCenterOfMassTransform();
     t.setOrigin( r0 );
     rigidBody->setCenterOfMassTransform( t );
     atm.r0 = r0;
-    g.r0   = r0;
+    g.r0   = r0;*/
+    sceneNode->setPosition( at );
 }
 
-void EntityPlanet::setRotation( const Ogre::Quaternion & q )
+void EntityPlanet::setQ( const Ogre::Quaternion & q )
 {
-    btTransform t = rigidBody->getCenterOfMassTransform();;
+    /*btTransform t = rigidBody->getCenterOfMassTransform();;
     t.setRotation(btQuaternion( q.x, q.y, q.z, q.w ) );
-    rigidBody->setCenterOfMassTransform( t );
+    rigidBody->setCenterOfMassTransform( t );*/
+
+    sceneNode->setOrientation( q );
 }
 
 void EntityPlanet::integrateKinematics( Ogre::Real t_sec )
@@ -106,9 +109,9 @@ void EntityPlanet::integrateKinematics( Ogre::Real t_sec )
     rotTime += t_sec;
     if ( rotTime > rotPeriod )
         rotTime -= rotPeriod;
-    const Ogre::Quaternion rotQ = rotation();
+    const Ogre::Quaternion rotQ = absoluteQ();
 
-    setRotation( rotQ );
+    setQ( rotQ );
 
 
     // Position relative to parent (but in absolute ref. frame).
@@ -129,10 +132,30 @@ void EntityPlanet::integrateKinematics( Ogre::Real t_sec )
     const Ogre::Vector3 at( p_at.x + orbitR.x,
                             p_at.x + orbitR.y,
                             p_at.x + orbitR.z );
-    setPosition( at );
+    setR( at );
 }
 
-Ogre::Vector3 EntityPlanet::velocity( bool includingParent ) const
+Ogre::Vector3 EntityPlanet::absoluteR() const
+{
+    const Ogre::Real orbAng_2 = 3.1415926535 * orbitTime / orbitPeriod;
+    const Ogre::Real o_co2 = std::cos( orbAng_2 );
+    const Ogre::Real o_si2 = std::sin( orbAng_2 );
+    const Ogre::Quaternion orbitSelfR( 0.0, orbitRadius, 0.0, 0.0 );
+    const Ogre::Quaternion orbitSelfQ( o_co2, 0.0, o_si2, 0.0 );
+    const Ogre::Quaternion orbitR = orbitQuat * orbitSelfQ *
+                                          orbitSelfR *
+                                    orbitSelfQ.Inverse() * orbitQuat.Inverse();
+    Ogre::Vector3 at( orbitR.x, orbitR.y, orbitR.z );
+    if ( parent )
+    {
+        const Ogre::Vector3 p_at = parent->absoluteR();
+        at = p_at + at;
+    }
+
+    return at;
+}
+
+Ogre::Vector3 EntityPlanet::absoluteV() const
 {
     //const Ogre::Vector4 v = p_v;
 
@@ -154,27 +177,42 @@ Ogre::Vector3 EntityPlanet::velocity( bool includingParent ) const
     const Ogre::Quaternion q_v_rotated = orbitQuat * q_v * orbitQuat.Inverse();
     v = Ogre::Vector3( q_v_rotated.x, q_v_rotated.y, q_v_rotated.z );
 
-    if ( includingParent && parent )
+    if ( parent )
     {
-        const Ogre::Vector3 v_parent = parent->velocity( includingParent );
+        const Ogre::Vector3 v_parent = parent->absoluteV();
         v = v_parent + v;
-        return v;
     }
 
     return v;
 }
 
-Ogre::Vector3 EntityPlanet::velocityAt( const Ogre::Vector3 & at ) const
+Ogre::Vector3 EntityPlanet::absoluteW() const
 {
-    const Ogre::Real w = 1.0/rotPeriod;
-    Ogre::Quaternion qw( 0.0, 0.0, w, 0.0 );
-    qw = rotQuat * qw * rotQuat.Inverse();
-    Ogre::Vector3 vw( qw.x, qw.y, qw.z );
-    Ogre::Vector3 v = vw.crossProduct( at );
+    const Ogre::Real w = 2.0*3.1415926535 / rotPeriod;
+    Ogre::Quaternion wq( 0.0, 0.0, w, 0.0 );
+    wq = rotQuat * wq * rotQuat.Inverse();
+    const Ogre::Vector3 wv( wq.x, wq.y, wq.z );
+    return wv;
+}
+
+// Velocity in abs. ref. frame caused by rotation.
+// "local" tells if "at" is in local ref. frame or in global one.
+Ogre::Vector3 EntityPlanet::rotV( const Ogre::Vector3 & at, bool local ) const
+{
+    const Ogre::Vector3 w = absoluteW();
+    Ogre::Vector3 r = at;
+    if ( local )
+    {
+        const Ogre::Quaternion q = absoluteQ();
+        Ogre::Quaternion rq( 0.0, r.x, r.y, r.z );
+        rq = q * rq * q.Inverse();
+        r = Ogre::Vector3( rq.x, rq.y, rq.z );
+    }
+    const Ogre::Vector3 v = w.crossProduct( r );
     return v;
 }
 
-Ogre::Quaternion EntityPlanet::rotation() const
+Ogre::Quaternion EntityPlanet::absoluteQ() const
 {
     // Absolute rotation.
     const Ogre::Real rotAng_2 = 3.1415926535 * rotTime / rotPeriod;

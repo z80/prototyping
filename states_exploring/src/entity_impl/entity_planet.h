@@ -24,17 +24,23 @@ public:
     ~EntityPlanet();
 
     void addForces( EntityPart & part );
-    void setPosition( const Ogre::Vector3 & at );
-    void setRotation( const Ogre::Quaternion & q );
+    void setR( const Ogre::Vector3 & at );
+    void setQ( const Ogre::Quaternion & q );
 
     void integrateKinematics( Ogre::Real t_sec );
-    /// Translational velocity caused by orbital movement.
-    Ogre::Vector3 velocity( bool includingParent=false ) const;
-    /// Velocity caused by self rotation.
-    Ogre::Vector3 velocityAt( const Ogre::Vector3 & at ) const;
-    /// Orientation.
-    Ogre::Quaternion rotation() const;
 public:
+    /// Absolute position.
+    Ogre::Vector3 absoluteR() const;
+    /// Translational velocity caused by all movements.
+    Ogre::Vector3 absoluteV() const;
+    /// Angular velocity.
+    Ogre::Vector3 absoluteW() const;
+    /// Velocity caused by self rotation.
+    Ogre::Vector3 rotV( const Ogre::Vector3 & at, bool local=false ) const;
+    /// Orientation.
+    Ogre::Quaternion absoluteQ() const;
+
+
     Ogre::Entity     * visualEntity;
     Ogre::SceneNode  * sceneNode;
     btRigidBody      * rigidBody;

@@ -126,6 +126,12 @@ void EntityPart::speed( Ogre::Real & v ) const
     v = vel.length();
 }
 
+void EntityPart::setSpeed( Ogre::Vector3 & v )
+{
+    btVector3 vel( v.x, v.y, v.z );
+    rigidBody->setLinearVelocity( vel );
+}
+
 
 
 
@@ -293,11 +299,11 @@ void EntityPart::setParent( EntityPlanet * planet, bool nearSurface )
     {
         if ( parent )
         {
-            Ogre::Vector3 parentV = parent->velocity( true );
+            Ogre::Vector3 parentV = parent->absoluteV();
             if ( this->nearSurface )
             {
 
-                const Ogre::Vector3 surfV = parent->velocityAt( at );
+                //const Ogre::Vector3 surfV = parent->rotV( at );
             }
         }
     }

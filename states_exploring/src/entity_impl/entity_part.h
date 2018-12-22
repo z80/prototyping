@@ -78,8 +78,7 @@ public:
 
     void speed( Ogre::Vector3 & v ) const;
     void speed( Ogre::Real & v ) const;
-
-
+    void setSpeed( Ogre::Vector3 & v );
 
     bool setEntity( const char * mesh, const char * material = 0 );
     bool setMaterial( const char * material );
@@ -107,6 +106,12 @@ public:
     bool stopSound( const std::string & name );
 
 public:
+    // Specific functions for changing a parent.
+    Ogre::Vector3    absoluteV() const;
+    Ogre::Vector3    absoluteR() const;
+    Ogre::Vector3    absoluteW() const;
+    Ogre::Quaternion absoluteQ() const;
+
     void deleteRigidBody();
     void deleteCollisionShape();
     void deleteVisual();
