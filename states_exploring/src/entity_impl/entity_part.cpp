@@ -98,20 +98,22 @@ void EntityPart::contextMenuEvent()
 
 }
 
-void EntityPart::speed( Ogre::Vector3 & v ) const
+Ogre::Vector3 EntityPart::speed() const
 {
+    Ogre::Vector3 v;
     if ( !rigidBody )
     {
         v.x = 0.0;
         v.y = 0.0;
         v.z = 0.0;
-        return;
+        return v;
     }
 
-    btVector3 vel = rigidBody->getLinearVelocity();
+    const btVector3 vel = rigidBody->getLinearVelocity();
     v.x = vel.x();
     v.y = vel.y();
     v.z = vel.z();
+    return v;
 }
 
 void EntityPart::speed( Ogre::Real & v ) const
@@ -122,7 +124,7 @@ void EntityPart::speed( Ogre::Real & v ) const
         return;
     }
 
-    btVector3 vel = rigidBody->getLinearVelocity();
+    const btVector3  vel = rigidBody->getLinearVelocity();
     v = vel.length();
 }
 
@@ -366,6 +368,76 @@ bool EntityPart::stopSound( const std::string & name )
 
     return true;
 }
+
+Ogre::Vector3    EntityPart::absoluteV() const
+{
+    Ogre::Vector3 v = speed();
+    if ( parent )
+    {
+        const Ogre::Vector3 v_par = parent->absoluteV();
+        if ( nearSurface )
+        {
+            // First convert speed to global ref. frame and add
+            // rotational speed in that point.
+            const Ogre::Quaternion q_par = parent->absoluteQ();
+            Ogre::Quaternion vq( 0.0, v.x, v.y, v.z );
+            vq = q_par * vq * q_par.Inverse();
+            v = Ogre::Vector3( vq.x, vq.y, vq.z );
+
+            const Ogre::Vector3 at = position();
+            Ogre::Vector3 v_par_at = parent->rotV( at, true );
+            v = v_par_at + v;
+        }
+        v = v_par + v;
+    }
+    return v;
+}
+
+Ogre::Vector3    EntityPart::absoluteR() const
+{
+    Ogre::Vector3 r = position();
+    if ( parent )
+    {
+        const Ogre::Vector3 r_par = parent->absoluteR();
+        if ( nearSurface )
+        {
+            const Ogre::Quaternion q_par = parent->absoluteQ();
+            Ogre::Quaternion rq( 0.0, r.x, r.y, r.z );
+            rq = q_par * rq * q_par.Inverse();
+            r = Ogre::Vector3( rq.x, rq.y, rq.z );
+        }
+        r = r_par + r;
+    }
+    return r;
+}
+
+Ogre::Vector3    EntityPart::absoluteW() const
+{
+    const btVector3 bw = rigidBody->getAngularVelocity();
+    Ogre::Vector3 w( bw.x(), bw.y(), bw.z() );
+    if ( nearSurface && parent )
+    {
+        const Ogre::Vector3 w_parent    = parent->absoluteW();
+        const Ogre::Quaternion q_parent = parent->absoluteQ();
+        Ogre::Quaternion wq( 0.0, bw.x(), bw.y(), bw.z() );
+        wq = q_parent * wq * q_parent.Inverse();
+        w = Ogre::Vector3( wq.x, wq.y, wq.z );
+        w = w_parent + w;
+    }
+    return w;
+}
+
+Ogre::Quaternion EntityPart::absoluteQ() const
+{
+    Ogre::Quaternion q = rotation();
+    if ( parent && nearSurface )
+    {
+        const Ogre::Quaternion q_parent = parent->absoluteQ();
+        q = q_parent * q;
+    }
+    return q;
+}
+
 
 void EntityPart::deleteRigidBody()
 {

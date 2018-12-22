@@ -76,8 +76,8 @@ public:
     virtual void unselectEvent();
     virtual void contextMenuEvent();
 
-    void speed( Ogre::Vector3 & v ) const;
-    void speed( Ogre::Real & v ) const;
+    Ogre::Vector3 speed() const;
+    void          speed( Ogre::Real & v ) const;
     void setSpeed( Ogre::Vector3 & v );
 
     bool setEntity( const char * mesh, const char * material = 0 );
