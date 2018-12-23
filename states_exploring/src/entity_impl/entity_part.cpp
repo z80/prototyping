@@ -128,7 +128,7 @@ void EntityPart::speed( Ogre::Real & v ) const
     v = vel.length();
 }
 
-void EntityPart::setSpeed( Ogre::Vector3 & v )
+void EntityPart::setV( Ogre::Vector3 & v )
 {
     btVector3 vel( v.x, v.y, v.z );
     rigidBody->setLinearVelocity( vel );
@@ -269,7 +269,7 @@ void EntityPart::applyTorque( const Ogre::Vector3 & p )
     rigidBody->applyTorque( btVector3( p.x, p.y, p.z ) );
 }
 
-void EntityPart::setPosition( const Ogre::Vector3 & at )
+void EntityPart::setR( const Ogre::Vector3 & at )
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
@@ -288,7 +288,7 @@ Ogre::Vector3 EntityPart::position() const
     return v;
 }
 
-void EntityPart::setRotation( const Ogre::Quaternion & q )
+void EntityPart::setQ( const Ogre::Quaternion & q )
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
@@ -327,20 +327,30 @@ void EntityPart::setParent( EntityPlanet * planet )
             const Ogre::Quaternion parentQ = parent->absoluteQ();
             const Ogre::Vector3    parentV = parent->absoluteV();
             // Due to not near surface, "w" is not added up.
-            //const Ogre::Vector3    parentW = parent->absoluteW();
+            const Ogre::Vector3    parentW = parent->absoluteW();
 
-            r = r - parentR;
-            q = parentQ.Inverse() * q;
-            v = v - parentV;
-            //w = w - parentW;
+            // Convert values to global ref. frame.
+            r = parentR + r;
+            q = parentQ * q;
+            v = parentV + v;
+            if ( nearSurface )
+                w = parentW + w;
 
-            setPosition( r );
-            setRotation( q );
-            setSpeed( v );
         }
 
         if ( planet )
+        {
+            const Ogre::Vector3    parentR = parent->absoluteR();
+            const Ogre::Quaternion parentQ = parent->absoluteQ();
+            const Ogre::Vector3    parentV = parent->absoluteV();
+
+            // Convert to new parent's ref. frame.
+            r = r - parentR;
+            q = parentQ.Inverse() * q;
+            v = v - parentV;
+
             planet->sceneNode->addChild( sceneNode );
+        }
         else
         {
             Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
@@ -348,7 +358,14 @@ void EntityPart::setParent( EntityPlanet * planet )
         }
     }
 
-    parent = planet;
+    // Update position and movement parameters.
+    setR( r );
+    setQ( q );
+    setV( v );
+    setW( w );
+
+    // Update condition variables.
+    parent      = planet;
     nearSurface = false;
 }
 

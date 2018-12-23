@@ -90,13 +90,13 @@ public:
     void applyForce( const Ogre::Vector3 & at, const Ogre::Vector3 & f );
     void applyTorque( const Ogre::Vector3 & p );
 
-    void setPosition( const Ogre::Vector3 & at );
+    void setR( const Ogre::Vector3 & at );
     Ogre::Vector3 position() const;
-    void setRotation( const Ogre::Quaternion & q );
+    void setQ( const Ogre::Quaternion & q );
     Ogre::Quaternion rotation() const;
     Ogre::Vector3 speed() const;
     void          speed( Ogre::Real & v ) const;
-    void setSpeed( Ogre::Vector3 & v );
+    void setV( Ogre::Vector3 & v );
     Ogre::Vector3 w() const;
     void setW( const Ogre::Vector3 & w );
 

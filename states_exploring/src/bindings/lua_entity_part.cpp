@@ -176,7 +176,7 @@ static int lua_setPosition( lua_State * L )
         Ogre::LogManager::getSingletonPtr()->logError( "No position vector specified" );
         return 1;
     }
-    p->setPosition( at );
+    p->setR( at );
 
     lua_pushboolean( L, 1 );
     return 1;
@@ -194,7 +194,7 @@ static int lua_setRotation( lua_State * L )
         Ogre::LogManager::getSingletonPtr()->logError( "No quaternion specified" );
         return 1;
     }
-    p->setRotation( q );
+    p->setQ( q );
 
     lua_pushboolean( L, 1 );
     return 1;
