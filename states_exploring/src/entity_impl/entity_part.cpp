@@ -98,7 +98,7 @@ void EntityPart::contextMenuEvent()
 
 }
 
-Ogre::Vector3 EntityPart::speed() const
+Ogre::Vector3 EntityPart::relV() const
 {
     Ogre::Vector3 v;
     if ( !rigidBody )
@@ -116,7 +116,7 @@ Ogre::Vector3 EntityPart::speed() const
     return v;
 }
 
-void EntityPart::speed( Ogre::Real & v ) const
+void EntityPart::relV( Ogre::Real & v ) const
 {
     if ( !rigidBody )
     {
@@ -134,12 +134,13 @@ void EntityPart::setV( Ogre::Vector3 & v )
     rigidBody->setLinearVelocity( vel );
 }
 
-Ogre::Vector3 EntityPart::w() const
+Ogre::Vector3 EntityPart::relW() const
 {
     const btVector3 wb = rigidBody->getAngularVelocity();
     const Ogre::Vector3 wv( wb.x(), wb.y(), wb.z() );
     return wv;
 }
+
 void EntityPart::setW( const Ogre::Vector3 & w )
 {
     rigidBody->setAngularVelocity( btVector3( w.x, w.y, w.z ) );
@@ -278,14 +279,14 @@ void EntityPart::setR( const Ogre::Vector3 & at )
     st->setWorldTransform( t );
 }
 
-Ogre::Vector3 EntityPart::position() const
+Ogre::Vector3 EntityPart::relR() const
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
     st->getWorldTransform( t );
     const btVector3 at = t.getOrigin();
-    const Ogre::Vector3 v( at.x(), at.y(), at.z() );
-    return v;
+    const Ogre::Vector3 r( at.x(), at.y(), at.z() );
+    return r;
 }
 
 void EntityPart::setQ( const Ogre::Quaternion & q )
@@ -297,7 +298,7 @@ void EntityPart::setQ( const Ogre::Quaternion & q )
     st->setWorldTransform( t );
 }
 
-Ogre::Quaternion EntityPart::rotation() const
+Ogre::Quaternion EntityPart::relQ() const
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
@@ -314,12 +315,14 @@ void EntityPart::setParent( EntityPlanet * planet )
 
     sceneNode->setInheritOrientation( false );
     sceneNode->setInheritScale( false );
+
+    Ogre::Vector3    r = absoluteR();
+    Ogre::Quaternion q = absoluteQ();
+    Ogre::Vector3    v = absoluteV();
+    Ogre::Vector3    w = absoluteW();
+
     if ( parent!=planet )
     {
-        Ogre::Vector3    r = absoluteR();
-        Ogre::Quaternion q = absoluteQ();
-        Ogre::Vector3    v = absoluteV();
-        Ogre::Vector3    w = absoluteW();
         sceneNode->getParentSceneNode()->removeChild( sceneNode );
         if ( parent )
         {
@@ -331,7 +334,8 @@ void EntityPart::setParent( EntityPlanet * planet )
 
             // Convert values to global ref. frame.
             r = parentR + r;
-            q = parentQ * q;
+            if ( nearSurface )
+                q = parentQ * q;
             v = parentV + v;
             if ( nearSurface )
                 w = parentW + w;
@@ -346,7 +350,6 @@ void EntityPart::setParent( EntityPlanet * planet )
 
             // Convert to new parent's ref. frame.
             r = r - parentR;
-            q = parentQ.Inverse() * q;
             v = v - parentV;
 
             planet->sceneNode->addChild( sceneNode );
@@ -368,6 +371,75 @@ void EntityPart::setParent( EntityPlanet * planet )
     parent      = planet;
     nearSurface = false;
 }
+
+void EntityPart::setParentSurface( EntityPlanet * planet )
+{
+    if ( !sceneNode )
+        return;
+
+    sceneNode->setInheritOrientation( true );
+    sceneNode->setInheritScale( false );
+
+    Ogre::Vector3    r = absoluteR();
+    Ogre::Quaternion q = absoluteQ();
+    Ogre::Vector3    v = absoluteV();
+    Ogre::Vector3    w = absoluteW();
+
+    if ( parent!=planet )
+    {
+        sceneNode->getParentSceneNode()->removeChild( sceneNode );
+        if ( parent )
+        {
+            const Ogre::Vector3    parentR = parent->absoluteR();
+            const Ogre::Quaternion parentQ = parent->absoluteQ();
+            const Ogre::Vector3    parentV = parent->absoluteV();
+            // Due to not near surface, "w" is not added up.
+            const Ogre::Vector3    parentW = parent->absoluteW();
+
+            // Convert values to global ref. frame.
+            r = parentR + r;
+            if ( nearSurface )
+                q = parentQ * q;
+            v = parentV + v;
+            if ( nearSurface )
+                w = parentW + w;
+
+        }
+
+        if ( planet )
+        {
+            const Ogre::Vector3    parentR = parent->absoluteR();
+            const Ogre::Quaternion parentQ = parent->absoluteQ();
+            const Ogre::Vector3    parentV = parent->absoluteV();
+            const Ogre::Vector3    parentW = parent->absoluteW();
+
+            // Convert to new parent's ref. frame.
+            r = r - parentR;
+            q = parentQ.Inverse() * q;
+            v = v - parentV;
+            w = w - parentW;
+
+            planet->sceneNode->addChild( sceneNode );
+        }
+        else
+        {
+            Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
+            scnMgr->getRootSceneNode()->addChild( sceneNode );
+        }
+    }
+
+    // Update position and movement parameters.
+    setR( r );
+    setQ( q );
+    setV( v );
+    setW( w );
+
+    // Update condition variables.
+    parent      = planet;
+    if ( planet )
+        nearSurface = true;
+}
+
 
 bool EntityPart::addSound( const std::string & fileName, const std::string & name )
 {
@@ -427,7 +499,7 @@ bool EntityPart::stopSound( const std::string & name )
 
 Ogre::Vector3    EntityPart::absoluteV() const
 {
-    Ogre::Vector3 v = speed();
+    Ogre::Vector3 v = relV();
     if ( parent )
     {
         const Ogre::Vector3 v_par = parent->absoluteV();
@@ -440,7 +512,7 @@ Ogre::Vector3    EntityPart::absoluteV() const
             vq = q_par * vq * q_par.Inverse();
             v = Ogre::Vector3( vq.x, vq.y, vq.z );
 
-            const Ogre::Vector3 at = position();
+            const Ogre::Vector3 at = relR();
             Ogre::Vector3 v_par_at = parent->rotV( at, true );
             v = v_par_at + v;
         }
@@ -451,7 +523,7 @@ Ogre::Vector3    EntityPart::absoluteV() const
 
 Ogre::Vector3    EntityPart::absoluteR() const
 {
-    Ogre::Vector3 r = position();
+    Ogre::Vector3 r = relR();
     if ( parent )
     {
         const Ogre::Vector3 r_par = parent->absoluteR();
@@ -469,13 +541,12 @@ Ogre::Vector3    EntityPart::absoluteR() const
 
 Ogre::Vector3    EntityPart::absoluteW() const
 {
-    const btVector3 bw = rigidBody->getAngularVelocity();
-    Ogre::Vector3 w( bw.x(), bw.y(), bw.z() );
+    Ogre::Vector3 w = relW();
     if ( nearSurface && parent )
     {
         const Ogre::Vector3 w_parent    = parent->absoluteW();
         const Ogre::Quaternion q_parent = parent->absoluteQ();
-        Ogre::Quaternion wq( 0.0, bw.x(), bw.y(), bw.z() );
+        Ogre::Quaternion wq( 0.0, w.x, w.y, w.z );
         wq = q_parent * wq * q_parent.Inverse();
         w = Ogre::Vector3( wq.x, wq.y, wq.z );
         w = w_parent + w;
@@ -485,7 +556,7 @@ Ogre::Vector3    EntityPart::absoluteW() const
 
 Ogre::Quaternion EntityPart::absoluteQ() const
 {
-    Ogre::Quaternion q = rotation();
+    Ogre::Quaternion q = relQ();
     if ( parent && nearSurface )
     {
         const Ogre::Quaternion q_parent = parent->absoluteQ();

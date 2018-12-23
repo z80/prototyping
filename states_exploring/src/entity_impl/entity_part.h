@@ -91,13 +91,13 @@ public:
     void applyTorque( const Ogre::Vector3 & p );
 
     void setR( const Ogre::Vector3 & at );
-    Ogre::Vector3 position() const;
+    Ogre::Vector3 relR() const;
     void setQ( const Ogre::Quaternion & q );
-    Ogre::Quaternion rotation() const;
-    Ogre::Vector3 speed() const;
-    void          speed( Ogre::Real & v ) const;
+    Ogre::Quaternion relQ() const;
+    Ogre::Vector3 relV() const;
+    void          relV( Ogre::Real & v ) const;
     void setV( Ogre::Vector3 & v );
-    Ogre::Vector3 w() const;
+    Ogre::Vector3 relW() const;
     void setW( const Ogre::Vector3 & w );
 
     void setParent( EntityPlanet * planet );
