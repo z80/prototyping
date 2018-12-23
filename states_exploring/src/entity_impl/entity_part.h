@@ -151,6 +151,7 @@ public:
 
 };
 
+typedef std::shared_ptr<EntityPart> EntityPartPtr;
 
 
 
