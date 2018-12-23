@@ -58,6 +58,7 @@ include_directories( ./src
                      ./src/states_impl 
                      ./src/air_dynamics 
                      ./src/camera 
+                     ./src/player
                      ./src/utils )
 
 add_executable( ${proj} ${src} ${IMGUI}/imgui/imgui_demo.cpp )

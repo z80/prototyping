@@ -8,6 +8,7 @@
 #include "OgreOggSoundPlugin.h"
 #include "entity_world.h"
 #include "camera_ctrl.h"
+#include "player_local.h"
 
 class State;
 namespace Config
