@@ -14,10 +14,20 @@ namespace Entity
 class Entity
 {
 public:
+    enum Type
+    {
+        Planet,
+        Part
+    };
+
+
     Entity();
     virtual ~Entity();
 
     virtual void action( Ogre::int32 actionGroup, const Ogre::String & name, Ogre::Real value );
+    virtual Type type() = 0;
+
+    //static template<typename T> T * cast<T>( Entity * e );
 };
 
 

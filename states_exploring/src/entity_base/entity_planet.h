@@ -21,7 +21,15 @@ class EntityPlanet: public Entity
 {
 public:
     EntityPlanet();
-    ~EntityPlanet();
+    virtual ~EntityPlanet();
+
+    // This one is supposed to initialize
+    // All the features like visual entity,
+    // rigid body, etc.
+    virtual void create();
+    // Called by "integrateKinematics()" in the case it is needed
+    // to update rigid body or collision shape.
+    virtual void update();
 
     void addForces( EntityPart & part );
     void setR( const Ogre::Vector3 & at );

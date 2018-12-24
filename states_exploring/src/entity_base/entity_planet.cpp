@@ -59,6 +59,16 @@ EntityPlanet::~EntityPlanet()
     }
 }
 
+void EntityPlanet::create()
+{
+
+}
+
+void EntityPlanet::update()
+{
+
+}
+
 void EntityPlanet::addForces( EntityPart & part )
 {
     part.rigidBody->clearForces();
