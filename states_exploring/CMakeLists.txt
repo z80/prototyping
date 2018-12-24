@@ -53,6 +53,7 @@ include_directories( ./src
                      ./src/bindings 
                      ./src/entity_base 
                      ./src/entity_impl 
+                     ./src/designs
                      ./src/panel_constructor 
                      ./src/states_base 
                      ./src/states_impl 

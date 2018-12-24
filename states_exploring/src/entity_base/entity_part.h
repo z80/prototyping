@@ -44,18 +44,16 @@ struct Sound
     } Lt;
 };
 
+class EntityPlanet;
+class EntityPart;
+
+
 struct ConnectionPoint
 {
-    /// Connection point position in local ref. frame.
-    Ogre::Vector3 at;
-    /// Connection point "direction"
-    /// Connected objects are to have opposite directions.
-    Ogre::Vector3 dir;
-    /// Connection name (Not sure if I need that though...)
-    std::string   name;
+    EntityPart * partA;
+    EntityPart * partB;
+    btTypedConstraint * constraint;
 };
-
-class EntityPlanet;
 
 class EntityPart: public Entity
 {
