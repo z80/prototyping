@@ -16,6 +16,9 @@ public:
 
     void create();
     void update();
+
+public:
+    Ogre::Real R;
 };
 
 }

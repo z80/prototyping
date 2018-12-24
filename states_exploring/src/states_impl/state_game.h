@@ -7,6 +7,7 @@
 #include "entity_world.h"
 #include "entity_part.h"
 #include "entity_planet.h"
+#include "solar_system_test.h"
 
 class GameState: public State,
                   public Ogre::Singleton<GameState>
@@ -38,11 +39,11 @@ private:
     void debugOverlay();
     void modesOverlay();
 
-    Ogre::Root * mRoot;
+    Ogre::Root         * mRoot;
     Ogre::SceneManager * mSceneMgr;
-    Ogre::Viewport * mViewport;
-    Ogre::Camera * mCamera;
-    Ogre::SceneNode * mCameraNode;
+    Ogre::Viewport     * mViewport;
+    Ogre::Camera       * mCamera;
+    Ogre::SceneNode    * mCameraNode;
     bool doDebugDraw;
     bool mExitState;
     bool paused;
@@ -51,8 +52,9 @@ private:
 
     Entity::EntityWorld * world;
     Entity::EntityPart  //* plane,
-                        * cube;
+                         * cube;
     Entity::EntityPlanet * planet;
+    Entity::SolarSystemTest * solSys;
 
     void createObjects();
     void destroyObjects();

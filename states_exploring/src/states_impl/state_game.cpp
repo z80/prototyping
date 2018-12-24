@@ -33,6 +33,7 @@ GameState::GameState()
     //plane = 0;
     cube   = 0;
     planet = 0;
+    solSys = 0;
 }
 
 GameState::~GameState()
@@ -199,6 +200,7 @@ void GameState::createObjects()
                 Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
     planet = dynamic_cast<Entity::EntityPlanet *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "planet" ) );
+    solSys = new SolarSystemTest();
 
     // Debugging object to see at least something.
     {
@@ -262,6 +264,8 @@ void GameState::destroyObjects()
         delete planet;
     if ( cube )
         delete cube;
+    if ( solSys )
+        delete solSys;
     //if ( plane )
     //    delete plane;
     if ( world )

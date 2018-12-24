@@ -9,7 +9,7 @@ namespace Entity
 EntityTestPlanet::EntityTestPlanet()
     :EntityPlanet()
 {
-
+    R = 100.0;
 }
 
 EntityTestPlanet::~EntityTestPlanet()
@@ -19,7 +19,7 @@ EntityTestPlanet::~EntityTestPlanet()
 
 void EntityTestPlanet::create()
 {
-    const btScalar R = 100.0;
+    const btScalar R = this->R;
 
 
     EntityPlanet * p = new EntityPlanet();
