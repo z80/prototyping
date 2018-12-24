@@ -372,7 +372,7 @@ void EntityPart::setParent( EntityPlanet * planet )
     nearSurface = false;
 }
 
-void EntityPart::setParentSurface( EntityPlanet * planet )
+void EntityPart::setParentRf( EntityPlanet * planet )
 {
     if ( !sceneNode )
         return;

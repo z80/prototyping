@@ -101,7 +101,7 @@ public:
     void setW( const Ogre::Vector3 & w );
 
     void setParent( EntityPlanet * planet );
-    void setParentSurface( EntityPlanet * planet );
+    void setParentRf( EntityPlanet * planet );
 
     bool addSound( const std::string & fileName, const std::string & name );
     void finalizeSounds();
