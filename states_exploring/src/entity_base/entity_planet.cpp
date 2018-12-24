@@ -128,20 +128,7 @@ void EntityPlanet::integrateKinematics( Ogre::Real t_sec )
     orbitTime += t_sec;
     if ( orbitTime > orbitPeriod )
         orbitTime -= orbitPeriod;
-    const Ogre::Real orbAng_2 = 3.1415926535 * orbitTime / orbitPeriod;
-    const Ogre::Real o_co2 = std::cos( orbAng_2 );
-    const Ogre::Real o_si2 = std::sin( orbAng_2 );
-    const Ogre::Quaternion orbitSelfR( 0.0, orbitRadius, 0.0, 0.0 );
-    const Ogre::Quaternion orbitSelfQ( o_co2, 0.0, o_si2, 0.0 );
-    const Ogre::Quaternion orbitR = orbitQuat * orbitSelfQ *
-                                        orbitSelfR *
-                                    orbitSelfQ.Inverse() * orbitQuat.Inverse();
-
-    const Ogre::Vector3 p_at = ( parent ) ?
-                parent->sceneNode->_getDerivedPosition() : Ogre::Vector3();
-    const Ogre::Vector3 at( p_at.x + orbitR.x,
-                            p_at.x + orbitR.y,
-                            p_at.x + orbitR.z );
+    const Ogre::Vector3 at = absoluteR();
     setR( at );
 }
 

@@ -22,7 +22,7 @@ void EntityTestPlanet::create()
     const btScalar R = this->R;
 
 
-    EntityPlanet * p = new EntityPlanet();
+    EntityPlanet * p = this;
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 

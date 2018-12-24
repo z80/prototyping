@@ -105,11 +105,13 @@ bool GameState::frameStarted(const Ogre::FrameEvent& evt)
 
     StateManager::getSingletonPtr()->scriptFrameStarted( evt );
 
-    if ( world )
+    if ( solSys )
+        solSys->integrateKinematics( evt.timeSinceLastFrame );
+    /*if ( world )
     {
         planet->addForces( *cube );
         world->frameStarted( evt, doDebugDraw );
-    }
+    }*/
     if ( toWorkshopMode )
     {
         toWorkshopMode = false;
@@ -198,8 +200,8 @@ void GameState::createObjects()
     //            Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
     cube  = dynamic_cast<Entity::EntityPart *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
-    planet = dynamic_cast<Entity::EntityPlanet *>(
-                Entity::EntityFactory::getSingletonPtr()->create( "planet" ) );
+    planet = 0; //dynamic_cast<Entity::EntityPlanet *>(
+                //Entity::EntityFactory::getSingletonPtr()->create( "planet" ) );
     solSys = new Entity::SolarSystemTest();
 
     // Debugging object to see at least something.
