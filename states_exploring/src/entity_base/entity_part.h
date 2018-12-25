@@ -46,6 +46,7 @@ struct Sound
 
 class EntityPlanet;
 class EntityPart;
+class Assembly;
 
 
 struct ConnectionPoint
@@ -147,6 +148,15 @@ public:
     std::string icon;
     int         level;
 
+    /// Assembly this part is part of.
+    Assembly       * assembly;
+    /// Part position within the assembly.
+    Ogre::Vector3    assemblyR;
+    Ogre::Quaternion assemblyQ;
+    /// Functionality to convert position and velocity to/from assembly.
+    /// It is supposed to be used when true dynamics is turned on/off.
+    void toAssembly();
+    void fromAssembly();
 };
 
 typedef std::shared_ptr<EntityPart> EntityPartPtr;

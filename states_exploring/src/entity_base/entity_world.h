@@ -32,6 +32,8 @@ public:
     EntityWorld( Ogre::SceneManager * scnMgr );
     ~EntityWorld();
 
+    void integrationStep( Ogre::Real & t_sec, int timeBoost=1 );
+
     bool frameStarted( const Ogre::FrameEvent & evt, bool debugDraw = true );
     bool frameStarted( Ogre::Real dt, bool debugDraw = true );
     void addEntity( EntityPart * part );

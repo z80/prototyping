@@ -1,6 +1,7 @@
 
 #include "entity_part.h"
 #include "entity_planet.h"
+#include "assembly.h"
 #include "entity_world.h"
 #include "state_manager.h"
 
@@ -613,6 +614,34 @@ void EntityPart::deleteVisual()
         }
     }
 }
+
+void EntityPart::toAssembly()
+{
+
+}
+
+void EntityPart::fromAssembly()
+{
+    const Ogre::Quaternion assQ = assembly->locQ();
+    const Ogre::Quaternion q = assQ * assemblyQ;
+    const Ogre::Vector3    w = assembly->locW();
+
+    Ogre::Quaternion       rq( 0.0, assemblyR.x, assemblyR.y, assemblyR.z );
+    rq = assQ * rq * assQ.Inverse();
+    Ogre::Vector3    r( rq.x, rq.y, rq.z );
+
+    // v = assV + W x R
+    Ogre::Vector3 v = assembly->locV() + w.crossProduct( r );
+
+    // R = assR + R
+    r = assembly->locR() + r;
+
+    setR( r );
+    setQ( q );
+    setV( v );
+    setW( w );
+}
+
 
 
 

@@ -58,6 +58,12 @@ EntityWorld::~EntityWorld()
     delete mBroadphase;
 }
 
+void EntityWorld::integrationStep( Ogre::Real & t_sec, int timeBoost )
+{
+    for ( int i=0; i<timeBoost; i++ )
+        phyWorld->stepSimulation( t_sec, 10 );
+}
+
 bool EntityWorld::frameStarted( const Ogre::FrameEvent & evt, bool debugDraw )
 {
     //Update Bullet world. Don't forget the debugDrawWorld() part!

@@ -34,21 +34,31 @@ public:
     Ogre::Vector3 absoluteV()    const;
     Ogre::Vector3 absoluteW()    const;
 
-    void integrateDynamics( Ogre::Real t_sec );
+    void integrateDynamics( Ogre::Real t_sec, int timeBoost=1 );
     void setParent( EntityPlanet * planet );
     void setParentRf( EntityPlanet * planet );
+    void partsToWorldRf();
+    void partsToAssemblyRg();
 
-    void destroyPart( EntityPart * part );
+    void partDestroyed( EntityPart * part );
+    void connectionRemoved( EntityPart * partA, EntityPart * partB );
+    void connectionEstablished( EntityPart * partA, EntityPart * partB );
 
-    void computeRQ();
+    void computeRQVW();
 
     Ogre::Vector3     r;
     Ogre::Quaternion  q;
-    bool              onSurface;
+    Ogre::Vector3     v;
+    Ogre::Vector3     w;
+    // Here not going to use rigid body so far.
+    // May be later...
+
+
+    bool              nearSurface;
     EntityPlanet    * parent;
     Ogre::SceneNode * sceneNode;
 
-    std::vector<EntityPart *> part;
+    std::vector<EntityPart *> parts;
     AssembliesManager * assembliesMgr;
 };
 
