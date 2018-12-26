@@ -44,7 +44,8 @@ public:
     void connectionRemoved( EntityPart * partA, EntityPart * partB );
     void connectionEstablished( EntityPart * partA, EntityPart * partB );
 
-    void computeRQVW();
+    void computeAssemblyRQVW();
+    void computePartsRQVW();
 
     Ogre::Vector3     r;
     Ogre::Quaternion  q;
