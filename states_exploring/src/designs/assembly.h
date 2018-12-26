@@ -24,10 +24,10 @@ public:
     void setV( const Ogre::Vector3 & v );
     void setW( const Ogre::Vector3 & w );
 
-    Ogre::Vector3    locR() const;
-    Ogre::Quaternion locQ() const;
-    Ogre::Vector3    locV() const;
-    Ogre::Vector3    locW() const;
+    Ogre::Vector3    relR() const;
+    Ogre::Quaternion relQ() const;
+    Ogre::Vector3    relV() const;
+    Ogre::Vector3    relW() const;
 
     Ogre::Vector3 absoluteR()    const;
     Ogre::Quaternion absoluteQ() const;
@@ -37,8 +37,6 @@ public:
     void integrateDynamics( Ogre::Real t_sec, int timeBoost=1 );
     void setParent( EntityPlanet * planet );
     void setParentRf( EntityPlanet * planet );
-    void partsToWorldRf();
-    void partsToAssemblyRg();
 
     void partDestroyed( EntityPart * part );
     void connectionRemoved( EntityPart * partA, EntityPart * partB );

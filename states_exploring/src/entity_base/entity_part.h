@@ -95,10 +95,12 @@ public:
     Ogre::Quaternion relQ() const;
     Ogre::Vector3 relV() const;
     void          relV( Ogre::Real & v ) const;
-    void setV( Ogre::Vector3 & v );
+    void setV( const Ogre::Vector3 & v );
     Ogre::Vector3 relW() const;
     void setW( const Ogre::Vector3 & w );
 
+    // Are not supposed to be used.
+    // Assembly manages all parenting stuff.
     void setParent( EntityPlanet * planet );
     void setParentRf( EntityPlanet * planet );
 

@@ -15,7 +15,7 @@ Assembly::~Assembly()
 
 }
 
-static Assembly * Assembly::create( Design & design )
+Assembly * Assembly::create( Design & design )
 {
     return 0;
 }
@@ -48,22 +48,22 @@ void Assembly::setW( const Ogre::Vector3 & w )
     this->w = w;
 }
 
-Ogre::Vector3    Assembly::locR() const
+Ogre::Vector3    Assembly::relR() const
 {
     return r;
 }
 
-Ogre::Quaternion Assembly::locQ() const
+Ogre::Quaternion Assembly::relQ() const
 {
     return q;
 }
 
-Ogre::Vector3    Assembly::locV() const
+Ogre::Vector3    Assembly::relV() const
 {
     return v;
 }
 
-Ogre::Vector3    Assembly::locW() const
+Ogre::Vector3    Assembly::relW() const
 {
     return w;
 }
@@ -155,6 +155,9 @@ void Assembly::integrateDynamics( Ogre::Real t_sec, int timeBoost )
 
 void Assembly::setParent( EntityPlanet * planet )
 {
+    if ( !sceneNode )
+        return;
+
     if ( nearSurface )
     {
         // Compute assembly's pose using part poses.
@@ -169,11 +172,13 @@ void Assembly::setParent( EntityPlanet * planet )
             p->setQ( p->assemblyQ );
             p->setV( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
             p->setW( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
+            p->sceneNode->getParent()->removeChild( p->sceneNode );
+            sceneNode->addChild( p->sceneNode );
+
+            p->sceneNode->setInheritOrientation( true );
+            p->sceneNode->setInheritScale( false );
         }
     }
-
-    if ( !sceneNode )
-        return;
 
     sceneNode->setInheritOrientation( false );
     sceneNode->setInheritScale( false );
@@ -235,32 +240,63 @@ void Assembly::setParent( EntityPlanet * planet )
 
 void Assembly::setParentRf( EntityPlanet * planet )
 {
+    if ( !sceneNode )
+        return;
 
-}
+    if ( nearSurface )
+    {
+        // Compute assembly's pose using part poses.
+        computeAssemblyRQVW();
 
-void Assembly::partsToWorldRf()
-{
+        // Return all parts to assembly.
+        const size_t qty = parts.size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            EntityPart * p = parts[i];
+            p->setR( p->assemblyR );
+            p->setQ( p->assemblyQ );
+            p->setV( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
+            p->setW( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
+            p->sceneNode->getParent()->removeChild( p->sceneNode );
+            sceneNode->addChild( p->sceneNode );
 
-}
+            p->sceneNode->setInheritOrientation( true );
+            p->sceneNode->setInheritScale( false );
+        }
+    }
 
-void Assembly::partsToAssemblyRg()
-{
+    sceneNode->setInheritOrientation( true );
+    sceneNode->setInheritScale( false );
 
+    // Take all parts from assembly.
+    // 1) Compute their poses and pose derivatives.
+    computePartsRQVW();
+    // 2) Set actual parent to be appropriate planet.
+    const size_t qty = parts.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        EntityPart * p = parts[i];
+        p->sceneNode->getParent()->removeChild(p->sceneNode );
+        planet->sceneNode->addChild( p->sceneNode );
+    }
+
+    nearSurface = true;
+    parent      = planet;
 }
 
 void Assembly::partDestroyed( EntityPart * part )
 {
-
+    // Need to split assembly into two here.
 }
 
 void Assembly::connectionRemoved( EntityPart * partA, EntityPart * partB )
 {
-
+    // Need to split assembly into two here.
 }
 
 void Assembly::connectionEstablished( EntityPart * partA, EntityPart * partB )
 {
-
+    // Need to merge two assemblies here.
 }
 
 void Assembly::computeAssemblyRQVW()
@@ -308,9 +344,16 @@ void Assembly::computePartsRQVW()
         // partW = assW
         // partV = assV + assW x rel_r;
         const Ogre::Quaternion partQ = q * p->assemblyQ;
-        Ogre::Quaternion rq( 0.0, p->assemblyR.x, p->assemblyR/y, p->assemblyR.z );
+        Ogre::Quaternion rq( 0.0, p->assemblyR.x, p->assemblyR.y, p->assemblyR.z );
         rq = partQ * rq * partQ.Inverse();
         Ogre::Vector3 rel_r( rq.x, rq.y, rq.z );
+        const Ogre::Vector3 partR = r + rel_r;
+        const Ogre::Vector3 partW = w;
+        const Ogre::Vector3 partV = v + partW.crossProduct( rel_r );
+        p->setR( partR );
+        p->setQ( partQ );
+        p->setV( partV );
+        p->setW( partW );
     }
 
 }

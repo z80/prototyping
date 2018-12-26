@@ -129,7 +129,7 @@ void EntityPart::relV( Ogre::Real & v ) const
     v = vel.length();
 }
 
-void EntityPart::setV( Ogre::Vector3 & v )
+void EntityPart::setV( const Ogre::Vector3 & v )
 {
     btVector3 vel( v.x, v.y, v.z );
     rigidBody->setLinearVelocity( vel );
@@ -622,19 +622,19 @@ void EntityPart::toAssembly()
 
 void EntityPart::fromAssembly()
 {
-    const Ogre::Quaternion assQ = assembly->locQ();
+    const Ogre::Quaternion assQ = assembly->relQ();
     const Ogre::Quaternion q = assQ * assemblyQ;
-    const Ogre::Vector3    w = assembly->locW();
+    const Ogre::Vector3    w = assembly->relW();
 
     Ogre::Quaternion       rq( 0.0, assemblyR.x, assemblyR.y, assemblyR.z );
     rq = assQ * rq * assQ.Inverse();
     Ogre::Vector3    r( rq.x, rq.y, rq.z );
 
     // v = assV + W x R
-    Ogre::Vector3 v = assembly->locV() + w.crossProduct( r );
+    Ogre::Vector3 v = assembly->relV() + w.crossProduct( r );
 
     // R = assR + R
-    r = assembly->locR() + r;
+    r = assembly->relR() + r;
 
     setR( r );
     setQ( q );
