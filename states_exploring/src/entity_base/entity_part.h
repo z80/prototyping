@@ -49,11 +49,12 @@ class EntityPart;
 class Assembly;
 
 
-struct ConnectionPoint
+struct Connection
 {
     EntityPart * partA;
     EntityPart * partB;
     btTypedConstraint * constraint;
+    int          assemblyInd;
 };
 
 class EntityPart: public Entity
@@ -79,7 +80,7 @@ public:
     bool setMaterial( const char * material );
     bool setMask( Ogre::uint32 mask );
     bool setAirMesh( const std::string & meshFileName );
-    void addConnectionPoint( const ConnectionPoint & pt );
+    void addConnectionPoint( const Connection & pt );
 
     void setMass( Ogre::Real & m );
     void setInertia( const Ogre::Vector3 & i );
@@ -139,7 +140,7 @@ public:
     /// parent planet.
     bool           nearSurface;
 
-    std::vector<ConnectionPoint>  connections;
+    std::vector<Connection>  connections;
     std::vector<Sound>            sounds;
     Ogre::Real    mass;
     Ogre::Vector3 inertia;
@@ -155,6 +156,8 @@ public:
     /// Part position within the assembly.
     Ogre::Vector3    assemblyR;
     Ogre::Quaternion assemblyQ;
+    /// Part index in assembly.
+    int assemblyInd;
     /// Functionality to convert position and velocity to/from assembly.
     /// It is supposed to be used when true dynamics is turned on/off.
     void toAssembly();

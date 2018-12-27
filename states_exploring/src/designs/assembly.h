@@ -38,12 +38,16 @@ public:
     void setParent( EntityPlanet * planet );
     void setParentRf( EntityPlanet * planet );
 
-    void partDestroyed( EntityPart * part );
-    void connectionRemoved( EntityPart * partA, EntityPart * partB );
-    void connectionEstablished( EntityPart * partA, EntityPart * partB );
+    void deletePart( EntityPart * part );
+    void deleteConnection( EntityPart * partA, EntityPart * partB );
+    void connectionEstablished( EntityPart * partA, EntityPart * partB, const ConnectionDesc & connection );
 
     void computeAssemblyRQVW();
     void computePartsRQVW();
+
+
+public:
+    void assignIndices();
 
     Ogre::Vector3     r;
     Ogre::Quaternion  q;
@@ -58,6 +62,7 @@ public:
     Ogre::SceneNode * sceneNode;
 
     std::vector<EntityPart *> parts;
+    std::vector<Connection>   connections;
     AssembliesManager * assembliesMgr;
 };
 

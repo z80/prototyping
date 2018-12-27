@@ -8,7 +8,7 @@ namespace Entity
 {
 
 
-struct ConnectionJoint
+struct ConnectionDesc
 {
     // Additional axis for rotation is not needed.
     // It is supposed to be fixed by part design.
@@ -33,7 +33,7 @@ public:
 
 public:
     std::vector<Ogre::String>    parts;
-    std::vector<ConnectionJoint> joints;
+    std::vector<ConnectionDesc> joints;
 };
 
 

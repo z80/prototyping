@@ -284,17 +284,33 @@ void Assembly::setParentRf( EntityPlanet * planet )
     parent      = planet;
 }
 
-void Assembly::partDestroyed( EntityPart * part )
+void Assembly::deletePart( EntityPart * part )
 {
     // Need to split assembly into two here.
 }
 
-void Assembly::connectionRemoved( EntityPart * partA, EntityPart * partB )
+void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
 {
     // Need to split assembly into two here.
+    const size_t qty = connections.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const Connection & c = connections[i];
+        if ( ( (c.partA == partA) && (c.partB == partB) ) ||
+             ( (c.partB == partA) && (c.partA == partB) ) )
+        {
+            if ( i < (qty-1) )
+                connections[i] = connections[qty-1];
+            connections.resize( qty-1 );
+        }
+    }
+
+    // Find connected components.
+    // And if more than one need to create new assembly(es).
+
 }
 
-void Assembly::connectionEstablished( EntityPart * partA, EntityPart * partB )
+void Assembly::connectionEstablished( EntityPart * partA, EntityPart * partB, const ConnectionDesc & connection )
 {
     // Need to merge two assemblies here.
 }
@@ -355,6 +371,11 @@ void Assembly::computePartsRQVW()
         p->setV( partV );
         p->setW( partW );
     }
+
+}
+
+void Assembly::assignIndices()
+{
 
 }
 

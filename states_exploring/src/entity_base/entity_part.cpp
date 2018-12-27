@@ -25,6 +25,9 @@ EntityPart::EntityPart()
 
     parent      = 0;
     nearSurface = true;
+
+    assembly    = 0;
+    assemblyInd = -1;
 }
 
 EntityPart::~EntityPart()
@@ -223,7 +226,7 @@ bool EntityPart::setAirMesh( const std::string & meshFileName )
     return res;
 }
 
-void EntityPart::addConnectionPoint( const ConnectionPoint & pt )
+void EntityPart::addConnectionPoint( const Connection & pt )
 {
     connections.push_back( pt );
 }
