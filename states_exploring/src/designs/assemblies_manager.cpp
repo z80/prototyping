@@ -63,13 +63,13 @@ void AssembliesManager::remove( Assembly * assembly )
 
 int AssembliesManager::designsQty() const
 {
-    const int qty = static_cast<int>( desings.size() );
+    const int qty = static_cast<int>( designs.size() );
 }
 
 Design * AssembliesManager::design( int ind )
 {
-    const int qty = static_cast<int>( desings.size() );
-    Design * d = ( ind < qty ) ? &(designs[i]) : 0;
+    const int qty = static_cast<int>( designs.size() );
+    Design * d = ( ind < qty ) ? &(designs[ind]) : 0;
     return d;
 }
 
