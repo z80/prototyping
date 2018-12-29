@@ -493,7 +493,9 @@ void Assembly::cleanup()
         delete p;
     }
 
-    EntityWorld * w = StateManager::getSingletonPtr()->getWorld();
+    StateManager * sm = StateManager::getSingletonPtr();
+
+    EntityWorld * w = sm->getWorld();
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
@@ -502,6 +504,16 @@ void Assembly::cleanup()
         w->phyWorld->removeConstraint( c.constraint );
         delete c.constraint;
     }
+
+    // Make sure that if camera control target will
+    // make sense after deletion of this sceneNode.
+    CameraCtrl * cc = sm->getCameraCtrl();
+    if ( cc->nodeTarget == sceneNode )
+        cc->nodeTarget = 0;
+    // And also remove scene node.
+    Ogre::SceneManager * smgr = sm->getSceneManager();
+    smgr->destroySceneNode( sceneNode );
+    sceneNode = 0;
 }
 
 }
