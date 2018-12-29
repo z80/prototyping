@@ -102,8 +102,8 @@ public:
 
     // Are not supposed to be used.
     // Assembly manages all parenting stuff.
-    void setParent( EntityPlanet * planet );
-    void setParentRf( EntityPlanet * planet );
+    //void setParent( EntityPlanet * planet );
+    //void setParentRf( EntityPlanet * planet );
 
     bool addSound( const std::string & fileName, const std::string & name );
     void finalizeSounds();
@@ -126,7 +126,6 @@ public:
     bool        doShowContextMenu;
 
     Ogre::Entity     * visualEntity;
-    Ogre::SceneNode  * sceneNode;
     btRigidBody      * rigidBody;
     btCollisionShape * collisionShape;
     BtOgre::RigidBodyState * bodyState;

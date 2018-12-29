@@ -54,8 +54,7 @@ EntityPlanet::~EntityPlanet()
         if ( visualEntity );
             scnMgr->destroyEntity( visualEntity );
 
-        if ( sceneNode )
-            scnMgr->destroySceneNode( sceneNode );
+        destroySceneNode();
     }
 }
 

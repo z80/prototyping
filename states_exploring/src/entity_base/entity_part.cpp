@@ -42,6 +42,8 @@ EntityPart::~EntityPart()
     deleteRigidBody();
     deleteCollisionShape();
     deleteVisual();
+
+    StateManager::getSingletonPtr()->getPartsManager()->remove( this );
 }
 
 void EntityPart::loadResources()
@@ -312,7 +314,7 @@ Ogre::Quaternion EntityPart::relQ() const
     return q;
 }
 
-void EntityPart::setParent( EntityPlanet * planet )
+/*void EntityPart::setParent( EntityPlanet * planet )
 {
     if ( !sceneNode )
         return;
@@ -443,7 +445,7 @@ void EntityPart::setParentRf( EntityPlanet * planet )
     if ( planet )
         nearSurface = true;
 }
-
+*/
 
 bool EntityPart::addSound( const std::string & fileName, const std::string & name )
 {
@@ -610,11 +612,7 @@ void EntityPart::deleteVisual()
             visualEntity = 0;
         }
 
-        if ( sceneNode )
-        {
-            scnMgr->destroySceneNode( sceneNode );
-            sceneNode = 0;
-        }
+        destroySceneNode();
     }
 }
 

@@ -6,6 +6,10 @@
 #include "OgreInput.h"
 #include "OgreRTShaderSystem.h"
 #include "OgreOggSoundPlugin.h"
+
+#include "part_manager_base.h"
+#include "planet_manager_base.h"
+#include "assemblies_manager.h"
 #include "entity_world.h"
 #include "camera_ctrl.h"
 #include "player_local.h"
@@ -41,6 +45,9 @@ public:
     Ogre::SceneManager  * getSceneManager();
     Ogre::Camera        * getCamera();
     Entity::EntityWorld * getWorld();
+    Entity::PartManagerBase   * getPartsManager();
+    //Entity::PlanetManagerBase * planetsManager();
+
     void setMouseVisible( bool en );
 
     Config::ConfigReader * getConfigReader();
@@ -72,7 +79,12 @@ private:
     std::list< State * > states;
     Ogre::SceneManager  * scnMgr;
     Ogre::Camera        * mCamera;
+
+
     Entity::EntityWorld * mWorld;
+    Entity::PartManagerBase * mPartsManager;
+    //Entity::PlanetManagerBase * mPlanetsManager;
+
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;
     CameraCtrl             cameraCtrl;

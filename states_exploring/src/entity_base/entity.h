@@ -14,13 +14,6 @@ namespace Entity
 class Entity
 {
 public:
-    /*enum Type
-    {
-        Planet,
-        Part
-    };*/
-
-
     Entity();
     virtual ~Entity();
 
@@ -28,6 +21,11 @@ public:
     //virtual Type type() = 0;
 
     //static template<typename T> T * cast<T>( Entity * e );
+
+    void setSceneParent( Entity * parent, bool inheritRotation = true );
+public:
+    void destroySceneNode();
+    Ogre::SceneNode * sceneNode;
 };
 
 

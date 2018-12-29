@@ -29,6 +29,8 @@ StateManager::StateManager()
     mouseAtX = mouseAtY = 0;
     windowGrab = false;
     scriptArgsQty = 0;
+
+    mPartsManager = 0;
 }
 
 StateManager::~StateManager()
@@ -108,6 +110,11 @@ Ogre::Camera * StateManager::getCamera()
 Entity::EntityWorld * StateManager::getWorld()
 {
     return mWorld;
+}
+
+Entity::PartManagerBase * StateManager::getPartsManager()
+{
+    return mPartsManager;
 }
 
 void StateManager::setMouseVisible( bool en )
