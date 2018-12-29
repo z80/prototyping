@@ -48,6 +48,7 @@ public:
 
 public:
     void assignIndices();
+    void computeCenterOfInertia();
 
     Ogre::Vector3     r;
     Ogre::Quaternion  q;

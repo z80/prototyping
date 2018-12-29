@@ -49,6 +49,7 @@ add_subdirectory( "./config_reader" )
 #add_subdirectory( "./icosphere" )
 #add_subdirectory( "./material_viewer" )
 add_subdirectory( "./states_exploring" )
+add_subdirectory( "./tests" )
 
 
 

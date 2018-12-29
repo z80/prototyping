@@ -24,7 +24,9 @@ include_directories( ${OGRE_INCLUDE_DIRS}
                      ${ROOT}/3dparty/oggsound/include
                      ${ROOT}/config_reader/src
                      ${ROOT}/3dparty/lua-5.1.5/src
-                     ${ROOT}/3dparty/lua-5.1.5/etc )
+                     ${ROOT}/3dparty/lua-5.1.5/etc
+                     "${ROOT}/3dparty/lemon-1.3.1/"
+                     "${PROJECT_BINARY_DIR}/3dparty/lemon-1.3.1" )
 link_directories(${OGRE_LIBRARY_DIRS})
 
 # copy essential config files next to our binary where OGRE autodiscovers them

@@ -1,6 +1,10 @@
 
 #include "assembly.h"
 #include "state_manager.h"
+// For splitting and merging assemblies.
+#include "lemon/list_graph.h"
+#include "lemon/connectivity.h"
+
 
 namespace Entity
 {
@@ -292,22 +296,82 @@ void Assembly::deletePart( EntityPart * part )
 void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
 {
     // Need to split assembly into two here.
-    const size_t qty = connections.size();
-    for ( size_t i=0; i<qty; i++ )
+
+    // Remove a connection.
+    const size_t connQty = connections.size();
+    for ( size_t i=0; i<connQty; i++ )
     {
         const Connection & c = connections[i];
         if ( ( (c.partA == partA) && (c.partB == partB) ) ||
              ( (c.partB == partA) && (c.partA == partB) ) )
         {
-            if ( i < (qty-1) )
-                connections[i] = connections[qty-1];
-            connections.resize( qty-1 );
+            if ( i < (connQty-1) )
+                connections[i] = connections[connQty-1];
+            connections.resize( connQty-1 );
         }
     }
+    // Reenumerate all parts and connctions.
+    // This is for graph construction.
+    for ( size_t i=0; i<connQty; i++ )
+    {
+        Connection & c = connections[i];
+        c.assemblyInd = (int)i;
+    }
+    const size_t partQty = parts.size();
+    for ( size_t i=0; i<partQty; i++ )
+    {
+        EntityPart * p = parts[i];
+        p->assemblyInd = i;
+    }
+
+    // Refresh part coordinates.
+    computePartsRQVW();
 
     // Find connected components.
     // And if more than one need to create new assembly(es).
 
+    // 1) Construct graph.
+    using namespace lemon;
+    typedef Undirector<ListDigraph> Graph;
+    ListDigraph g;
+    ListDigraph::NodeMap<int> indsMap(g);
+    for ( size_t i=0; i<partQty; i++ )
+    {
+        ListDigraph::Node u = g.addNode();
+        const EntityPart * p = parts[i];
+        indsMap[u] = p->assemblyInd;
+    }
+    for ( size_t i=0; i<connQty; i++ )
+    {
+        const Connection & c = connections[i];
+        ListDigraph::Node a = ListDigraph::nodeFromId(c.partA->assemblyInd);
+        ListDigraph::Node b = ListDigraph::nodeFromId(c.partB->assemblyInd);
+        ListDigraph::Arc  arc = g.addArc(a, b);
+    }
+
+    // 2) Count connected components.
+    Graph graph(g);
+    const int compsQty = countConnectedComponents( graph );
+    // Compute center of inertia and orientation for the whole assemblies.
+    // If just one connected component. E.i. no separation just recompute
+    // assembly's center of inertia.
+    // Ther may be a few cases.
+
+    // 1) No parts left.
+    if ( compsQty == 0 )
+    {
+        // Just delete this assembly.
+    }
+    // 2) Only one connected component. It means no separation happened.
+    else if ( compsQty == 1 )
+    {
+        computeCenterOfInertia();
+    }
+    // 3) And if more than one.
+    else
+    {
+
+    }
 }
 
 void Assembly::connectionEstablished( EntityPart * partA, EntityPart * partB, const ConnectionDesc & connection )
@@ -376,7 +440,33 @@ void Assembly::computePartsRQVW()
 
 void Assembly::assignIndices()
 {
+    const size_t connQty = connections.size();
+    for ( size_t i=0; i<connQty; i++ )
+    {
+        Connection & c = connections[i];
+        c.assemblyInd = (int)i;
+    }
+    const size_t partQty = parts.size();
+    for ( size_t i=0; i<partQty; i++ )
+    {
+        EntityPart * p = parts[i];
+        p->assemblyInd = i;
+    }
+}
 
+void Assembly::computeCenterOfInertia()
+{
+    Ogre::Vector3 coi = Ogre::Vector3::ZERO;
+    const size_t partQty = parts.size();
+    for ( size_t i=0; i<partQty; i++ )
+    {
+        EntityPart * p = parts[i];
+        const Ogre::Vector3 at = p->relR();
+        coi = coi + at;
+    }
+    const Ogre::Real qty = static_cast<Ogre::Real>( partQty );
+    coi = coi / qty;
+    r = coi;
 }
 
 
