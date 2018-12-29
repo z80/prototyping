@@ -361,6 +361,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     if ( compsQty == 0 )
     {
         // Just delete this assembly.
+        delete this;
     }
     // 2) Only one connected component. It means no separation happened.
     else if ( compsQty == 1 )
@@ -467,8 +468,41 @@ void Assembly::computeCenterOfInertia()
     const Ogre::Real qty = static_cast<Ogre::Real>( partQty );
     coi = coi / qty;
     r = coi;
+
+    q = parts[0]->relQ();
+
+    // Compute relative position and orientation
+    // for all parts within assembly.
+    for ( size_t i=0; i<partQty; i++ )
+    {
+        EntityPart * p = parts[i];
+        const Ogre::Vector3 relR = p->relR() - r;
+        p->assemblyR = relR;
+
+        const Ogre::Quaternion relQ = q.Inverse() * p->relQ();
+        p->assemblyQ = relQ;
+    }
 }
 
+void Assembly::cleanup()
+{
+    const size_t partQty = parts.size();
+    for ( size_t i=0; i<partQty; i++ )
+    {
+        EntityPart * p = parts[i];
+        delete p;
+    }
+
+    EntityWorld * w = StateManager::getSingletonPtr()->getWorld();
+    const size_t connQty = connections.size();
+    for ( size_t i=0; i<connQty; i++ )
+    {
+        Connection & c = connections[i];
+
+        w->phyWorld->removeConstraint( c.constraint );
+        delete c.constraint;
+    }
+}
 
 }
 

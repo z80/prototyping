@@ -1,5 +1,6 @@
 
 #include "assemblies_manager.h"
+#include "state_manager.h"
 #include "entity_part.h"
 #include "entity_planet.h"
 #include "assembly.h"
@@ -31,12 +32,58 @@ void AssembliesManager::setOrigin( EntityPlanet * planet,
 
 Assembly * AssembliesManager::create( const Design & design )
 {
+    Assembly * a = new Assembly();
+    a->assembliesMgr = this;
+    //Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    a->sceneNode = planet->sceneNode->createChildSceneNode();
+    Ogre::SceneNode * sn = a->sceneNode;
+    sn->setInheritScale( false );
+    sn->setInheritOrientation( true );
+    sn->setPosition( at );
+    sn->setOrientation( q );
 
+    a->parent      = planet;
+    a->nearSurface = true;
+
+
+    // Add parts.
+
+
+    // Compute center of inertia.
+    a->computeCenterOfInertia();
+    a->computeAssemblyRQVW();
+
+    assemblies.push_back( a );
+
+    return a;
 }
 
 Assembly * AssembliesManager::create( const Ogre::String & fname )
 {
+    Assembly * a = new Assembly();
+    a->assembliesMgr = this;
+    //Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    a->sceneNode = planet->sceneNode->createChildSceneNode();
+    Ogre::SceneNode * sn = a->sceneNode;
+    sn->setInheritScale( false );
+    sn->setInheritOrientation( true );
+    sn->setPosition( at );
+    sn->setOrientation( q );
 
+    a->parent      = planet;
+    a->nearSurface = true;
+
+
+    // Add parts.
+
+
+    // Compute center of inertia.
+    a->computeCenterOfInertia();
+    a->computeAssemblyRQVW();
+
+    assemblies.push_back( a );
+
+    return a;
 }
 
 Assembly * AssembliesManager::create( const std::vector<EntityPart *> & parts,
@@ -44,6 +91,36 @@ Assembly * AssembliesManager::create( const std::vector<EntityPart *> & parts,
 {
     Assembly * a = new Assembly();
     a->assembliesMgr = this;
+    //Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    a->sceneNode = planet->sceneNode->createChildSceneNode();
+    Ogre::SceneNode * sn = a->sceneNode;
+    sn->setInheritScale( false );
+    sn->setInheritOrientation( true );
+    sn->setPosition( at );
+    sn->setOrientation( q );
+
+    a->parent      = planet;
+    a->nearSurface = true;
+
+
+    // Add parts.
+    a->parts       = parts;
+    a->connections = connections;
+    // Set each part assembly to be this one.
+    const size_t partQty = parts.size();
+    for ( size_t i=0; i<partQty; i++ )
+    {
+        EntityPart * p = parts[i];
+        p->assembly = a;
+    }
+
+    // Compute center of inertia.
+    a->computeCenterOfInertia();
+    a->computeAssemblyRQVW();
+
+    assemblies.push_back( a );
+
+    return a;
 }
 
 void AssembliesManager::remove( Assembly * assembly )
