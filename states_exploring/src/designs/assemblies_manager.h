@@ -3,6 +3,7 @@
 #define __ASSEMBLIES_MANAGER_H_
 
 #include "Ogre.h"
+#include "design.h"
 
 namespace Config
 {
@@ -11,6 +12,9 @@ namespace Config
 
 namespace Entity
 {
+
+class EntityPlanet;
+class Assembly;
 
 class AssembliesManager
 {
@@ -25,8 +29,29 @@ public:
                     const Ogre::Vector3 & at,
                     const Ogre::Quaternion & q=Ogre::Quaternion::IDENTITY );
 
+    /// Ways to create new assemblies.
+    Assembly * create( const Design & design );
+    Assembly * create( const Ogre::String & fname );
+    Assembly * create( const std::vector<EntityPart *> & parts,
+                       const std::vector<Connection> & connections );
+    /// Removes an assembly. Mostly it removes a pointer from the array.
+    void remove( Assembly * assembly );
+
+    /// Number of designs.
+    int designsQty() const;
+    /// Get a design by it's index.
+    Design * design( int ind );
 public:
+    void cleanup();
+
+    /// Creation origin.
+    EntityPlanet   * planet;
+    Ogre::Vector3    at;
+    Ogre::Quaternion q;
+    /// List of existing assemblies.
     std::vector<Assembly *> assemblies;
+    /// List of available desings.
+    std::vector<Design>     designs;
 };
 
 
