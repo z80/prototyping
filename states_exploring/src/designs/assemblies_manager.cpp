@@ -3,6 +3,7 @@
 #include "state_manager.h"
 #include "entity_part.h"
 #include "entity_planet.h"
+#include "entity_world.h"
 #include "assembly.h"
 
 namespace Entity
@@ -148,6 +149,33 @@ Design * AssembliesManager::design( int ind )
     const int qty = static_cast<int>( designs.size() );
     Design * d = ( ind < qty ) ? &(designs[ind]) : 0;
     return d;
+}
+
+void AssembliesManager::integrateDynamics( Ogre::Real time_s, int time_boost )
+{
+    bool needIntegration = false;
+    const size_t qty = assemblies.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Assembly * a = assemblies[i];
+        a->integrateDynamics( time_s, time_boost );
+        if ( a->forcesApplied() )
+            needIntegration = true;
+    }
+    // All assemblies experiencing forces other than gravity
+    // are moved here.
+    // For those poses and velocities are supposed to be recalculated.
+    if ( needIntegration )
+    {
+        EntityWorld * w = StateManager::getSingletonPtr()->getWorld();
+        w->integrationStep( time_s, time_boost );
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Assembly * a = assemblies[i];
+            if ( a->forcesApplied() )
+                a->computeAssemblyRQVW();
+        }
+    }
 }
 
 void AssembliesManager::cleanup()

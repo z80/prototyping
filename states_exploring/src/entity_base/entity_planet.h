@@ -43,7 +43,7 @@ public:
     void setR( const Ogre::Vector3 & at );
     void setQ( const Ogre::Quaternion & q );
 
-    void integrateKinematics( Ogre::Real t_sec );
+    void integrateKinematics( Ogre::Real t_sec, int time_boost=1 );
 public:
     /// Absolute position.
     Ogre::Vector3 absoluteR() const;

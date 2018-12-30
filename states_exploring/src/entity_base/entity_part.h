@@ -87,7 +87,12 @@ public:
     void setCollisionShape( btCollisionShape * shape );
     void initDynamics();
 
-    void applyForce( const Ogre::Vector3 & at, const Ogre::Vector3 & f );
+    /// Returns true if during this step the part
+    /// experiences force/torque applied.
+    bool forcesApplied() const;
+    /// Resets forcesApplied() flag.
+    void resetForcesApplied();
+    void applyForce( const Ogre::Vector3 & f, const Ogre::Vector3 & at, bool localRf=true );
     void applyTorque( const Ogre::Vector3 & p );
 
     void setR( const Ogre::Vector3 & at );
@@ -120,6 +125,8 @@ public:
     void deleteRigidBody();
     void deleteCollisionShape();
     void deleteVisual();
+
+    bool forcesWereApplied;
 
     Ogre::int32 actionGroup;
     bool        isSeleted;

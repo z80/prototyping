@@ -35,6 +35,8 @@ public:
     Ogre::Vector3 absoluteW()    const;
 
     void integrateDynamics( Ogre::Real t_sec, int timeBoost=1 );
+    bool forcesApplied() const;
+
     void setParent( EntityPlanet * planet );
     void setParentRf( EntityPlanet * planet );
 

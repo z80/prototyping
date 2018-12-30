@@ -10,9 +10,9 @@ namespace AirMesh
 
 struct Triangle
 {
-    btScalar  area;
-    btVector3 at;
-    btVector3 norm;
+    Ogre::Real    area;
+    Ogre::Vector3 at;
+    Ogre::Vector3 norm;
 };
 
 class AtmosphereForces
@@ -38,12 +38,11 @@ public:
     Gravity();
     ~Gravity();
 
-    virtual void gravity( const btScalar m, const btVector3 & r,
-                          btVector3 & g );
+    virtual Ogre::Vector3 gravity( const Ogre::Real m, const Ogre::Vector3 & r );
+    virtual Ogre::Vector3 gravity( const Ogre::Real m, const Ogre::Vector3 & r0, const Ogre::Vector3 & r );
 
-    btScalar  GM;
-    btScalar  radius;
-    btVector3 r0;
+    Ogre::Real  GM;
+    Ogre::Real  radius;
 };
 
 

@@ -41,6 +41,11 @@ public:
     int designsQty() const;
     /// Get a design by it's index.
     Design * design( int ind );
+
+    /// Dynamics integration.
+    /// It is supposed to call dynamics world integration in
+    /// the case if there is at least one assembly near surface.
+    void integrateDynamics( Ogre::Real time_s, int time_boost=1 );
 public:
     void cleanup();
 

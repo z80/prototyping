@@ -14,6 +14,8 @@ static void deleteSubshapes( btCollisionShape * s );
 EntityPart::EntityPart()
     : Entity()
 {
+    forcesWereApplied = false;
+
     actionGroup       = 0;
     isSeleted         = false;
     doShowContextMenu = false;
@@ -267,13 +269,33 @@ void EntityPart::initDynamics()
     EntityWorld::getSingletonPtr()->addEntity( this );
 }
 
-void EntityPart::applyForce( const Ogre::Vector3 & at, const Ogre::Vector3 & f )
+bool EntityPart::forcesApplied() const
 {
-    rigidBody->applyForce( btVector3(f.x, f.y, f.z), btVector3( at.x, at.y, at.z ) );
+    return forcesWereApplied;
+}
+
+void EntityPart::resetForcesApplied()
+{
+    forcesWereApplied = false;
+}
+
+void EntityPart::applyForce( const Ogre::Vector3 & f, const Ogre::Vector3 & at, bool localRf )
+{
+    forcesWereApplied = true;
+    if ( localRf )
+    {
+        const Ogre::Quaternion q = relQ();
+        Ogre::Quaternion rq( 0.0, at.x, at.y, at.z );
+        rq = q * rq * q.Inverse();
+        rigidBody->applyForce( btVector3(rq.x, rq.y, rq.z), btVector3( at.x, at.y, at.z ) );
+    }
+    else
+        rigidBody->applyForce( btVector3(f.x, f.y, f.z), btVector3( at.x, at.y, at.z ) );
 }
 
 void EntityPart::applyTorque( const Ogre::Vector3 & p )
 {
+    forcesWereApplied = true;
     rigidBody->applyTorque( btVector3( p.x, p.y, p.z ) );
 }
 

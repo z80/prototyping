@@ -107,25 +107,27 @@ bool EntityPlanet::nearSurface( const Assembly & a ) const
 void EntityPlanet::addForces( EntityPart & part )
 {
     part.rigidBody->clearForces();
-    part.rigidBody->activate( true );
+    if ( !part.rigidBody->isActive() )
+        part.rigidBody->activate( true );
 
-    const btTransform t  = part.rigidBody->getWorldTransform();
-    const btVector3 r    = t.getOrigin();
-    const btQuaternion q = t.getRotation();
-    const btVector3 v = part.rigidBody->getLinearVelocity();
-    const btScalar  m = 1.0 / part.rigidBody->getInvMass();
+    const Ogre::Vector3    r = part.relR();
+    const Ogre::Quaternion q = part.relQ();
+    const Ogre::Vector3    v = part.relV();
+    const Ogre::Vector3    w = part.relW();
+    const Ogre::Real       m = 1.0 / part.rigidBody->getInvMass();
 
-    btVector3 fg;
-    g.gravity( m, r, fg );
-    btVector3 f( 0.0, 0.0, 0.0 );
-    btVector3 p( 0.0, 0.0, 0.0 );
+    Ogre::Vector3 fg = g.gravity( m, r );
+    Ogre::Vector3 f( 0.0, 0.0, 0.0 );
+    Ogre::Vector3 p( 0.0, 0.0, 0.0 );
     part.airMesh.forceTorque( atm, r, v, q, f, p );
 
     //std::cout << "air friction: " << f.x() << ", " << f.y() << ", " << f.z() << std::endl;
 
     f += fg;
-    part.rigidBody->applyCentralForce( f );
-    part.rigidBody->applyTorque( p );
+    //part.rigidBody->applyCentralForce( f );
+    //part.rigidBody->applyTorque( p );
+    part.applyForce( Ogre::Vector3( f.x(), f.y(), f.z() ), Ogre::Vector3::ZERO );
+    part.applyTorque( p );
 }
 
 void EntityPlanet::setR( const Ogre::Vector3 & at )
@@ -148,7 +150,7 @@ void EntityPlanet::setQ( const Ogre::Quaternion & q )
     sceneNode->setOrientation( q );
 }
 
-void EntityPlanet::integrateKinematics( Ogre::Real t_sec )
+void EntityPlanet::integrateKinematics( Ogre::Real t_sec, int time_boost )
 {
     // Absolute rotation.
     rotTime += t_sec;

@@ -146,17 +146,44 @@ Ogre::Vector3 Assembly::absoluteW()    const
 
 void Assembly::integrateDynamics( Ogre::Real t_sec, int timeBoost )
 {
+    // Cleanup applied forces flag.
+    const size_t qty = parts.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        EntityPart * p = parts[i];
+        p->resetForcesApplied();
+    }
+
     // If in space follow orbital path.
     // Else integrate dynamics.
     if ( nearSurface )
     {
-        // Do nothing here as physical world integration
-        // is supposed to be done only once.
+        // Apply planet forces here.
+        const size_t qty = parts.size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            EntityPart * p = parts[i];
+            parent->addForces( *p );
+        }
     }
     else
     {
         // Use Kepler's laws to predict position.
     }
+}
+
+bool Assembly::forcesApplied() const
+{
+    if ( nearSurface )
+        return true;
+    const size_t qty = parts.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        EntityPart * p = parts[i];
+        if ( p->forcesApplied() )
+            return true;
+    }
+    return false;
 }
 
 void Assembly::setParent( EntityPlanet * planet )

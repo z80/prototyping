@@ -21,7 +21,7 @@ public:
     /// Each planet has it's movement parameters.
     /// This method executes planet movement and
     /// updates poses and velocities.
-    void integrateKinematics( Ogre::Real t_sec );
+    void integrateKinematics( Ogre::Real t_sec, int timeBoost=1 );
 
     int planetsQty() const;
     EntityPlanet * planet( int index );

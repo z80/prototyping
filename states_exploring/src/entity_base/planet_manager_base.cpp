@@ -20,7 +20,7 @@ void PlanetManagerBase::create()
 
 }
 
-void PlanetManagerBase::integrateKinematics( Ogre::Real t_sec )
+void PlanetManagerBase::integrateKinematics( Ogre::Real t_sec, int timeBoost=1 )
 {
     for ( std::vector<EntityPlanetPtr>::iterator it=planets.begin();
           it!=planets.end(); it++ )

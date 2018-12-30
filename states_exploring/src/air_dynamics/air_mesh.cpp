@@ -65,7 +65,6 @@ btScalar AtmosphereForces::density( const btVector3 & at ) const
 
 
 Gravity::Gravity()
-    : r0( 0.0, 0.0, 0.0 )
 {
     GM     = 12345.0;
     radius = 100.0;
@@ -76,18 +75,32 @@ Gravity::~Gravity()
 
 }
 
-void Gravity::gravity( const btScalar m, const btVector3 & r,
-                       btVector3 & g )
+Ogre::Vector3 Gravity::gravity( const Ogre::Real m, const Ogre::Vector3 & r )
 {
-    btVector3 dr = r - r0;
-    const btScalar d = dr.length();
+    const Ogre::Vector3 dr = r;
+    const Ogre::Real d = dr.length();
     // To avoid  troubles if the body is inside.
     if ( d < radius*0.5 )
     {
-        g = btVector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
-        return;
+        const Ogre::Vector3 g = btVector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
+        return g;
     }
-    g = -dr * GM / ( d*d*d );
+    const Ogre::Vector3 g = -dr * GM / ( d*d*d );
+    return g;
+}
+
+Ogre::Vector3 Gravity::gravity( const Ogre::Real m, const Ogre::Vector3 & r0, const Ogre::Vector3 & r )
+{
+    const Ogre::Vector3 dr = r - r0;
+    const Ogre::Real d = dr.length();
+    // To avoid  troubles if the body is inside.
+    if ( d < radius*0.5 )
+    {
+        const Ogre::Vector3 g = btVector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
+        return g;
+    }
+    const Ogre::Vector3 g = -dr * GM / ( d*d*d );
+    return g;
 }
 
 
