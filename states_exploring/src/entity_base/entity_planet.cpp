@@ -2,6 +2,7 @@
 #include "entity_planet.h"
 #include "entity_world.h"
 #include "state_manager.h"
+#include "assembly.h"
 
 #include <iostream>
 
@@ -67,6 +68,41 @@ void EntityPlanet::update()
 {
 
 }
+
+Ogre::Real EntityPlanet::gForce( const Assembly & a )
+{
+    const bool local = (a.parent == this);
+    if ( local )
+    {
+        g.r0 = btVector3( 0.0, 0.0, 0.0 );
+        const Ogre::Vector3 r  = a.relR();
+        btVector3 f;
+        g.gravity( 1.0, btVector3( r.x, r.y, r.z ), f );
+        Ogre::Real acc = (Ogre::Real)f.length();
+        return acc;
+    }
+
+    const Ogre::Vector3 r0 = absoluteR();
+    const Ogre::Vector3 r  = a.absoluteR();
+    g.r0 = btVector3( r0.x, r0.y, r0.z );
+    btVector3 f;
+    g.gravity( 1.0, btVector3( r.x, r.y, r.z ), f );
+    Ogre::Real acc = (Ogre::Real)f.length();
+    return acc;
+}
+
+bool EntityPlanet::nearSurface( const Assembly & a ) const
+{
+    const bool local = (a.parent == this);
+    if ( !local )
+        return false;
+
+    const Ogre::Real d = atm.radius + atm.height;
+    const Ogre::Real r = a.relR().length();
+    const bool near = (r < d);
+    return near;
+}
+
 
 void EntityPlanet::addForces( EntityPart & part )
 {

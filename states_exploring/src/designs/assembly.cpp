@@ -1,6 +1,8 @@
 
 #include "assembly.h"
 #include "state_manager.h"
+#include "entity_world.h"
+
 // For splitting and merging assemblies.
 #include "lemon/list_graph.h"
 #include "lemon/connectivity.h"

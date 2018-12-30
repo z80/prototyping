@@ -4,6 +4,7 @@
 #include "assembly.h"
 #include "entity_world.h"
 #include "state_manager.h"
+#include "part_manager_base.h"
 
 namespace Entity
 {

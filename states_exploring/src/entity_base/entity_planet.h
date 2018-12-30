@@ -23,14 +23,22 @@ public:
     EntityPlanet();
     virtual ~EntityPlanet();
 
-    // This one is supposed to initialize
-    // All the features like visual entity,
-    // rigid body, etc.
+    /// This one is supposed to initialize
+    /// All the features like visual entity,
+    /// rigid body, etc.
     virtual void create();
-    // Called by "integrateKinematics()" in the case it is needed
-    // to update rigid body or collision shape.
+    /// Called by "integrateKinematics()" in the case if it
+    /// is needed to update rigid body or collision shape.
     virtual void update();
 
+    /// Check sphere of influence by measuring
+    /// gravity caused acceleration.
+    Ogre::Real gForce( const Assembly & a );
+    /// Check if need to be in local ref. frame or inertial one.
+    /// Basically by comparing height with atmosphere height.
+    bool nearSurface( const Assembly & a ) const;
+
+    /// Add all forces to a body in sphere of influence.
     void addForces( EntityPart & part );
     void setR( const Ogre::Vector3 & at );
     void setQ( const Ogre::Quaternion & q );
