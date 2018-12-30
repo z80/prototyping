@@ -4,7 +4,13 @@
 #include "Ogre.h"
 #include "OgreRoot.h"
 #include "ImguiManager.h"
+
 #include "config_reader.h"
+#include "part_manager_base.h"
+#include "planet_manager_base.h"
+#include "assemblies_manager.h"
+#include "entity_world.h"
+
 #include "lua_collision_shapes.h"
 #include "lua_entity_part.h"
 #include "lua_entity_world.h"

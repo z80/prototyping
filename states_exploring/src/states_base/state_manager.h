@@ -7,10 +7,6 @@
 #include "OgreRTShaderSystem.h"
 #include "OgreOggSoundPlugin.h"
 
-#include "part_manager_base.h"
-#include "planet_manager_base.h"
-#include "assemblies_manager.h"
-#include "entity_world.h"
 #include "camera_ctrl.h"
 #include "player_local.h"
 
@@ -18,6 +14,16 @@ class State;
 namespace Config
 {
     class ConfigReader;
+}
+
+namespace Entity
+{
+    class Entity;
+    class EntityPart;
+    class EntityPlanet;
+    class EntityWorld;
+    class PartManagerBase;
+    class PlanetManagerBase;
 }
 
 class StateManager: public OgreBites::ApplicationContext,
@@ -46,7 +52,7 @@ public:
     Ogre::Camera        * getCamera();
     Entity::EntityWorld * getWorld();
     Entity::PartManagerBase   * getPartsManager();
-    //Entity::PlanetManagerBase * planetsManager();
+    Entity::PlanetManagerBase * getPlanetsManager();
 
     void setMouseVisible( bool en );
 
@@ -83,7 +89,7 @@ private:
 
     Entity::EntityWorld * mWorld;
     Entity::PartManagerBase * mPartsManager;
-    //Entity::PlanetManagerBase * mPlanetsManager;
+    Entity::PlanetManagerBase * mPlanetsManager;
 
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;
