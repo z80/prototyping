@@ -316,7 +316,7 @@ void WorkshopState::panelItem( const Group::GroupItem & item, int groupInd, int 
     ImGui::BeginGroup();
     {
         ImGui::Text( "%s", item.name.c_str() );
-        const bool clicked = ImGui::ImageButton( (ImTextureID)item.icon, iconSz );
+        const bool clicked = ImGui::ImageButton( (ImTextureID)item.iconHandle, iconSz );
         if ( clicked )
         {
             Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();

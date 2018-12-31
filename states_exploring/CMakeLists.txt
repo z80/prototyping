@@ -56,7 +56,7 @@ include_directories( ./src
                      ./src/entity_base 
                      ./src/entity_impl 
                      ./src/designs
-                     ./src/panel_constructor 
+                     ./src/design_descs
                      ./src/states_base 
                      ./src/states_impl 
                      ./src/launch_site
