@@ -331,8 +331,8 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     for ( size_t i=0; i<connQty; i++ )
     {
         const Connection & c = connections[i];
-        if ( ( (c.partA == partA) && (c.partB == partB) ) ||
-             ( (c.partB == partA) && (c.partA == partB) ) )
+        if ( ( (c.partA == partA->assemblyInd) && (c.partB == partB->assemblyInd) ) ||
+             ( (c.partB == partA->assemblyInd) && (c.partA == partB->assemblyInd) ) )
         {
             if ( i < (connQty-1) )
                 connections[i] = connections[connQty-1];
@@ -404,7 +404,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     }
 }
 
-void Assembly::connectionEstablished( EntityPart * partA, EntityPart * partB, const ConnectionDesc & connection )
+void Assembly::connectionEstablished( EntityPart * partA, EntityPart * partB )
 {
     // Need to merge two assemblies here.
 }

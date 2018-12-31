@@ -11,7 +11,7 @@
 #include "BtOgreExtras.h"
 #include "OgreOggSoundManager.h"
 
-namespace Desc
+namespace Entity
 {
 
 struct ConnectionDesc
@@ -32,6 +32,8 @@ struct ConnectionDesc
 
 struct PartDesc
 {
+    /// If it is allowed.
+    bool enabled;
     /// Part name. It should correspond to a
     /// part PartsManager is able to create.
     Ogre::String name;

@@ -10,7 +10,9 @@
 #include "planet_manager_base.h"
 #include "assemblies_manager.h"
 #include "entity_world.h"
+#include "tech_tree.h"
 
+#include "lua_tech_tree.h"
 #include "lua_collision_shapes.h"
 #include "lua_entity_part.h"
 #include "lua_entity_world.h"
@@ -39,6 +41,7 @@ StateManager::StateManager()
     mPartsManager   = 0;
     mPlanetsManager = 0;
     mSiteManager    = 0;
+    mTechTree       = 0;
 }
 
 StateManager::~StateManager()
@@ -135,6 +138,11 @@ Entity::LaunchSiteManagerBase * StateManager::getSiteManager()
     return mSiteManager;
 }
 
+Entity::TechTree * StateManager::getTechTree()
+{
+    return mTechTree;
+}
+
 void StateManager::setMouseVisible( bool en )
 {
     windowGrab = en;
@@ -227,6 +235,8 @@ void StateManager::shutdown()
     scnMgr->destroyAllMovableObjects();
     scnMgr->destroyAllManualObjects();
     scnMgr->destroyQuery( raySceneQuery );
+
+    delete mTechTree;
 }
 
 void StateManager::setup()
@@ -267,11 +277,13 @@ void StateManager::setup()
 
     initSound();
 
-    mWorld = Entity::EntityWorld::createWorld();
-
+    mWorld    = Entity::EntityWorld::createWorld();
+    mTechTree = new Entity::TechTree();
 
     // After all needed objects are created init script.
     initScript();
+
+    mTechTree->load( getConfigReader() );
 }
 
 void StateManager::initSound()
@@ -311,6 +323,7 @@ void StateManager::initScript()
     luaopen_entityPart( L );
     luaopen_entityWorld( L );
     luaopen_camera( L );
+    luaopen_techTree( L );
 }
 
 void StateManager::finitScript()

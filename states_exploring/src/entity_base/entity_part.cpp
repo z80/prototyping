@@ -231,11 +231,6 @@ bool EntityPart::setAirMesh( const std::string & meshFileName )
     return res;
 }
 
-void EntityPart::addConnectionPoint( const Connection & pt )
-{
-    connections.push_back( pt );
-}
-
 void EntityPart::setMass( Ogre::Real & m )
 {
     mass = m;

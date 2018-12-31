@@ -25,6 +25,7 @@ namespace Entity
     class PartManagerBase;
     class PlanetManagerBase;
     class LaunchSiteManagerBase;
+    class TechTree;
 }
 
 class StateManager: public OgreBites::ApplicationContext,
@@ -55,6 +56,7 @@ public:
     Entity::PartManagerBase   * getPartsManager();
     Entity::PlanetManagerBase * getPlanetsManager();
     Entity::LaunchSiteManagerBase * getSiteManager();
+    Entity::TechTree              * getTechTree();
 
     void setMouseVisible( bool en );
 
@@ -93,6 +95,7 @@ private:
     Entity::PartManagerBase       * mPartsManager;
     Entity::PlanetManagerBase     * mPlanetsManager;
     Entity::LaunchSiteManagerBase * mSiteManager;
+    Entity::TechTree              * mTechTree;
 
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;

@@ -21,9 +21,9 @@ struct GroupDesc
 // Represents a particular part type.
 struct GroupItem
 {
-    Ogre::String name;
-    Ogre::String tooltip;
-    Ogre::String description;
+    Ogre::String         name;
+    Ogre::String         tooltip;
+    Ogre::String         description;
     Ogre::String         icon;
     Ogre::ResourceHandle iconHandle;
     int level;

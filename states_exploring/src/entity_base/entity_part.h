@@ -49,14 +49,6 @@ class EntityPart;
 class Assembly;
 
 
-struct Connection
-{
-    EntityPart * partA;
-    EntityPart * partB;
-    btTypedConstraint * constraint;
-    int          assemblyInd;
-};
-
 class EntityPart: public Entity
 {
 public:
@@ -80,7 +72,6 @@ public:
     bool setMaterial( const char * material );
     bool setMask( Ogre::uint32 mask );
     bool setAirMesh( const std::string & meshFileName );
-    void addConnectionPoint( const Connection & pt );
 
     void setMass( Ogre::Real & m );
     void setInertia( const Ogre::Vector3 & i );
@@ -146,7 +137,6 @@ public:
     /// parent planet.
     bool           nearSurface;
 
-    std::vector<Connection>  connections;
     std::vector<Sound>            sounds;
     Ogre::Real    mass;
     Ogre::Vector3 inertia;

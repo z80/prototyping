@@ -42,7 +42,7 @@ public:
 
     void deletePart( EntityPart * part );
     void deleteConnection( EntityPart * partA, EntityPart * partB );
-    void connectionEstablished( EntityPart * partA, EntityPart * partB, const ConnectionDesc & connection );
+    void connectionEstablished( EntityPart * partA, EntityPart * partB );
 
     void computeAssemblyRQVW();
     void computePartsRQVW();

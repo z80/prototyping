@@ -6,8 +6,8 @@
 namespace Entity
 {
 
-static void saveJoint( const ConnectionDesc & j, std::ofstream & out );
-static bool loadJoint( ConnectionDesc & j,       std::ifstream & in );
+static void saveJoint( const Connection & j, std::ofstream & out );
+static bool loadJoint( Connection & j,       std::ifstream & in );
 
 Design::Design()
 {
@@ -68,12 +68,12 @@ bool Design::valid() const
 
 
 
-static void saveJoint( const ConnectionDesc & j, std::ofstream & out )
+static void saveJoint( const Connection & j, std::ofstream & out )
 {
 
 }
 
-static bool loadJoint( ConnectionDesc & j, std::ifstream & in )
+static bool loadJoint( Connection & j, std::ifstream & in )
 {
 
     return false;
