@@ -72,6 +72,55 @@ void LaunchSiteManagerBase::destroy()
     sites.clear();
 }
 
+bool LaunchSiteManagerBase::setCurrent( const Ogre::String & function, const Ogre::String & name )
+{
+    // First searc if there already is selected site
+    // with this function and overwrite if found.
+    const size_t qty = mSelected.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Current & c = mSelected[i];
+        if ( c.function == function )
+        {
+            const size_t sitesQty = sites.size();
+            for ( size_t j=0; j<sitesQty; j++ )
+            {
+                Site * s = sites[j];
+                if ( (s->function == function) && (s->name == name) )
+                {
+                    c.index = j;
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    // No existing one with selected function.
+    // Append one.
+    const size_t sitesQty = sites.size();
+    for ( size_t j=0; j<sitesQty; j++ )
+    {
+        Site * s = sites[j];
+        if ( (s->function == function) && (s->name == name) )
+        {
+            Current c;
+            c.function = function;
+            c.index = j;
+            mSelected.push_back( c );
+            return true;
+        }
+    }
+    return false;
+
+}
+
+Site * LaunchSiteManagerBase::current( const Ogre::String & function )
+{
+
+}
+
+
 
 
 

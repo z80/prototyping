@@ -22,10 +22,21 @@ public:
     Site * site( int index );
     Site * site( const Ogre::String & function, const Ogre::String & name );
 
+    bool setCurrent( const Ogre::String & function, const Ogre::String & name );
+    Site * current( const Ogre::String & function );
+
+
 public:
     void destroy();
 
     std::vector<Site *> sites;
+
+    struct Current
+    {
+        Ogre::String function;
+        size_t       index;
+    };
+    std::vector<Current> mSelected;
 };
 
 
