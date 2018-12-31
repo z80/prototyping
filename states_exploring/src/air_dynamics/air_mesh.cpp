@@ -23,37 +23,37 @@ AtmosphereForces::~AtmosphereForces()
 }
 
 void AtmosphereForces::forceTorque( const Triangle & tri,
-                                    const btVector3 & velocity,
-                                    btVector3 & F, btVector3 & P ) const
+                                    const Ogre::Vector3 & velocity,
+                                    Ogre::Vector3 & F, Ogre::Vector3 & P ) const
 {
-    const btScalar absV = velocity.length();
+    const Ogre::Real absV = velocity.length();
     if ( absV > 0.0001 )
     {
-        const btScalar d = velocity.dot( tri.norm ) / absV;
-        const btVector3 vNorm = velocity * d;
-        const btVector3 vTang = velocity - vNorm;
-        const btScalar  viscosityNorm = ( (d >= 0.0) ? viscosityFwd : viscosityBwd );
-        const btVector3 fNorm = vNorm * viscosityNorm;
-        const btVector3 fTang = vTang * viscosityLat;
-        const btVector3 f = -(fNorm + fTang) * tri.area;
-        const btVector3 p = tri.at.cross( f );
+        const Ogre::Real d = velocity.dotProduct( tri.norm ) / absV;
+        const Ogre::Vector3 vNorm = velocity * d;
+        const Ogre::Vector3 vTang = velocity - vNorm;
+        const Ogre::Real  viscosityNorm = ( (d >= 0.0) ? viscosityFwd : viscosityBwd );
+        const Ogre::Vector3 fNorm = vNorm * viscosityNorm;
+        const Ogre::Vector3 fTang = vTang * viscosityLat;
+        const Ogre::Vector3 f = -(fNorm + fTang) * tri.area;
+        const Ogre::Vector3 p = tri.at.crossProduct( f );
         F += f;
         P += p;
     }
 }
 
-btScalar AtmosphereForces::density( const btVector3 & at ) const
+Ogre::Real AtmosphereForces::density( const Ogre::Vector3 & at ) const
 {
-    const btVector3 dr = at - r0;
-    const btScalar h = dr.length() - radius;
+    const Ogre::Vector3 dr = at - r0;
+    const Ogre::Real h = dr.length() - radius;
     if ( h < 0.0 )
         return groundDensity;
     else if ( h > height )
         return 0.0;
     // Should be exponential. But for simplicity
     // make it quadratic.
-    const btScalar dh = (h - height)/height;
-    const btScalar ro = groundDensity * dh * dh;
+    const Ogre::Real dh = (h - height)/height;
+    const Ogre::Real ro = groundDensity * dh * dh;
     return ro;
 }
 
@@ -82,7 +82,7 @@ Ogre::Vector3 Gravity::gravity( const Ogre::Real m, const Ogre::Vector3 & r )
     // To avoid  troubles if the body is inside.
     if ( d < radius*0.5 )
     {
-        const Ogre::Vector3 g = btVector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
+        const Ogre::Vector3 g = Ogre::Vector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
         return g;
     }
     const Ogre::Vector3 g = -dr * GM / ( d*d*d );
@@ -96,7 +96,7 @@ Ogre::Vector3 Gravity::gravity( const Ogre::Real m, const Ogre::Vector3 & r0, co
     // To avoid  troubles if the body is inside.
     if ( d < radius*0.5 )
     {
-        const Ogre::Vector3 g = btVector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
+        const Ogre::Vector3 g = Ogre::Vector3( 0.0, 0.0, 0.0 ); //GM * r / (radius*radius*radius);
         return g;
     }
     const Ogre::Vector3 g = -dr * GM / ( d*d*d );
@@ -132,8 +132,8 @@ bool AirMesh::airMesh( Ogre::Entity * e, AirMesh & a )
         Ogre::Vector3 n = v01.crossProduct( v02 );
         Triangle tri;
         tri.area = 0.5 * n.normalise();
-        tri.norm =  btVector3( n.x, n.y, n.z );
-        tri.at   =  btVector3( c.x, c.y, c.z );
+        tri.norm =  Ogre::Vector3( n.x, n.y, n.z );
+        tri.at   =  Ogre::Vector3( c.x, c.y, c.z );
         a.tris.push_back( tri );
     }
 
@@ -163,8 +163,8 @@ bool AirMesh::airMesh( Ogre::MeshPtr m, AirMesh & a )
         Ogre::Vector3 n = v01.crossProduct( v02 );
         Triangle tri;
         tri.area = 0.5 * n.normalise();
-        tri.norm =  btVector3( n.x, n.y, n.z );
-        tri.at   =  btVector3( c.x, c.y, c.z );
+        tri.norm =  Ogre::Vector3( n.x, n.y, n.z );
+        tri.at   =  Ogre::Vector3( c.x, c.y, c.z );
         a.tris.push_back( tri );
     }
 
@@ -193,29 +193,32 @@ const AirMesh & AirMesh::operator=( const AirMesh & inst )
     return *this;
 }
 
-const btVector3 & AirMesh::forceTorque(const AtmosphereForces & f, const btVector3 & position,
-                                        const btVector3 & velocity,
-                                        const btQuaternion & orientation,
-                                        btVector3 & resF, btVector3 & resP ) const
+const Ogre::Vector3 & AirMesh::forceTorque(const AtmosphereForces & f, const Ogre::Vector3 & position,
+                                        const Ogre::Vector3 & velocity,
+                                        const Ogre::Quaternion & orientation,
+                                        Ogre::Vector3 & resF, Ogre::Vector3 & resP ) const
 {
-    btVector3 F( 0.0, 0.0, 0.0 );
-    btVector3 P( 0.0, 0.0, 0.0 );
+    Ogre::Vector3 F( 0.0, 0.0, 0.0 );
+    Ogre::Vector3 P( 0.0, 0.0, 0.0 );
 
-    const btQuaternion vq = orientation.inverse() * velocity * orientation;
-    const btVector3 v( vq.x(), vq.y(), vq.z() );
+    Ogre::Quaternion vq( 0.0, velocity.x, velocity.y, velocity.z );
+    vq = orientation.Inverse() * vq * orientation;
+    const Ogre::Vector3 v( vq.x, vq.y, vq.z );
 
-    for ( std::list<Triangle>::const_iterator it=tris.begin();
+    for ( std::vector<Triangle>::const_iterator it=tris.begin();
           it!=tris.end(); it++ )
     {
         const Triangle & tri = *it;
         f.forceTorque( tri, v, F, P );
     }
 
-    const btQuaternion Fq = orientation * F * orientation.inverse();
-    const btQuaternion Pq = orientation * P * orientation.inverse();
-    F = btVector3( Fq.x(), Fq.y(), Fq.z() );
-    P = btVector3( Pq.x(), Pq.y(), Pq.z() );
-    const btScalar ro = f.density( position );
+    Ogre::Quaternion Fq( 0.0, F.x, F.y, F.z );
+    Fq = orientation * Fq * orientation.Inverse();
+    Ogre::Quaternion Pq( 0.0, P.x, P.y, P.z );
+    Pq = orientation * Pq * orientation.Inverse();
+    F = Ogre::Vector3( Fq.x, Fq.y, Fq.z );
+    P = Ogre::Vector3( Pq.x, Pq.y, Pq.z );
+    const Ogre::Real ro = f.density( position );
     F *= ro;
     P *= ro;
 

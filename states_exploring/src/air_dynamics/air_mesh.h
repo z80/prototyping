@@ -22,14 +22,14 @@ public:
     virtual ~AtmosphereForces();
 
     virtual void forceTorque( const Triangle & tri,
-                              const btVector3 & velocity,
-                              btVector3 & f, btVector3 & p ) const;
-    virtual btScalar density( const btVector3 & at ) const;
-    btScalar viscosityFwd,
-             viscosityBwd,
-             viscosityLat,
-             radius, height, groundDensity;
-    btVector3 r0;
+                              const Ogre::Vector3 & velocity,
+                              Ogre::Vector3 & f, Ogre::Vector3 & p ) const;
+    virtual Ogre::Real density( const Ogre::Vector3 & at ) const;
+    Ogre::Real viscosityFwd,
+               viscosityBwd,
+               viscosityLat,
+               radius, height, groundDensity;
+    Ogre::Vector3 r0;
 };
 
 class Gravity
@@ -57,14 +57,14 @@ public:
     AirMesh( const AirMesh & inst );
     const AirMesh & operator=( const AirMesh & inst );
 
-    const btVector3 & forceTorque( const AtmosphereForces & f,
-                                   const btVector3 & position,
-                                   const btVector3 & velocity,
-                                   const btQuaternion & orientation,
-                                   btVector3 & resF, btVector3 & resP ) const;
+    const Ogre::Vector3 & forceTorque( const AtmosphereForces & f,
+                                       const Ogre::Vector3 & position,
+                                       const Ogre::Vector3 & velocity,
+                                       const Ogre::Quaternion & orientation,
+                                       Ogre::Vector3 & resF, Ogre::Vector3 & resP ) const;
 
 public:
-    std::list<Triangle> tris;
+    std::vector<Triangle> tris;
 };
 
 

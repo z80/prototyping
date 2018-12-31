@@ -74,19 +74,15 @@ Ogre::Real EntityPlanet::gForce( const Assembly & a )
     const bool local = (a.parent == this);
     if ( local )
     {
-        g.r0 = btVector3( 0.0, 0.0, 0.0 );
         const Ogre::Vector3 r  = a.relR();
-        btVector3 f;
-        g.gravity( 1.0, btVector3( r.x, r.y, r.z ), f );
+        Ogre::Vector3 f = g.gravity( 1.0, r );
         Ogre::Real acc = (Ogre::Real)f.length();
         return acc;
     }
 
     const Ogre::Vector3 r0 = absoluteR();
     const Ogre::Vector3 r  = a.absoluteR();
-    g.r0 = btVector3( r0.x, r0.y, r0.z );
-    btVector3 f;
-    g.gravity( 1.0, btVector3( r.x, r.y, r.z ), f );
+    Ogre::Vector3 f = g.gravity( 1.0, r0, r );
     Ogre::Real acc = (Ogre::Real)f.length();
     return acc;
 }
@@ -126,7 +122,7 @@ void EntityPlanet::addForces( EntityPart & part )
     f += fg;
     //part.rigidBody->applyCentralForce( f );
     //part.rigidBody->applyTorque( p );
-    part.applyForce( Ogre::Vector3( f.x(), f.y(), f.z() ), Ogre::Vector3::ZERO );
+    part.applyForce( f, Ogre::Vector3::ZERO );
     part.applyTorque( p );
 }
 

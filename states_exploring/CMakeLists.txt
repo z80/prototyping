@@ -59,6 +59,7 @@ include_directories( ./src
                      ./src/panel_constructor 
                      ./src/states_base 
                      ./src/states_impl 
+                     ./src/launch_site
                      ./src/air_dynamics 
                      ./src/camera 
                      ./src/player
