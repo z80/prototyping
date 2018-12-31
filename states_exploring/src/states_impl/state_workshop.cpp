@@ -375,16 +375,17 @@ bool WorkshopState::loadGroups()
         {
             if ( !getItem( L, i, j, icon, group.items[j] ) )
                 return false;
+            group.items[j].icon = icon;
             TexturePtr t = TextureManager::getSingleton().getByName( icon );
             if ( !t )
                 t = TextureManager::getSingleton().create( icon, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME );
             if ( t )
             {
                 ResourceHandle hdl = t->getHandle();
-                group.items[j].icon = hdl;
+                group.items[j].iconHandle = hdl;
             }
             else
-                group.items[j].icon = -1;
+                group.items[j].iconHandle = -1;
         }
     }
 
