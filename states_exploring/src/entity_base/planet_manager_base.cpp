@@ -45,6 +45,20 @@ EntityPlanet * PlanetManagerBase::planet( int index )
     return p;
 }
 
+EntityPlanet * PlanetManagerBase::planet( const Ogre::String & name )
+{
+    const size_t qty = planets.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        EntityPlanet * p = planets[i].get();
+        const Ogre::String & n = p->name();
+        if ( name == n )
+            return p;
+    }
+
+    return 0;
+}
+
 void PlanetManagerBase::destroy()
 {
     planets.clear();

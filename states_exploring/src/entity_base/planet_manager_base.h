@@ -25,6 +25,7 @@ public:
 
     int planetsQty() const;
     EntityPlanet * planet( int index );
+    EntityPlanet * planet( const Ogre::String & name );
 
 public:
     void destroy();

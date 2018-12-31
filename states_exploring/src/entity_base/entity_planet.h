@@ -44,6 +44,8 @@ public:
     void setQ( const Ogre::Quaternion & q );
 
     void integrateKinematics( Ogre::Real t_sec, int time_boost=1 );
+
+    const Ogre::String & name() const;
 public:
     /// Absolute position.
     Ogre::Vector3 absoluteR() const;
@@ -56,6 +58,9 @@ public:
     /// Orientation.
     Ogre::Quaternion absoluteQ() const;
 
+    /// Planet name. In idea it might be used to retrieve
+    /// it from PlanetManager.
+    Ogre::String       planetName;
 
     Ogre::Entity     * visualEntity;
     Ogre::SceneNode  * sceneNode;

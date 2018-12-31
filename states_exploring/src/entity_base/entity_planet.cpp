@@ -165,6 +165,11 @@ void EntityPlanet::integrateKinematics( Ogre::Real t_sec, int time_boost )
     setR( at );
 }
 
+const Ogre::String & EntityPlanet::name() const
+{
+    return planetName;
+}
+
 Ogre::Vector3 EntityPlanet::absoluteR() const
 {
     const Ogre::Real orbAng_2 = 3.1415926535 * orbitTime / orbitPeriod;

@@ -36,7 +36,9 @@ StateManager::StateManager()
     windowGrab = false;
     scriptArgsQty = 0;
 
-    mPartsManager = 0;
+    mPartsManager   = 0;
+    mPlanetsManager = 0;
+    mSiteManager    = 0;
 }
 
 StateManager::~StateManager()
@@ -121,6 +123,16 @@ Entity::EntityWorld * StateManager::getWorld()
 Entity::PartManagerBase * StateManager::getPartsManager()
 {
     return mPartsManager;
+}
+
+Entity::PlanetManagerBase * StateManager::getPlanetsManager()
+{
+    return mPlanetsManager;
+}
+
+Entity::LaunchSiteManagerBase * StateManager::getSiteManager()
+{
+    return mSiteManager;
 }
 
 void StateManager::setMouseVisible( bool en )
