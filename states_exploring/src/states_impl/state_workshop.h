@@ -36,9 +36,9 @@ public:
 private:
     void debugOverlay();
     void backToGameOverlay();
-    void panelOverlay();
+    /*void panelOverlay();
     void panelItem( const Group::GroupItem & item, int groupInd,
-                    int itemInd, bool notLastInRow );
+                    int itemInd, bool notLastInRow );*/
 
     Ogre::Root * mRoot;
     Ogre::SceneManager * mSceneMgr;
@@ -53,7 +53,7 @@ private:
     void destroyObjects();
 
     // Externally load all the parameters of groups overlay.
-    bool loadGroups();
+    /*bool loadGroups();
     bool loadLevel();
 
     int    level;
@@ -61,7 +61,7 @@ private:
     ImVec2 iconSz;
     int    panelWidth, itemsPerLine;
 
-    std::vector<Group::Group> groups;
+    std::vector<Group::Group> groups;*/
 };
 
 

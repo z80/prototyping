@@ -29,9 +29,9 @@ WorkshopState::WorkshopState()
     mExitState = false;
     paused     = false;
     disableMouseCtrl = false;
-    groupsInitialized = false;
+    /*groupsInitialized = false;
     panelWidth        = 250;
-    itemsPerLine      = 3;
+    itemsPerLine      = 3;*/
 }
 
 WorkshopState::~WorkshopState()
@@ -88,7 +88,7 @@ void WorkshopState::resume()
 
     paused = false;
 
-    if ( !groupsInitialized )
+    /*if ( !groupsInitialized )
     {
         Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
         if ( cr )
@@ -99,7 +99,7 @@ void WorkshopState::resume()
                 Ogre::LogManager::getSingletonPtr()->logMessage( "WorkshopState: Failed to load groups" );
         }
     }
-    loadLevel();
+    loadLevel();*/
 }
 
 bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
@@ -108,7 +108,7 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
         return true;
 
     ImGui::ShowTestWindow();
-    panelOverlay();
+    //panelOverlay();
     backToGameOverlay();
 
     StateManager::getSingletonPtr()->scriptFrameStarted( evt );
@@ -263,6 +263,7 @@ void WorkshopState::backToGameOverlay()
     ImGui::End();
 }
 
+/*
 void WorkshopState::panelOverlay()
 {
     const ImVec2 wndSz( 250, ImGui::GetIO().DisplaySize.y );
@@ -622,7 +623,7 @@ static void itemClicked( lua_State * L, int group, int item )
     lua_settop( L, top );
     return;
 }
-
+*/
 
 
 
