@@ -49,6 +49,22 @@ class EntityPart;
 class Assembly;
 
 
+class EntityConnection
+{
+public:
+    EntityConnection();
+    ~EntityConnection();
+
+    void destroy();
+
+    EntityPart * partA;
+    EntityPart * partB;
+    btTypedConstraint * constraint;
+    Assembly     * assembly;
+    EntityPlanet * planet;
+    int          assemblyInd;
+};
+
 class EntityPart: public Entity
 {
 public:
@@ -67,6 +83,9 @@ public:
     virtual void selectEvent();
     virtual void unselectEvent();
     virtual void contextMenuEvent();
+
+    virtual void toWorld( EntityWorld * w );
+    virtual void fromWorld( EntityWorld * w );
 
     bool setEntity( const char * mesh, const char * material = 0 );
     bool setMaterial( const char * material );

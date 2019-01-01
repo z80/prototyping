@@ -65,8 +65,8 @@ public:
     EntityPlanet    * parent;
     Ogre::SceneNode * sceneNode;
 
-    std::vector<EntityPart *> parts;
-    std::vector<Connection>   connections;
+    std::vector<EntityPart *>       parts;
+    std::vector<EntityConnection *> connections;
     AssembliesManager * assembliesMgr;
 };
 

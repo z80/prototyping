@@ -7,6 +7,18 @@
 #include "lemon/list_graph.h"
 #include "lemon/connectivity.h"
 
+static void removeFromWorld( btDynamicsWorld * w,
+                             std::vector<EntityPart *> & parts,
+                             std::vector<EntityConnection *> * conns )
+{
+    const size_t partsQty = parts.size();
+    for ( size_t i=0; i<partsQty; i++ )
+    {
+        Entity::EntityPart * p = parts[i];
+        if ( p->rigidBody )
+
+    }
+}
 
 namespace Entity
 {
@@ -330,21 +342,24 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
-        const Connection & c = connections[i];
-        if ( ( (c.partA == partA->assemblyInd) && (c.partB == partB->assemblyInd) ) ||
-             ( (c.partB == partA->assemblyInd) && (c.partA == partB->assemblyInd) ) )
+        Connection * c = connections[i];
+        if ( ( (c->partA == partA) && (c->partB == partB) ) ||
+             ( (c->partB == partA) && (c->partA == partB) ) )
         {
             if ( i < (connQty-1) )
                 connections[i] = connections[connQty-1];
             connections.resize( connQty-1 );
+
+            delete c;
+            break;
         }
     }
     // Reenumerate all parts and connctions.
     // This is for graph construction.
     for ( size_t i=0; i<connQty; i++ )
     {
-        Connection & c = connections[i];
-        c.assemblyInd = (int)i;
+        Connection * c = connections[i];
+        c->assemblyInd = (int)i;
     }
     const size_t partQty = parts.size();
     for ( size_t i=0; i<partQty; i++ )
@@ -372,9 +387,9 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     }
     for ( size_t i=0; i<connQty; i++ )
     {
-        const Connection & c = connections[i];
-        ListDigraph::Node a = ListDigraph::nodeFromId(c.partA->assemblyInd);
-        ListDigraph::Node b = ListDigraph::nodeFromId(c.partB->assemblyInd);
+        const Connection * c = connections[i];
+        ListDigraph::Node a = ListDigraph::nodeFromId(c->partA->assemblyInd);
+        ListDigraph::Node b = ListDigraph::nodeFromId(c->partB->assemblyInd);
         ListDigraph::Arc  arc = g.addArc(a, b);
     }
 
@@ -400,7 +415,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     // 3) And if more than one.
     else
     {
-
+        // Split assembly into a few assemblies.
     }
 }
 

@@ -11,6 +11,37 @@ namespace Entity
 
 static void deleteSubshapes( btCollisionShape * s );
 
+EntityConnection::EntityConnection()
+{
+    partA = 0;
+    partB = 0;
+    assembly    = 0;
+    assemblyInd = -1;
+    planet      = 0;
+    constraint  = 0;
+}
+
+EntityConnection::~EntityConnection()
+{
+    destroy();
+}
+
+void EntityConnection::destroy()
+{
+    StateManager * sm = StateManager::getSingletonPtr();
+    EntityWorld * w = sm->getWorld();
+    if ( constraint )
+    {
+        w->phyWorld->removeConstraint( constraint );
+        delete constraint;
+    }
+}
+
+
+
+
+
+
 EntityPart::EntityPart()
     : Entity()
 {
