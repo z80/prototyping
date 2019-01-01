@@ -88,7 +88,7 @@ Assembly * AssembliesManager::create( const Ogre::String & fname )
 }
 
 Assembly * AssembliesManager::create( const std::vector<EntityPart *> & parts,
-                                      const std::vector<Connection> & connections )
+                                      const std::vector<EntityConnection *> & connections )
 {
     Assembly * a = new Assembly();
     a->assembliesMgr = this;

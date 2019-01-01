@@ -26,6 +26,17 @@ EntityConnection::~EntityConnection()
     destroy();
 }
 
+void EntityConnection::toWorld( EntityWorld * w )
+{
+    w->phyWorld->addConstraint( constraint, true );
+}
+
+void EntityConnection::fromWorld( EntityWorld * w )
+{
+    w->phyWorld->removeConstraint( constraint );
+}
+
+
 void EntityConnection::destroy()
 {
     StateManager * sm = StateManager::getSingletonPtr();
@@ -136,6 +147,16 @@ void EntityPart::unselectEvent()
 void EntityPart::contextMenuEvent()
 {
 
+}
+
+void EntityPart::toWorld( EntityWorld * w )
+{
+    w->phyWorld->addRigidBody( rigidBody );
+}
+
+void EntityPart::fromWorld( EntityWorld * w )
+{
+    w->phyWorld->removeRigidBody( rigidBody );
 }
 
 Ogre::Vector3 EntityPart::relV() const

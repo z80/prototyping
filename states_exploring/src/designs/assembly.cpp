@@ -7,21 +7,33 @@
 #include "lemon/list_graph.h"
 #include "lemon/connectivity.h"
 
-static void removeFromWorld( btDynamicsWorld * w,
+
+namespace Entity
+{
+
+/// Utility function.
+static void removeFromWorld( EntityWorld * w,
                              std::vector<EntityPart *> & parts,
-                             std::vector<EntityConnection *> * conns )
+                             std::vector<EntityConnection *> & conns )
 {
     const size_t partsQty = parts.size();
     for ( size_t i=0; i<partsQty; i++ )
     {
-        Entity::EntityPart * p = parts[i];
+        EntityPart * p = parts[i];
         if ( p->rigidBody )
+            p->fromWorld( w );
 
+    }
+
+    const size_t connsQty = conns.size();
+    for ( size_t i=0; i<connsQty; i++ )
+    {
+        EntityConnection * c = conns[i];
+        if ( c->constraint )
+            c->fromWorld( w );
     }
 }
 
-namespace Entity
-{
 
 Assembly::Assembly()
 {
@@ -342,7 +354,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
-        Connection * c = connections[i];
+        EntityConnection * c = connections[i];
         if ( ( (c->partA == partA) && (c->partB == partB) ) ||
              ( (c->partB == partA) && (c->partA == partB) ) )
         {
@@ -358,7 +370,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     // This is for graph construction.
     for ( size_t i=0; i<connQty; i++ )
     {
-        Connection * c = connections[i];
+        EntityConnection * c = connections[i];
         c->assemblyInd = (int)i;
     }
     const size_t partQty = parts.size();
@@ -387,7 +399,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     }
     for ( size_t i=0; i<connQty; i++ )
     {
-        const Connection * c = connections[i];
+        const EntityConnection * c = connections[i];
         ListDigraph::Node a = ListDigraph::nodeFromId(c->partA->assemblyInd);
         ListDigraph::Node b = ListDigraph::nodeFromId(c->partB->assemblyInd);
         ListDigraph::Arc  arc = g.addArc(a, b);
@@ -488,8 +500,8 @@ void Assembly::assignIndices()
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
-        Connection & c = connections[i];
-        c.assemblyInd = (int)i;
+        EntityConnection * c = connections[i];
+        c->assemblyInd = (int)i;
     }
     const size_t partQty = parts.size();
     for ( size_t i=0; i<partQty; i++ )
@@ -543,10 +555,10 @@ void Assembly::cleanup()
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
-        Connection & c = connections[i];
+        EntityConnection * c = connections[i];
 
-        w->phyWorld->removeConstraint( c.constraint );
-        delete c.constraint;
+        c->fromWorld( w );
+        delete c;
     }
 
     // Make sure that if camera control target will

@@ -33,7 +33,7 @@ public:
     Assembly * create( const Design & design );
     Assembly * create( const Ogre::String & fname );
     Assembly * create( const std::vector<EntityPart *> & parts,
-                       const std::vector<Connection> & connections );
+                       const std::vector<EntityConnection *> & connections );
     /// Removes an assembly. Mostly it removes a pointer from the array.
     void remove( Assembly * assembly );
 

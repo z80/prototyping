@@ -44,6 +44,7 @@ struct Sound
     } Lt;
 };
 
+class EntityWorld;
 class EntityPlanet;
 class EntityPart;
 class Assembly;
@@ -54,6 +55,9 @@ class EntityConnection
 public:
     EntityConnection();
     ~EntityConnection();
+
+    void toWorld( EntityWorld * w );
+    void fromWorld( EntityWorld * w );
 
     void destroy();
 
@@ -84,6 +88,8 @@ public:
     virtual void unselectEvent();
     virtual void contextMenuEvent();
 
+    /// Virtual because in implementations
+    /// there might be more than one rigid body.
     virtual void toWorld( EntityWorld * w );
     virtual void fromWorld( EntityWorld * w );
 
