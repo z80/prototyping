@@ -98,6 +98,8 @@ public:
     void generatePanelContent();
     bool enableNode( const Ogre::String & name );
 
+    const std::vector<CategoryDesc> & getPanelContent() const;
+    const std::vector<PartDesc> &     getPartDescs() const;
 public:
     bool nodeEnabled( const Ogre::String & name ) const;
     std::vector<TechNode>     nodes;

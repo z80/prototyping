@@ -88,6 +88,16 @@ bool TechTree::enableNode( const Ogre::String & name )
     return false;
 }
 
+const std::vector<CategoryDesc> & TechTree::getPanelContent() const
+{
+    return panelContent;
+}
+
+const std::vector<PartDesc> & TechTree::getPartDescs() const
+{
+    return partDescs;
+}
+
 bool TechTree::nodeEnabled( const Ogre::String & name ) const
 {
     const size_t nodesQty = nodes.size();

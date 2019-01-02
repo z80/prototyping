@@ -58,7 +58,9 @@ include_directories( ./src
                      ./src/designs
                      ./src/design_descs
                      ./src/states_base 
-                     ./src/states_impl 
+                     ./src/state_intro
+                     ./src/state_workshop
+                     ./src/state_game
                      ./src/launch_site
                      ./src/air_dynamics 
                      ./src/camera 
