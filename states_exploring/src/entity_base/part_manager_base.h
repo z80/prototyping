@@ -8,6 +8,7 @@ namespace Entity
 {
 
 class EntityPart;
+class EntityPlanet;
 
 class PartManagerBase
 {
@@ -27,8 +28,7 @@ public:
      */
     virtual EntityPart * create( const std::string & name,
                                  const Ogre::Vector3 & r = Ogre::Vector3::ZERO,
-                                 const Ogre::Quaternion & q = Ogre::Quaternion::IDENTITY,
-                                 Entity * parent = 0 ) = 0;
+                                 const Ogre::Quaternion & q = Ogre::Quaternion::IDENTITY ) = 0;
     void remove( EntityPart * part );
 private:
     void destroyAllParts();
