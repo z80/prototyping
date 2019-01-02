@@ -11,6 +11,7 @@ struct PartDesc;
 
 class TechTreePanelCallback
 {
+public:
     TechTreePanelCallback() {}
     virtual ~TechTreePanelCallback() {}
 

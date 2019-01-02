@@ -9,8 +9,9 @@ namespace Entity
 
 TechTreePanel::TechTreePanel()
 {
+    panelSz      = 250;
     itemsPerLine = 3;
-    iconSz = 128;
+    iconSz       = 128;
 
     initPanelGeometry();
 }
@@ -63,6 +64,7 @@ void TechTreePanel::drawBackToGamePanel()
 }
 
 static void panelItem( const PartDesc & item,
+                       int iconSz,
                        bool notLastInRow,
                        TechTreePanelCallback * cb );
 
@@ -75,7 +77,7 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
     const std::vector<CategoryDesc> & panelContent = tt->getPanelContent();
     const std::vector<PartDesc> & partDescs = tt->getPartDescs();
 
-    const ImVec2 wndSz( 250, ImGui::GetIO().DisplaySize.y );
+    const ImVec2 wndSz( panelSz, ImGui::GetIO().DisplaySize.y );
     ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
     ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
     const ImVec2 windowPos = ImVec2( 0, 0 );
@@ -106,7 +108,7 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
                     const PartDesc & p = partDescs[partInd];
                     const bool notLastInRow = ( ( (j+1) % itemsPerLine ) != 0 ) && ( j != 0 );
                     //ImGui::PushItemWidth( w );
-                    panelItem( p, notLastInRow, cb );
+                    panelItem( p, iconSz, notLastInRow, cb );
                 }
             }
         }
@@ -117,6 +119,7 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
 }
 
 static void panelItem( const PartDesc & item,
+                       int iconSz,
                        bool notLastInRow,
                        TechTreePanelCallback * cb )
 {
@@ -124,7 +127,8 @@ static void panelItem( const PartDesc & item,
         ImGui::SameLine();
     ImGui::BeginGroup();
     {
-        const bool clicked = ImGui::ImageButton( (ImTextureID)item.iconHandle, iconSz );
+        const ImVec2 sz( iconSz, iconSz );
+        const bool clicked = ImGui::ImageButton( (ImTextureID)item.iconHandle, sz );
         if ( clicked )
             cb->part( item.name );
         ImGui::Text( "%s", item.name.c_str() );
