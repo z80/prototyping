@@ -5,6 +5,7 @@
 #include "state_workshop.h"
 
 #include "entity_factory.h"
+#include "planet_manager_test.h"
 #include "camera_ctrl.h"
 #include "ImguiManager.h"
 
@@ -200,12 +201,10 @@ void GameState::createObjects()
     //            Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
     cube  = dynamic_cast<Entity::EntityPart *>(
                 Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
-    planet = 0; //dynamic_cast<Entity::EntityPlanet *>(
-                //Entity::EntityFactory::getSingletonPtr()->create( "planet" ) );
-    solSys = new Entity::PlanetManagerTest();
+    solSys = StateManager::getSingletonPtr()->getPlanetsManager();
 
     // Debugging object to see at least something.
-    {
+    /*{
         Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
         Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
         ogreNode->attachObject(ogreEntity);
@@ -252,7 +251,7 @@ void GameState::createObjects()
         ogreNode->setPosition( -10.0, 0.0, 0.0 );
         ogreNode->setScale( 0.1, 0.1, 0.1 );
         ogreNode->setVisible( true );
-    }
+    }*/
 }
 
 void GameState::destroyObjects()
@@ -260,18 +259,10 @@ void GameState::destroyObjects()
     StateManager::getSingletonPtr()->getCameraCtrl()->setCameraNode( 0 );
     StateManager::getSingletonPtr()->getCameraCtrl()->setTargetNode( 0 );
 
-    if ( mCameraNode )
-        mSceneMgr->destroySceneNode( mCameraNode );
     if ( planet )
         delete planet;
     if ( cube )
         delete cube;
-    if ( solSys )
-        delete solSys;
-    //if ( plane )
-    //    delete plane;
-    if ( world )
-        Entity::EntityWorld::deleteWorld();
 }
 
 void GameState::debugOverlay()

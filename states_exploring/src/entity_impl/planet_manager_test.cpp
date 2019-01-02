@@ -16,7 +16,7 @@ PlanetManagerTest::~PlanetManagerTest()
 }
 
 
-void PlanetManagerTest::create()
+void PlanetManagerTest::createImpl()
 {
     // This is a "Sun".
     {

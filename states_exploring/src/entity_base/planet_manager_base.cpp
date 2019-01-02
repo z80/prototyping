@@ -7,7 +7,6 @@ namespace Entity
 
 PlanetManagerBase::PlanetManagerBase()
 {
-    create();
 }
 
 PlanetManagerBase::~PlanetManagerBase()
@@ -17,7 +16,8 @@ PlanetManagerBase::~PlanetManagerBase()
 
 void PlanetManagerBase::create()
 {
-
+    if ( planets.empty() )
+        createImpl();
 }
 
 void PlanetManagerBase::integrateKinematics( Ogre::Real t_sec, int timeBoost )

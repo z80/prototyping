@@ -10,7 +10,7 @@
 #include "planet_manager_test.h"
 
 class GameState: public State,
-                  public Ogre::Singleton<GameState>
+                 public Ogre::Singleton<GameState>
 {
 public:
     GameState();
@@ -50,11 +50,11 @@ private:
     bool disableMouseCtrl;
     bool toWorkshopMode;
 
-    Entity::EntityWorld * world;
-    Entity::EntityPart  //* plane,
-                         * cube;
-    Entity::EntityPlanet * planet;
-    Entity::PlanetManagerTest * solSys;
+    Entity::EntityWorld       * world;
+    Entity::EntityPart      //* plane,
+                              * cube;
+    Entity::EntityPlanet      * planet;
+    Entity::PlanetManagerBase * solSys;
 
     void createObjects();
     void destroyObjects();

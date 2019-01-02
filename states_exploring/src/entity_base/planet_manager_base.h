@@ -16,7 +16,7 @@ public:
     virtual ~PlanetManagerBase();
 
     /// Need to create all the planets here.
-    virtual void create();
+    void create();
 
     /// Each planet has it's movement parameters.
     /// This method executes planet movement and
@@ -28,6 +28,7 @@ public:
     EntityPlanet * planet( const Ogre::String & name );
 
 public:
+    virtual void createImpl() = 0;
     void destroy();
 
     typedef Ogre::shared_ptr<EntityPlanet> EntityPlanetPtr;

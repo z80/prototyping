@@ -66,6 +66,10 @@ EntityPart   * PartManagerTest::PD::cube()
     p->collisionShape->calculateLocalInertia( mass, inertia );
 
     p->rigidBody = new btRigidBody( mass, p->bodyState, p->collisionShape, inertia );
+    // It is potentially very fast moving body.
+    // Because of that Continuous Collision Detection is enabled.
+    p->rigidBody->setCcdMotionThreshold( 1.0e-7 );
+    p->rigidBody->setCcdSweptSphereRadius( 0.5 );
 
     AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );
 
@@ -89,6 +93,10 @@ EntityPart * PartManagerTest::PD::sphere()
     btVector3      inertia( 1.0, 1.0, 1.0 );
 
     p->rigidBody = new btRigidBody( mass, p->bodyState, p->collisionShape, inertia );
+    // It is potentially very fast moving body.
+    // Because of that Continuous Collision Detection is enabled.
+    p->rigidBody->setCcdMotionThreshold( 1.0e-7 );
+    p->rigidBody->setCcdSweptSphereRadius( 0.5 );
     //p->rigidBody->activate( true );
 
     AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );

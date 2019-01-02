@@ -13,7 +13,8 @@ public:
     PlanetManagerTest();
     ~PlanetManagerTest();
 
-    void create();
+public:
+    void createImpl();
 };
 
 }

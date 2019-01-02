@@ -12,6 +12,10 @@
 #include "entity_world.h"
 #include "tech_tree.h"
 
+#include "part_manager_test.h"
+#include "planet_manager_test.h"
+
+
 #include "lua_tech_tree.h"
 #include "lua_collision_shapes.h"
 #include "lua_entity_part.h"
@@ -230,13 +234,15 @@ void StateManager::shutdown()
     destroyRTShaderSystem();
     finitSound();
 
+    delete mTechTree;
+    delete mPartsManager;
+    delete mPlanetsManager;
+
     scnMgr->destroyAllCameras();
     scnMgr->destroyAllEntities();
     scnMgr->destroyAllMovableObjects();
     scnMgr->destroyAllManualObjects();
     scnMgr->destroyQuery( raySceneQuery );
-
-    delete mTechTree;
 }
 
 void StateManager::setup()
@@ -278,6 +284,9 @@ void StateManager::setup()
     initSound();
 
     mWorld    = Entity::EntityWorld::createWorld();
+    mPartsManager = new Entity::PartManagerTest();
+    mPlanetsManager = new Entity::PlanetManagerTest();
+    mPlanetsManager->create();
     mTechTree = new Entity::TechTree();
 
     // After all needed objects are created init script.
