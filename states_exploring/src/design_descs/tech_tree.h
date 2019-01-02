@@ -23,7 +23,7 @@ struct ConnectionDesc
     /// If spinning is allowed this normal
     /// for the connection point  is (0, 1, 0) rotated by "q".
     /// And spinning is around this axis.
-    bool spinAllowed;
+    bool spin;
     /// Allowed to be rotated around axes perpendicular to local "y".
     bool tilt;
     /// Allowed to be connected to any surface.
@@ -51,7 +51,7 @@ struct PartDesc
 };
 
 
-// Represents a parts group.
+// Group container.
 struct CategoryDesc
 {
     Ogre::String name;
@@ -60,12 +60,7 @@ struct CategoryDesc
 
     Ogre::String         icon;
     Ogre::ResourceHandle iconHandle;
-};
 
-// Group container.
-struct Category
-{
-    CategoryDesc groupDesc;
     /// PartDesc indices in the array of all PartDescs.
     std::vector<int> items;
 };
@@ -101,12 +96,13 @@ public:
 
     bool load( Config::ConfigReader * cr );
     void generatePanelContent();
-    bool enableNode( const Ogre::String & name ) const;
+    bool enableNode( const Ogre::String & name );
 
 public:
+    bool nodeEnabled( const Ogre::String & name ) const;
     std::vector<TechNode>     nodes;
     std::vector<PartDesc>     partDescs;
-    std::vector<Category>     panelContent;
+    std::vector<CategoryDesc> panelContent;
 };
 
 

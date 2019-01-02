@@ -23,10 +23,7 @@ bool TechTree::load( Config::ConfigReader * cr )
         return false;
 
     StateManager * sm = StateManager::getSingletonPtr();
-    sm->pushFunc( "loadTechTree" );
-    const bool callOk = sm->callFunc();
-
-    sm->pushFunc( "loadPartDescs" );
+    sm->pushFunc( "initTechTree" );
     const bool callOk = sm->callFunc();
 
     return callOk;
@@ -38,7 +35,7 @@ void TechTree::generatePanelContent()
     const size_t catsQty = panelContent.size();
     for ( size_t i=0; i<catsQty; i++ )
     {
-        Category & c = panelContent[i];
+        CategoryDesc & c = panelContent[i];
         c.items.clear();
     }
 
@@ -54,7 +51,7 @@ void TechTree::generatePanelContent()
             {
                 for ( size_t k=0; k<catsQty; k++ )
                 {
-                    Category & c = panelContent[k];
+                    CategoryDesc & c = panelContent[k];
                     if ( c.name == p.category )
                     {
                         c.items.push_back( i );
@@ -67,16 +64,44 @@ void TechTree::generatePanelContent()
     }
 }
 
-bool TechTree::partAllowed( const Ogre::String & name )
+bool TechTree::enableNode( const Ogre::String & name )
 {
+    const size_t nodesQty = nodes.size();
+    for ( size_t j=0; j<nodesQty; j++ )
+    {
+        TechNode & n = nodes[j];
+        if ( n.name == name )
+        {
+            // Check that all parents are enabled as well.
+            const size_t ptsQty = n.parents.size();
+            for ( size_t j=0; j<ptsQty; j++ )
+            {
+                const bool parentEnabled = nodeEnabled( n.parents[j] );
+                if ( !parentEnabled )
+                    return false;
+            }
+            n.enabled = true;
+            return true;
+        }
+    }
 
+    return false;
 }
 
-bool TechTree::enableNode( const Ogre::String & name ) const
+bool TechTree::nodeEnabled( const Ogre::String & name ) const
 {
+    const size_t nodesQty = nodes.size();
+    for ( size_t j=0; j<nodesQty; j++ )
+    {
+        const TechNode & n = nodes[j];
+        if ( n.name == name )
+        {
+            return n.enabled;
+        }
+    }
 
+    return false;
 }
-
 
 
 }

@@ -2,7 +2,7 @@
 #include "lua_tech_tree.h"
 #include "tech_tree.h"
 #include "state_manager.h"
-
+#include "lua_utils.h"
 
 static const char LIB_NAME[]    = "core";
 static const char META_T_NAME[] = "TT";
@@ -43,7 +43,7 @@ static int lua_gc( lua_State * L )
     return 0;
 }
 
-static int lua_clear( lua_State * L )
+static int lua_clearNodes( lua_State * L )
 {
     Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
                 lua_touserdata( L, 1 ) );
@@ -65,6 +65,13 @@ static int lua_addNode( lua_State * L )
     n.iconHovered  = "icon";
     n.at = Ogre::Vector2::ZERO;
 
+    const bool hasArgument = ( lua_istable( L, -1 ) > 0 );
+    if ( !hasArgument )
+    {
+        lua_pushboolean( L, 0 );
+        return 1;
+    }
+
     lua_pushstring( L, "enabled" );
     lua_gettable( L, -2 );
     if ( lua_isboolean( L, -1 ) )
@@ -75,6 +82,32 @@ static int lua_addNode( lua_State * L )
     lua_gettable( L, -2 );
     if ( lua_isstring( L, -1 ) )
         n.name = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "parents" );
+    lua_gettable( L, -2 );
+    if ( lua_istable( L, -1 ) )
+    {
+        int ind = 1;
+        while ( true )
+        {
+            lua_pushinteger( L, ind );
+            lua_gettable( L, -2 );
+            bool needBrake;
+            if ( lua_isstring( L, -1 ) )
+            {
+                const char * name = lua_tostring( L, -1 );
+                n.parents.push_back( name );
+                needBrake = false;
+            }
+            else
+                needBrake = true;
+            lua_pop( L, 1 );
+            if ( needBrake )
+                break;
+            ind += 1;
+        }
+    }
     lua_pop( L, 1 );
 
     lua_pushstring( L, "at" );
@@ -115,15 +148,194 @@ static int lua_addNode( lua_State * L )
 
     tt->nodes.push_back( n );
 
+    // return "true".
+    lua_pushboolean( L, 1 );
+    return 1;
+}
+
+static int lua_clearParts( lua_State * L )
+{
+    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+                lua_touserdata( L, 1 ) );
+    tt->partDescs.clear();
+    return 0;
+}
+
+static bool readConnection( lua_State * L, Entity::ConnectionDesc & c );
+
+static int lua_addPart( lua_State * L )
+{
+    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+                lua_touserdata( L, 1 ) );
+
+    Entity::PartDesc p;
+    p.name        = "";
+    p.description = "";
+    p.tooltip     = -1;
+    p.neededNode  = "";
+    p.category    = "";
+    p.icon        = "";
+
+    p.iconHandle  = -1;
+
+    const bool hasArgument = ( lua_istable( L, -1 ) > 0 );
+    if ( !hasArgument )
+    {
+        lua_pushboolean( L, 0 );
+        return 1;
+    }
+
+    lua_pushstring( L, "name" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        p.name = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "description" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        p.description = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "tooltip" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        p.tooltip = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "neededNode" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        p.neededNode = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "category" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        p.category = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "icon" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        p.icon = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+
+    lua_pushstring( L, "connections" );
+    lua_gettable( L, -2 );
+    if ( lua_istable( L, -1 ) )
+    {
+        int ind = 1;
+        while ( true )
+        {
+            lua_pushinteger( L, ind );
+            lua_gettable( L, -1 );
+            bool doBreak;
+            if ( lua_istable( L, -1 ) )
+            {
+                // We are in "connection" table now.
+                // Need to read it.
+                Entity::ConnectionDesc c;
+                const bool connOk = readConnection( L, c );
+                if ( connOk )
+                    p.connections.push_back( c );
+                doBreak = false;
+            }
+            else
+                doBreak = true;
+            lua_pop( L, 1 );
+            ind += 1;
+        }
+    }
+    lua_pop( L, 1 );
+
+    tt->partDescs.push_back( p );
+
+    lua_pushboolean( L, 1 );
+    return 1;
+}
+
+static int lua_enableNode( lua_State * L )
+{
+    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+                lua_touserdata( L, 1 ) );
+
+    const char * name = lua_tostring( L, 2 );
+    const bool res = tt->enableNode( "name" );
+
+    lua_pushboolean( L, res ? 1 : 0 );
+    return 1;
+}
+
+static int lua_clearCategories( lua_State * L )
+{
+    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+                lua_touserdata( L, 1 ) );
+
+    tt->panelContent.clear();
+    return 0;
+}
+
+static int lua_addCategory( lua_State * L )
+{
+    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+                lua_touserdata( L, 1 ) );
+
+    Entity::CategoryDesc c;
+    c.name        = "";
+    c.description = "";
+    c.tooltip     = "";
+    c.icon        = "";
+
+    const bool hasArgument = ( lua_istable( L, -1 ) > 0 );
+    if ( !hasArgument )
+    {
+        lua_pushboolean( L, 0 );
+        return 1;
+    }
+
+    lua_pushstring( L, "name" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        c.name = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "description" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        c.description = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "tooltip" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        c.tooltip = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "icon" );
+    lua_gettable( L, -2 );
+    if ( lua_isstring( L, -1 ) )
+        c.icon = lua_tostring( L, -1 );
+    lua_pop( L, 1 );
+
+    tt->panelContent.push_back( c );
+
+    lua_pushboolean( L, 1 );
+    return 1;
 }
 
 
 
-
 static const struct luaL_reg META_T_FUNCS[] = {
-    { "clear",        lua_clear },
-    { "addNode",      lua_addNode },
-    { NULL,           NULL },
+    { "clearNodes", lua_clearNodes },
+    { "addNode",    lua_addNode },
+    { "clearParts", lua_clearParts },
+    { "addPart",    lua_addPart },
+    { "enableNode", lua_enableNode },
+    { "clearCategories", lua_clearCategories },
+    { "addCategory", lua_addCategory },
+    { NULL,         NULL },
 };
 
 static void createMeta( lua_State * L )
@@ -166,4 +378,39 @@ int luaopen_techTree( lua_State * L )
 
 
 
+
+static bool readConnection( lua_State * L, Entity::ConnectionDesc & c )
+{
+    lua_pushstring( L, "r" );
+    lua_gettable( L, -2 );
+    if ( lua_istable( L, -1 ) )
+        luaReadVector( L, -1, c.r );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "q" );
+    lua_gettable( L, -2 );
+    if ( lua_istable( L, -1 ) )
+        luaReadQuat( L, -1, c.q );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "anySurface" );
+    lua_gettable( L, -2 );
+    if ( lua_isboolean( L, -1 ) )
+        c.anySurface = ( lua_toboolean( L, -1) != 0 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "spin" );
+    lua_gettable( L, -2 );
+    if ( lua_isboolean( L, -1 ) )
+        c.spin = ( lua_toboolean( L, -1) != 0 );
+    lua_pop( L, 1 );
+
+    lua_pushstring( L, "tilt" );
+    lua_gettable( L, -2 );
+    if ( lua_isboolean( L, -1 ) )
+        c.tilt = ( lua_toboolean( L, -1) != 0 );
+    lua_pop( L, 1 );
+
+    return true;
+}
 
