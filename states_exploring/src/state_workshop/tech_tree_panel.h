@@ -32,10 +32,13 @@ public:
 
     void drawBackToGamePanel();
     void drawTechPanel( TechTreePanelCallback * cb );
+
+    const bool isHovered() const;
 public:
     int panelSz;
     int iconSz;
     int itemsPerLine;
+    bool hovered;
 };
 
 }

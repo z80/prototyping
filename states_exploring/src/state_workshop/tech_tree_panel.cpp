@@ -13,6 +13,8 @@ TechTreePanel::TechTreePanel()
     itemsPerLine = 3;
     iconSz       = 128;
 
+    hovered = false;
+
     initPanelGeometry();
 }
 
@@ -113,9 +115,14 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
             }
         }
 
-        //disableMouseCtrl = ImGui::IsAnyWindowHovered();
+        hovered = ImGui::IsWindowHovered( ImGuiHoveredFlags_AnyWindow );
     }
     ImGui::End();
+}
+
+const bool TechTreePanel::isHovered() const
+{
+
 }
 
 static void panelItem( const PartDesc & item,
