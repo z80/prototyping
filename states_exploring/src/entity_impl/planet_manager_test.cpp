@@ -1,22 +1,22 @@
 
-#include "solar_system_test.h"
+#include "planet_manager_test.h"
 #include "entity_test_planet.h"
 
 
 namespace Entity
 {
 
-SolarSystemTest::SolarSystemTest()
+PlanetManagerTest::PlanetManagerTest()
     : PlanetManagerBase()
 {
 }
 
-SolarSystemTest::~SolarSystemTest()
+PlanetManagerTest::~PlanetManagerTest()
 {
 }
 
 
-void SolarSystemTest::create()
+void PlanetManagerTest::create()
 {
     // This is a "Sun".
     {

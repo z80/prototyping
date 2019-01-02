@@ -202,7 +202,7 @@ void GameState::createObjects()
                 Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
     planet = 0; //dynamic_cast<Entity::EntityPlanet *>(
                 //Entity::EntityFactory::getSingletonPtr()->create( "planet" ) );
-    solSys = new Entity::SolarSystemTest();
+    solSys = new Entity::PlanetManagerTest();
 
     // Debugging object to see at least something.
     {

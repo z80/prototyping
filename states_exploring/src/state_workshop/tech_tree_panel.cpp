@@ -122,7 +122,7 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
 
 const bool TechTreePanel::isHovered() const
 {
-
+    return hovered;
 }
 
 static void panelItem( const PartDesc & item,

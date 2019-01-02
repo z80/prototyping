@@ -7,7 +7,7 @@
 #include "entity_world.h"
 #include "entity_part.h"
 #include "entity_planet.h"
-#include "solar_system_test.h"
+#include "planet_manager_test.h"
 
 class GameState: public State,
                   public Ogre::Singleton<GameState>
@@ -54,7 +54,7 @@ private:
     Entity::EntityPart  //* plane,
                          * cube;
     Entity::EntityPlanet * planet;
-    Entity::SolarSystemTest * solSys;
+    Entity::PlanetManagerTest * solSys;
 
     void createObjects();
     void destroyObjects();

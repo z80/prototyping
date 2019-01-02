@@ -7,11 +7,11 @@
 namespace Entity
 {
 
-class SolarSystemTest: public PlanetManagerBase
+class PlanetManagerTest: public PlanetManagerBase
 {
 public:
-    SolarSystemTest();
-    ~SolarSystemTest();
+    PlanetManagerTest();
+    ~PlanetManagerTest();
 
     void create();
 };
