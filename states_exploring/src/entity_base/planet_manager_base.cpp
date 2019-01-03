@@ -22,10 +22,10 @@ void PlanetManagerBase::create()
 
 void PlanetManagerBase::integrateKinematics( Ogre::Real t_sec, int timeBoost )
 {
-    for ( std::vector<EntityPlanetPtr>::iterator it=planets.begin();
-          it!=planets.end(); it++ )
+    const size_t qty = planets.size();
+    for ( size_t i=0; i<qty; i++ )
     {
-        EntityPlanetPtr & p = *it;
+        EntityPlanet * p = planets[i];
         p->integrateKinematics( t_sec, timeBoost );
     }
 }
@@ -41,7 +41,7 @@ EntityPlanet * PlanetManagerBase::planet( int index )
     const int qty = static_cast<int>( planets.size() );
     if ( index >= qty )
         return 0;
-    EntityPlanet * p = planets[index].get();
+    EntityPlanet * p = planets[index];
     return p;
 }
 
@@ -50,7 +50,7 @@ EntityPlanet * PlanetManagerBase::planet( const Ogre::String & name )
     const size_t qty = planets.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPlanet * p = planets[i].get();
+        EntityPlanet * p = planets[i];
         const Ogre::String & n = p->name();
         if ( name == n )
             return p;
@@ -61,6 +61,12 @@ EntityPlanet * PlanetManagerBase::planet( const Ogre::String & name )
 
 void PlanetManagerBase::destroy()
 {
+    const size_t qty = planets.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        EntityPlanet * p = planets[i];
+        delete p;
+    }
     planets.clear();
 }
 

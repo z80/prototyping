@@ -32,7 +32,7 @@ public:
     void destroy();
 
     typedef Ogre::shared_ptr<EntityPlanet> EntityPlanetPtr;
-    std::vector<EntityPlanetPtr> planets;
+    std::vector<EntityPlanet *> planets;
 };
 
 

@@ -32,28 +32,32 @@ EntityPlanet::~EntityPlanet()
 {
     if ( rigidBody )
     {
-        EntityWorld * w = EntityWorld::getSingletonPtr();
-        if ( w && w->phyWorld )
-            w->phyWorld->removeRigidBody( rigidBody );
-    }
-
-    if ( rigidBody )
-    {
         btMotionState * motionState = rigidBody->getMotionState();
         if ( motionState )
             delete motionState;
 
+        EntityWorld * w = EntityWorld::getSingletonPtr();
+        if ( w && w->phyWorld )
+            w->phyWorld->removeRigidBody( rigidBody );
         delete rigidBody;
+        rigidBody = 0;
     }
 
     if ( collisionShape )
+    {
         delete collisionShape;
+        collisionShape = 0;
+    }
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
     if ( scnMgr )
     {
         if ( visualEntity );
-            scnMgr->destroyEntity( visualEntity );
+        {
+            if ( scnMgr->hasEntity( visualEntity->getName() ) )
+                scnMgr->destroyEntity( visualEntity );
+            visualEntity = 0;
+        }
 
         destroySceneNode();
     }

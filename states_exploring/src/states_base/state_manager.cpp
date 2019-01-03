@@ -228,11 +228,6 @@ void StateManager::shutdown()
         states.pop_back();
     }
 
-    Entity::EntityWorld::deleteWorld();
-    mWorld = 0;
-
-    destroyRTShaderSystem();
-    finitSound();
 
     delete mTechTree;
     delete mPartsManager;
@@ -243,6 +238,12 @@ void StateManager::shutdown()
     scnMgr->destroyAllMovableObjects();
     scnMgr->destroyAllManualObjects();
     scnMgr->destroyQuery( raySceneQuery );
+
+    Entity::EntityWorld::deleteWorld();
+    mWorld = 0;
+
+    destroyRTShaderSystem();
+    finitSound();
 }
 
 void StateManager::setup()

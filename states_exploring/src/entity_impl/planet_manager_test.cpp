@@ -27,8 +27,10 @@ void PlanetManagerTest::createImpl()
         p->orbitRadius = 1.0;
         p->parent = 0;
         p->create();
-        planets.push_back( EntityPlanetPtr( p ) );
+        p->planetName = "sun";
+        planets.push_back( p );
     }
+    destroy();
     // This is an "Earth".
     {
         EntityTestPlanet * p = new EntityTestPlanet();
@@ -36,9 +38,10 @@ void PlanetManagerTest::createImpl()
         p->rotPeriod = 5.0;
         p->orbitPeriod = 60.0;
         p->orbitRadius = 300.0;
-        p->parent = (planets.rbegin())->get();
+        p->parent = *(planets.rbegin());
         p->create();
-        planets.push_back( EntityPlanetPtr( p ) );
+        p->planetName = "earth";
+        planets.push_back( p );
     }
     // This is a "Moon".
     {
@@ -47,9 +50,10 @@ void PlanetManagerTest::createImpl()
         p->rotPeriod = 3.0;
         p->orbitPeriod = 10.0;
         p->orbitRadius = 50.0;
-        p->parent = (planets.rbegin())->get();
+        p->parent = *(planets.rbegin());
         p->create();
-        planets.push_back( EntityPlanetPtr( p ) );
+        p->planetName = "moon";
+        planets.push_back( p );
     }
 }
 
