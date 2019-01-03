@@ -1,32 +1,31 @@
 
-#include "launch_site_manager_base.h"
-#include "launch_site.h"
+#include "site_manager_base.h"
+#include "site.h"
 
 namespace Entity
 {
 
-LaunchSiteManagerBase::LaunchSiteManagerBase()
+SiteManagerBase::SiteManagerBase()
 {
-    create();
 }
 
-LaunchSiteManagerBase::~LaunchSiteManagerBase()
+SiteManagerBase::~SiteManagerBase()
 {
     destroy();
 }
 
-void LaunchSiteManagerBase::create()
+void SiteManagerBase::create()
 {
-
+    createImpl();
 }
 
-int LaunchSiteManagerBase::sitesQty() const
+int SiteManagerBase::sitesQty() const
 {
     const int qty = static_cast<int>( sites.size() );
     return qty;
 }
 
-int LaunchSiteManagerBase::sitesQty( const Ogre::String & function ) const
+int SiteManagerBase::sitesQty( const Ogre::String & function ) const
 {
     int n = 0;
     const size_t qty = sites.size();
@@ -40,14 +39,14 @@ int LaunchSiteManagerBase::sitesQty( const Ogre::String & function ) const
     return n;
 }
 
-Site * LaunchSiteManagerBase::site( int index )
+Site * SiteManagerBase::site( int index )
 {
     Site * s = sites[index];
     return s;
 }
 
 
-Site * LaunchSiteManagerBase::site( const Ogre::String & function, const Ogre::String & name )
+Site * SiteManagerBase::site( const Ogre::String & function, const Ogre::String & name )
 {
     const size_t qty = sites.size();
     for ( size_t i=0; i<qty; i++ )
@@ -61,7 +60,7 @@ Site * LaunchSiteManagerBase::site( const Ogre::String & function, const Ogre::S
 
 }
 
-void LaunchSiteManagerBase::destroy()
+void SiteManagerBase::destroy()
 {
     const size_t qty = sites.size();
     for ( size_t i=0; i<qty; i++ )
@@ -72,7 +71,7 @@ void LaunchSiteManagerBase::destroy()
     sites.clear();
 }
 
-bool LaunchSiteManagerBase::setCurrent( const Ogre::String & function, const Ogre::String & name )
+bool SiteManagerBase::setCurrent( const Ogre::String & function, const Ogre::String & name )
 {
     // First searc if there already is selected site
     // with this function and overwrite if found.
@@ -115,9 +114,21 @@ bool LaunchSiteManagerBase::setCurrent( const Ogre::String & function, const Ogr
 
 }
 
-Site * LaunchSiteManagerBase::current( const Ogre::String & function )
+Site * SiteManagerBase::current( const Ogre::String & function )
 {
+    const size_t qty = mSelected.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Current & c = mSelected[i];
+        if ( c.function == function )
+        {
+            const int ind = c.index;
+            Site * s = sites[ind];
+            return s;
+        }
+    }
 
+    return 0;
 }
 
 

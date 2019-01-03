@@ -5,6 +5,10 @@
 #include "Ogre.h"
 #include "entity.h"
 
+class btRigidBody;
+class btCollisionShape;
+
+
 namespace Entity
 {
 
@@ -26,8 +30,11 @@ public:
     /// Function "assembly", "launch_pod".
     Ogre::String      function;
 
-    /// There should be at least one entity, right?
-    Ogre::Entity * entity;
+    /// There should be at least one visual entity, right?
+    Ogre::Entity * visualEntity;
+    btRigidBody      * rigidBody;
+    btCollisionShape * collisionShape;
+
 
     /// Planet it is located on.
     EntityPlanet    * planet;

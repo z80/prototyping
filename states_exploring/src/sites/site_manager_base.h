@@ -15,7 +15,7 @@ public:
     SiteManagerBase();
     virtual ~SiteManagerBase();
 
-    virtual void create();
+    void create();
 
     int sitesQty() const;
     int sitesQty( const Ogre::String & function ) const;
@@ -27,6 +27,8 @@ public:
 
 
 public:
+    virtual void createImpl() = 0;
+
     void destroy();
 
     std::vector<Site *> sites;
