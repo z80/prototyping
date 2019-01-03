@@ -44,7 +44,7 @@ void CameraCtrl::setCameraNode( Ogre::SceneNode * nodeCam )
 {
     this->nodeCam = nodeCam;
     if ( nodeCam )
-        nodeCam->setInheritOrientation( false );
+        nodeCam->setInheritOrientation( true );
 }
 
 void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
