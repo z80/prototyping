@@ -40,9 +40,9 @@ void CameraCtrl::setEnabled( bool en )
     mEnabled = en;
 }
 
-void CameraCtrl::setCameraNode( Ogre::SceneNode * nodeCam )
+void CameraCtrl::setCamera( Ogre::Camera * camera )
 {
-    this->nodeCam = nodeCam;
+    this->nodeCam = camera->getParentSceneNode();
     if ( nodeCam )
         nodeCam->setInheritOrientation( true );
 }
@@ -50,6 +50,18 @@ void CameraCtrl::setCameraNode( Ogre::SceneNode * nodeCam )
 void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
 {
     this->nodeTarget = nodeTarget;
+    if ( nodeTarget && nodeCam )
+    {
+        Ogre::SceneNode * parent = nodeTarget->getParentSceneNode();
+        //const Ogre::Vector3    absR = nodeCam->_getDerivedPosition();
+        //const Ogre::Quaternion absQ = nodeCam->_getDerivedOrientation();
+
+        Ogre::SceneNode * camParent = nodeCam->getParentSceneNode();
+        if ( camParent )
+            camParent->removeChild( nodeCam );
+
+        parent->addChild( nodeCam );
+    }
 }
 
 void CameraCtrl::setMode( Mode m )

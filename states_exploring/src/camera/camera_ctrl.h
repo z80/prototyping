@@ -14,7 +14,7 @@ public:
     CameraCtrl();
     ~CameraCtrl();
     void setEnabled( bool en );
-    void setCameraNode( Ogre::SceneNode * nodeCam );
+    void setCamera( Ogre::Camera * camera );
     void setTargetNode( Ogre::SceneNode * nodeTarget );
 
     void setMode( Mode m );

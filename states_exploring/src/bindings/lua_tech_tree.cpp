@@ -114,12 +114,12 @@ static int lua_addNode( lua_State * L )
     lua_gettable( L, -2 );
     if ( lua_istable( L, -1 ) )
     {
-        lua_pushstring( L, "x" );
+        lua_pushinteger( L, 1 );
         lua_gettable( L, -2 );
         if ( lua_isnumber( L, -1 ) )
             n.at.x = lua_tonumber( L, -1 );
         lua_pop( L, -1 );
-        lua_pushstring( L, "y" );
+        lua_pushinteger( L, 2 );
         lua_gettable( L, -2 );
         if ( lua_isnumber( L, -1 ) )
             n.at.y = lua_tonumber( L, -1 );

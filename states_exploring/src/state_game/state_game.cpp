@@ -92,7 +92,6 @@ void GameState::resume()
     //mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     mSceneMgr->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
 
-    StateManager::getSingletonPtr()->getCameraCtrl()->setCameraNode( mCameraNode );
     StateManager::getSingletonPtr()->getCameraCtrl()->setTargetNode( cube->sceneNode );
 
     paused = false;
@@ -258,7 +257,6 @@ void GameState::createObjects()
 
 void GameState::destroyObjects()
 {
-    StateManager::getSingletonPtr()->getCameraCtrl()->setCameraNode( 0 );
     StateManager::getSingletonPtr()->getCameraCtrl()->setTargetNode( 0 );
 
     if ( planet )

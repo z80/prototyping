@@ -281,12 +281,13 @@ void StateManager::setup()
     mCamera = scnMgr->createCamera( "Camera" );
     Ogre::SceneNode * cameraNode = scnMgr->getRootSceneNode()->createChildSceneNode( "CameraNode" );
     cameraNode->attachObject( mCamera );
+    cameraCtrl.setCamera( mCamera );
 
     raySceneQuery = scnMgr->createRayQuery( Ogre::Ray() );
 
     initSound();
 
-    mWorld    = Entity::EntityWorld::createWorld();
+    mWorld          = Entity::EntityWorld::createWorld();
     mPartsManager   = new Entity::PartManagerTest();
     mSiteManager    = new Entity::SiteManagerTest();
     mPlanetsManager = new Entity::PlanetManagerTest();
