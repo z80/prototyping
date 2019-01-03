@@ -30,7 +30,6 @@ void PlanetManagerTest::createImpl()
         p->planetName = "sun";
         planets.push_back( p );
     }
-    destroy();
     // This is an "Earth".
     {
         EntityTestPlanet * p = new EntityTestPlanet();

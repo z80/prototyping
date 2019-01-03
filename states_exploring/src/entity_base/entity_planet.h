@@ -63,7 +63,6 @@ public:
     Ogre::String       planetName;
 
     Ogre::Entity     * visualEntity;
-    Ogre::SceneNode  * sceneNode;
     btRigidBody      * rigidBody;
     btCollisionShape * collisionShape;
     BtOgre::RigidBodyState * bodyState;

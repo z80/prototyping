@@ -31,7 +31,7 @@ void Entity::setSceneParent( Entity * parent, bool inheritRotation )
     }
 
     sceneNode->getParentSceneNode()->removeChild( sceneNode );
-    if ( parent && parent->sceneNode )
+    if ( (parent != 0) && (parent->sceneNode != 0) )
         parent->sceneNode->addChild( sceneNode );
     else
     {
@@ -47,6 +47,8 @@ void Entity::destroySceneNode()
     if ( !sceneNode )
         return;
     Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    if ( !smgr->hasSceneNode( sceneNode->getName() ) )
+        return;
     std::vector<Ogre::Node *> nodes;
     Ogre::Node::ChildNodeIterator it = sceneNode->getChildIterator();
     while ( it.hasMoreElements() )

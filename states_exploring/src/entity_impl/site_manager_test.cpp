@@ -36,8 +36,6 @@ void SiteManagerTest::createImpl()
 
     s->r = r * (30.0 + 1.0);
     s->q = q;
-    s->sceneNode->setPosition( r );
-    s->sceneNode->setOrientation( q );
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
@@ -53,6 +51,8 @@ void SiteManagerTest::createImpl()
     // Reparent to the appropriate planet.
     s->setSceneParent( s->planet );
 
+    s->sceneNode->setPosition( r );
+    s->sceneNode->setOrientation( q );
 
     BtOgre::StaticMeshToShapeConverter converter( s->visualEntity );
     s->collisionShape = converter.createCylinder();
