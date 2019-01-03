@@ -137,7 +137,7 @@ Entity::PlanetManagerBase * StateManager::getPlanetsManager()
     return mPlanetsManager;
 }
 
-Entity::LaunchSiteManagerBase * StateManager::getSiteManager()
+Entity::SiteManagerBase * StateManager::getSiteManager()
 {
     return mSiteManager;
 }

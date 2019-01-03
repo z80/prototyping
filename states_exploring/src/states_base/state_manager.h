@@ -24,7 +24,7 @@ namespace Entity
     class EntityWorld;
     class PartManagerBase;
     class PlanetManagerBase;
-    class LaunchSiteManagerBase;
+    class SiteManagerBase;
     class TechTree;
 }
 
@@ -50,13 +50,13 @@ public:
     bool pushBool( bool val );
     bool callFunc();
 
-    Ogre::SceneManager  * getSceneManager();
-    Ogre::Camera        * getCamera();
-    Entity::EntityWorld * getWorld();
+    Ogre::SceneManager        * getSceneManager();
+    Ogre::Camera              * getCamera();
+    Entity::EntityWorld       * getWorld();
     Entity::PartManagerBase   * getPartsManager();
     Entity::PlanetManagerBase * getPlanetsManager();
-    Entity::LaunchSiteManagerBase * getSiteManager();
-    Entity::TechTree              * getTechTree();
+    Entity::SiteManagerBase   * getSiteManager();
+    Entity::TechTree          * getTechTree();
 
     void setMouseVisible( bool en );
 
@@ -94,7 +94,7 @@ private:
     Entity::EntityWorld           * mWorld;
     Entity::PartManagerBase       * mPartsManager;
     Entity::PlanetManagerBase     * mPlanetsManager;
-    Entity::LaunchSiteManagerBase * mSiteManager;
+    Entity::SiteManagerBase * mSiteManager;
     Entity::TechTree              * mTechTree;
 
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;

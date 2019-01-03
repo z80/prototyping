@@ -1,6 +1,6 @@
 
-#ifndef __LAUNCH_SITE_MANAGER_BASE_H_
-#define __LAUNCH_SITE_MANAGER_BASE_H_
+#ifndef __SITE_MANAGER_BASE_H_
+#define __SITE_MANAGER_BASE_H_
 
 #include "Ogre.h"
 
@@ -9,11 +9,11 @@ namespace Entity
 
 class Site;
 
-class LaunchSiteManagerBase
+class SiteManagerBase
 {
 public:
-    LaunchSiteManagerBase();
-    virtual ~LaunchSiteManagerBase();
+    SiteManagerBase();
+    virtual ~SiteManagerBase();
 
     virtual void create();
 

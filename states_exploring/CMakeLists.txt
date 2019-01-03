@@ -61,7 +61,7 @@ include_directories( ./src
                      ./src/state_intro
                      ./src/state_workshop
                      ./src/state_game
-                     ./src/launch_site
+                     ./src/sites
                      ./src/air_dynamics 
                      ./src/camera 
                      ./src/player

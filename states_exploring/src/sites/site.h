@@ -1,8 +1,9 @@
 
-#ifndef __LAUNCH_SITE_H_
-#define __LAUNCH_SITE_H_
+#ifndef __SITE_H_
+#define __SITE_H_
 
 #include "Ogre.h"
+#include "entity.h"
 
 namespace Entity
 {
@@ -14,7 +15,7 @@ class EntityPlanet;
  * Vehicle assembly building, runway, launch pad, etc.
  * So far it is incomplete. But will add content later on.
  */
-class Site
+class Site: public Entity
 {
 public:
     Site();
@@ -24,10 +25,12 @@ public:
     Ogre::String      name;
     /// Function "assembly", "launch_pod".
     Ogre::String      function;
-    Ogre::SceneNode * sceneNode;
-    Ogre::Entity    * entity;
-    EntityPlanet    * planet;
 
+    /// There should be at least one entity, right?
+    Ogre::Entity * entity;
+
+    /// Planet it is located on.
+    EntityPlanet    * planet;
     /// Position on the planet.
     Ogre::Vector3    r;
     /// Orientation on the planet.
