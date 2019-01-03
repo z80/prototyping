@@ -13,6 +13,7 @@
 #include "tech_tree.h"
 
 #include "part_manager_test.h"
+#include "site_manager_test.h"
 #include "planet_manager_test.h"
 
 
@@ -231,6 +232,7 @@ void StateManager::shutdown()
 
     delete mTechTree;
     delete mPartsManager;
+    delete mSiteManager;
     delete mPlanetsManager;
 
     scnMgr->destroyAllCameras();
@@ -285,9 +287,11 @@ void StateManager::setup()
     initSound();
 
     mWorld    = Entity::EntityWorld::createWorld();
-    mPartsManager = new Entity::PartManagerTest();
+    mPartsManager   = new Entity::PartManagerTest();
+    mSiteManager    = new Entity::SiteManagerTest();
     mPlanetsManager = new Entity::PlanetManagerTest();
     mPlanetsManager->create();
+    mSiteManager->create();
     mTechTree = new Entity::TechTree();
 
     // After all needed objects are created init script.

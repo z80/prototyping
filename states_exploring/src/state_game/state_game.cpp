@@ -5,7 +5,10 @@
 #include "state_workshop.h"
 
 #include "entity_factory.h"
-#include "planet_manager_test.h"
+#include "site.h"
+#include "part_manager_base.h"
+#include "site_manager_base.h"
+#include "planet_manager_base.h"
 #include "camera_ctrl.h"
 #include "ImguiManager.h"
 
@@ -195,13 +198,12 @@ bool GameState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 
 void GameState::createObjects()
 {
-    world = dynamic_cast<Entity::EntityWorld *>(
-                Entity::EntityFactory::getSingletonPtr()->create( "world" ) );
-    //plane = dynamic_cast<Entity::EntityPart *>(
-    //            Entity::EntityFactory::getSingletonPtr()->create( "plane" ) );
-    cube  = dynamic_cast<Entity::EntityPart *>(
-                Entity::EntityFactory::getSingletonPtr()->create( "cube" ) );
+    world = StateManager::getSingletonPtr()->getWorld();
+    cube  = StateManager::getSingletonPtr()->getPartsManager()->create( "cube" );
     solSys = StateManager::getSingletonPtr()->getPlanetsManager();
+
+    Entity::Site * s = StateManager::getSingletonPtr()->getSiteManager()->current( "assembly" );
+    cube->setSceneParent( s );
 
     // Debugging object to see at least something.
     /*{
