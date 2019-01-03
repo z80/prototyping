@@ -36,8 +36,8 @@ set(GENERIC_LIB_SOVERSION "7")
 # To build the tests, use cmake . -DBUILD_TESTS:BOOL=ON
 # To disable the building of the tests, use cmake . -DBUILD_TESTS:BOOL=OFF
 
-option(BUILD_SHARED_LIBS "build as shared library" ON)
-option(BUILD_TESTS "build xmltest (deprecated: Use BUILD_TESTING)" ON)
+option(BUILD_SHARED_LIBS "build as shared library" OFF)
+option(BUILD_TESTS "build xmltest (deprecated: Use BUILD_TESTING)" OFF)
 
 # To allow using tinyxml in another shared library
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
