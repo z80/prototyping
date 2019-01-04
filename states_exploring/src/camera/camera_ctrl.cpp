@@ -304,7 +304,7 @@ void CameraCtrl::orbitMovement( const Ogre::FrameEvent & evt )
     const Ogre::Real T = 0.1;
     const Ogre::Real dt = (evt.timeSinceLastFrame < T) ? evt.timeSinceLastFrame : T;
     const Ogre::Real k = dt * orbitKi;
-    const Ogre::Vector3 sp = nodeTarget->_getDerivedPosition();
+    const Ogre::Vector3 sp = nodeTarget->getPosition();
     Ogre::Vector3 & at = orbitAt;
     const Ogre::Vector3 dr = (sp-at)*k;
     at += dr;
