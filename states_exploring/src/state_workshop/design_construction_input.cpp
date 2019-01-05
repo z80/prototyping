@@ -76,6 +76,7 @@ bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
     }
     else if ( moveMode == TFree )
     {
+        int index;
         const bool partSelected = trySelect( index );
         if ( partSelected )
         {

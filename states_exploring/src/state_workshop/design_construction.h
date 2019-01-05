@@ -49,9 +49,11 @@ public:
     /// Mouse ray intersection point with editing plane.
     void mouseInPlane( Ogre::Vector2 & xy );
     /// Absolute position of mouse ray intersection with editing plane.
-    void mouseAbs( Ogre::Vector3 & xyz );
+    void mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & origin = Ogre::Vector3::ZERO );
     /// Check mouse ray for entity part intersection.
     bool trySelect( int & index );
+    /// Drag part.
+    bool drag();
 
     Site          * workshop;
     TechTreePanel * techTreePanel;

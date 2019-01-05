@@ -104,7 +104,7 @@ void DesignConstruction::mouseInPlane( Ogre::Vector2 & xy )
 
 }
 
-void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz )
+void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & origin )
 {
     StateManager * sm = StateManager::getSingletonPtr();
     Ogre::Ray ray;
@@ -135,13 +135,13 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz )
 
     // Now need to intersect a ray with a camera plane.
     // Ray:   r = a*t+r0;
-    // Plane: (r,n) = 0;
-    // Substitute: (a,n)*t = -(r0,n);
+    // Plane: (r-origin,n) = 0;
+    // Substitute: (a,n)*t = (origin-r0,n);
     // t = -(r0,n)/(a,n);
     const Ogre::Real t_den = a.dotProduct(n);
     if ( std::abs( t_den < 0.001 ) )
         xyz = Ogre::Vector3( 0.0, 0.0, 0.0 );
-    const Ogre::Real t = a.dotProduct(n) / t_den;
+    const Ogre::Real t = (origin-r0).dotProduct(n) / t_den;
     xyz = a*t+r0;
 }
 
@@ -175,6 +175,24 @@ bool DesignConstruction::trySelect( int & index )
     }
 
     return false;
+}
+
+bool DesignConstruction::drag()
+{
+    if ( techTreePanel->isHovered() )
+        return false;
+    if ( selectedPartIndex < 0 )
+        return false;
+
+    EntityPart * p = parts[selectedPartIndex];
+    const Ogre::Vector3 origin = p->relR();
+
+    Ogre::Vector3 dest;
+    mouseAbs( dest, origin );
+
+    p->setR( dest );
+
+    return true;
 }
 
 
