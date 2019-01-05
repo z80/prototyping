@@ -28,7 +28,8 @@ bool DesignConstruction::keyPressed(const OgreBites::KeyboardEvent& evt)
     {
         if ( evt.keysym.sym == 27 )
         {
-            moveMode = TFree;
+            moveMode          = TFree;
+            selectedPartIndex = -1;
             return true;
         }
     }
@@ -57,6 +58,17 @@ bool DesignConstruction::touchReleased(const OgreBites::TouchFingerEvent& evt)
 
 bool DesignConstruction::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
+    if ( techTreePanel->isHovered() )
+        return false;
+    if ( moveMode == TDrag )
+    {
+        drag();
+        return true;
+    }
+    else if ( moveMode == TRotate )
+    {
+        return true;
+    }
     return false;
 }
 
