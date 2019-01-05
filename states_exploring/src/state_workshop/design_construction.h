@@ -50,6 +50,8 @@ public:
     void mouseInPlane( Ogre::Vector2 & xy );
     /// Absolute position of mouse ray intersection with editing plane.
     void mouseAbs( Ogre::Vector3 & xyz );
+    /// Check mouse ray for entity part intersection.
+    bool trySelect( int & index );
 
     Site          * workshop;
     TechTreePanel * techTreePanel;

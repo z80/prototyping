@@ -63,6 +63,12 @@ void DesignConstruction::part( const Ogre::String & name )
     p->setQ( Ogre::Quaternion::IDENTITY );
     // Position is a point on a plane.
     // And plane is defined by current camera axis vector.
+    Ogre::Vector3 xyz;
+    mouseAbs( xyz );
+    p->setR( xyz );
+
+    // By default drag mode.
+    moveMode = TDrag;
 }
 
 void DesignConstruction::cameraPlane( Ogre::Vector3 & x, Ogre::Vector3 & y, Ogre::Vector3 & n )
@@ -137,6 +143,38 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz )
         xyz = Ogre::Vector3( 0.0, 0.0, 0.0 );
     const Ogre::Real t = a.dotProduct(n) / t_den;
     xyz = a*t+r0;
+}
+
+bool DesignConstruction::trySelect( int & index )
+{
+    // Check if mouse is not hovering anything.
+    const bool mouseHovering = techTreePanel->isHovered();
+    if ( mouseHovering )
+        return false;
+    StateManager * sm = StateManager::getSingletonPtr();
+
+    Entity * e;
+    const bool entityOnTheWay = sm->mouseQuery( e );
+    if ( !entityOnTheWay )
+        return false;
+    if ( e->type() != Entity::TPart )
+        return false;
+
+    EntityPart * p_sel = dynamic_cast<EntityPart *>( e );
+
+    const size_t qty = parts.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        EntityPart * p = parts[i];
+        if ( p == p_sel )
+        {
+            index = static_cast<int>( i );
+            selectedPartIndex = index;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
