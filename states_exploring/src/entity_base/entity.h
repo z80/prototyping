@@ -14,18 +14,21 @@ namespace Entity
 class Entity
 {
 public:
+    enum Type { TUnspecified=0, TPart, TPlanet, TSite };
     Entity();
     virtual ~Entity();
 
     virtual void action( Ogre::int32 actionGroup, const Ogre::String & name, Ogre::Real value );
-    //virtual Type type() = 0;
+    Type type();
 
     //static template<typename T> T * cast<T>( Entity * e );
 
     void setSceneParent( Entity * parent, bool inheritRotation = true );
 public:
     void destroySceneNode();
+
     Ogre::SceneNode * sceneNode;
+    Type              mType;
 };
 
 

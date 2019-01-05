@@ -12,6 +12,8 @@ namespace Entity
 Site::Site()
     : Entity()
 {
+    mType = TSite;
+
     visualEntity   = 0;
     planet         = 0;
     rigidBody      = 0;

@@ -62,9 +62,10 @@ public:
 
     Config::ConfigReader * getConfigReader();
     CameraCtrl   * getCameraCtrl();
-    bool rayQuery( const Ogre::Ray & ray, Entity::Entity * e, Ogre::uint32 mask = 0xFFFFFFFF );
-    bool mouseQuery( Entity::Entity * e, Ogre::uint32 mask = 0xFFFFFFFF );
+    bool rayQuery(const Ogre::Ray & ray, Entity::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
+    bool mouseQuery( Entity::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
     bool mouseRay( Ogre::Ray & ray );
+    Ogre::Vector2 relMouseRay();
 
 protected:
     void shutdown();

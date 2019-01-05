@@ -56,6 +56,8 @@ void EntityConnection::destroy()
 EntityPart::EntityPart()
     : Entity()
 {
+    mType = TPart;
+
     forcesWereApplied = false;
 
     actionGroup       = 0;

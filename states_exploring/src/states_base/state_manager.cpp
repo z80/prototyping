@@ -165,7 +165,7 @@ CameraCtrl * StateManager::getCameraCtrl()
 }
 
 //Ogre::RaySceneQuery   * getRaySceneQuery();
-bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * ent, Ogre::uint32 mask )
+bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * & ent, Ogre::uint32 mask )
 {
     raySceneQuery->setRay( ray );
     raySceneQuery->setQueryMask( mask );
@@ -190,7 +190,7 @@ bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * ent, Ogre::
     return false;
 }
 
-bool StateManager::mouseQuery( Entity::Entity * e, Ogre::uint32 mask )
+bool StateManager::mouseQuery( Entity::Entity * & e, Ogre::uint32 mask )
 {
     Ogre::Ray ray;
     const bool rayExists = mouseRay( ray );
@@ -214,6 +214,18 @@ bool StateManager::mouseRay( Ogre::Ray & ray )
             static_cast<Ogre::Real>( height );
     ray = mCamera->getCameraToViewportRay( x, y );
     return true;
+}
+
+Vector2 StateManager::relMouseRay()
+{
+    Ogre::Viewport * v = mCamera->getViewport();
+    int left, top, width, height;
+    v->getActualDimensions( left, top, width, height );
+    const Ogre::Real x = static_cast<Ogre::Real>( mouseAtX - left ) /
+            static_cast<Ogre::Real>( width );
+    const Ogre::Real y = static_cast<Ogre::Real>( mouseAtY - top ) /
+            static_cast<Ogre::Real>( height );
+    return Ogre::Vector2( x, y );
 }
 
 void StateManager::shutdown()

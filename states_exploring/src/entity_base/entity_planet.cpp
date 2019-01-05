@@ -13,6 +13,8 @@ namespace Entity
 EntityPlanet::EntityPlanet()
     : Entity()
 {
+    mType = TPlanet;
+
     visualEntity   = 0;
     sceneNode      = 0;
     rigidBody      = 0;

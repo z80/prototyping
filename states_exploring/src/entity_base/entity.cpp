@@ -9,6 +9,7 @@ namespace Entity
 Entity::Entity()
 {
     sceneNode = 0;
+    mType     = TUnspecified;
 }
 
 Entity::~Entity()
@@ -19,6 +20,11 @@ Entity::~Entity()
 void Entity::action( Ogre::int32 actionGroup, const Ogre::String & name, Ogre::Real value )
 {
 
+}
+
+Entity::Type Entity::type()
+{
+    return mType;
 }
 
 void Entity::setSceneParent( Entity * parent, bool inheritRotation )
