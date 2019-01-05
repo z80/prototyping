@@ -134,6 +134,7 @@ bool WorkshopState::keyPressed(const OgreBites::KeyboardEvent& evt)
         StateManager::getSingletonPtr()->getCameraCtrl()->keyPressed( evt );
     if ( evt.keysym.sym == 27 )
         StateManager::getSingletonPtr()->pushState( IntroState::getSingletonPtr() );
+    return true;
 }
 
 bool WorkshopState::keyReleased(const OgreBites::KeyboardEvent& evt)

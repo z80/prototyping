@@ -24,10 +24,13 @@ bool DesignConstruction::frameEnded(const Ogre::FrameEvent& evt)
 
 bool DesignConstruction::keyPressed(const OgreBites::KeyboardEvent& evt)
 {
-    if ( evt.keysym.sym == 1 )
+    if ( moveMode != TFree )
     {
-        moveMode = TFree;
-        return true;
+        if ( evt.keysym.sym == 27 )
+        {
+            moveMode = TFree;
+            return true;
+        }
     }
     return false;
 }
@@ -64,6 +67,8 @@ bool DesignConstruction::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 
 bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
+    if ( techTreePanel->isHovered() )
+        return false;
     if ( ( moveMode == TDrag ) || (moveMode == TRotate) )
     {
         moveMode = TFree;
@@ -71,8 +76,12 @@ bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
     }
     else if ( moveMode == TFree )
     {
-
-        return true;
+        const bool partSelected = trySelect( index );
+        if ( partSelected )
+        {
+            moveMode = TDrag;
+            return true;
+        }
     }
     return false;
 }
