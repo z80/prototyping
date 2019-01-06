@@ -172,9 +172,9 @@ namespace OgreOggSound
 		return aab;
 	}
 	/*/////////////////////////////////////////////////////////////////*/
-	float OgreOggListener::getBoundingRadius(void) const
+    Ogre::Real OgreOggListener::getBoundingRadius(void) const
 	{
-		return 0;
+        return 0.0;
 	}
 	/*/////////////////////////////////////////////////////////////////*/
 	void OgreOggListener::_updateRenderQueue(Ogre::RenderQueue *queue)

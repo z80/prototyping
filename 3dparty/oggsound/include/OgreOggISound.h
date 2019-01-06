@@ -505,7 +505,7 @@ namespace OgreOggSound
 		@remarks
 			Overridden from MovableObject.
 		 */
-		virtual float getBoundingRadius(void) const;
+        virtual Ogre::Real getBoundingRadius(void) const;
 		/** Gets the SceneManager pointer registered at creation.
 		@remarks
 			This will only be set if the sound was created through the plugin method

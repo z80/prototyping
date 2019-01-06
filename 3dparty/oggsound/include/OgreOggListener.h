@@ -147,7 +147,7 @@ namespace OgreOggSound
 			Overridden function from MovableObject, provides the
 			bounding radius for this object.
 		 */
-		virtual float getBoundingRadius(void) const;
+        virtual Ogre::Real getBoundingRadius(void) const;
 		/** Updates the RenderQueue for this object
 		@remarks
 			Overridden function from MovableObject.
