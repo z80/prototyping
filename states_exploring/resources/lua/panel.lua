@@ -28,7 +28,7 @@ function initTechTree()
   addCategoryAnother( tt )
 
   tt:clearParts()
-  tt:addPartCube()
+  addPartCube( tt )
 end
 
 

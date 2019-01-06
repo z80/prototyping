@@ -165,8 +165,12 @@ static const struct luaL_reg FUNCS[] =
 
 int luaopen_entityWorld( lua_State * L )
 {
+    const int top = lua_gettop( L );
+
     worldCreateMeta( L );
     luaL_register( L, LIB_NAME, FUNCS );
+
+    lua_settop( L, top );
     return 0;
 }
 

@@ -123,7 +123,7 @@ bool ConfigReader::openFile( const char * fname )
 {
     pd->top = lua_gettop( pd->L );
     int err = luaL_dofile( pd->L, fname );
-    if ( err )
+    if ( err != 0 )
     {
         std::ostringstream out;
         int top = lua_gettop( pd->L );

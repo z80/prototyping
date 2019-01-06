@@ -179,8 +179,12 @@ static const struct luaL_reg FUNCS[] =
 
 int luaopen_camera( lua_State * L )
 {
+    const int top = lua_gettop( L );
+
     cameraCreateMeta( L );
     luaL_register( L, LIB_NAME, FUNCS );
+
+    lua_settop( L, top );
     return 0;
 }
 

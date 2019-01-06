@@ -118,12 +118,12 @@ static int lua_addNode( lua_State * L )
         lua_gettable( L, -2 );
         if ( lua_isnumber( L, -1 ) )
             n.at.x = lua_tonumber( L, -1 );
-        lua_pop( L, -1 );
+        lua_pop( L, 1 );
         lua_pushinteger( L, 2 );
         lua_gettable( L, -2 );
         if ( lua_isnumber( L, -1 ) )
             n.at.y = lua_tonumber( L, -1 );
-        lua_pop( L, -1 );
+        lua_pop( L, 1 );
     }
     lua_pop( L, 1 );
 
@@ -171,7 +171,7 @@ static int lua_addPart( lua_State * L )
     Entity::PartDesc p;
     p.name        = "";
     p.description = "";
-    p.tooltip     = -1;
+    p.tooltip     = "";
     p.neededNode  = "";
     p.category    = "";
     p.icon        = "";
@@ -230,7 +230,7 @@ static int lua_addPart( lua_State * L )
         while ( true )
         {
             lua_pushinteger( L, ind );
-            lua_gettable( L, -1 );
+            lua_gettable( L, -2 );
             bool doBreak;
             if ( lua_istable( L, -1 ) )
             {
@@ -245,6 +245,8 @@ static int lua_addPart( lua_State * L )
             else
                 doBreak = true;
             lua_pop( L, 1 );
+            if ( doBreak )
+                break;
             ind += 1;
         }
     }
@@ -369,8 +371,10 @@ static const struct luaL_reg FUNCS[] =
 
 int luaopen_techTree( lua_State * L )
 {
+    const int top = lua_gettop( L );
     createMeta( L );
     luaL_register( L, LIB_NAME, FUNCS );
+    lua_settop( L, top );
     return 0;
 }
 

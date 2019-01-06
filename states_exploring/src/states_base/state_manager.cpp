@@ -336,6 +336,15 @@ void StateManager::finitSound()
 void StateManager::initScript()
 {
     confReader = new Config::ConfigReader( true );
+
+    lua_State * L = confReader->luaState();
+    luaopen_sound( L );
+    luaopen_btShapes( L );
+    luaopen_entityPart( L );
+    luaopen_entityWorld( L );
+    luaopen_camera( L );
+    luaopen_techTree( L );
+
     if ( !confReader->openFile( "./resources/lua/main.lua" ) )
     {
         const char * err;
@@ -344,13 +353,6 @@ void StateManager::initScript()
         if ( lm )
             lm->logMessage( err );
     }
-    lua_State * L = confReader->luaState();
-    luaopen_sound( L );
-    luaopen_btShapes( L );
-    luaopen_entityPart( L );
-    luaopen_entityWorld( L );
-    luaopen_camera( L );
-    luaopen_techTree( L );
 }
 
 void StateManager::finitScript()

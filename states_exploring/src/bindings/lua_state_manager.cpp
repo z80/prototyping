@@ -338,8 +338,12 @@ static const struct luaL_reg FUNCS[] =
 
 int luaopen_sound( lua_State * L )
 {
+    const int top = lua_gettop( L );
+
     soundCreateMeta( L );
     luaL_register( L, LIB_NAME, FUNCS );
+
+    lua_settop( L, top );
 }
 
 
