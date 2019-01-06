@@ -59,7 +59,7 @@ bool DesignConstruction::touchReleased(const OgreBites::TouchFingerEvent& evt)
 bool DesignConstruction::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
     if ( techTreePanel->isHovered() )
-        return false;
+        return true;
     if ( moveMode == TDrag )
     {
         drag();
@@ -80,7 +80,7 @@ bool DesignConstruction::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
     if ( techTreePanel->isHovered() )
-        return false;
+        return true;
     if ( ( moveMode == TDrag ) || (moveMode == TRotate) )
     {
         moveMode = TFree;

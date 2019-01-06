@@ -94,12 +94,12 @@ bool TechTree::enableNode( const Ogre::String & name )
     return false;
 }
 
-const std::vector<CategoryDesc> & TechTree::getPanelContent() const
+std::vector<CategoryDesc> & TechTree::getPanelContent()
 {
     return panelContent;
 }
 
-const std::vector<PartDesc> & TechTree::getPartDescs() const
+std::vector<PartDesc> & TechTree::getPartDescs()
 {
     return partDescs;
 }

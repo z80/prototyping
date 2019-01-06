@@ -40,6 +40,21 @@ void TechTreePanel::updateAllowedParts()
     tt->generatePanelContent();
 
     // Re-read/load part icon textures here.
+    std::vector<PartDesc> & pds = tt->getPartDescs();
+    const size_t qty = pds.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        PartDesc & pd = pds[i];
+        try
+        {
+            Ogre::TexturePtr t_ptr = Ogre::TextureManager::getSingletonPtr()->getByName( pd.icon );
+            pd.iconHandle = t_ptr->getHandle();
+        } catch ( ... )
+        {
+            Ogre::TexturePtr t_ptr = Ogre::TextureManager::getSingletonPtr()->load( pd.icon, "General" );
+            pd.iconHandle = t_ptr->getHandle();
+        }
+    }
 }
 
 

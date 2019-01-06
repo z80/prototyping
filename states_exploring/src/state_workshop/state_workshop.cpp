@@ -89,11 +89,11 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
 
 bool WorkshopState::frameEnded(const Ogre::FrameEvent& evt)
 {
-    StateManager::getSingletonPtr()->getCameraCtrl()->frameRendered( evt );
     if ( designCtrl )
     {
         designCtrl->frameEnded( evt );
     }
+    StateManager::getSingletonPtr()->getCameraCtrl()->frameRendered( evt );
     return true;
 }
 
