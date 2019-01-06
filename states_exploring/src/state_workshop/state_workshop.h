@@ -7,6 +7,11 @@
 #include "group_item.h"
 #include "ImguiManager.h"
 
+namespace Entity
+{
+    class DesignConstruction;
+}
+
 class WorkshopState: public State,
                      public Ogre::Singleton<WorkshopState>
 {
@@ -34,34 +39,9 @@ public:
     bool mouseReleased(const OgreBites::MouseButtonEvent& evt);
 
 private:
-    void debugOverlay();
-    void backToGameOverlay();
-    /*void panelOverlay();
-    void panelItem( const Group::GroupItem & item, int groupInd,
-                    int itemInd, bool notLastInRow );*/
 
-    Ogre::Root * mRoot;
-    Ogre::SceneManager * mSceneMgr;
-    Ogre::Viewport * mViewport;
-    Ogre::Camera    * mCamera;
-    Ogre::SceneNode * mCameraNode;
-    bool mExitState;
     bool paused;
-    bool disableMouseCtrl;
-
-    void createObjects();
-    void destroyObjects();
-
-    // Externally load all the parameters of groups overlay.
-    /*bool loadGroups();
-    bool loadLevel();
-
-    int    level;
-    bool   groupsInitialized;
-    ImVec2 iconSz;
-    int    panelWidth, itemsPerLine;
-
-    std::vector<Group::Group> groups;*/
+    Entity::DesignConstruction * designCtrl;
 };
 
 
