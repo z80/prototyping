@@ -12,8 +12,8 @@ TechTreePanel::TechTreePanel()
     panelSz      = 250;
     itemsPerLine = 3;
     iconSz       = 128;
-
-    hovered = false;
+    alpha        = 0.3;
+    hovered      = false;
 
     initPanelGeometry();
 }
@@ -28,6 +28,10 @@ void TechTreePanel::initPanelGeometry()
     Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
     cr->readInt( "techPanel.itemsPerLine", itemsPerLine, itemsPerLine );
     cr->readInt( "techPanel.iconSz",       iconSz,       iconSz );
+    cr->readInt( "techPanel.panelSz",      panelSz,      panelSz );
+    Config::ConfigReader::Float a = alpha;
+    cr->readFloat( "techPanel.alpha",      a,            a );
+    alpha = static_cast<Ogre::Real>( a );
 }
 
 void TechTreePanel::updateAllowedParts()
@@ -42,7 +46,7 @@ void TechTreePanel::updateAllowedParts()
 void TechTreePanel::drawBackToGamePanel()
 {
     const ImVec2 wndSz( 150, 50 );
-    ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
+    ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
     ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
     const ImVec2 windowPos = ImVec2( -10.0,
                                       10.0 );
@@ -80,7 +84,7 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
     const std::vector<PartDesc> & partDescs = tt->getPartDescs();
 
     const ImVec2 wndSz( panelSz, ImGui::GetIO().DisplaySize.y );
-    ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
+    ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
     ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
     const ImVec2 windowPos = ImVec2( 0, 0 );
     const ImVec2 windowPosPivot = ImVec2( 0, 0 );

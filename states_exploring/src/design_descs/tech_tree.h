@@ -95,7 +95,7 @@ public:
     ~TechTree();
 
     bool load( Config::ConfigReader * cr );
-    void generatePanelContent();
+    bool generatePanelContent();
     bool enableNode( const Ogre::String & name );
 
     const std::vector<CategoryDesc> & getPanelContent() const;

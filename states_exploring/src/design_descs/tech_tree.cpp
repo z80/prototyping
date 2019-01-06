@@ -29,8 +29,12 @@ bool TechTree::load( Config::ConfigReader * cr )
     return callOk;
 }
 
-void TechTree::generatePanelContent()
+bool TechTree::generatePanelContent()
 {
+    const bool loadedOk = load( StateManager::getSingletonPtr()->getConfigReader() );
+    if ( !loadedOk )
+        return false;
+
     // Clean up allowed parts.
     const size_t catsQty = panelContent.size();
     for ( size_t i=0; i<catsQty; i++ )
@@ -62,6 +66,8 @@ void TechTree::generatePanelContent()
             }
         }
     }
+
+    return true;
 }
 
 bool TechTree::enableNode( const Ogre::String & name )

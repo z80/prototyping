@@ -35,10 +35,11 @@ public:
 
     const bool isHovered() const;
 public:
-    int panelSz;
-    int iconSz;
-    int itemsPerLine;
-    bool hovered;
+    int        panelSz;
+    int        iconSz;
+    int        itemsPerLine;
+    Ogre::Real alpha;
+    bool       hovered;
 };
 
 }

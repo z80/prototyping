@@ -35,6 +35,8 @@ void DesignConstruction::enter()
     Site * s = sm->current( "construction" );
     workshop = s;
 
+    techTreePanel->updateAllowedParts();
+
     Ogre::Camera * c = StateManager::getSingletonPtr()->getCamera();
     CameraCtrl * cc = StateManager::getSingletonPtr()->getCameraCtrl();
     //cc->setCamera( 0 );
