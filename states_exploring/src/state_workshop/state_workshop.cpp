@@ -46,6 +46,7 @@ void WorkshopState::enter()
     v->setBackgroundColour(ColourValue(0.7, 0.7, 0.4));
     StateManager::getSingletonPtr()->setMouseVisible( true );
 
+    designCtrl->enter();
     resume();
 }
 
@@ -59,15 +60,16 @@ void WorkshopState::exit()
 void WorkshopState::pause()
 {
     paused = true;
+
+    designCtrl->leave();
 }
 
 void WorkshopState::resume()
 {
+    paused = false;
     //mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getCamera()->getSceneManager();
     smgr->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
-
-    paused = false;
 }
 
 bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)

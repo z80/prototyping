@@ -63,7 +63,7 @@ void TechTreePanel::drawBackToGamePanel()
     const ImVec2 wndSz( 150, 50 );
     ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
     ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
-    const ImVec2 windowPos = ImVec2( -10.0,
+    const ImVec2 windowPos = ImVec2( ImGui::GetIO().DisplaySize.x-10.0,
                                       10.0 );
     const ImVec2 windowPosPivot = ImVec2( 1.0, 0.0 );
 
