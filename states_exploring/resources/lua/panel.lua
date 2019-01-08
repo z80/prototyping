@@ -41,9 +41,9 @@ function addTestNode( tt )
     name    = "Test parts node", 
     parents = { "" }, 
     at      = { 0.4, 0.5 }, 
-    iconEnabled  = "aaa", 
-    iconDisabled = "aaa", 
-    iconHovered  = "aaa"
+    iconEnabled  = "I_Sphere", 
+    iconDisabled = "I_Sphere", 
+    iconHovered  = "I_Sphere"
   }
   tt:addNode( n )
 end
@@ -54,9 +54,9 @@ function addAnotherNode( tt )
     name    = "Another node", 
     parents = { "Test parts node" }, 
     at      = { 0.6, 0.5 }, 
-    iconEnabled  = "aaa", 
-    iconDisabled = "aaa", 
-    iconHovered  = "aaa"
+    iconEnabled  = "I_Cylinder", 
+    iconDisabled = "I_Cylinder", 
+    iconHovered  = "I_Cylinder"
   }
   tt:addNode( n )
 end
@@ -71,7 +71,7 @@ function addCategoryTest( tt )
     name        = "Test category", 
     description = "This is a test category description. It contatins test blocks.", 
     tooltip     = "Test category toolitp", 
-    icon        = "aaa"
+    icon        = "I_Sphere"
   }
   tt:addCategory( c )
 end
@@ -81,7 +81,7 @@ function addCategoryAnother( tt )
     name        = "Another category", 
     description = "This is another category description. It contatins nothing :)", 
     tooltip     = "Another category tooltip", 
-    icon        = "aaa"
+    icon        = "I_Cylinder"
   }
   tt:addCategory( c )
 end
@@ -98,7 +98,7 @@ function addPartCube( tt )
     tooltip     = "This is just a dumb cube", 
     neededNode  = "Test parts node", 
     category    = "Test category", 
-    icon        = "aaa", 
+    icon        = "I_Cube", 
     connections = {
       { r = { 0.0, 0.5, 0.0 }, 
         q = { 1.0, 0.0, 0.0, 0.0 }, 
