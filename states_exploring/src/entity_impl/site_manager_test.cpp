@@ -39,6 +39,7 @@ void SiteManagerTest::createImpl()
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
+    //Ogre::MeshPtr meshPtr = Ogre::MeshManager::getSingletonPtr()->load( "MyPod.mesh", "General" );
     s->visualEntity = scnMgr->createEntity( NameGenerator::Next("pod"), "Pod.mesh" );
     Ogre::UserObjectBindings & uob = s->visualEntity->getUserObjectBindings();
     uob.setUserAny( Ogre::Any( s ) );
