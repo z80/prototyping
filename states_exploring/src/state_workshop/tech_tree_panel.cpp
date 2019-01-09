@@ -48,7 +48,12 @@ void TechTreePanel::updateAllowedParts()
         try
         {
             Ogre::TexturePtr t_ptr = Ogre::TextureManager::getSingletonPtr()->getByName( pd.icon );
-            pd.iconHandle = t_ptr->getHandle();
+            if ( !t_ptr )
+                t_ptr = Ogre::TextureManager::getSingletonPtr()->load( pd.icon, "General" );
+            if ( t_ptr )
+                pd.iconHandle = t_ptr->getHandle();
+            else
+                pd.iconHandle = -1;
         } catch ( ... )
         {
             Ogre::TexturePtr t_ptr = Ogre::TextureManager::getSingletonPtr()->load( pd.icon, "General" );

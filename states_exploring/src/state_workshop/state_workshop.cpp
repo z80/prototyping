@@ -77,10 +77,8 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
     if ( paused )
         return true;
 
-    if ( designCtrl )
-    {
-        designCtrl->frameStarted( evt );
-    }
+    if ( designCtrl->frameStarted( evt ) )
+        return true;
 
     //ImGui::ShowTestWindow();
 
@@ -91,11 +89,10 @@ bool WorkshopState::frameStarted(const Ogre::FrameEvent& evt)
 
 bool WorkshopState::frameEnded(const Ogre::FrameEvent& evt)
 {
-    if ( designCtrl )
-    {
-        designCtrl->frameEnded( evt );
-    }
-    StateManager::getSingletonPtr()->getCameraCtrl()->frameRendered( evt );
+    if ( designCtrl->frameEnded( evt ) )
+        return true;
+    if ( !designCtrl->isHovered() )
+        StateManager::getSingletonPtr()->getCameraCtrl()->frameRendered( evt );
     return true;
 }
 
@@ -106,7 +103,8 @@ bool WorkshopState::keyPressed(const OgreBites::KeyboardEvent& evt)
         if ( designCtrl->keyPressed( evt ) )
             return true;
     }
-    StateManager::getSingletonPtr()->getCameraCtrl()->keyPressed( evt );
+    if ( !designCtrl->isHovered() )
+        StateManager::getSingletonPtr()->getCameraCtrl()->keyPressed( evt );
     if ( evt.keysym.sym == 27 )
         StateManager::getSingletonPtr()->pushState( IntroState::getSingletonPtr() );
     return true;
@@ -114,86 +112,66 @@ bool WorkshopState::keyPressed(const OgreBites::KeyboardEvent& evt)
 
 bool WorkshopState::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->keyReleased( evt ) )
-            return true;
-    }
+    if ( designCtrl->keyReleased( evt ) )
+        return true;
     StateManager::getSingletonPtr()->getCameraCtrl()->keyReleased( evt );
     return true;
 }
 
 bool WorkshopState::touchMoved(const OgreBites::TouchFingerEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->touchMoved( evt ) )
-            return true;
-    }
+    if ( designCtrl->touchMoved( evt ) )
+        return true;
     return true;
 }
 
 bool WorkshopState::touchPressed(const OgreBites::TouchFingerEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->touchPressed( evt ) )
-            return true;
-    }
+    if ( designCtrl->touchPressed( evt ) )
+        return true;
     return true;
 }
 
 bool WorkshopState::touchReleased(const OgreBites::TouchFingerEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->touchReleased( evt ) )
-            return true;
-    }
+    if ( designCtrl->touchReleased( evt ) )
+        return true;
     return true;
 }
 
 bool WorkshopState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->mouseMoved( evt ) )
-            return true;
-    }
-    StateManager::getSingletonPtr()->getCameraCtrl()->mouseMoved( evt );
+    if ( designCtrl->mouseMoved( evt ) )
+        return true;
+    if ( !designCtrl->isHovered() )
+        StateManager::getSingletonPtr()->getCameraCtrl()->mouseMoved( evt );
     return true;
 }
 
 bool WorkshopState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->mouseWheelRolled( evt ) )
-            return true;
-    }
-    StateManager::getSingletonPtr()->getCameraCtrl()->mouseWheelRolled( evt );
+    if ( designCtrl->mouseWheelRolled( evt ) )
+        return true;
+    if ( !designCtrl->isHovered() )
+        StateManager::getSingletonPtr()->getCameraCtrl()->mouseWheelRolled( evt );
     return true;
 }
 
 bool WorkshopState::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->mousePressed( evt ) )
-            return true;
-    }
-    StateManager::getSingletonPtr()->getCameraCtrl()->mousePressed( evt );
+    if ( designCtrl->mousePressed( evt ) )
+        return true;
+    if ( !designCtrl->isHovered() )
+        StateManager::getSingletonPtr()->getCameraCtrl()->mousePressed( evt );
     return true;
 }
 
 bool WorkshopState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
-    if ( designCtrl )
-    {
-        if ( designCtrl->mouseReleased( evt ) )
+    if ( designCtrl->mouseReleased( evt ) )
             return true;
-    }
-    StateManager::getSingletonPtr()->getCameraCtrl()->mouseReleased( evt );
+    if ( !designCtrl->isHovered() )
+        StateManager::getSingletonPtr()->getCameraCtrl()->mouseReleased( evt );
     return true;
 }
 

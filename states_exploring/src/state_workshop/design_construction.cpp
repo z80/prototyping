@@ -32,7 +32,7 @@ void DesignConstruction::enter()
     if ( !sm )
         return;
 
-    Site * s = sm->current( "construction" );
+    Site * s = sm->current( "assembly" );
     workshop = s;
 
     techTreePanel->updateAllowedParts();
@@ -71,6 +71,12 @@ void DesignConstruction::part( const Ogre::String & name )
 
     // By default drag mode.
     moveMode = TDrag;
+}
+
+bool DesignConstruction::isHovered() const
+{
+    bool res = techTreePanel->isHovered();
+    return res;
 }
 
 void DesignConstruction::cameraPlane( Ogre::Vector3 & x, Ogre::Vector3 & y, Ogre::Vector3 & n )

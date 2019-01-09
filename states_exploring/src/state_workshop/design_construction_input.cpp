@@ -101,7 +101,7 @@ bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 
 bool DesignConstruction::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
-    return true;
+    return false;
 }
 
 

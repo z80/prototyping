@@ -28,6 +28,9 @@ public:
     /// TechTreePanel callback implementation.
     void part( const Ogre::String & name );
 
+    /// Hovering mouse or not.
+    bool isHovered() const;
+
     /// Input devices callbacks.
     bool frameStarted(const Ogre::FrameEvent& evt);
     bool frameEnded(const Ogre::FrameEvent& evt);
