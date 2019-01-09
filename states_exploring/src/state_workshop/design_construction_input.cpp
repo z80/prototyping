@@ -14,12 +14,12 @@ bool DesignConstruction::frameStarted(const Ogre::FrameEvent& evt)
         techTreePanel->drawTechPanel( this );
         techTreePanel->drawBackToGamePanel();
     }
-    return true;
+    return false;
 }
 
 bool DesignConstruction::frameEnded(const Ogre::FrameEvent& evt)
 {
-    return true;
+    return false;
 }
 
 bool DesignConstruction::keyPressed(const OgreBites::KeyboardEvent& evt)

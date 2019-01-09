@@ -150,7 +150,7 @@ Entity::TechTree * StateManager::getTechTree()
 
 void StateManager::setMouseVisible( bool en )
 {
-    windowGrab = en;
+    windowGrab = !en;
     setWindowGrab( !en );
 }
 

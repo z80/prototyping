@@ -92,7 +92,8 @@ void DesignConstruction::cameraPlane( Ogre::Vector3 & x, Ogre::Vector3 & y, Ogre
     {
         Ogre::Quaternion qx( 0.0, 1.0, 0.0, 0.0 );
         qx = q * qx * q.Inverse();
-        x = Ogre::Vector3( qx.x, qx.y, qx.z );
+        x = Ogre::Vector3( qx.x, 0.0, qx.z );
+        x.normalise();
 
         y = Ogre::Vector3( 0.0, 1.0, 0.0 );
 
@@ -101,7 +102,8 @@ void DesignConstruction::cameraPlane( Ogre::Vector3 & x, Ogre::Vector3 & y, Ogre
     }
     Ogre::Quaternion qx( 0.0, 1.0, 0.0, 0.0 );
     qx = q * qx * q.Inverse();
-    x = Ogre::Vector3( qx.x, qx.y, qx.z );
+    x = Ogre::Vector3( qx.x, 0.0, qx.z );
+    x.normalise();
 
     n =  Ogre::Vector3( 0.0, 0.0, 1.0 );
     y = n.crossProduct( x );
@@ -147,7 +149,7 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
     // Substitute: (a,n)*t = (origin-r0,n);
     // t = -(r0,n)/(a,n);
     const Ogre::Real t_den = a.dotProduct(n);
-    if ( std::abs( t_den < 0.001 ) )
+    if ( std::abs(t_den) < 0.001 )
         xyz = Ogre::Vector3( 0.0, 0.0, 0.0 );
     const Ogre::Real t = (origin-r0).dotProduct(n) / t_den;
     xyz = a*t+r0;
@@ -198,6 +200,7 @@ bool DesignConstruction::drag()
     Ogre::Vector3 dest;
     mouseAbs( dest, origin );
 
+    dest = Ogre::Vector3( 0.0, 3.0, 0.0 );
     p->setR( dest );
 
     return true;

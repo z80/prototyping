@@ -42,7 +42,7 @@ void SiteManagerTest::createImpl()
     //Ogre::MeshPtr meshPtr = Ogre::MeshManager::getSingletonPtr()->load( "MyPod.mesh", "General" );
     s->visualEntity = scnMgr->createEntity( NameGenerator::Next("pod"), "Pod.mesh" );
     Ogre::UserObjectBindings & uob = s->visualEntity->getUserObjectBindings();
-    uob.setUserAny( Ogre::Any( s ) );
+    uob.setUserAny( Ogre::Any( dynamic_cast<Entity *>( s ) ) );
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "M_Pod" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     s->visualEntity->setMaterial( m );
