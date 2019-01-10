@@ -125,10 +125,21 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
         return;
     }
 
+        Ogre::Camera * cam = sm->getCamera();
+        cam->getParentSceneNode()->needUpdate( true );
+        const Ogre::Quaternion camQ = cam->getParentSceneNode()->_getDerivedOrientation();
+        const Ogre::Vector3    camRelR = cam->getParentSceneNode()->getPosition();
+        const Ogre::Vector3    camParR = cam->getParentSceneNode()->getParentSceneNode()->_getDerivedPosition();
+        const Ogre::Vector3    camR = cam->getParentSceneNode()->_getDerivedPosition();
+
+
     // Absolute coordinates for the ray.
     Ogre::Vector3 r0 = ray.getOrigin();
     Ogre::Vector3 a  = ray.getDirection();
     // Need to convery those to relative to assembly node.
+    Ogre::SceneNode * camParent   = cam->getParentSceneNode()->getParentSceneNode();
+    Ogre::SceneNode * wsSceneNode = workshop->sceneNode;
+
     const Ogre::Vector3    wsR = workshop->sceneNode->_getDerivedPosition();
     const Ogre::Quaternion wsQ = workshop->sceneNode->_getDerivedOrientation();
     r0 = r0 - wsR;

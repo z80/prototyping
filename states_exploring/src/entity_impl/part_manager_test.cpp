@@ -42,9 +42,12 @@ EntityPart * PartManagerTest::PD::basePart( const Ogre::String & meshName, const
     uob.setUserAny( Ogre::Any( dynamic_cast<Entity *>( p ) ) );
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( materialName );
     p->visualEntity->setMaterial( m );
-    p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next( meshName ) );
-    p->sceneNode->attachObject( p->visualEntity );
 
+    p->visualNode = p->sceneNode->createChildSceneNode( NameGenerator::Next( meshName ) );
+    p->visualNode->attachObject( p->visualEntity );
+    p->visualNode->setScale( 1.0, 1.0, 1.0 );
+    p->visualNode->setInheritOrientation( true );
+    p->visualNode->setInheritScale( false );
     return p;
 }
 

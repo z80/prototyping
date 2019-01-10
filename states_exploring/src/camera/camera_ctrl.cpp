@@ -8,7 +8,7 @@ CameraCtrl::CameraCtrl()
 {
     mEnabled = true;
     mode = Orbit;
-    nodeCam    = 0;
+    camera     = 0;
     nodeTarget = 0;
 
     mOrbiting = false;
@@ -42,25 +42,37 @@ void CameraCtrl::setEnabled( bool en )
 
 void CameraCtrl::setCamera( Ogre::Camera * camera )
 {
-    this->nodeCam = camera->getParentSceneNode();
+    this->camera = camera;
+    Ogre::SceneNode * nodeCam = camera->getParentSceneNode();
     if ( nodeCam )
+    {
         nodeCam->setInheritOrientation( true );
+        nodeCam->setInheritScale( false );
+    }
 }
 
 void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
 {
+    if ( !camera )
+        return;
+    Ogre::SceneNode * nodeCam = camera->getParentSceneNode();
     this->nodeTarget = nodeTarget;
     if ( nodeTarget && nodeCam )
     {
-        Ogre::SceneNode * parent = nodeTarget->getParentSceneNode();
-        //const Ogre::Vector3    absR = nodeCam->_getDerivedPosition();
-        //const Ogre::Quaternion absQ = nodeCam->_getDerivedOrientation();
+        const Ogre::Vector3    absR = nodeCam->_getDerivedPosition();
+        const Ogre::Quaternion absQ = nodeCam->_getDerivedOrientation();
+
+        const Ogre::Vector3    relR = nodeTarget->convertWorldToLocalPosition( absR );
+        const Ogre::Quaternion relQ = nodeTarget->convertWorldToLocalOrientation( absQ );
 
         Ogre::SceneNode * camParent = nodeCam->getParentSceneNode();
         if ( camParent )
             camParent->removeChild( nodeCam );
 
-        parent->addChild( nodeCam );
+        nodeTarget->addChild( nodeCam );
+
+        nodeCam->setPosition( relR );
+        nodeCam->setOrientation( relQ );
     }
 }
 
@@ -246,17 +258,19 @@ std::string CameraCtrl::modeStri() const
 
 Ogre::Real CameraCtrl::getDistToTarget() const
 {
+    Ogre::SceneNode * nodeCam = camera->getParentSceneNode();
     if ( !nodeCam )
         return 0.0;
     if ( !nodeTarget )
         return 0.0;
-    const Ogre::Vector3 offset = nodeCam->getPosition() - nodeTarget->_getDerivedPosition();
+    const Ogre::Vector3 offset = nodeCam->getPosition();
     const Ogre::Real d = offset.length();
     return d;
 }
 
 void CameraCtrl::freeMovement( const Ogre::FrameEvent & evt )
 {
+    Ogre::SceneNode * nodeCam = camera->getParentSceneNode();
     // build our acceleration vector based on keyboard input composite
     Ogre::Vector3 accel = Ogre::Vector3::ZERO;
     Ogre::Matrix3 axes = nodeCam->getLocalAxes();
@@ -304,7 +318,7 @@ void CameraCtrl::orbitMovement( const Ogre::FrameEvent & evt )
     const Ogre::Real T = 0.1;
     const Ogre::Real dt = (evt.timeSinceLastFrame < T) ? evt.timeSinceLastFrame : T;
     const Ogre::Real k = dt * orbitKi;
-    const Ogre::Vector3 sp = nodeTarget->getPosition();
+    const Ogre::Vector3 sp = Ogre::Vector3::ZERO; //nodeTarget->getPosition();
     Ogre::Vector3 & at = orbitAt;
     const Ogre::Vector3 dr = (sp-at)*k;
     at += dr;
@@ -312,8 +326,15 @@ void CameraCtrl::orbitMovement( const Ogre::FrameEvent & evt )
     Ogre::Quaternion q( 0.0, 0.0, 0.0, orbitDist );
     q = orbitQuat * q * orbitQuat.Inverse();
     const Ogre::Vector3 camAt( at.x+q.x, at.y+q.y, at.z+q.z );
+    Ogre::SceneNode * nodeCam = camera->getParentSceneNode();
     nodeCam->setPosition( camAt );
     nodeCam->setOrientation( orbitQuat );
+
+    {
+        // Debugging
+        Ogre::Vector3 absR = nodeCam->_getDerivedPosition();
+
+    }
 }
 
 void CameraCtrl::orbitAdjustRotation( const OgreBites::MouseMotionEvent & evt )

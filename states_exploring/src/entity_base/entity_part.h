@@ -149,6 +149,9 @@ public:
     bool        doShowContextMenu;
 
     Ogre::Entity     * visualEntity;
+    /// Need a separate scene node as if any scale is envolved
+    /// Ogre goes nuts with _getDerivedOrientation()
+    Ogre::SceneNode  * visualNode;
     btRigidBody      * rigidBody;
     btCollisionShape * collisionShape;
     BtOgre::RigidBodyState * bodyState;

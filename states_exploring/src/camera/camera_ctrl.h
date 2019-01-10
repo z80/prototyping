@@ -5,6 +5,7 @@
 #include "Ogre.h"
 #include "OgreSingleton.h"
 #include "OgreInput.h"
+#include "entity.h"
 
 class CameraCtrl
 {
@@ -62,7 +63,7 @@ public:
 
     bool mEnabled;
     Mode mode;
-    Ogre::SceneNode * nodeCam;
+    Ogre::Camera    * camera;
     Ogre::SceneNode * nodeTarget;
 
     bool mOrbiting;

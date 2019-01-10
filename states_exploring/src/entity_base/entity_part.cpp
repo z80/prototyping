@@ -65,6 +65,7 @@ EntityPart::EntityPart()
     doShowContextMenu = false;
 
     visualEntity   = 0;
+    visualNode     = 0;
     sceneNode      = 0;
     rigidBody      = 0;
     collisionShape = 0;
@@ -675,16 +676,21 @@ void EntityPart::deleteCollisionShape()
 
 void EntityPart::deleteVisual()
 {
-    Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
-    if ( scnMgr )
+    Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    if ( smgr )
     {
         if ( visualEntity );
         {
-            scnMgr->destroyEntity( visualEntity );
+            smgr->destroyEntity( visualEntity );
             visualEntity = 0;
         }
 
-        destroySceneNode();
+        if ( visualNode )
+        {
+            if ( !smgr->hasSceneNode( visualNode->getName() ) )
+                smgr->destroySceneNode( visualNode );
+            visualNode = 0;
+        }
     }
 }
 

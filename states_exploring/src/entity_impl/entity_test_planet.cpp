@@ -32,9 +32,12 @@ void EntityTestPlanet::create()
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "MaterialSphere" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     p->visualEntity->setMaterial( m );
-    p->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("sphereSceneNode") );
-    p->sceneNode->attachObject( p->visualEntity );
-    p->sceneNode->setScale( R, R, R );
+
+    p->visualNode = p->sceneNode->createChildSceneNode( NameGenerator::Next("sphere") );
+    p->visualNode->attachObject( p->visualEntity );
+    p->visualNode->setScale( R, R, R );
+    p->visualNode->setInheritOrientation( true );
+    p->visualNode->setInheritScale( false );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );

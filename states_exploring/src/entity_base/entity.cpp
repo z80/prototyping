@@ -1,6 +1,7 @@
 
 #include "entity.h"
 #include "state_manager.h"
+#include "name_generator.h"
 #include "OgreSceneManager.h"
 
 namespace Entity
@@ -8,7 +9,11 @@ namespace Entity
 
 Entity::Entity()
 {
-    sceneNode = 0;
+    Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    sceneNode = smgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next( "Entity" ) );
+    sceneNode->setInheritOrientation( true );
+    sceneNode->setInheritScale( false );
+
     mType     = TUnspecified;
 }
 
