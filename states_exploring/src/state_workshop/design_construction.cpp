@@ -6,6 +6,8 @@
 #include "site.h"
 #include "part_manager_base.h"
 
+#include <iostream>
+
 namespace Entity
 {
 
@@ -136,6 +138,11 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
     // Absolute coordinates for the ray.
     Ogre::Vector3 r0 = ray.getOrigin();
     Ogre::Vector3 a  = ray.getDirection();
+
+    std::cout << "a_abs: " << a.x << " "
+                           << a.y << " "
+                           << a.z << "   ";
+
     // Need to convery those to relative to assembly node.
     Ogre::SceneNode * camParent   = cam->getParentSceneNode()->getParentSceneNode();
     Ogre::SceneNode * wsSceneNode = workshop->sceneNode;
@@ -150,6 +157,10 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
     Ogre::Quaternion aq( 0.0, a.x, a.y, a.z );
     aq = wsQ.Inverse() * aq * wsQ;
     a = Ogre::Vector3( aq.x, aq.y, aq.z );
+
+    std::cout << "a: " << a.x << " "
+                       << a.y << " "
+                       << a.z << "   ";
 
     Ogre::Vector3 x, y, n;
     cameraPlane( x, y, n );
@@ -206,12 +217,16 @@ bool DesignConstruction::drag()
         return false;
 
     EntityPart * p = parts[selectedPartIndex];
-    const Ogre::Vector3 origin = p->relR();
+    const Ogre::Vector3 origin = Ogre::Vector3::ZERO; //p->relR();
 
     Ogre::Vector3 dest;
     mouseAbs( dest, origin );
 
-    dest = Ogre::Vector3( 0.0, 3.0, 0.0 );
+    std::cout << "dest: " << dest.x << " "
+                          << dest.y << " "
+                          << dest.z << std::endl;
+
+    //dest = Ogre::Vector3( 0.0, 3.0, 0.0 );
     p->setR( dest );
 
     return true;

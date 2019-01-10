@@ -66,7 +66,6 @@ EntityPart::EntityPart()
 
     visualEntity   = 0;
     visualNode     = 0;
-    sceneNode      = 0;
     rigidBody      = 0;
     collisionShape = 0;
     bodyState      = 0;

@@ -26,6 +26,8 @@
 #include "lua.hpp"
 #include "lua_utils.h"
 
+#include <iostream>
+
 using namespace Ogre;
 
 static StateManager g_sm;
@@ -212,6 +214,16 @@ bool StateManager::mouseRay( Ogre::Ray & ray )
             static_cast<Ogre::Real>( width );
     const Ogre::Real y = static_cast<Ogre::Real>( mouseAtY - top ) /
             static_cast<Ogre::Real>( height );
+
+    std::cout << "at: " << mouseAtX << " "
+                        << mouseAtY << "   ";
+
+    std::cout << "xy: " << x << " "
+                        << y << "   ";
+
+    const Real ratio  = mCamera->getAspectRatio();
+    const Ogre::Radian fovY  = mCamera->getFOVy();
+
     ray = mCamera->getCameraToViewportRay( x, y );
     return true;
 }
