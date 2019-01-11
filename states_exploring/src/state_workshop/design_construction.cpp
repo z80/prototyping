@@ -139,9 +139,9 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
     Ogre::Vector3 r0 = ray.getOrigin();
     Ogre::Vector3 a  = ray.getDirection();
 
-    std::cout << "a_abs: " << a.x << " "
+    /*std::cout << "a_abs: " << a.x << " "
                            << a.y << " "
-                           << a.z << "   ";
+                           << a.z << "   ";*/
 
     // Need to convery those to relative to assembly node.
     Ogre::SceneNode * camParent   = cam->getParentSceneNode()->getParentSceneNode();
@@ -158,9 +158,9 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
     aq = wsQ.Inverse() * aq * wsQ;
     a = Ogre::Vector3( aq.x, aq.y, aq.z );
 
-    std::cout << "a: " << a.x << " "
+    /*std::cout << "a: " << a.x << " "
                        << a.y << " "
-                       << a.z << "   ";
+                       << a.z << "   ";*/
 
     Ogre::Vector3 x, y, n;
     cameraPlane( x, y, n );
