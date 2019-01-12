@@ -216,11 +216,16 @@ bool StateManager::mouseRay( Ogre::Ray & ray )
     std::cout << "f: " << screenX << " "
                        << screenY << std::endl;
 
-    const Matrix4 mp = mCamera->getProjectionMatrix();
-    const Matrix4 mv = mCamera->getViewMatrix(true);
-    const Matrix4 mv2 = mCamera->getViewMatrix();
+    const Ogre::Real Zn = 1.0;
+    const Ogre::Real Zf = 2.0;
 
-    Matrix4 inverseVP = (mCamera->getProjectionMatrix() * mCamera->getViewMatrix(true)).inverse();
+    Matrix4 mp = mCamera->getProjectionMatrix();
+    const Matrix4 mv = mCamera->getViewMatrix(true);
+
+    mp[2][2] = -(Zf+Zn)/(Zf-Zn);
+    mp[2][3] = -(Zf*Zn)/(Zf-Zn)*2.0;
+
+    Matrix4 inverseVP = (mp * mv).inverse();
 
     const Matrix4 & m = inverseVP;
     std::cout << m[0][0] << " " << m[0][1] << " " << m[0][2] << " " << m[0][3] << std::endl;
