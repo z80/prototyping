@@ -65,6 +65,7 @@ public:
     bool rayQuery(const Ogre::Ray & ray, Entity::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
     bool mouseQuery( Entity::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
     bool mouseRay( Ogre::Ray & ray );
+    void mouseScreenPos( int & x, int & y );
     Ogre::Vector2 relMouseRay();
 
 protected:

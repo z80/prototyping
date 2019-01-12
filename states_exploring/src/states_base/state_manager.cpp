@@ -291,6 +291,12 @@ bool StateManager::mouseRay( Ogre::Ray & ray )
     return true;
 }
 
+void StateManager::mouseScreenPos( int & x, int & y )
+{
+    x = mouseAtX;
+    y = mouseAtY;
+}
+
 Vector2 StateManager::relMouseRay()
 {
     Ogre::Viewport * v = mCamera->getViewport();
