@@ -207,14 +207,18 @@ bool StateManager::mouseRay( Ogre::Ray & ray )
     const bool grab = windowGrab;
     if ( grab )
         return false;
+    /*
     std::cout << "i: " << mouseAtX << " "
                        << mouseAtY << "   ";
+                       */
 
     Ogre::RenderWindow * w = getRenderWindow();
-    Ogre::Real screenX = (Ogre::Real)((Ogre::Real)mouseAtX / (Ogre::Real)w->getWidth());
-    Ogre::Real screenY = (Ogre::Real)((Ogre::Real)mouseAtY / (Ogre::Real)w->getHeight());
+    const Ogre::Real screenX = (Ogre::Real)((Ogre::Real)mouseAtX / (Ogre::Real)w->getWidth());
+    const Ogre::Real screenY = (Ogre::Real)((Ogre::Real)mouseAtY / (Ogre::Real)w->getHeight());
+    /*
     std::cout << "f: " << screenX << " "
                        << screenY << std::endl;
+                       */
 
     const Ogre::Real Zn = 1.0;
     const Ogre::Real Zf = 2.0;
@@ -225,13 +229,15 @@ bool StateManager::mouseRay( Ogre::Ray & ray )
     mp[2][2] = -(Zf+Zn)/(Zf-Zn);
     mp[2][3] = -(Zf*Zn)/(Zf-Zn)*2.0;
 
-    Matrix4 inverseVP = (mp * mv).inverse();
+    const Matrix4 inverseVP = (mp * mv).inverse();
 
+    /*
     const Matrix4 & m = inverseVP;
     std::cout << m[0][0] << " " << m[0][1] << " " << m[0][2] << " " << m[0][3] << std::endl;
     std::cout << m[1][0] << " " << m[1][1] << " " << m[1][2] << " " << m[1][3] << std::endl;
     std::cout << m[2][0] << " " << m[2][1] << " " << m[2][2] << " " << m[2][3] << std::endl;
     std::cout << m[3][0] << " " << m[3][1] << " " << m[3][2] << " " << m[3][3] << std::endl;
+    */
 
 #if OGRE_NO_VIEWPORT_ORIENTATIONMODE == 0
     // We need to convert screen point to our oriented viewport (temp solution)
@@ -241,40 +247,42 @@ bool StateManager::mouseRay( Ogre::Ray & ray )
     if ((int)mCamera->getOrientationMode()&1) screenY = 1.f - screenY;
 #endif
 
-    Real nx = (2.0f * screenX) - 1.0f;
-    Real ny = 1.0f - (2.0f * screenY);
+    const Real nx = (2.0f * screenX) - 1.0f;
+    const Real ny = 1.0f - (2.0f * screenY);
+    /*
     std::cout << "n: " << nx << " "
                        << ny << std::endl;
+                       */
     Vector3 nearPoint(nx, ny, -1.f);
-    std::cout << "np: " << nearPoint.x << " "
+    /*std::cout << "np: " << nearPoint.x << " "
                         << nearPoint.y << " "
-                        << nearPoint.z << std::endl;
+                        << nearPoint.z << std::endl;*/
     // Use midPoint rather than far point to avoid issues with infinite projection
     Vector3 midPoint (nx, ny,  0.0f);
-    std::cout << "mp: " << midPoint.x << " "
+    /*std::cout << "mp: " << midPoint.x << " "
                         << midPoint.y << " "
-                        << midPoint.z << std::endl;
+                        << midPoint.z << std::endl;*/
 
     // Get ray origin and ray target on near plane in world space
     Vector3 rayOrigin, rayTarget;
 
     rayOrigin = inverseVP * nearPoint;
-    std::cout << "ro: " << rayOrigin.x << " "
+    /*std::cout << "ro: " << rayOrigin.x << " "
                         << rayOrigin.y << " "
-                        << rayOrigin.z << std::endl;
+                        << rayOrigin.z << std::endl;*/
     rayTarget = inverseVP * midPoint;
-    std::cout << "rt: " << rayTarget.x << " "
+    /*std::cout << "rt: " << rayTarget.x << " "
                         << rayTarget.y << " "
-                        << rayTarget.z << std::endl;
+                        << rayTarget.z << std::endl;*/
 
     Vector3 rayDirection = rayTarget - rayOrigin;
 
-    std::cout << "d: " << rayDirection.x << " "
+    /*std::cout << "d: " << rayDirection.x << " "
                        << rayDirection.y << " "
                        << rayDirection.z << std::endl;
     std::cout << "o: " << rayOrigin.x << " "
                        << rayOrigin.y << " "
-                       << rayOrigin.z << std::endl;
+                       << rayOrigin.z << std::endl;*/
 
     rayDirection.normalise();
 
