@@ -24,6 +24,8 @@ public:
     //static template<typename T> T * cast<T>( Entity * e );
 
     void setSceneParent( Entity * parent, bool inheritRotation = true );
+
+    void relativePose( Entity * other, Ogre::Vector3 & r, Ogre::Quaternion & q );
 public:
     void destroySceneNode();
 

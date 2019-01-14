@@ -53,6 +53,18 @@ void Entity::setSceneParent( Entity * parent, bool inheritRotation )
     sceneNode->setInheritOrientation( inheritRotation );
 }
 
+void Entity::relativePose( Entity * other, Ogre::Vector3 & r, Ogre::Quaternion & q )
+{
+    // root->a->b->c->d->e->this
+    // root->a->b->other->f->g
+    // The idea is to accumulate relative position and orientation.
+    Ogre::Vector3    r = Ogre::Vector3::ZERO;
+    Ogre::Quaternion q = Ogre::Quaternion::IDENTITY;
+
+    Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    const Ogre::SceneNode * root = smgr->getRootSceneNode();
+}
+
 void Entity::destroySceneNode()
 {
     if ( !sceneNode )
