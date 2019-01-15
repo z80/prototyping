@@ -25,7 +25,7 @@ public:
 
     void setSceneParent( Entity * parent, bool inheritRotation = true );
 
-    void relativePose( Entity * other, Ogre::Vector3 & r, Ogre::Quaternion & q );
+    bool relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaternion & rel_q );
 public:
     void destroySceneNode();
 

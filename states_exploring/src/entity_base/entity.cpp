@@ -53,7 +53,7 @@ void Entity::setSceneParent( Entity * parent, bool inheritRotation )
     sceneNode->setInheritOrientation( inheritRotation );
 }
 
-void Entity::relativePose( Entity * other, Ogre::Vector3 & r, Ogre::Quaternion & q )
+bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaternion & rel_q )
 {
     // root->a->b->c->d->e->this
     // root->a->b->other->f->g
@@ -63,6 +63,79 @@ void Entity::relativePose( Entity * other, Ogre::Vector3 & r, Ogre::Quaternion &
 
     Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
     const Ogre::SceneNode * root = smgr->getRootSceneNode();
+
+    // Get all ancestors of current node.
+    // Make it static as graphics is in one thread.
+    static std::vector<Ogre::SceneNode *> allAncestorsA;
+    allAncestorsA.clear();
+    Ogre::SceneNode * nodeA = this->sceneNode;
+    do {
+        allAncestorsA.push_back( nodeA );
+        nodeA = nodeA->getParentSceneNode();
+    } while ( nodeA != 0 );
+    const size_t allQtyA = allAncestorsA.size();
+
+    Ogre::SceneNode * nodeB = other->sceneNode;
+    static std::vector<Ogre::SceneNode *> ancestorsB;
+    ancestorsB.clear();
+    size_t indA = allQtyA;
+    do {
+        ancestorsB.push_back( nodeB );
+        // Check if nodeB is in allAncestorsA.
+        for ( size_t i=0; i<allQtyA; i++ )
+        {
+            nodeA = allAncestorsA[i];
+            if ( nodeA == nodeB )
+            {
+                indA = i;
+                break;
+            }
+        }
+        if ( indA != allQtyA )
+            break;
+        // Get parent.
+        nodeB = nodeB->getParentSceneNode();
+    } while ( nodeB != 0 );
+
+    // If reached the root and didn't meed 
+    // anything common just break.
+    if ( indA == allQtyA )
+        return false;
+
+    // Here there is a closest common ancestor.
+    // First find pose of nodeA in it's ref. frame.
+    Ogre::Vector3    ra = Ogre::Vector3::ZERO;
+    Ogre::Quaternion qa = Ogre::Quaternion::IDENTITY;
+    for ( size_t i=0; i<(indA-1); i++ )
+    {
+        nodeA = allAncestorsA[i];
+        const Ogre::Quaternion q = nodeA->getOrientation();
+        ra = q*ra;
+        const Ogre::Vector3    r = nodeA->getPosition();
+        ra = r + ra;
+
+        qa = q * qa;
+    }
+
+    Ogre::Vector3    rb = Ogre::Vector3::ZERO;
+    Ogre::Quaternion qb = Ogre::Quaternion::IDENTITY;
+    const size_t qtyB = ancestorsB.size()-1;
+    for ( size_t i=0; i<qtyB; i++ )
+    {
+        Ogre::SceneNode * nodeB = ancestorsB[i];
+        const Ogre::Quaternion q = nodeB->getOrientation();
+        rb = q*rb;
+        const Ogre::Vector3    r = nodeB->getPosition();
+        rb = r + rb;
+
+        qb = q * qb;
+    }
+
+    rel_r = ra - rb;
+    // This might be wrong. 
+    // I probably don't need quaternion at all.
+    rel_q = qa * qb.Inverse();
+    return true;
 }
 
 void Entity::destroySceneNode()
