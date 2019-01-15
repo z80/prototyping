@@ -39,7 +39,7 @@ void WorkshopState::enter()
 {
     if ( !paused )
     {
-        designCtrl = new Entity::DesignConstruction();
+        designCtrl = new Osp::DesignConstruction();
     }
 
     Ogre::Viewport * v = StateManager::getSingletonPtr()->getCamera()->getViewport();

@@ -201,7 +201,7 @@ void GameState::createObjects()
     cube  = StateManager::getSingletonPtr()->getPartsManager()->create( "cube" );
     solSys = StateManager::getSingletonPtr()->getPlanetsManager();
 
-    Entity::Site * s = StateManager::getSingletonPtr()->getSiteManager()->current( "assembly" );
+    Osp::Site * s = StateManager::getSingletonPtr()->getSiteManager()->current( "assembly" );
     cube->setSceneParent( s );
 
     // Debugging object to see at least something.

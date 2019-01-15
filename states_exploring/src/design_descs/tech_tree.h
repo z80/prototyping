@@ -11,7 +11,7 @@ namespace Config
     class ConfigReader;
 }
 
-namespace Entity
+namespace Osp
 {
 
 struct ConnectionDesc

@@ -6,7 +6,7 @@
 #include "entity_world.h"
 #include "state_manager.h"
 
-namespace Entity
+namespace Osp
 {
 
 Site::Site()

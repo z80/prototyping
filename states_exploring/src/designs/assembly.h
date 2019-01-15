@@ -6,7 +6,7 @@
 #include "entity_planet.h"
 #include "design.h"
 
-namespace Entity
+namespace Osp
 {
 
 class AssembliesManager;
@@ -40,9 +40,9 @@ public:
     void setParent( EntityPlanet * planet );
     void setParentRf( EntityPlanet * planet );
 
-    void deletePart( EntityPart * part );
-    void deleteConnection( EntityPart * partA, EntityPart * partB );
-    void connectionEstablished( EntityPart * partA, EntityPart * partB );
+    void deletePart( Block * part );
+    void deleteConnection( Block * partA, Block * partB );
+    void connectionEstablished( Block * partA, Block * partB );
 
     void computeAssemblyRQVW();
     void computePartsRQVW();
@@ -65,7 +65,7 @@ public:
     EntityPlanet    * parent;
     Ogre::SceneNode * sceneNode;
 
-    std::vector<EntityPart *>       parts;
+    std::vector<Block *>       parts;
     std::vector<EntityConnection *> connections;
     AssembliesManager * assembliesMgr;
 };

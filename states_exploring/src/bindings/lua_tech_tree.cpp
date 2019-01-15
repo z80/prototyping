@@ -9,15 +9,15 @@ static const char META_T_NAME[] = "TT";
 
 static int lua_create( lua_State * L )
 {
-    Entity::TechTree * e = StateManager::getSingletonPtr()->getTechTree();
+    Osp::TechTree * e = StateManager::getSingletonPtr()->getTechTree();
     if ( !e )
     {
         lua_pushboolean( L, 0 );
         Ogre::LogManager::getSingletonPtr()->logError( "Failed to retrieve TechTree" );
         return 1;
     }
-    Entity::TechTree * * p = reinterpret_cast<Entity::TechTree * *>(
-                lua_newuserdata( L, sizeof(Entity::TechTree *)) );
+    Osp::TechTree * * p = reinterpret_cast<Osp::TechTree * *>(
+                lua_newuserdata( L, sizeof(Osp::TechTree *)) );
     *p = e;
     // Get metatable.
     luaL_getmetatable( L, META_T_NAME );
@@ -35,7 +35,7 @@ static int lua_create( lua_State * L )
 
 static int lua_gc( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                                     lua_touserdata( L, 1 ) );
 
     // Here do nothing as it is singleton managed
@@ -45,7 +45,7 @@ static int lua_gc( lua_State * L )
 
 static int lua_clearNodes( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                 lua_touserdata( L, 1 ) );
     tt->nodes.clear();
     return 0;
@@ -53,10 +53,10 @@ static int lua_clearNodes( lua_State * L )
 
 static int lua_addNode( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                 lua_touserdata( L, 1 ) );
 
-    Entity::TechNode n;
+    Osp::TechNode n;
     n.enableable = false;
     n.enabled    = false;
     n.name       = "";
@@ -155,20 +155,20 @@ static int lua_addNode( lua_State * L )
 
 static int lua_clearParts( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                 lua_touserdata( L, 1 ) );
     tt->partDescs.clear();
     return 0;
 }
 
-static bool readConnection( lua_State * L, Entity::ConnectionDesc & c );
+static bool readConnection( lua_State * L, Osp::ConnectionDesc & c );
 
 static int lua_addPart( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                 lua_touserdata( L, 1 ) );
 
-    Entity::PartDesc p;
+    Osp::PartDesc p;
     p.name        = "";
     p.description = "";
     p.tooltip     = "";
@@ -236,7 +236,7 @@ static int lua_addPart( lua_State * L )
             {
                 // We are in "connection" table now.
                 // Need to read it.
-                Entity::ConnectionDesc c;
+                Osp::ConnectionDesc c;
                 const bool connOk = readConnection( L, c );
                 if ( connOk )
                     p.connections.push_back( c );
@@ -260,7 +260,7 @@ static int lua_addPart( lua_State * L )
 
 static int lua_enableNode( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                 lua_touserdata( L, 1 ) );
 
     const char * name = lua_tostring( L, 2 );
@@ -272,7 +272,7 @@ static int lua_enableNode( lua_State * L )
 
 static int lua_clearCategories( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                 lua_touserdata( L, 1 ) );
 
     tt->panelContent.clear();
@@ -281,10 +281,10 @@ static int lua_clearCategories( lua_State * L )
 
 static int lua_addCategory( lua_State * L )
 {
-    Entity::TechTree * tt = *reinterpret_cast<Entity::TechTree * *>(
+    Osp::TechTree * tt = *reinterpret_cast<Osp::TechTree * *>(
                 lua_touserdata( L, 1 ) );
 
-    Entity::CategoryDesc c;
+    Osp::CategoryDesc c;
     c.name        = "";
     c.description = "";
     c.tooltip     = "";
@@ -383,7 +383,7 @@ int luaopen_techTree( lua_State * L )
 
 
 
-static bool readConnection( lua_State * L, Entity::ConnectionDesc & c )
+static bool readConnection( lua_State * L, Osp::ConnectionDesc & c )
 {
     lua_pushstring( L, "r" );
     lua_gettable( L, -2 );

@@ -4,7 +4,7 @@
 
 #include "entity_part.h"
 
-namespace Entity
+namespace Osp
 {
 
 

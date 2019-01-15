@@ -11,7 +11,7 @@
 #include "BtOgreExtras.h"
 #include "OgreOggSoundManager.h"
 
-namespace Entity
+namespace Osp
 {
 
 

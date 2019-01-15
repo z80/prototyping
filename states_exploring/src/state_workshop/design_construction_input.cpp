@@ -1,10 +1,11 @@
 
 #include "design_construction.h"
+#include "state_manager.h"
 #include "tech_tree_panel.h"
 #include "OgreInput.h"
 
 
-namespace Entity
+namespace Osp
 {
 
 bool DesignConstruction::frameStarted(const Ogre::FrameEvent& evt)
@@ -29,7 +30,7 @@ bool DesignConstruction::keyPressed(const OgreBites::KeyboardEvent& evt)
         if ( evt.keysym.sym == 27 )
         {
             moveMode          = TFree;
-            selectedPartIndex = -1;
+            selectedBlockIndex = -1;
             return true;
         }
     }
@@ -80,27 +81,39 @@ bool DesignConstruction::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
     if ( techTreePanel->isHovered() )
-        return true;
-    if ( ( moveMode == TDrag ) || (moveMode == TRotate) )
-    {
-        moveMode = TFree;
-        return true;
-    }
-    else if ( moveMode == TFree )
-    {
-        int index;
-        const bool partSelected = trySelect( index );
-        if ( partSelected )
-        {
-            moveMode = TDrag;
-            return true;
-        }
-    }
+        return false;
+
+    StateManager::getSingletonPtr()->mouseScreenPos( mouseDownX, mouseDownY );
+
     return false;
 }
 
 bool DesignConstruction::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
+    int mouseUpX, mouseUpY;
+    StateManager::getSingletonPtr()->mouseScreenPos( mouseUpX, mouseUpY );
+
+    if ( techTreePanel->isHovered() )
+        return false;
+
+    if ( ( mouseDownX == mouseUpX ) && ( mouseDownY == mouseUpY ) )
+    {
+        if ( ( moveMode == TDrag ) || (moveMode == TRotate) )
+        {
+            moveMode = TFree;
+            return true;
+        }
+        else if ( moveMode == TFree )
+        {
+            int index;
+            const bool partSelected = trySelect( index );
+            if ( partSelected )
+            {
+                moveMode = TDrag;
+                return true;
+            }
+        }
+    }
     return false;
 }
 

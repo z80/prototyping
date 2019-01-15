@@ -5,10 +5,10 @@
 #include "Ogre.h"
 #include "entity_part.h"
 
-namespace Entity
+namespace Osp
 {
 
-class EntityPart;
+class Block;
 
 struct Action
 {

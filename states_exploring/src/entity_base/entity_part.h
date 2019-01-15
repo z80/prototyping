@@ -16,7 +16,7 @@
 
 class StateManager;
 
-namespace Entity
+namespace Osp
 {
 
 struct Sound
@@ -46,7 +46,7 @@ struct Sound
 
 class EntityWorld;
 class EntityPlanet;
-class EntityPart;
+class Block;
 class Assembly;
 
 
@@ -61,19 +61,19 @@ public:
 
     void destroy();
 
-    EntityPart * partA;
-    EntityPart * partB;
+    Block * partA;
+    Block * partB;
     btTypedConstraint * constraint;
     Assembly     * assembly;
     EntityPlanet * planet;
     int          assemblyInd;
 };
 
-class EntityPart: public Entity
+class Block: public Entity
 {
 public:
-    EntityPart();
-    virtual ~EntityPart();
+    Block();
+    virtual ~Block();
 
     virtual void loadResources();
 
@@ -188,7 +188,7 @@ public:
     void fromAssembly();
 };
 
-typedef std::shared_ptr<EntityPart> EntityPartPtr;
+typedef std::shared_ptr<Block> EntityPartPtr;
 
 
 

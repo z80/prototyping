@@ -4,7 +4,7 @@
 
 #include "entity.h"
 
-namespace Entity
+namespace Osp
 {
 
 class EntityFactory: public Ogre::Singleton<EntityFactory>

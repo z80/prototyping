@@ -7,7 +7,7 @@
 #include "group_item.h"
 #include "ImguiManager.h"
 
-namespace Entity
+namespace Osp
 {
     class DesignConstruction;
 }
@@ -41,7 +41,7 @@ public:
 private:
 
     bool paused;
-    Entity::DesignConstruction * designCtrl;
+    Osp::DesignConstruction * designCtrl;
 };
 
 

@@ -4,7 +4,7 @@
 #include "config_reader.h"
 #include "tech_tree.h"
 
-namespace Entity
+namespace Osp
 {
 
 TechTreePanel::TechTreePanel()
@@ -161,7 +161,7 @@ static void panelItem( const PartDesc & item,
         const ImVec2 sz( iconSz, iconSz );
         const bool clicked = ImGui::ImageButton( (ImTextureID)item.iconHandle, sz );
         if ( clicked )
-            cb->part( item.name );
+            cb->block( item.name );
         ImGui::Text( "%s", item.name.c_str() );
     }
     ImGui::EndGroup();

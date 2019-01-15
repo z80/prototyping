@@ -1,7 +1,7 @@
 
 #include "player_local.h"
 
-namespace Entity
+namespace Osp
 {
 
 EntityPlayer::EntityPlayer()

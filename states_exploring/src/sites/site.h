@@ -9,7 +9,7 @@ class btRigidBody;
 class btCollisionShape;
 
 
-namespace Entity
+namespace Osp
 {
 
 class EntityPlanet;

@@ -10,7 +10,7 @@ namespace Config
     class ConfigReader;
 }
 
-namespace Entity
+namespace Osp
 {
 
 class EntityPlanet;
@@ -32,7 +32,7 @@ public:
     /// Ways to create new assemblies.
     Assembly * create( const Design & design );
     Assembly * create( const Ogre::String & fname );
-    Assembly * create( const std::vector<EntityPart *> & parts,
+    Assembly * create( const std::vector<Block *> & parts,
                        const std::vector<EntityConnection *> & connections );
     /// Removes an assembly. Mostly it removes a pointer from the array.
     void remove( Assembly * assembly );

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-namespace Entity
+namespace Osp
 {
 
 
@@ -110,7 +110,7 @@ bool EntityPlanet::nearSurface( const Assembly & a ) const
 }
 
 
-void EntityPlanet::addForces( EntityPart & part )
+void EntityPlanet::addForces( Block & part )
 {
     part.rigidBody->clearForces();
     if ( !part.rigidBody->isActive() )

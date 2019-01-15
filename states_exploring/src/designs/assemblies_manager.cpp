@@ -6,7 +6,7 @@
 #include "entity_world.h"
 #include "assembly.h"
 
-namespace Entity
+namespace Osp
 {
 
 AssembliesManager::AssembliesManager()
@@ -87,7 +87,7 @@ Assembly * AssembliesManager::create( const Ogre::String & fname )
     return a;
 }
 
-Assembly * AssembliesManager::create( const std::vector<EntityPart *> & parts,
+Assembly * AssembliesManager::create( const std::vector<Block *> & parts,
                                       const std::vector<EntityConnection *> & connections )
 {
     Assembly * a = new Assembly();
@@ -111,7 +111,7 @@ Assembly * AssembliesManager::create( const std::vector<EntityPart *> & parts,
     const size_t partQty = parts.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         p->assembly = a;
     }
 

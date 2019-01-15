@@ -2,7 +2,7 @@
 #include "site_manager_base.h"
 #include "site.h"
 
-namespace Entity
+namespace Osp
 {
 
 SiteManagerBase::SiteManagerBase()

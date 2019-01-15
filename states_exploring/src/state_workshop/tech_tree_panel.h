@@ -4,7 +4,7 @@
 
 #include "Ogre.h"
 
-namespace Entity
+namespace Osp
 {
 
 struct PartDesc;
@@ -15,7 +15,7 @@ public:
     TechTreePanelCallback() {}
     virtual ~TechTreePanelCallback() {}
 
-    virtual void part( const Ogre::String & name ) = 0;
+    virtual void block( const Ogre::String & name ) = 0;
 };
 
 class TechTreePanel

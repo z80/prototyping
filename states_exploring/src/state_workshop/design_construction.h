@@ -6,11 +6,12 @@
 #include "OgreInput.h"
 #include "tech_tree_panel.h"
 
-namespace Entity
+namespace Osp
 {
 
 class Site;
-class EntityPart;
+class Block;
+class PivotMarker;
 class TechTreePanel;
 
 class DesignConstruction: public TechTreePanelCallback
@@ -26,7 +27,7 @@ public:
     void leave();
 
     /// TechTreePanel callback implementation.
-    void part( const Ogre::String & name );
+    void block( const Ogre::String & name );
 
     /// Hovering mouse or not.
     bool isHovered() const;
@@ -57,13 +58,17 @@ public:
     bool trySelect( int & index );
     /// Drag part.
     bool drag();
+    /// Show/hide pivot markers.
+    void setPivotsVisible( bool en );
 
     Site          * workshop;
     TechTreePanel * techTreePanel;
 
-    int selectedPartIndex;
+    int selectedBlockIndex;
+    int mouseDownX, mouseDownY;
     MoveMode moveMode;
-    std::vector<EntityPart *> parts;
+    std::vector<Block *>        blocks;
+    std::vector<PivotMarker * > markers;
 
     Ogre::Real snapDist;
 };

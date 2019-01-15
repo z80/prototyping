@@ -4,7 +4,7 @@
 
 #include "Ogre.h"
 
-namespace Entity
+namespace Osp
 {
 
 class Site;

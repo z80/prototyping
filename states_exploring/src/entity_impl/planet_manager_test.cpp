@@ -3,7 +3,7 @@
 #include "entity_test_planet.h"
 
 
-namespace Entity
+namespace Osp
 {
 
 PlanetManagerTest::PlanetManagerTest()

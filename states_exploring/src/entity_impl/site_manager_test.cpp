@@ -5,7 +5,7 @@
 #include "entity_planet.h"
 #include "site.h"
 
-namespace Entity
+namespace Osp
 {
 
 SiteManagerTest::SiteManagerTest()

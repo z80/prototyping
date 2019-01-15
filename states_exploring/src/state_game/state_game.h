@@ -50,11 +50,11 @@ private:
     bool disableMouseCtrl;
     bool toWorkshopMode;
 
-    Entity::EntityWorld       * world;
-    Entity::EntityPart      //* plane,
+    Osp::EntityWorld       * world;
+    Osp::Block      //* plane,
                               * cube;
-    Entity::EntityPlanet      * planet;
-    Entity::PlanetManagerBase * solSys;
+    Osp::EntityPlanet      * planet;
+    Osp::PlanetManagerBase * solSys;
 
     void createObjects();
     void destroyObjects();

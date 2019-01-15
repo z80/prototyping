@@ -4,7 +4,7 @@
 #include "name_generator.h"
 #include "OgreSceneManager.h"
 
-namespace Entity
+namespace Osp
 {
 
 Entity::Entity()

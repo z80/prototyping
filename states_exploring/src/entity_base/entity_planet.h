@@ -13,7 +13,7 @@ namespace Config
     class ConfigReader;
 }
 
-namespace Entity
+namespace Osp
 {
 
 
@@ -39,7 +39,7 @@ public:
     bool nearSurface( const Assembly & a ) const;
 
     /// Add all forces to a body in sphere of influence.
-    void addForces( EntityPart & part );
+    void addForces( Block & part );
     void setR( const Ogre::Vector3 & at );
     void setQ( const Ogre::Quaternion & q );
 

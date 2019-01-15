@@ -11,9 +11,9 @@ static const char META_T_NAME[] = "EP";
 
 static int lua_partCreate( lua_State * L )
 {
-    Entity::EntityPart * e = new Entity::EntityPart();
-    Entity::EntityPart * * p = reinterpret_cast<Entity::EntityPart * *>(
-                lua_newuserdata( L, sizeof(Entity::EntityPart *)) );
+    Osp::Block * e = new Osp::Block();
+    Osp::Block * * p = reinterpret_cast<Osp::Block * *>(
+                lua_newuserdata( L, sizeof(Osp::Block *)) );
     *p = e;
     // Get metatable.
     luaL_getmetatable( L, META_T_NAME );
@@ -31,7 +31,7 @@ static int lua_partCreate( lua_State * L )
 
 static int lua_partGc( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                                     lua_touserdata( L, 1 ) );
 
     delete p;
@@ -40,7 +40,7 @@ static int lua_partGc( lua_State * L )
 
 static int lua_setMesh( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
     const char * meshName = lua_tostring( L, 2 );
     bool res = p->setEntity( meshName );
@@ -50,7 +50,7 @@ static int lua_setMesh( lua_State * L )
 
 static int lua_setMaterial( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
     const char * materialName = lua_tostring( L, 2 );
     bool res = p->setEntity( materialName );
@@ -60,7 +60,7 @@ static int lua_setMaterial( lua_State * L )
 
 static int lua_setCollisionShape( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
 
     const int top = lua_gettop( L );
@@ -83,7 +83,7 @@ static int lua_setCollisionShape( lua_State * L )
 
 static int lua_setMass( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
 
     const btScalar m = static_cast<btScalar>( lua_tonumber( L, 2 ) );
@@ -94,7 +94,7 @@ static int lua_setMass( lua_State * L )
 
 static int lua_setInertia( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
 
     Ogre::Vector3 I;
@@ -113,7 +113,7 @@ static int lua_setInertia( lua_State * L )
 
 static int lua_initDynamics( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
     p->initDynamics();
 
@@ -122,7 +122,7 @@ static int lua_initDynamics( lua_State * L )
 
 static int lua_applyForce( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
     Ogre::Vector3 at;
     const bool atExists = luaReadVector( L, 2, at );
@@ -148,7 +148,7 @@ static int lua_applyForce( lua_State * L )
 
 static int lua_applyTorque( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
     Ogre::Vector3 T;
     const bool tExists = luaReadVector( L, 2, T );
@@ -166,7 +166,7 @@ static int lua_applyTorque( lua_State * L )
 
 static int lua_setPosition( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
     Ogre::Vector3 at;
     const bool atExists = luaReadVector( L, 2, at );
@@ -184,7 +184,7 @@ static int lua_setPosition( lua_State * L )
 
 static int lua_setRotation( lua_State * L )
 {
-    Entity::EntityPart * p = *reinterpret_cast<Entity::EntityPart * *>(
+    Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 1 ) );
     Ogre::Quaternion q;
     const bool qExists = luaReadQuat( L, 2, q );

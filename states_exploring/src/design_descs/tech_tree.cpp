@@ -4,7 +4,7 @@
 #include "state_manager.h"
 #include "lua.hpp"
 
-namespace Entity
+namespace Osp
 {
 
 TechTree::TechTree()

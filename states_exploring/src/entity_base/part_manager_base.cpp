@@ -2,7 +2,7 @@
 #include "part_manager_base.h"
 #include "entity_part.h"
 
-namespace Entity
+namespace Osp
 {
 
 PartManagerBase::PartManagerBase()
@@ -15,12 +15,12 @@ PartManagerBase::~PartManagerBase()
     destroyAllParts();
 }
 
-void PartManagerBase::remove( EntityPart * part )
+void PartManagerBase::remove( Block * part )
 {
     size_t qty = parts.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         if ( p == part )
         {
             const size_t qty_1 = qty-1;
@@ -38,7 +38,7 @@ void PartManagerBase::destroyAllParts()
     size_t qty = parts.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPart * p = parts[0];
+        Block * p = parts[0];
         delete p;
     }
 }

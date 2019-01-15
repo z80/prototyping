@@ -16,10 +16,10 @@ namespace Config
     class ConfigReader;
 }
 
-namespace Entity
+namespace Osp
 {
     class Entity;
-    class EntityPart;
+    class Block;
     class EntityPlanet;
     class EntityWorld;
     class PartManagerBase;
@@ -52,18 +52,18 @@ public:
 
     Ogre::SceneManager        * getSceneManager();
     Ogre::Camera              * getCamera();
-    Entity::EntityWorld       * getWorld();
-    Entity::PartManagerBase   * getPartsManager();
-    Entity::PlanetManagerBase * getPlanetsManager();
-    Entity::SiteManagerBase   * getSiteManager();
-    Entity::TechTree          * getTechTree();
+    Osp::EntityWorld       * getWorld();
+    Osp::PartManagerBase   * getPartsManager();
+    Osp::PlanetManagerBase * getPlanetsManager();
+    Osp::SiteManagerBase   * getSiteManager();
+    Osp::TechTree          * getTechTree();
 
     void setMouseVisible( bool en );
 
     Config::ConfigReader * getConfigReader();
     CameraCtrl   * getCameraCtrl();
-    bool rayQuery(const Ogre::Ray & ray, Entity::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
-    bool mouseQuery( Entity::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
+    bool rayQuery(const Ogre::Ray & ray, Osp::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
+    bool mouseQuery( Osp::Entity * & e, Ogre::uint32 mask = 0xFFFFFFFF );
     bool mouseRay( Ogre::Ray & ray );
     void mouseScreenPos( int & x, int & y );
     Ogre::Vector2 relMouseRay();
@@ -93,11 +93,11 @@ private:
     Ogre::Camera        * mCamera;
 
 
-    Entity::EntityWorld           * mWorld;
-    Entity::PartManagerBase       * mPartsManager;
-    Entity::PlanetManagerBase     * mPlanetsManager;
-    Entity::SiteManagerBase * mSiteManager;
-    Entity::TechTree              * mTechTree;
+    Osp::EntityWorld           * mWorld;
+    Osp::PartManagerBase       * mPartsManager;
+    Osp::PlanetManagerBase     * mPlanetsManager;
+    Osp::SiteManagerBase * mSiteManager;
+    Osp::TechTree              * mTechTree;
 
     OgreOggSound::OgreOggSoundPlugin * soundPlugin;
     Config::ConfigReader * confReader;

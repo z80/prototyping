@@ -8,15 +8,17 @@
 
 #include <iostream>
 
-namespace Entity
+namespace Osp
 {
 
 DesignConstruction::DesignConstruction()
 {
-    workshop         = 0;
-    selectedPartIndex = -1;
-    snapDist         = 0.3;
-    moveMode         = TFree;
+    workshop          = 0;
+    selectedBlockIndex = -1;
+    snapDist          = 0.3;
+    mouseDownX        = -1;
+    mouseDownY        = -1;
+    moveMode          = TFree;
 
     techTreePanel = new TechTreePanel();
 }
@@ -54,13 +56,13 @@ void DesignConstruction::leave()
 }
 
 /// TechTreePanel callback implementation.
-void DesignConstruction::part( const Ogre::String & name )
+void DesignConstruction::block( const Ogre::String & name )
 {
     PartManagerBase * pm = StateManager::getSingletonPtr()->getPartsManager();
-    EntityPart * p = pm->create( name );
+    Block * p = pm->create( name );
     p->setSceneParent( workshop );
-    parts.push_back( p );
-    selectedPartIndex = static_cast<int>( parts.size() ) - 1;
+    blocks.push_back( p );
+    selectedBlockIndex = static_cast<int>( blocks.size() ) - 1;
 
     // Specify position and rotation.
     // Rotation is easy.
@@ -192,16 +194,16 @@ bool DesignConstruction::trySelect( int & index )
     if ( e->type() != Entity::TPart )
         return false;
 
-    EntityPart * p_sel = dynamic_cast<EntityPart *>( e );
+    Block * p_sel = dynamic_cast<Block *>( e );
 
-    const size_t qty = parts.size();
+    const size_t qty = blocks.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = blocks[i];
         if ( p == p_sel )
         {
             index = static_cast<int>( i );
-            selectedPartIndex = index;
+            selectedBlockIndex = index;
             return true;
         }
     }
@@ -213,10 +215,10 @@ bool DesignConstruction::drag()
 {
     if ( techTreePanel->isHovered() )
         return false;
-    if ( selectedPartIndex < 0 )
+    if ( selectedBlockIndex < 0 )
         return false;
 
-    EntityPart * p = parts[selectedPartIndex];
+    Block * p = blocks[selectedBlockIndex];
     const Ogre::Vector3 origin = Ogre::Vector3::ZERO; //p->relR();
 
     Ogre::Vector3 dest;
@@ -232,6 +234,10 @@ bool DesignConstruction::drag()
     return true;
 }
 
+void DesignConstruction::setPivotsVisible( bool en )
+{
+
+}
 
 
 

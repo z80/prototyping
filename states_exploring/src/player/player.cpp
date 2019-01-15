@@ -1,7 +1,7 @@
 
 #include "player.h"
 
-namespace Entity
+namespace Osp
 {
 
 Player::Player()

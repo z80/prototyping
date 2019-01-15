@@ -2,7 +2,7 @@
 #include "planet_manager_base.h"
 #include "entity_planet.h"
 
-namespace Entity
+namespace Osp
 {
 
 PlanetManagerBase::PlanetManagerBase()

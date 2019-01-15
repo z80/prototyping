@@ -14,7 +14,7 @@
 #include "entity_part.h"
 #include "entity_planet.h"
 
-namespace Entity
+namespace Osp
 {
 
 /** This class contains dynamics simulation related objects.
@@ -36,9 +36,9 @@ public:
 
     bool frameStarted( const Ogre::FrameEvent & evt, bool debugDraw = true );
     bool frameStarted( Ogre::Real dt, bool debugDraw = true );
-    void addEntity( EntityPart * part );
+    void addEntity( Block * part );
     void addEntity( EntityPlanet * part );
-    void removeEntity( EntityPart * part );
+    void removeEntity( Block * part );
     void removeEntity( EntityPlanet * part );
 
 public:

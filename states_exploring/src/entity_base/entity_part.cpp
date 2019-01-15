@@ -6,7 +6,7 @@
 #include "state_manager.h"
 #include "part_manager_base.h"
 
-namespace Entity
+namespace Osp
 {
 
 static void deleteSubshapes( btCollisionShape * s );
@@ -53,7 +53,7 @@ void EntityConnection::destroy()
 
 
 
-EntityPart::EntityPart()
+Block::Block()
     : Entity()
 {
     mType = TPart;
@@ -77,7 +77,7 @@ EntityPart::EntityPart()
     assemblyInd = -1;
 }
 
-EntityPart::~EntityPart()
+Block::~Block()
 {
     /*
             Globals::phyWorld->removeRigidBody(mNinjaBody);
@@ -93,22 +93,22 @@ EntityPart::~EntityPart()
     StateManager::getSingletonPtr()->getPartsManager()->remove( this );
 }
 
-void EntityPart::loadResources()
+void Block::loadResources()
 {
 
 }
 
-void EntityPart::setActionGroup( Ogre::int32 group )
+void Block::setActionGroup( Ogre::int32 group )
 {
     actionGroup = group;
 }
 
-void EntityPart::action( Ogre::int32 actionGroup, const Ogre::String & name, Ogre::Real value )
+void Block::action( Ogre::int32 actionGroup, const Ogre::String & name, Ogre::Real value )
 {
     // By default do nothing.
 }
 
-void EntityPart::drawGui()
+void Block::drawGui()
 {
     const ImVec2 wndSz( 340, 120 );
     ImGui::SetNextWindowBgAlpha( 0.3f ); // Transparent background
@@ -126,42 +126,42 @@ void EntityPart::drawGui()
     ImGui::End();
 }
 
-void EntityPart::drawContextMenu()
+void Block::drawContextMenu()
 {
 
 }
 
-void EntityPart::computeAirFriction()
+void Block::computeAirFriction()
 {
     //airMesh.
 }
 
-void EntityPart::selectEvent()
+void Block::selectEvent()
 {
 
 }
 
-void EntityPart::unselectEvent()
+void Block::unselectEvent()
 {
 
 }
 
-void EntityPart::contextMenuEvent()
+void Block::contextMenuEvent()
 {
 
 }
 
-void EntityPart::toWorld( EntityWorld * w )
+void Block::toWorld( EntityWorld * w )
 {
     w->phyWorld->addRigidBody( rigidBody );
 }
 
-void EntityPart::fromWorld( EntityWorld * w )
+void Block::fromWorld( EntityWorld * w )
 {
     w->phyWorld->removeRigidBody( rigidBody );
 }
 
-Ogre::Vector3 EntityPart::relV() const
+Ogre::Vector3 Block::relV() const
 {
     Ogre::Vector3 v;
     if ( !rigidBody )
@@ -179,7 +179,7 @@ Ogre::Vector3 EntityPart::relV() const
     return v;
 }
 
-void EntityPart::relV( Ogre::Real & v ) const
+void Block::relV( Ogre::Real & v ) const
 {
     if ( !rigidBody )
     {
@@ -191,20 +191,20 @@ void EntityPart::relV( Ogre::Real & v ) const
     v = vel.length();
 }
 
-void EntityPart::setV( const Ogre::Vector3 & v )
+void Block::setV( const Ogre::Vector3 & v )
 {
     btVector3 vel( v.x, v.y, v.z );
     rigidBody->setLinearVelocity( vel );
 }
 
-Ogre::Vector3 EntityPart::relW() const
+Ogre::Vector3 Block::relW() const
 {
     const btVector3 wb = rigidBody->getAngularVelocity();
     const Ogre::Vector3 wv( wb.x(), wb.y(), wb.z() );
     return wv;
 }
 
-void EntityPart::setW( const Ogre::Vector3 & w )
+void Block::setW( const Ogre::Vector3 & w )
 {
     rigidBody->setAngularVelocity( btVector3( w.x, w.y, w.z ) );
 }
@@ -213,7 +213,7 @@ void EntityPart::setW( const Ogre::Vector3 & w )
 
 
 
-bool EntityPart::setEntity( const char * mesh, const char * material )
+bool Block::setEntity( const char * mesh, const char * material )
 {
     deleteVisual();
 
@@ -242,7 +242,7 @@ bool EntityPart::setEntity( const char * mesh, const char * material )
     return res;
 }
 
-bool EntityPart::setMaterial( const char * material )
+bool Block::setMaterial( const char * material )
 {
     if ( !visualEntity )
         return false;
@@ -260,7 +260,7 @@ bool EntityPart::setMaterial( const char * material )
     return res;
 }
 
-bool EntityPart::setMask( Ogre::uint32 mask )
+bool Block::setMask( Ogre::uint32 mask )
 {
     if ( !visualEntity )
         return false;
@@ -269,7 +269,7 @@ bool EntityPart::setMask( Ogre::uint32 mask )
     return true;
 }
 
-bool EntityPart::setAirMesh( const std::string & meshFileName )
+bool Block::setAirMesh( const std::string & meshFileName )
 {
     bool res = true;
     try
@@ -285,23 +285,23 @@ bool EntityPart::setAirMesh( const std::string & meshFileName )
     return res;
 }
 
-void EntityPart::setMass( Ogre::Real & m )
+void Block::setMass( Ogre::Real & m )
 {
     mass = m;
 }
 
-void EntityPart::setInertia( const Ogre::Vector3 & i )
+void Block::setInertia( const Ogre::Vector3 & i )
 {
     inertia = i;
 }
 
-void EntityPart::setCollisionShape( btCollisionShape * shape )
+void Block::setCollisionShape( btCollisionShape * shape )
 {
     deleteCollisionShape();
     collisionShape = shape;
 }
 
-void EntityPart::initDynamics()
+void Block::initDynamics()
 {
     deleteRigidBody();
 
@@ -318,17 +318,17 @@ void EntityPart::initDynamics()
     EntityWorld::getSingletonPtr()->addEntity( this );
 }
 
-bool EntityPart::forcesApplied() const
+bool Block::forcesApplied() const
 {
     return forcesWereApplied;
 }
 
-void EntityPart::resetForcesApplied()
+void Block::resetForcesApplied()
 {
     forcesWereApplied = false;
 }
 
-void EntityPart::applyForce( const Ogre::Vector3 & f, const Ogre::Vector3 & at, bool localRf )
+void Block::applyForce( const Ogre::Vector3 & f, const Ogre::Vector3 & at, bool localRf )
 {
     forcesWereApplied = true;
     if ( localRf )
@@ -342,13 +342,13 @@ void EntityPart::applyForce( const Ogre::Vector3 & f, const Ogre::Vector3 & at, 
         rigidBody->applyForce( btVector3(f.x, f.y, f.z), btVector3( at.x, at.y, at.z ) );
 }
 
-void EntityPart::applyTorque( const Ogre::Vector3 & p )
+void Block::applyTorque( const Ogre::Vector3 & p )
 {
     forcesWereApplied = true;
     rigidBody->applyTorque( btVector3( p.x, p.y, p.z ) );
 }
 
-void EntityPart::setR( const Ogre::Vector3 & at )
+void Block::setR( const Ogre::Vector3 & at )
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
@@ -357,7 +357,7 @@ void EntityPart::setR( const Ogre::Vector3 & at )
     st->setWorldTransform( t );
 }
 
-Ogre::Vector3 EntityPart::relR() const
+Ogre::Vector3 Block::relR() const
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
@@ -367,7 +367,7 @@ Ogre::Vector3 EntityPart::relR() const
     return r;
 }
 
-void EntityPart::setQ( const Ogre::Quaternion & q )
+void Block::setQ( const Ogre::Quaternion & q )
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
@@ -376,7 +376,7 @@ void EntityPart::setQ( const Ogre::Quaternion & q )
     st->setWorldTransform( t );
 }
 
-Ogre::Quaternion EntityPart::relQ() const
+Ogre::Quaternion Block::relQ() const
 {
     btMotionState * st = rigidBody->getMotionState();
     btTransform t;
@@ -519,7 +519,7 @@ void EntityPart::setParentRf( EntityPlanet * planet )
 }
 */
 
-bool EntityPart::addSound( const std::string & fileName, const std::string & name )
+bool Block::addSound( const std::string & fileName, const std::string & name )
 {
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
     OgreOggSound::OgreOggSoundManager * m = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
@@ -546,12 +546,12 @@ bool EntityPart::addSound( const std::string & fileName, const std::string & nam
     return true;
 }
 
-void EntityPart::finalizeSounds()
+void Block::finalizeSounds()
 {
     std::sort_heap( sounds.begin(), sounds.end(), Sound::Lt );
 }
 
-bool EntityPart::playSound( const std::string & name, bool looped )
+bool Block::playSound( const std::string & name, bool looped )
 {
     std::vector<Sound>::iterator it = std::lower_bound( sounds.begin(), sounds.end(), name, Sound::Lt );
     if ( it == sounds.end() )
@@ -563,7 +563,7 @@ bool EntityPart::playSound( const std::string & name, bool looped )
     return true;
 }
 
-bool EntityPart::stopSound( const std::string & name )
+bool Block::stopSound( const std::string & name )
 {
     std::vector<Sound>::iterator it = std::lower_bound( sounds.begin(), sounds.end(), name, Sound::Lt );
     if ( it == sounds.end() )
@@ -575,7 +575,7 @@ bool EntityPart::stopSound( const std::string & name )
     return true;
 }
 
-Ogre::Vector3    EntityPart::absoluteV() const
+Ogre::Vector3    Block::absoluteV() const
 {
     Ogre::Vector3 v = relV();
     if ( parent )
@@ -599,7 +599,7 @@ Ogre::Vector3    EntityPart::absoluteV() const
     return v;
 }
 
-Ogre::Vector3    EntityPart::absoluteR() const
+Ogre::Vector3    Block::absoluteR() const
 {
     Ogre::Vector3 r = relR();
     if ( parent )
@@ -617,7 +617,7 @@ Ogre::Vector3    EntityPart::absoluteR() const
     return r;
 }
 
-Ogre::Vector3    EntityPart::absoluteW() const
+Ogre::Vector3    Block::absoluteW() const
 {
     Ogre::Vector3 w = relW();
     if ( nearSurface && parent )
@@ -632,7 +632,7 @@ Ogre::Vector3    EntityPart::absoluteW() const
     return w;
 }
 
-Ogre::Quaternion EntityPart::absoluteQ() const
+Ogre::Quaternion Block::absoluteQ() const
 {
     Ogre::Quaternion q = relQ();
     if ( parent && nearSurface )
@@ -644,7 +644,7 @@ Ogre::Quaternion EntityPart::absoluteQ() const
 }
 
 
-void EntityPart::deleteRigidBody()
+void Block::deleteRigidBody()
 {
     if ( rigidBody )
     {
@@ -661,7 +661,7 @@ void EntityPart::deleteRigidBody()
     }
 }
 
-void EntityPart::deleteCollisionShape()
+void Block::deleteCollisionShape()
 {
     if ( collisionShape )
     {
@@ -673,7 +673,7 @@ void EntityPart::deleteCollisionShape()
     }
 }
 
-void EntityPart::deleteVisual()
+void Block::deleteVisual()
 {
     Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
     if ( smgr )
@@ -693,12 +693,12 @@ void EntityPart::deleteVisual()
     }
 }
 
-void EntityPart::toAssembly()
+void Block::toAssembly()
 {
 
 }
 
-void EntityPart::fromAssembly()
+void Block::fromAssembly()
 {
     const Ogre::Quaternion assQ = assembly->relQ();
     const Ogre::Quaternion q = assQ * assemblyQ;

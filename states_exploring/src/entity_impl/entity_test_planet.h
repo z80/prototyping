@@ -5,7 +5,7 @@
 #include "entity_planet.h"
 
 
-namespace Entity
+namespace Osp
 {
 
 class EntityTestPlanet: public EntityPlanet

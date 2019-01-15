@@ -2,7 +2,7 @@
 #include "entity_world.h"
 #include "state_manager.h"
 
-namespace Entity
+namespace Osp
 {
 
 static EntityWorld * g_ew = 0;
@@ -96,7 +96,7 @@ bool EntityWorld::frameStarted( Ogre::Real dt, bool debugDraw )
     return true;
 }
 
-void EntityWorld::addEntity( EntityPart * part )
+void EntityWorld::addEntity( Block * part )
 {
     phyWorld->addRigidBody( part->rigidBody );
 }
@@ -106,7 +106,7 @@ void EntityWorld::addEntity( EntityPlanet * part )
     phyWorld->addRigidBody( part->rigidBody );
 }
 
-void EntityWorld::removeEntity( EntityPart * part )
+void EntityWorld::removeEntity( Block * part )
 {
     phyWorld->removeRigidBody( part->rigidBody );
 }

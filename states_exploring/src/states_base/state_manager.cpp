@@ -125,27 +125,27 @@ Ogre::Camera * StateManager::getCamera()
     return mCamera;
 }
 
-Entity::EntityWorld * StateManager::getWorld()
+Osp::EntityWorld * StateManager::getWorld()
 {
     return mWorld;
 }
 
-Entity::PartManagerBase * StateManager::getPartsManager()
+Osp::PartManagerBase * StateManager::getPartsManager()
 {
     return mPartsManager;
 }
 
-Entity::PlanetManagerBase * StateManager::getPlanetsManager()
+Osp::PlanetManagerBase * StateManager::getPlanetsManager()
 {
     return mPlanetsManager;
 }
 
-Entity::SiteManagerBase * StateManager::getSiteManager()
+Osp::SiteManagerBase * StateManager::getSiteManager()
 {
     return mSiteManager;
 }
 
-Entity::TechTree * StateManager::getTechTree()
+Osp::TechTree * StateManager::getTechTree()
 {
     return mTechTree;
 }
@@ -167,7 +167,7 @@ CameraCtrl * StateManager::getCameraCtrl()
 }
 
 //Ogre::RaySceneQuery   * getRaySceneQuery();
-bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * & ent, Ogre::uint32 mask )
+bool StateManager::rayQuery( const Ogre::Ray & ray, Osp::Entity * & ent, Ogre::uint32 mask )
 {
     raySceneQuery->setRay( ray );
     raySceneQuery->setQueryMask( mask );
@@ -181,10 +181,10 @@ bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * & ent, Ogre
         const Ogre::Any & a = e.movable->getUserObjectBindings().getUserAny();
         if ( a.has_value() )
         {
-            const Entity::Entity * entity = Ogre::any_cast<Entity::Entity *>( a );
+            const Osp::Entity * entity = Ogre::any_cast<Osp::Entity *>( a );
             if ( entity )
             {
-                ent = const_cast<Entity::Entity *>( entity );
+                ent = const_cast<Osp::Entity *>( entity );
                 return true;
             }
         }
@@ -192,7 +192,7 @@ bool StateManager::rayQuery( const Ogre::Ray & ray, Entity::Entity * & ent, Ogre
     return false;
 }
 
-bool StateManager::mouseQuery( Entity::Entity * & e, Ogre::uint32 mask )
+bool StateManager::mouseQuery( Osp::Entity * & e, Ogre::uint32 mask )
 {
     Ogre::Ray ray;
     const bool rayExists = mouseRay( ray );
@@ -334,7 +334,7 @@ void StateManager::shutdown()
     scnMgr->destroyAllManualObjects();
     scnMgr->destroyQuery( raySceneQuery );
 
-    Entity::EntityWorld::deleteWorld();
+    Osp::EntityWorld::deleteWorld();
     mWorld = 0;
 
     destroyRTShaderSystem();
@@ -380,13 +380,13 @@ void StateManager::setup()
 
     initSound();
 
-    mWorld          = Entity::EntityWorld::createWorld();
-    mPartsManager   = new Entity::PartManagerTest();
-    mSiteManager    = new Entity::SiteManagerTest();
-    mPlanetsManager = new Entity::PlanetManagerTest();
+    mWorld          = Osp::EntityWorld::createWorld();
+    mPartsManager   = new Osp::PartManagerTest();
+    mSiteManager    = new Osp::SiteManagerTest();
+    mPlanetsManager = new Osp::PlanetManagerTest();
     mPlanetsManager->create();
     mSiteManager->create();
-    mTechTree = new Entity::TechTree();
+    mTechTree = new Osp::TechTree();
 
     // After all needed objects are created init script.
     initScript();

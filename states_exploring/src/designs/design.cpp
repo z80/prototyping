@@ -3,7 +3,7 @@
 #include "state_manager.h"
 #include "config_reader.h"
 
-namespace Entity
+namespace Osp
 {
 
 static void saveJoint( const Connection & j, std::ofstream & out );

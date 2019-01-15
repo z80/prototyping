@@ -4,7 +4,7 @@
 
 #include "planet_manager_base.h"
 
-namespace Entity
+namespace Osp
 {
 
 class PlanetManagerTest: public PlanetManagerBase

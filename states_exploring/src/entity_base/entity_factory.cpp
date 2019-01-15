@@ -7,7 +7,7 @@
 #include "state_manager.h"
 #include "name_generator.h"
 
-namespace Entity
+namespace Osp
 {
 
 static EntityFactory g_ef;
@@ -17,8 +17,8 @@ class EntityFactory::PD
 {
 public:
     EntityWorld  * world();
-    EntityPart   * cube();
-    EntityPart   * plane();
+    Block   * cube();
+    Block   * plane();
     EntityPlanet * spherePlanet();
 
     PD();
@@ -41,9 +41,9 @@ EntityWorld  * EntityFactory::PD::world()
     return w;
 }
 
-EntityPart   * EntityFactory::PD::cube()
+Block   * EntityFactory::PD::cube()
 {
-    EntityPart * p = new EntityPart();
+    Block * p = new Block();
 
     Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
 
@@ -78,9 +78,9 @@ EntityPart   * EntityFactory::PD::cube()
     return p;
 }
 
-EntityPart   * EntityFactory::PD::plane()
+Block   * EntityFactory::PD::plane()
 {
-    EntityPart * p = new EntityPart();
+    Block * p = new Block();
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 

@@ -5,7 +5,7 @@
 #include "Ogre.h"
 #include "site_manager_base.h"
 
-namespace Entity
+namespace Osp
 {
 
 class SiteManagerTest: public SiteManagerBase

@@ -8,18 +8,18 @@
 #include "lemon/connectivity.h"
 
 
-namespace Entity
+namespace Osp
 {
 
 /// Utility function.
 static void removeFromWorld( EntityWorld * w,
-                             std::vector<EntityPart *> & parts,
+                             std::vector<Block *> & parts,
                              std::vector<EntityConnection *> & conns )
 {
     const size_t partsQty = parts.size();
     for ( size_t i=0; i<partsQty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         if ( p->rigidBody )
             p->fromWorld( w );
 
@@ -174,7 +174,7 @@ void Assembly::integrateDynamics( Ogre::Real t_sec, int timeBoost )
     const size_t qty = parts.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         p->resetForcesApplied();
     }
 
@@ -186,7 +186,7 @@ void Assembly::integrateDynamics( Ogre::Real t_sec, int timeBoost )
         const size_t qty = parts.size();
         for ( size_t i=0; i<qty; i++ )
         {
-            EntityPart * p = parts[i];
+            Block * p = parts[i];
             parent->addForces( *p );
         }
     }
@@ -203,7 +203,7 @@ bool Assembly::forcesApplied() const
     const size_t qty = parts.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         if ( p->forcesApplied() )
             return true;
     }
@@ -224,7 +224,7 @@ void Assembly::setParent( EntityPlanet * planet )
         const size_t qty = parts.size();
         for ( size_t i=0; i<qty; i++ )
         {
-            EntityPart * p = parts[i];
+            Block * p = parts[i];
             p->setR( p->assemblyR );
             p->setQ( p->assemblyQ );
             p->setV( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
@@ -309,7 +309,7 @@ void Assembly::setParentRf( EntityPlanet * planet )
         const size_t qty = parts.size();
         for ( size_t i=0; i<qty; i++ )
         {
-            EntityPart * p = parts[i];
+            Block * p = parts[i];
             p->setR( p->assemblyR );
             p->setQ( p->assemblyQ );
             p->setV( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
@@ -332,7 +332,7 @@ void Assembly::setParentRf( EntityPlanet * planet )
     const size_t qty = parts.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         p->sceneNode->getParent()->removeChild(p->sceneNode );
         planet->sceneNode->addChild( p->sceneNode );
     }
@@ -341,12 +341,12 @@ void Assembly::setParentRf( EntityPlanet * planet )
     parent      = planet;
 }
 
-void Assembly::deletePart( EntityPart * part )
+void Assembly::deletePart( Block * part )
 {
     // Need to split assembly into two here.
 }
 
-void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
+void Assembly::deleteConnection( Block * partA, Block * partB )
 {
     // Need to split assembly into two here.
 
@@ -376,7 +376,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     const size_t partQty = parts.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         p->assemblyInd = i;
     }
 
@@ -394,7 +394,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     for ( size_t i=0; i<partQty; i++ )
     {
         ListDigraph::Node u = g.addNode();
-        const EntityPart * p = parts[i];
+        const Block * p = parts[i];
         indsMap[u] = p->assemblyInd;
     }
     for ( size_t i=0; i<connQty; i++ )
@@ -431,7 +431,7 @@ void Assembly::deleteConnection( EntityPart * partA, EntityPart * partB )
     }
 }
 
-void Assembly::connectionEstablished( EntityPart * partA, EntityPart * partB )
+void Assembly::connectionEstablished( Block * partA, Block * partB )
 {
     // Need to merge two assemblies here.
 }
@@ -443,7 +443,7 @@ void Assembly::computeAssemblyRQVW()
 
     // Right now for simplicity take the very first part
     // and use it as a reference.
-    EntityPart * part = *(parts.begin());
+    Block * part = *(parts.begin());
     // partR = assR + assQ * assemblyR * assQ.Inverse()
     // assR  = partR - assQ * assemblyR * assQ.Inverse()
     // partQ = assQ * assemblyQ
@@ -475,7 +475,7 @@ void Assembly::computePartsRQVW()
     const size_t qty = parts.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         // partQ = assQ * assemblyQ;
         // partR = assR + partQ * assemblyR * partQ.Inverse()
         // partW = assW
@@ -506,7 +506,7 @@ void Assembly::assignIndices()
     const size_t partQty = parts.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         p->assemblyInd = i;
     }
 }
@@ -517,7 +517,7 @@ void Assembly::computeCenterOfInertia()
     const size_t partQty = parts.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         const Ogre::Vector3 at = p->relR();
         coi = coi + at;
     }
@@ -531,7 +531,7 @@ void Assembly::computeCenterOfInertia()
     // for all parts within assembly.
     for ( size_t i=0; i<partQty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         const Ogre::Vector3 relR = p->relR() - r;
         p->assemblyR = relR;
 
@@ -545,7 +545,7 @@ void Assembly::cleanup()
     const size_t partQty = parts.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        EntityPart * p = parts[i];
+        Block * p = parts[i];
         delete p;
     }
 

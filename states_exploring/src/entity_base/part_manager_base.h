@@ -4,10 +4,10 @@
 
 #include "entity.h"
 
-namespace Entity
+namespace Osp
 {
 
-class EntityPart;
+class Block;
 class EntityPlanet;
 
 class PartManagerBase
@@ -26,13 +26,13 @@ public:
      * Here parentNode is the one relative to
      * what "r" and "q" are provided.
      */
-    virtual EntityPart * create( const std::string & name,
+    virtual Block * create( const std::string & name,
                                  const Ogre::Vector3 & r = Ogre::Vector3::ZERO,
                                  const Ogre::Quaternion & q = Ogre::Quaternion::IDENTITY ) = 0;
-    void remove( EntityPart * part );
+    void remove( Block * part );
 private:
     void destroyAllParts();
-    std::vector<EntityPart *> parts;
+    std::vector<Block *> parts;
 };
 
 

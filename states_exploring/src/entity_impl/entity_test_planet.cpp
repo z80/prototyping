@@ -3,7 +3,7 @@
 #include "OgreSceneManager.h"
 #include "state_manager.h"
 
-namespace Entity
+namespace Osp
 {
 
 EntityTestPlanet::EntityTestPlanet()

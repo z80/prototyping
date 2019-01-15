@@ -5,7 +5,7 @@
 #include "entity.h"
 #include "part_manager_base.h"
 
-namespace Entity
+namespace Osp
 {
 
 class PartManagerTest: public PartManagerBase
@@ -24,7 +24,7 @@ public:
      * Here parentNode is the one relative to
      * what at and q are provided.
      */
-    virtual EntityPart * create( const std::string & name,
+    virtual Block * create( const std::string & name,
                                  const Ogre::Vector3 & r = Ogre::Vector3::ZERO,
                                  const Ogre::Quaternion & q = Ogre::Quaternion::IDENTITY );
 

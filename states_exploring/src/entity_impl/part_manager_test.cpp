@@ -5,15 +5,15 @@
 #include "state_manager.h"
 #include "name_generator.h"
 
-namespace Entity
+namespace Osp
 {
 
 class PartManagerTest::PD
 {
 public:
-    EntityPart * basePart( const Ogre::String & meshName, const Ogre::String & materialName );
-    EntityPart * cube();
-    EntityPart * sphere();
+    Block * basePart( const Ogre::String & meshName, const Ogre::String & materialName );
+    Block * cube();
+    Block * sphere();
 
     PD();
     ~PD();
@@ -29,9 +29,9 @@ PartManagerTest::PD::~PD()
 
 }
 
-EntityPart * PartManagerTest::PD::basePart( const Ogre::String & meshName, const Ogre::String & materialName )
+Block * PartManagerTest::PD::basePart( const Ogre::String & meshName, const Ogre::String & materialName )
 {
-    EntityPart * p = new EntityPart();
+    Block * p = new Block();
 
     Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
 
@@ -52,9 +52,9 @@ EntityPart * PartManagerTest::PD::basePart( const Ogre::String & meshName, const
 }
 
 
-EntityPart   * PartManagerTest::PD::cube()
+Block   * PartManagerTest::PD::cube()
 {
-    EntityPart * p = basePart( "Cube.mesh", "MyGrass" );
+    Block * p = basePart( "Cube.mesh", "MyGrass" );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
@@ -80,9 +80,9 @@ EntityPart   * PartManagerTest::PD::cube()
 }
 
 
-EntityPart * PartManagerTest::PD::sphere()
+Block * PartManagerTest::PD::sphere()
 {
-    EntityPart * p = basePart( "SphereMesh", "MyGrass" );
+    Block * p = basePart( "SphereMesh", "MyGrass" );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
@@ -126,11 +126,11 @@ PartManagerTest::~PartManagerTest()
     delete pd;
 }
 
-EntityPart * PartManagerTest::create( const std::string & name,
+Block * PartManagerTest::create( const std::string & name,
                                       const Ogre::Vector3 & r,
                                       const Ogre::Quaternion & q )
 {
-    EntityPart * p = 0;
+    Block * p = 0;
     if ( name == "cube" )
         p = pd->cube();
     else if ( name == "planet" )
