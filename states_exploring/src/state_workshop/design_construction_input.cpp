@@ -70,6 +70,12 @@ bool DesignConstruction::mouseMoved(const OgreBites::MouseMotionEvent& evt)
     {
         return true;
     }
+    else if ( moveMode == TFree )
+    {
+        // To initiate camera control in the case if button down was accompanied
+        // by dragging.
+        StateManager::getSingletonPtr()->getCameraCtrl()->mousePressed( mousePressedEvt );
+    }
     return false;
 }
 
@@ -80,27 +86,29 @@ bool DesignConstruction::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 
 bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
+    mouseDown = true;
     if ( techTreePanel->isHovered() )
         return false;
 
-    StateManager::getSingletonPtr()->mouseScreenPos( mouseDownX, mouseDownY );
+    mousePressedEvt = evt;
 
-    return false;
+    const bool res = (moveMode != TFree);
+    return res;
 }
 
-bool DesignConstruction::mouseReleased(const OgreBites::MouseButtonEvent& evt)
+bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 {
-    int mouseUpX, mouseUpY;
-    StateManager::getSingletonPtr()->mouseScreenPos( mouseUpX, mouseUpY );
+    mouseDown = false;
 
     if ( techTreePanel->isHovered() )
         return false;
 
-    if ( ( mouseDownX == mouseUpX ) && ( mouseDownY == mouseUpY ) )
+    if ( ( mousePressedEvt.x == evt.x ) && ( mousePressedEvt.y == evt.y ) )
     {
         if ( ( moveMode == TDrag ) || (moveMode == TRotate) )
         {
             moveMode = TFree;
+            setPivotsVisible( false );
             return true;
         }
         else if ( moveMode == TFree )
@@ -110,11 +118,14 @@ bool DesignConstruction::mouseReleased(const OgreBites::MouseButtonEvent& evt)
             if ( partSelected )
             {
                 moveMode = TDrag;
+                setPivotsVisible( true );
                 return true;
             }
         }
     }
-    return false;
+
+    const bool res = (moveMode != TFree);
+    return res;
 }
 
 

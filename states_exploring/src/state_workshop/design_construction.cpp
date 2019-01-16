@@ -14,11 +14,10 @@ namespace Osp
 
 DesignConstruction::DesignConstruction()
 {
+    mouseDown         = false;
     workshop          = 0;
     selectedBlockIndex = -1;
     snapDist          = 0.3;
-    mouseDownX        = -1;
-    mouseDownY        = -1;
     moveMode          = TFree;
 
     techTreePanel = new TechTreePanel();
@@ -95,6 +94,8 @@ void DesignConstruction::block( const Ogre::String & name )
 
     // By default drag mode.
     moveMode = TDrag;
+
+    setPivotsVisible( true );
 }
 
 bool DesignConstruction::isHovered() const

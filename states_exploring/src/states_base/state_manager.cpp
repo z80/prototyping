@@ -204,10 +204,10 @@ bool StateManager::mouseQuery( Osp::Entity * & e, Ogre::uint32 mask )
 
 bool StateManager::mouseRay( Ogre::Ray & ray )
 {
+    /*
     const bool grab = windowGrab;
     if ( grab )
         return false;
-    /*
     std::cout << "i: " << mouseAtX << " "
                        << mouseAtY << "   ";
                        */
