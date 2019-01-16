@@ -35,6 +35,47 @@ void PivotMarker::setSize( Ogre::Real sz )
     sceneNode->setScale( sz, sz, sz );
 }
 
+
+
+
+
+void DesignBlock::setMarkersVisible( bool en )
+{
+
+}
+
+bool DesignBlock::connectToNearest( std::vector<DesignBlock *> & designs, Ogre::Real & R )
+{
+
+}
+
+DesignBlock::DesignBlock()
+{
+    block = 0;
+}
+
+DesignBlock::~DesignBlock()
+{
+    // Don't delete anything here.
+    // This class is just for grouping purpose.
+}
+
+DesignBlock::DesignBlock( const DesignBlock & inst )
+{
+    *this = inst;
+}
+
+const DesignBlock & DesignBlock::operator=( const DesignBlock & inst )
+{
+    if ( this != &inst )
+    {
+        block   = inst.block;
+        markers = inst.markers;
+    }
+    return *this;
+}
+
+
 }
 
 
