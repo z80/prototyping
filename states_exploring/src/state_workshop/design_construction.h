@@ -5,6 +5,7 @@
 #include "Ogre.h"
 #include "OgreInput.h"
 #include "tech_tree_panel.h"
+#include "pivot_marker.h"
 
 namespace Osp
 {
@@ -61,13 +62,16 @@ public:
     /// Show/hide pivot markers.
     void setPivotsVisible( bool en );
 
+    /// Clean up all created objects.
+    void cleanup();
+
     Site          * workshop;
     TechTreePanel * techTreePanel;
 
     int selectedBlockIndex;
     int mouseDownX, mouseDownY;
     MoveMode moveMode;
-    std::vector<Block *>        blocks;
+    std::vector<DesignBlock>    blocks;
     std::vector<PivotMarker * > markers;
 
     Ogre::Real snapDist;

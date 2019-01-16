@@ -39,11 +39,6 @@ void PivotMarker::setSize( Ogre::Real sz )
 
 
 
-void DesignBlock::setMarkersVisible( bool en )
-{
-
-}
-
 bool DesignBlock::connectToNearest( std::vector<DesignBlock *> & designs, Ogre::Real & R )
 {
 
@@ -73,6 +68,27 @@ const DesignBlock & DesignBlock::operator=( const DesignBlock & inst )
         markers = inst.markers;
     }
     return *this;
+}
+
+void DesignBlock::setPivotsVisible( bool en )
+{
+    const size_t markersQty = markers.size();
+    for ( size_t i=0; i<markersQty; i++ )
+    {
+        PivotMarker * pm = markers[i];
+        pm->visualEntity->setVisible( en );;
+    }
+}
+
+void DesignBlock::destroy()
+{
+    const size_t markersQty = markers.size();
+    for ( size_t i=0; i<markersQty; i++ )
+    {
+        PivotMarker * pm = markers[i];
+        delete pm;
+    }
+    delete block;
 }
 
 

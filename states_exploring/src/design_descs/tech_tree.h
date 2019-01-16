@@ -98,6 +98,8 @@ public:
     bool generatePanelContent();
     bool enableNode( const Ogre::String & name );
 
+    const PartDesc & partDesc( const Ogre::String & name );
+
     std::vector<CategoryDesc> & getPanelContent();
     std::vector<PartDesc>     & getPartDescs();
 public:

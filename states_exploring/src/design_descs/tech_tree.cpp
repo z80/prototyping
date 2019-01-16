@@ -94,6 +94,19 @@ bool TechTree::enableNode( const Ogre::String & name )
     return false;
 }
 
+const PartDesc & TechTree::partDesc( const Ogre::String & name )
+{
+    const size_t partsQty = partDescs.size();
+    for ( size_t i=0; i<partsQty; i++ )
+    {
+        const PartDesc & pd = partDescs[i];
+        if ( pd.name == name )
+            return pd;
+    }
+    static PartDesc failureDesc;
+    return failureDesc;
+}
+
 std::vector<CategoryDesc> & TechTree::getPanelContent()
 {
     return panelContent;

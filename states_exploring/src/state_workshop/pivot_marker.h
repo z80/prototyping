@@ -35,13 +35,20 @@ public:
     Block * block;
     std::vector<PivotMarker *> markers;
 
-    void setMarkersVisible( bool en );
     bool connectToNearest( std::vector<DesignBlock *> & designs, Ogre::Real & R );
 
     DesignBlock();
     ~DesignBlock();
     DesignBlock( const DesignBlock & inst );
     const DesignBlock & operator=( const DesignBlock & inst );
+
+    void setPivotsVisible( bool en );
+    /**
+     * @brief destroy
+     * Explicit destruction of all the content of
+     * this instance.
+     */
+    void destroy();
 };
 
 }

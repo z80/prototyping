@@ -5,6 +5,7 @@
 #include "site_manager_base.h"
 #include "site.h"
 #include "part_manager_base.h"
+#include "pivot_marker.h"
 
 #include <iostream>
 
@@ -25,6 +26,8 @@ DesignConstruction::DesignConstruction()
 
 DesignConstruction::~DesignConstruction()
 {
+    cleanup();
+
     if ( techTreePanel )
         delete techTreePanel;
 }
@@ -58,20 +61,37 @@ void DesignConstruction::leave()
 /// TechTreePanel callback implementation.
 void DesignConstruction::block( const Ogre::String & name )
 {
-    PartManagerBase * pm = StateManager::getSingletonPtr()->getPartsManager();
-    Block * p = pm->create( name );
-    p->setSceneParent( workshop );
-    blocks.push_back( p );
+    StateManager * sm = StateManager::getSingletonPtr();
+    TechTree * tt = sm->getTechTree();
+    PartManagerBase * pm = sm->getPartsManager();
+    Block * block = pm->create( name );
+    const PartDesc & pd = tt->partDesc( name );
+
+    DesignBlock db;
+    db.block = block;
+    const size_t connsQty = pd.connections.size();
+    for ( size_t i=0; i<connsQty; i++ )
+    {
+        const ConnectionDesc & cd = pd.connections[i];
+        PivotMarker * pivotMarker = new PivotMarker( snapDist );
+        pivotMarker->desc = cd;
+        db.markers.push_back( pivotMarker );
+        pivotMarker->setSceneParent( block );
+        pivotMarker->sceneNode->setPosition( cd.r );
+    }
+
+    block->setSceneParent( workshop );
+    blocks.push_back( db );
     selectedBlockIndex = static_cast<int>( blocks.size() ) - 1;
 
     // Specify position and rotation.
     // Rotation is easy.
-    p->setQ( Ogre::Quaternion::IDENTITY );
+    block->setQ( Ogre::Quaternion::IDENTITY );
     // Position is a point on a plane.
     // And plane is defined by current camera axis vector.
     Ogre::Vector3 xyz;
     mouseAbs( xyz );
-    p->setR( xyz );
+    block->setR( xyz );
 
     // By default drag mode.
     moveMode = TDrag;
@@ -199,7 +219,8 @@ bool DesignConstruction::trySelect( int & index )
     const size_t qty = blocks.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        Block * p = blocks[i];
+        DesignBlock & db = blocks[i];
+        Block * p = db.block;
         if ( p == p_sel )
         {
             index = static_cast<int>( i );
@@ -218,7 +239,7 @@ bool DesignConstruction::drag()
     if ( selectedBlockIndex < 0 )
         return false;
 
-    Block * p = blocks[selectedBlockIndex];
+    Block * p = blocks[selectedBlockIndex].block;
     const Ogre::Vector3 origin = Ogre::Vector3::ZERO; //p->relR();
 
     Ogre::Vector3 dest;
@@ -236,7 +257,26 @@ bool DesignConstruction::drag()
 
 void DesignConstruction::setPivotsVisible( bool en )
 {
+    const size_t qty = blocks.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        DesignBlock & db = blocks[i];
+        db.setPivotsVisible( en );
+    }
+}
 
+void DesignConstruction::cleanup()
+{
+    const size_t qty = blocks.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        DesignBlock & db = blocks[i];
+        db.destroy();
+    }
+    blocks.clear();
+
+    selectedBlockIndex = -1;
+    moveMode = TFree;
 }
 
 
