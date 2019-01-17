@@ -14,7 +14,7 @@ namespace Osp
 
 DesignConstruction::DesignConstruction()
 {
-    mouseDown         = false;
+    needMouseDown     = false;
     workshop          = 0;
     selectedBlockIndex = -1;
     snapDist          = 0.3;

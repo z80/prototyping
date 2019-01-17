@@ -74,7 +74,11 @@ bool DesignConstruction::mouseMoved(const OgreBites::MouseMotionEvent& evt)
     {
         // To initiate camera control in the case if button down was accompanied
         // by dragging.
-        StateManager::getSingletonPtr()->getCameraCtrl()->mousePressed( mousePressedEvt );
+        if ( needMouseDown )
+        {
+            needMouseDown = false;
+            StateManager::getSingletonPtr()->getCameraCtrl()->mousePressed( mousePressedEvt );
+        }
     }
     return false;
 }
@@ -86,11 +90,14 @@ bool DesignConstruction::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 
 bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
-    mouseDown = true;
     if ( techTreePanel->isHovered() )
         return false;
 
-    mousePressedEvt = evt;
+    if ( moveMode == TFree )
+    {
+        needMouseDown   = true;
+        mousePressedEvt = evt;
+    }
 
     const bool res = (moveMode != TFree);
     return res;
@@ -98,7 +105,7 @@ bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 
 bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 {
-    mouseDown = false;
+    needMouseDown = false;
 
     if ( techTreePanel->isHovered() )
         return false;
