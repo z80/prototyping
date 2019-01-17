@@ -141,37 +141,37 @@ bool WorkshopState::touchReleased(const OgreBites::TouchFingerEvent& evt)
 
 bool WorkshopState::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 {
-    if ( designCtrl->mouseMoved( evt ) )
-        return true;
     if ( !designCtrl->isHovered() )
         StateManager::getSingletonPtr()->getCameraCtrl()->mouseMoved( evt );
+    if ( designCtrl->mouseMoved( evt ) )
+        return true;
     return true;
 }
 
 bool WorkshopState::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 {
-    if ( designCtrl->mouseWheelRolled( evt ) )
-        return true;
     if ( !designCtrl->isHovered() )
         StateManager::getSingletonPtr()->getCameraCtrl()->mouseWheelRolled( evt );
+    if ( designCtrl->mouseWheelRolled( evt ) )
+        return true;
     return true;
 }
 
 bool WorkshopState::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
-    if ( designCtrl->mousePressed( evt ) )
-        return true;
     if ( !designCtrl->isHovered() )
         StateManager::getSingletonPtr()->getCameraCtrl()->mousePressed( evt );
+    if ( designCtrl->mousePressed( evt ) )
+        return true;
     return true;
 }
 
 bool WorkshopState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 {
-    if ( designCtrl->mouseReleased( evt ) )
-            return true;
     if ( !designCtrl->isHovered() )
         StateManager::getSingletonPtr()->getCameraCtrl()->mouseReleased( evt );
+    if ( designCtrl->mouseReleased( evt ) )
+            return true;
     return true;
 }
 

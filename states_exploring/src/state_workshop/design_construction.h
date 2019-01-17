@@ -69,7 +69,7 @@ public:
     TechTreePanel * techTreePanel;
 
     int selectedBlockIndex;
-    bool needMouseDown;
+    bool mouseRaySelection;
     OgreBites::MouseButtonEvent mousePressedEvt;
     MoveMode moveMode;
     std::vector<DesignBlock>    blocks;

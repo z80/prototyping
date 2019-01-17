@@ -14,10 +14,10 @@ namespace Osp
 
 DesignConstruction::DesignConstruction()
 {
-    needMouseDown     = false;
+    mouseRaySelection     = false;
     workshop          = 0;
     selectedBlockIndex = -1;
-    snapDist          = 0.3;
+    snapDist          = 10.3;
     moveMode          = TFree;
 
     techTreePanel = new TechTreePanel();
@@ -48,6 +48,9 @@ void DesignConstruction::enter()
     //cc->setCamera( 0 );
     cc->setTargetNode( s->sceneNode );
     cc->orbitDist = 10.0;
+
+    Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    smgr->setAmbientLight( Ogre::ColourValue() );
 }
 
 void DesignConstruction::leave()
