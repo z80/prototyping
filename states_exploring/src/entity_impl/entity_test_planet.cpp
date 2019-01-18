@@ -29,7 +29,7 @@ void EntityTestPlanet::create()
     p->visualEntity = scnMgr->createEntity( NameGenerator::Next("sphere"), "Sphere.mesh" );
     Ogre::UserObjectBindings & uob = p->visualEntity->getUserObjectBindings();
     uob.setUserAny( Ogre::Any( dynamic_cast<Entity *>( p ) ) );
-    Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "MaterialSphere" );
+    Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "M_Sphere" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     p->visualEntity->setMaterial( m );
 

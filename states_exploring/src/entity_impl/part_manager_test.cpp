@@ -54,7 +54,7 @@ Block * PartManagerTest::PD::basePart( const Ogre::String & meshName, const Ogre
 
 Block   * PartManagerTest::PD::cube()
 {
-    Block * p = basePart( "Cube.mesh", "MyGrass" );
+    Block * p = basePart( "Cube.mesh", "M_Cube" );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
@@ -82,7 +82,7 @@ Block   * PartManagerTest::PD::cube()
 
 Block * PartManagerTest::PD::sphere()
 {
-    Block * p = basePart( "SphereMesh", "MyGrass" );
+    Block * p = basePart( "Sphere", "MSphere" );
 
     //Create shape.
     BtOgre::StaticMeshToShapeConverter converter( p->visualEntity );
