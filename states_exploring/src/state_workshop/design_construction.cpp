@@ -14,11 +14,11 @@ namespace Osp
 
 DesignConstruction::DesignConstruction()
 {
-    mouseRaySelection     = false;
-    workshop          = 0;
+    mouseRaySelection  =  false;
+    workshop           =  0;
     selectedBlockIndex = -1;
-    snapDist          = 10.3;
-    moveMode          = TFree;
+    snapDist           =  0.3;
+    moveMode           =  TFree;
 
     techTreePanel = new TechTreePanel();
 }

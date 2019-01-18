@@ -100,13 +100,13 @@ function addPartCube( tt )
     category    = "Test category", 
     icon        = "I_Cube.png", 
     connections = {
-      { r = { 0.0, 0.5, 0.0 }, 
+      { r = { 0.0, 1.0, 0.0 }, 
         q = { 1.0, 0.0, 0.0, 0.0 }, 
         anySurface = false, 
         spin       = false, 
         tilt       = false
       }, 
-      { r = { 0.0,-0.5, 0.0 }, 
+      { r = { 0.0,-1.0, 0.0 }, 
         q = { 1.0, 0.0, 0.0, 0.0 }, 
         anySurface = false, 
         spin       = false, 
