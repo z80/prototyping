@@ -18,6 +18,7 @@ public:
     void setCamera( Ogre::Camera * camera );
     void setTargetNode( Ogre::SceneNode * nodeTarget );
 
+    void centerCamera();
     void setMode( Mode m );
 
     void frameRendered(const Ogre::FrameEvent& evt);
@@ -59,6 +60,7 @@ public:
     void orbitMovement( const Ogre::FrameEvent & evt );
     void orbitAdjustRotation( const OgreBites::MouseMotionEvent & evt );
     void orbitAdjustDistance( const OgreBites::MouseWheelEvent & evt );
+    void orbitAdjustOffset( const OgreBites::MouseMotionEvent & evt );
 
 
     bool mEnabled;
@@ -77,13 +79,17 @@ public:
     bool mGoingUp;
     bool mGoingDown;
     bool mFastMove;
+    bool mTranslation;
+    bool mUpVertical;
 
     Ogre::Real       mouseSensitivity,
                      mouseWheelSensitivity,
+                     mouseTranSensisivity,
                      orbitDist,
                      orbitKi;
     Ogre::Quaternion orbitQuat;
     Ogre::Vector3    orbitAt;
+    Ogre::Vector3    targetOffset;
 };
 
 

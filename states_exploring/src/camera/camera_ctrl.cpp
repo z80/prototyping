@@ -10,6 +10,7 @@ CameraCtrl::CameraCtrl()
     mode = Orbit;
     camera     = 0;
     nodeTarget = 0;
+    targetOffset = Ogre::Vector3::ZERO;
 
     mOrbiting = false;
     mMoving   = false;
@@ -22,11 +23,14 @@ CameraCtrl::CameraCtrl()
     mGoingDown    = false;
     mFastMove     = false;
 
+    mTranslation  = false;
+    mUpVertical   = true;
 
     mouseSensitivity      = 0.003;
     mouseWheelSensitivity = 0.8;
+    mouseTranSensisivity  = 0.01;
     orbitDist        = 10.0;
-    orbitKi          = 15.95;
+    orbitKi          = 1.595;
     orbitAt          = Ogre::Vector3( 0.0, 0.0, 10.0 );
 }
 
@@ -76,6 +80,11 @@ void CameraCtrl::setTargetNode( Ogre::SceneNode * nodeTarget )
     }
 }
 
+void CameraCtrl::centerCamera()
+{
+    targetOffset = Ogre::Vector3( 0.0, 0.0, 0.0 );
+}
+
 void CameraCtrl::setMode( Mode m )
 {
     mode = m;
@@ -99,7 +108,14 @@ bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
     OgreBites::Keycode key = evt.keysym.sym;
 
     // Camera keyboard controls.
-    if ( mode == Free )
+    if ( mode == Orbit )
+    {
+        if ( key == OgreBites::SDLK_LSHIFT )
+        {
+            mTranslation = true;
+        }
+    }
+    else if ( mode == Free )
     {
         if ( key == 'w' || key == OgreBites::SDLK_UP )
             mGoingForward = true;
@@ -114,7 +130,7 @@ bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
         else if ( key == OgreBites::SDLK_PAGEDOWN )
             mGoingDown = true;
         else if ( key == OgreBites::SDLK_LSHIFT )
-            mFastMove = true;
+            mFastMove    = true;
     }
 
     return true;
@@ -126,6 +142,22 @@ bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
         return true;
 
     const OgreBites::Keycode key = evt.keysym.sym;
+
+    if ( mode == Orbit )
+    {
+        if ( key == OgreBites::SDLK_LSHIFT )
+        {
+            mTranslation = false;
+        }
+        else if ( key == 'c' )
+        {
+            if ( mTranslation )
+            {
+                centerCamera();
+                return true;
+            }
+        }
+    }
 
     // Looping over camera modes.
     if ( key == 'c' )
@@ -167,7 +199,7 @@ bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
         else if ( key == OgreBites::SDLK_PAGEDOWN )
             mGoingDown = false;
         else if ( key == OgreBites::SDLK_LSHIFT )
-            mFastMove = false;
+            mFastMove    = false;
     }
 
     return true;
@@ -179,7 +211,12 @@ bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
         return true;
 
     if ( mode == Orbit )
-        orbitAdjustRotation( evt );
+    {
+        if ( !mTranslation )
+            orbitAdjustRotation( evt );
+        else
+            orbitAdjustOffset( evt );
+    }
 
     return true;
 }
@@ -318,7 +355,7 @@ void CameraCtrl::orbitMovement( const Ogre::FrameEvent & evt )
     const Ogre::Real T = 0.1;
     const Ogre::Real dt = (evt.timeSinceLastFrame < T) ? evt.timeSinceLastFrame : T;
     const Ogre::Real k = dt * orbitKi;
-    const Ogre::Vector3 sp = Ogre::Vector3::ZERO; //nodeTarget->getPosition();
+    const Ogre::Vector3 sp = targetOffset; //nodeTarget->getPosition();
     Ogre::Vector3 & at = orbitAt;
     const Ogre::Vector3 dr = (sp-at)*k;
     at += dr;
@@ -357,6 +394,23 @@ void CameraCtrl::orbitAdjustDistance( const OgreBites::MouseWheelEvent & evt )
         orbitDist *= mouseWheelSensitivity;
     else if ( evt.y < 0 )
         orbitDist /= mouseWheelSensitivity;
+}
+
+void CameraCtrl::orbitAdjustOffset( const OgreBites::MouseMotionEvent & evt )
+{
+    if ( !mOrbiting )
+        return;
+    Ogre::Vector3 right( 1.0, 0.0, 0.0 );
+    Ogre::Vector3 up( 0.0, 1.0, 0.0 );
+    Ogre::SceneNode * camNode = camera->getParentSceneNode();
+    Ogre::Quaternion q = camNode->getOrientation();
+    right = q * right;
+    if ( !mUpVertical )
+        up = q * up;
+    const Ogre::Real dx = static_cast<Ogre::Real>( evt.xrel ) * mouseTranSensisivity;
+    const Ogre::Real dy = static_cast<Ogre::Real>( evt.yrel ) * mouseTranSensisivity;
+    targetOffset += right * dx;
+    targetOffset -= up * dy;
 }
 
 
