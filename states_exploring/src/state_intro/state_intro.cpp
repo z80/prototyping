@@ -50,7 +50,7 @@ void IntroState::enter()
 
     StateManager::getSingletonPtr()->setMouseVisible( true );
 
-    initSound();
+    //initSound();
 
     instances += 1;
 }
@@ -69,12 +69,12 @@ void IntroState::exit()
 
 void IntroState::pause()
 {
-    pauseSound();
+    //pauseSound();
 }
 
 void IntroState::resume()
 {
-    resumeSound();
+    //resumeSound();
 }
 
 bool IntroState::frameStarted(const Ogre::FrameEvent& evt)
