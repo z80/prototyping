@@ -53,13 +53,17 @@ bool DesignConstruction::keyReleased(const OgreBites::KeyboardEvent& evt)
         if ( evt.keysym.sym == 'g' )
         {
             moveMode = TDrag;
+            hintOnDrag();
             setPivotsVisible( true );
+            StateManager::getSingletonPtr()->setMouseVisible( false );
             return true;
         }
         else if ( evt.keysym.sym == 'r' )
         {
             moveMode == TRotate;
+            hintOnRotate();
             setPivotsVisible( true );
+            StateManager::getSingletonPtr()->setMouseVisible( false );
             return true;
         }
     }
@@ -144,6 +148,7 @@ bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt 
     if ( ( moveMode == TDrag ) || (moveMode == TRotate) )
     {
         moveMode = TFree;
+        StateManager::getSingletonPtr()->setMouseVisible( true );
         setPivotsVisible( false );
         return true;
     }

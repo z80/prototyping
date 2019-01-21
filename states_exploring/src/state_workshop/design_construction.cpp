@@ -8,6 +8,7 @@
 #include "pivot_marker.h"
 
 #include <iostream>
+#include <sstream>
 
 namespace Osp
 {
@@ -21,6 +22,7 @@ DesignConstruction::DesignConstruction()
     moveMode           =  TFree;
 
     techTreePanel = new TechTreePanel();
+    hintOnNone();
 }
 
 DesignConstruction::~DesignConstruction()
@@ -99,6 +101,7 @@ void DesignConstruction::block( const Ogre::String & name )
     moveMode = TDrag;
 
     setPivotsVisible( true );
+    hintOnDrag();
 }
 
 bool DesignConstruction::isHovered() const
@@ -214,9 +217,15 @@ bool DesignConstruction::trySelect( int & index )
     Entity * e;
     const bool entityOnTheWay = sm->mouseQuery( e );
     if ( !entityOnTheWay )
+    {
+        hintOnNone();
         return false;
+    }
     if ( e->type() != Entity::TPart )
+    {
+        hintOnNone();
         return false;
+    }
 
     Block * p_sel = dynamic_cast<Block *>( e );
 
@@ -229,10 +238,12 @@ bool DesignConstruction::trySelect( int & index )
         {
             index = static_cast<int>( i );
             selectedBlockIndex = index;
+            hintOnSelect();
             return true;
         }
     }
 
+    hintOnNone();
     return false;
 }
 
@@ -288,6 +299,57 @@ void DesignConstruction::cleanup()
     selectedBlockIndex = -1;
     moveMode = TFree;
 }
+
+void DesignConstruction::hintOnNone()
+{
+    techTreePanel->setTooltip( "Create new blocks using left panel.\n"
+                               "Click LMB to select a block.\n"
+                               "Press wheel(+shift) to rotate/translate a camera." );
+}
+
+void DesignConstruction::hintOnSelect()
+{
+    if ( selectedBlockIndex < 0 )
+        return;
+
+    Block * p = blocks[selectedBlockIndex].block;
+    const Ogre::Vector3 origin = Ogre::Vector3::ZERO; //p->relR();
+
+    const std::string name = p->name;
+    std::ostringstream out;
+    out << "\"" << name << "\" is selected.\n" << "Press \"g\" to grab "
+           "or \"r\" to rotate selected block.";
+    techTreePanel->setTooltip( out.str() );
+}
+
+void DesignConstruction::hintOnDrag()
+{
+    if ( selectedBlockIndex < 0 )
+        return;
+
+    Block * p = blocks[selectedBlockIndex].block;
+    const Ogre::Vector3 origin = Ogre::Vector3::ZERO; //p->relR();
+
+    const std::string name = p->name;
+    std::ostringstream out;
+    out << "Dragging \"" << name << "\". Press LMB to finish.";
+    techTreePanel->setTooltip( out.str() );
+}
+
+void DesignConstruction::hintOnRotate()
+{
+    if ( selectedBlockIndex < 0 )
+        return;
+
+    Block * p = blocks[selectedBlockIndex].block;
+    const Ogre::Vector3 origin = Ogre::Vector3::ZERO; //p->relR();
+
+    const std::string name = p->name;
+    std::ostringstream out;
+    out << "Rotating \"" << name << "\". Press LMB to finish.";
+    techTreePanel->setTooltip( out.str() );
+}
+
 
 
 

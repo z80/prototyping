@@ -160,7 +160,7 @@ void TechTreePanel::drawTipPanel()
     const ImVec2 windowPosPivot = ImVec2( 0.0, 0.0 );
 
     ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
-    if ( ImGui::Begin( "BackToGame", 0,
+    if ( ImGui::Begin( "Tooltip", 0,
                         ImGuiWindowFlags_NoMove |
                         ImGuiWindowFlags_NoTitleBar |
                         ImGuiWindowFlags_NoResize |
@@ -170,7 +170,7 @@ void TechTreePanel::drawTipPanel()
                         ImGuiWindowFlags_NoNav )
        )
     {
-        ImGui::TextWrapped( "%s", tooltip );
+        ImGui::TextWrapped( "%s", tooltip.c_str() );
     }
     ImGui::End();
 }

@@ -67,6 +67,12 @@ public:
     /// Clean up all created objects.
     void cleanup();
 
+    /// Setting appropriate hints.
+    void hintOnNone();
+    void hintOnSelect();
+    void hintOnDrag();
+    void hintOnRotate();
+
     Site          * workshop;
     TechTreePanel * techTreePanel;
 
