@@ -329,7 +329,7 @@ void DesignConstruction::destroy()
     selectedBlockIndex = -1;
     hintOnNone();
 
-    delete block;
+    delete p;
 }
 
 void DesignConstruction::setPivotsVisible( bool en )
