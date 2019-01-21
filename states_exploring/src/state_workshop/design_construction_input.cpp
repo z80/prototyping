@@ -60,10 +60,14 @@ bool DesignConstruction::keyReleased(const OgreBites::KeyboardEvent& evt)
         }
         else if ( evt.keysym.sym == 'r' )
         {
-            moveMode == TRotate;
-            hintOnRotate();
-            setPivotsVisible( true );
+            moveMode = TRotate;
+            rotateStart();
             //StateManager::getSingletonPtr()->setMouseVisible( false );
+            return true;
+        }
+        else if ( evt.keysym.sym == 'x' )
+        {
+            destroy();
             return true;
         }
     }
@@ -145,12 +149,15 @@ bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt 
     if ( techTreePanel->isHovered() )
         return false;
 
-    if ( ( moveMode == TDrag ) || (moveMode == TRotate) )
+    if ( moveMode == TDrag )
     {
         moveMode = TFree;
-        StateManager::getSingletonPtr()->setMouseVisible( true );
-        setPivotsVisible( false );
         return true;
+    }
+    else if ( moveMode == TRotate )
+    {
+        rotateStop();
+        moveMode = TFree;
     }
     else if ( mouseRaySelection )
     {

@@ -19,6 +19,7 @@ DesignConstruction::DesignConstruction()
     workshop           =  0;
     selectedBlockIndex = -1;
     snapDist           =  0.3;
+    rotMouseGain       =  0.001;
     moveMode           =  TFree;
 
     techTreePanel = new TechTreePanel();
@@ -259,8 +260,76 @@ bool DesignConstruction::drag()
 
 bool DesignConstruction::rotate()
 {
+    if ( techTreePanel->isHovered() )
+        return false;
+    if ( selectedBlockIndex < 0 )
+        return false;
 
+    Block * p = blocks[selectedBlockIndex].block;
+
+    Ogre::Vector3 x, y, n;
+    cameraPlane( x, y, n );
+
+    int mx, my;
+    StateManager::getSingletonPtr()->mouseScreenPos( mx, my );
+    Ogre::Vector2 xy = Ogre::Vector2( (Ogre::Real)mx, (Ogre::Real)my );
+
+    const Ogre::Real dy = (xy.y - xyStart.y)*rotMouseGain * 0.5;
+    const Ogre::Real co2 = std::cos(dy);
+    const Ogre::Real si2 = std::sin(dy);
+    const Ogre::Quaternion dq( co2, si2*n.x, si2*n.y, si2*n.z );
+    const Ogre::Quaternion q = rotQuatStart * dq;
+
+    p->setQ( q );
+
+    // Rotate around "n".
     return true;
+}
+
+void DesignConstruction::rotateStart()
+{
+    if ( techTreePanel->isHovered() )
+        return;
+    if ( selectedBlockIndex < 0 )
+        return;
+
+    Block * p = blocks[selectedBlockIndex].block;
+
+    int x, y;
+    StateManager::getSingletonPtr()->mouseScreenPos( x, y );
+    xyStart = Ogre::Vector2( (Ogre::Real)x, (Ogre::Real)y );
+
+    rotQuatStart = p->relQ();
+
+    //StateManager::getSingletonPtr()->setMouseVisible( false );
+    hintOnRotate();
+    setPivotsVisible( true );
+}
+
+void DesignConstruction::rotateStop()
+{
+    StateManager::getSingletonPtr()->setMouseVisible( true );
+    setPivotsVisible( false );
+}
+
+void DesignConstruction::destroy()
+{
+    if ( techTreePanel->isHovered() )
+        return;
+    if ( selectedBlockIndex < 0 )
+        return;
+
+    Block * p = blocks[selectedBlockIndex].block;
+
+    const int lastInd = (int)(blocks.size()) - 1;
+    if ( selectedBlockIndex < lastInd )
+        blocks[selectedBlockIndex] = blocks[lastInd];
+    blocks.resize(lastInd);
+
+    selectedBlockIndex = -1;
+    hintOnNone();
+
+    delete block;
 }
 
 void DesignConstruction::setPivotsVisible( bool en )
@@ -304,8 +373,8 @@ void DesignConstruction::hintOnSelect()
 
     const std::string name = p->name;
     std::ostringstream out;
-    out << "\"" << name << "\" is selected.\n" << "Press \"g\" to grab "
-           "or \"r\" to rotate selected block.";
+    out << "\"" << name << "\" is selected.\n" << "Press \"g\" to grab, "
+           " \"r\" to rotate selected a block. \"x\" - to delete it.";
     techTreePanel->setTooltip( out.str() );
 }
 

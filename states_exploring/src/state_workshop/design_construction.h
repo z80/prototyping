@@ -61,6 +61,10 @@ public:
     bool drag();
     /// Rotate part.
     bool rotate();
+    void rotateStart();
+    void rotateStop();
+    /// Delete block.
+    void destroy();
     /// Show/hide pivot markers.
     void setPivotsVisible( bool en );
 
@@ -84,6 +88,9 @@ public:
     std::vector<PivotMarker * > markers;
 
     Ogre::Real snapDist;
+    Ogre::Vector2 xyStart;
+    Ogre::Quaternion rotQuatStart;
+    Ogre::Real rotMouseGain;
 };
 
 
