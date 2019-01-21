@@ -133,7 +133,7 @@ void DesignConstruction::cameraPlane( Ogre::Vector3 & x, Ogre::Vector3 & y, Ogre
     x = Ogre::Vector3( x.x, 0.0, x.z );
     x.normalise();
 
-    n =  Ogre::Vector3( 0.0, 0.0, 1.0 );
+    n =  Ogre::Vector3( 0.0, 1.0, 0.0 );
     y = n.crossProduct( x );
 }
 
@@ -242,7 +242,7 @@ bool DesignConstruction::drag()
         return false;
 
     Block * p = blocks[selectedBlockIndex].block;
-    const Ogre::Vector3 origin = Ogre::Vector3::ZERO; //p->relR();
+    const Ogre::Vector3 origin = p->relR();
 
     Ogre::Vector3 dest;
     mouseAbs( dest, origin );

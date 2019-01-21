@@ -55,7 +55,7 @@ bool DesignConstruction::keyReleased(const OgreBites::KeyboardEvent& evt)
             moveMode = TDrag;
             hintOnDrag();
             setPivotsVisible( true );
-            StateManager::getSingletonPtr()->setMouseVisible( false );
+            //StateManager::getSingletonPtr()->setMouseVisible( false );
             return true;
         }
         else if ( evt.keysym.sym == 'r' )
@@ -63,7 +63,7 @@ bool DesignConstruction::keyReleased(const OgreBites::KeyboardEvent& evt)
             moveMode == TRotate;
             hintOnRotate();
             setPivotsVisible( true );
-            StateManager::getSingletonPtr()->setMouseVisible( false );
+            //StateManager::getSingletonPtr()->setMouseVisible( false );
             return true;
         }
     }
