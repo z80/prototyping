@@ -68,6 +68,10 @@ public:
     /// Show/hide pivot markers.
     void setPivotsVisible( bool en );
 
+    /// On editing end try to snap to the closest
+    /// pivot point.
+    bool snapToClosestPoint();
+
     /// Clean up all created objects.
     void cleanup();
 
