@@ -113,27 +113,24 @@ bool DesignConstruction::isHovered() const
 void DesignConstruction::cameraPlane( Ogre::Vector3 & x, Ogre::Vector3 & y, Ogre::Vector3 & n )
 {
     Ogre::Camera * c = StateManager::getSingletonPtr()->getCamera();
-    Ogre::Quaternion qa( 0.0, 0.0, 0.0, -1.0 );
+    Ogre::Vector3 a( 0.0, 0.0, -1.0 );
     const Ogre::Quaternion q = c->getParentSceneNode()->getOrientation();
-    qa = q * qa * q.Inverse();
+    a = q * a;
     // Check if "y" abs value is > 0.707 or not.
     const Ogre::Real TH = 0.707;
-    const bool vert = ( std::abs( qa.y ) <= TH );
+    const bool vert = ( std::abs( a.y ) <= TH );
     if ( vert )
     {
-        Ogre::Quaternion qx( 0.0, 1.0, 0.0, 0.0 );
-        qx = q * qx * q.Inverse();
-        x = Ogre::Vector3( qx.x, 0.0, qx.z );
-        x.normalise();
+        x = Ogre::Vector3( 1.0, 0.0, 0.0 );
+        x = q * x;
 
         y = Ogre::Vector3( 0.0, 1.0, 0.0 );
-
         n = x.crossProduct( y );
         return;
     }
-    Ogre::Quaternion qx( 0.0, 1.0, 0.0, 0.0 );
-    qx = q * qx * q.Inverse();
-    x = Ogre::Vector3( qx.x, 0.0, qx.z );
+    x = Ogre::Vector3( 1.0, 0.0, 0.0 );
+    x = q * x;
+    x = Ogre::Vector3( x.x, 0.0, x.z );
     x.normalise();
 
     n =  Ogre::Vector3( 0.0, 0.0, 1.0 );
@@ -156,12 +153,6 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
         return;
     }
 
-        Ogre::Camera * cam = sm->getCamera();
-        cam->getParentSceneNode()->needUpdate( true );
-        const Ogre::Quaternion camQ = cam->getParentSceneNode()->_getDerivedOrientation();
-        const Ogre::Vector3    camRelR = cam->getParentSceneNode()->getPosition();
-        const Ogre::Vector3    camParR = cam->getParentSceneNode()->getParentSceneNode()->_getDerivedPosition();
-        const Ogre::Vector3    camR = cam->getParentSceneNode()->_getDerivedPosition();
 
 
     // Absolute coordinates for the ray.
@@ -171,10 +162,6 @@ void DesignConstruction::mouseAbs( Ogre::Vector3 & xyz, const Ogre::Vector3 & or
     /*std::cout << "a_abs: " << a.x << " "
                            << a.y << " "
                            << a.z << "   ";*/
-
-    // Need to convery those to relative to assembly node.
-    Ogre::SceneNode * camParent   = cam->getParentSceneNode()->getParentSceneNode();
-    Ogre::SceneNode * wsSceneNode = workshop->sceneNode;
 
     const Ogre::Vector3    wsR = workshop->sceneNode->_getDerivedPosition();
     const Ogre::Quaternion wsQ = workshop->sceneNode->_getDerivedOrientation();
