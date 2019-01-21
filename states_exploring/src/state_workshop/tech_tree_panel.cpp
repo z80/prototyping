@@ -14,6 +14,7 @@ TechTreePanel::TechTreePanel()
     iconSz       = 128;
     alpha        = 0.3;
     hovered      = false;
+    tooltip      = "Place hints about current state here";
 
     initPanelGeometry();
 }
@@ -60,6 +61,11 @@ void TechTreePanel::updateAllowedParts()
             pd.iconHandle = t_ptr->getHandle();
         }
     }
+}
+
+void TechTreePanel::setTooltip( const Ogre::String & stri )
+{
+    tooltip = stri;
 }
 
 
@@ -140,6 +146,31 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
         }
 
         hovered = ImGui::IsWindowHovered( ImGuiHoveredFlags_AnyWindow );
+    }
+    ImGui::End();
+}
+
+void TechTreePanel::drawTipPanel()
+{
+    const ImVec2 wndSz( 350, 50 );
+    ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
+    ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
+    const ImVec2 windowPos = ImVec2( ImGui::GetIO().DisplaySize.x-wndSz.x,
+                                     ImGui::GetIO().DisplaySize.y-wndSz.y );
+    const ImVec2 windowPosPivot = ImVec2( 0.0, 0.0 );
+
+    ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
+    if ( ImGui::Begin( "BackToGame", 0,
+                        ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoTitleBar |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_AlwaysAutoResize |
+                        ImGuiWindowFlags_NoSavedSettings |
+                        ImGuiWindowFlags_NoFocusOnAppearing |
+                        ImGuiWindowFlags_NoNav )
+       )
+    {
+        ImGui::TextWrapped( "%s", tooltip );
     }
     ImGui::End();
 }

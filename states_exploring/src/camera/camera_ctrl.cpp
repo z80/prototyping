@@ -103,7 +103,7 @@ void CameraCtrl::frameRendered( const Ogre::FrameEvent & evt )
 bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
 {
     if ( !mEnabled )
-        return true;
+        return false;
 
     OgreBites::Keycode key = evt.keysym.sym;
 
@@ -133,13 +133,13 @@ bool CameraCtrl::keyPressed( const OgreBites::KeyboardEvent & evt )
             mFastMove    = true;
     }
 
-    return true;
+    return false;
 }
 
 bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
 {
     if ( !mEnabled )
-        return true;
+        return false;
 
     const OgreBites::Keycode key = evt.keysym.sym;
 
@@ -202,45 +202,54 @@ bool CameraCtrl::keyReleased( const OgreBites::KeyboardEvent & evt )
             mFastMove    = false;
     }
 
-    return true;
+    return false;
 }
 
 bool CameraCtrl::mouseMoved( const OgreBites::MouseMotionEvent & evt )
 {
     if ( !mEnabled )
-        return true;
+        return false;
 
     if ( mode == Orbit )
     {
         if ( !mTranslation )
+        {
             orbitAdjustRotation( evt );
+            return true;
+        }
         else
+        {
             orbitAdjustOffset( evt );
+            return true;
+        }
     }
 
-    return true;
+    return false;
 }
 
 bool CameraCtrl::mouseWheelRolled( const OgreBites::MouseWheelEvent & evt )
 {
     if ( !mEnabled )
-        return true;
+        return false;
 
     if ( mode == Orbit )
+    {
         orbitAdjustDistance( evt );
+        return true;
+    }
     /*if ( mode == Orbit && evt.y != 0 )
     {
         const Ogre::Real dist = (nodeCam->getPosition() - nodeTarget->_getDerivedPosition()).length();
         nodeCam->translate( Ogre::Vector3(0, 0, -evt.y * 0.08f * dist),
                             Ogre::Node::TS_LOCAL );
     }*/
-    return true;
+    return false;
 }
 
 bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
 {
     if ( !mEnabled )
-        return true;
+        return false;
 
     if ( mode == Orbit )
     {
@@ -257,29 +266,39 @@ bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
             StateManager::getSingletonPtr()->setMouseVisible( false );
         }
     }
-    return true;
+    return false;
 }
 
 bool CameraCtrl::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 {
     if ( !mEnabled )
-        return true;
+        return false;
 
     if ( mode == Orbit )
     {
         if ( evt.button == OgreBites::BUTTON_MIDDLE )
+        {
             mOrbiting = false;
+            StateManager::getSingletonPtr()->setMouseVisible( true );
+            return true;
+        }
         else if ( evt.button == OgreBites::BUTTON_RIGHT )
+        {
             mMoving = false;
+            return true;
+        }
     }
     if ( mode != Fixed )
     {
         if ( evt.button == OgreBites::BUTTON_MIDDLE )
+        {
             mOrbiting = false;
-        StateManager::getSingletonPtr()->setMouseVisible( true );
+            StateManager::getSingletonPtr()->setMouseVisible( true );
+            return true;
+        }
     }
 
-    return true;
+    return false;
 }
 
 std::string CameraCtrl::modeStri() const
@@ -409,8 +428,8 @@ void CameraCtrl::orbitAdjustOffset( const OgreBites::MouseMotionEvent & evt )
         up = q * up;
     const Ogre::Real dx = static_cast<Ogre::Real>( evt.xrel ) * mouseTranSensisivity;
     const Ogre::Real dy = static_cast<Ogre::Real>( evt.yrel ) * mouseTranSensisivity;
-    targetOffset += right * dx;
-    targetOffset -= up * dy;
+    targetOffset -= right * dx;
+    targetOffset += up * dy;
 }
 
 

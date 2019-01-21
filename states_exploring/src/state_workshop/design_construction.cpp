@@ -259,6 +259,12 @@ bool DesignConstruction::drag()
     return true;
 }
 
+bool DesignConstruction::rotate()
+{
+
+    return true;
+}
+
 void DesignConstruction::setPivotsVisible( bool en )
 {
     const size_t qty = blocks.size();

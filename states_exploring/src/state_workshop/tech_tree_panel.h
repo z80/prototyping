@@ -30,8 +30,12 @@ public:
     /// Init/update allowed parts list.
     void updateAllowedParts();
 
+    /// Set tooltip for the panel.
+    void setTooltip( const Ogre::String & stri );
+
     void drawBackToGamePanel();
     void drawTechPanel( TechTreePanelCallback * cb );
+    void drawTipPanel();
 
     const bool isHovered() const;
 public:
@@ -40,6 +44,8 @@ public:
     int        itemsPerLine;
     Ogre::Real alpha;
     bool       hovered;
+
+    Ogre::String tooltip;
 };
 
 }

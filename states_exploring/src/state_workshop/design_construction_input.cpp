@@ -14,6 +14,7 @@ bool DesignConstruction::frameStarted(const Ogre::FrameEvent& evt)
     {
         techTreePanel->drawTechPanel( this );
         techTreePanel->drawBackToGamePanel();
+        techTreePanel->drawTipPanel();
     }
     return false;
 }
@@ -39,6 +40,29 @@ bool DesignConstruction::keyPressed(const OgreBites::KeyboardEvent& evt)
 
 bool DesignConstruction::keyReleased(const OgreBites::KeyboardEvent& evt)
 {
+    if ( evt.keysym.sym == 27 )
+    {
+        if ( moveMode != TFree )
+        {
+            moveMode = TFree;
+            return true;
+        }
+    }
+    if ( selectedBlockIndex >= 0 )
+    {
+        if ( evt.keysym.sym == 'g' )
+        {
+            moveMode = TDrag;
+            setPivotsVisible( true );
+            return true;
+        }
+        else if ( evt.keysym.sym == 'r' )
+        {
+            moveMode == TRotate;
+            setPivotsVisible( true );
+            return true;
+        }
+    }
     return false;
 }
 
@@ -70,6 +94,7 @@ bool DesignConstruction::mouseMoved(const OgreBites::MouseMotionEvent& evt)
     }
     else if ( moveMode == TRotate )
     {
+        rotate();
         return true;
     }
     else if ( moveMode == TFree )
@@ -131,8 +156,6 @@ bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt 
             const bool partSelected = trySelect( index );
             if ( partSelected )
             {
-                moveMode = TDrag;
-                setPivotsVisible( true );
                 return true;
             }
         }

@@ -59,6 +59,8 @@ public:
     bool trySelect( int & index );
     /// Drag part.
     bool drag();
+    /// Rotate part.
+    bool rotate();
     /// Show/hide pivot markers.
     void setPivotsVisible( bool en );
 
