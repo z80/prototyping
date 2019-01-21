@@ -244,14 +244,14 @@ bool CameraCtrl::mousePressed( const OgreBites::MouseButtonEvent & evt )
 
     if ( mode == Orbit )
     {
-        if ( evt.button == OgreBites::BUTTON_LEFT )
+        if ( evt.button == OgreBites::BUTTON_MIDDLE )
             mOrbiting = true;
         else if ( evt.button == OgreBites::BUTTON_RIGHT )
             mMoving = true;
     }
     if ( mode != Fixed )
     {
-        if ( evt.button == OgreBites::BUTTON_LEFT )
+        if ( evt.button == OgreBites::BUTTON_MIDDLE )
         {
             mOrbiting = true;
             StateManager::getSingletonPtr()->setMouseVisible( false );
@@ -267,14 +267,14 @@ bool CameraCtrl::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 
     if ( mode == Orbit )
     {
-        if ( evt.button == OgreBites::BUTTON_LEFT )
+        if ( evt.button == OgreBites::BUTTON_MIDDLE )
             mOrbiting = false;
         else if ( evt.button == OgreBites::BUTTON_RIGHT )
             mMoving = false;
     }
     if ( mode != Fixed )
     {
-        if ( evt.button == OgreBites::BUTTON_LEFT )
+        if ( evt.button == OgreBites::BUTTON_MIDDLE )
             mOrbiting = false;
         StateManager::getSingletonPtr()->setMouseVisible( true );
     }

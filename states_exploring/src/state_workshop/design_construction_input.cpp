@@ -92,6 +92,9 @@ bool DesignConstruction::mouseWheelRolled(const OgreBites::MouseWheelEvent& evt)
 
 bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 {
+    if ( evt.button != OgreBites::BUTTON_LEFT )
+        return false;
+
     if ( techTreePanel->isHovered() )
         return false;
 
@@ -107,6 +110,9 @@ bool DesignConstruction::mousePressed(const OgreBites::MouseButtonEvent& evt)
 
 bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt )
 {
+    if ( evt.button != OgreBites::BUTTON_LEFT )
+        return false;
+
     if ( techTreePanel->isHovered() )
         return false;
 
