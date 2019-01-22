@@ -9,6 +9,7 @@ namespace Osp
 {
 
 class Block;
+class Site;
 
 class PivotMarker: public Entity
 {
@@ -35,7 +36,12 @@ public:
     Block * block;
     std::vector<PivotMarker *> markers;
 
+    // Parent current block to the one with the
+    // nearest pivot point.
     bool connectToNearest( std::vector<DesignBlock *> & designs, Ogre::Real & R );
+    // Disconnect from parent and parent it to
+    // site.
+    bool disconnectFromParent( Site * site );
 
     DesignBlock();
     ~DesignBlock();

@@ -342,6 +342,17 @@ void DesignConstruction::setPivotsVisible( bool en )
     }
 }
 
+bool DesignConstruction::snapToClosestPoint()
+{
+    if ( selectedBlockIndex < 0 )
+        return false;
+
+    DesignBlock & db = blocks[selectedBlockIndex];
+    const bool res = db.connectToNearest( blocks, snapDist );
+
+    return res;
+}
+
 void DesignConstruction::cleanup()
 {
     const size_t qty = blocks.size();
