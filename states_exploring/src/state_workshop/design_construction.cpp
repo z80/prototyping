@@ -269,6 +269,7 @@ void DesignConstruction::dragStop()
     StateManager::getSingletonPtr()->setMouseVisible( true );
     setPivotsVisible( false );
     snapToClosestPoint();
+    hintOnSelect();
 }
 
 bool DesignConstruction::rotate()
@@ -324,6 +325,7 @@ void DesignConstruction::rotateStop()
     StateManager::getSingletonPtr()->setMouseVisible( true );
     setPivotsVisible( false );
     snapToClosestPoint();
+    hintOnSelect();
 }
 
 void DesignConstruction::destroy()
