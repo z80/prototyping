@@ -397,7 +397,7 @@ void DesignConstruction::hintOnSelect()
 
     const std::string name = p->name;
     std::ostringstream out;
-    out << "\"" << name << "\" is selected.\n" << "Press \"g\" to grab, "
+    out << "\"" << selectedBlockIndex << "\" is selected.\n" << "Press \"g\" to grab, "
            " \"r\" to rotate selected a block. \"x\" - to delete it.";
     techTreePanel->setTooltip( out.str() );
 }
