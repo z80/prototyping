@@ -59,6 +59,8 @@ public:
     bool trySelect( int & index );
     /// Drag part.
     bool drag();
+    void dragStart();
+    void dragStop();
     /// Rotate part.
     bool rotate();
     void rotateStart();

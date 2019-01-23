@@ -53,8 +53,7 @@ bool DesignConstruction::keyReleased(const OgreBites::KeyboardEvent& evt)
         if ( evt.keysym.sym == 'g' )
         {
             moveMode = TDrag;
-            hintOnDrag();
-            setPivotsVisible( true );
+            dragStart();
             //StateManager::getSingletonPtr()->setMouseVisible( false );
             return true;
         }
@@ -151,6 +150,7 @@ bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt 
 
     if ( moveMode == TDrag )
     {
+        dragStop();
         moveMode = TFree;
         return true;
     }
@@ -158,6 +158,7 @@ bool DesignConstruction::mouseReleased( const OgreBites::MouseButtonEvent & evt 
     {
         rotateStop();
         moveMode = TFree;
+        return true;
     }
     else if ( mouseRaySelection )
     {

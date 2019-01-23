@@ -258,6 +258,19 @@ bool DesignConstruction::drag()
     return true;
 }
 
+void DesignConstruction::dragStart()
+{
+    hintOnDrag();
+    setPivotsVisible( true );
+}
+
+void DesignConstruction::dragStop()
+{
+    StateManager::getSingletonPtr()->setMouseVisible( true );
+    setPivotsVisible( false );
+    snapToClosestPoint();
+}
+
 bool DesignConstruction::rotate()
 {
     if ( techTreePanel->isHovered() )
@@ -310,6 +323,7 @@ void DesignConstruction::rotateStop()
 {
     StateManager::getSingletonPtr()->setMouseVisible( true );
     setPivotsVisible( false );
+    snapToClosestPoint();
 }
 
 void DesignConstruction::destroy()
