@@ -38,7 +38,7 @@ public:
 
     // Parent current block to the one with the
     // nearest pivot point.
-    bool connectToNearest( std::vector<DesignBlock *> & designs, Ogre::Real & R );
+    bool connectToNearest( std::vector<DesignBlock> & designs, Ogre::Real & R );
     // Disconnect from parent and parent it to
     // site.
     bool disconnectFromParent( Site * site );
