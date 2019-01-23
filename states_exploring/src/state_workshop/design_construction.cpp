@@ -319,7 +319,8 @@ void DesignConstruction::destroy()
     if ( selectedBlockIndex < 0 )
         return;
 
-    Block * p = blocks[selectedBlockIndex].block;
+    DesignBlock & db = blocks[selectedBlockIndex];
+    db.destroy();
 
     const int lastInd = (int)(blocks.size()) - 1;
     if ( selectedBlockIndex < lastInd )
@@ -328,8 +329,6 @@ void DesignConstruction::destroy()
 
     selectedBlockIndex = -1;
     hintOnNone();
-
-    delete p;
 }
 
 void DesignConstruction::setPivotsVisible( bool en )
