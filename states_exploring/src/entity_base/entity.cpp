@@ -106,7 +106,7 @@ bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaterni
     // First find pose of nodeA in it's ref. frame.
     Ogre::Vector3    ra = Ogre::Vector3::ZERO;
     Ogre::Quaternion qa = Ogre::Quaternion::IDENTITY;
-    for ( size_t i=0; i<(indA-1); i++ )
+    for ( size_t i=0; i<indA; i++ )
     {
         nodeA = allAncestorsA[i];
         const Ogre::Quaternion q = nodeA->getOrientation();
@@ -119,8 +119,8 @@ bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaterni
 
     Ogre::Vector3    rb = Ogre::Vector3::ZERO;
     Ogre::Quaternion qb = Ogre::Quaternion::IDENTITY;
-    const size_t qtyB = ancestorsB.size()-1;
-    for ( size_t i=0; i<qtyB; i++ )
+    const size_t indB = ancestorsB.size()-1;
+    for ( size_t i=0; i<indB; i++ )
     {
         Ogre::SceneNode * nodeB = ancestorsB[i];
         const Ogre::Quaternion q = nodeB->getOrientation();
