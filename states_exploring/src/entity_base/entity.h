@@ -23,7 +23,11 @@ public:
 
     //static template<typename T> T * cast<T>( Entity * e );
 
-    void setSceneParent( Entity * parent, bool inheritRotation = true );
+    virtual void setR( const Ogre::Vector3 & at );
+    virtual Ogre::Vector3 relR() const;
+    virtual void setQ( const Ogre::Quaternion & q );
+    virtual Ogre::Quaternion relQ() const;
+    virtual void setSceneParent( Entity * parent, bool inheritRotation = true );
 
     bool relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaternion & rel_q );
 public:

@@ -32,8 +32,31 @@ Entity::Type Entity::type()
     return mType;
 }
 
+void Entity::setR( const Ogre::Vector3 & at )
+{
+    sceneNode->setPosition( at );
+}
+
+Ogre::Vector3 Entity::relR() const
+{
+    return sceneNode->getPosition();
+}
+
+void Entity::setQ( const Ogre::Quaternion & q )
+{
+    sceneNode->setOrientation( q );
+}
+
+Ogre::Quaternion Entity::relQ() const
+{
+    return sceneNode->getOrientation();
+}
+
 void Entity::setSceneParent( Entity * parent, bool inheritRotation )
 {
+    Ogre::Vector3    rel_r;
+    Ogre::Quaternion rel_q;
+    const bool relPoseOk = relativePose( parent, rel_r, rel_q );
     if ( !sceneNode )
     {
         Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
@@ -51,6 +74,11 @@ void Entity::setSceneParent( Entity * parent, bool inheritRotation )
     }
 
     sceneNode->setInheritOrientation( inheritRotation );
+    if ( relPoseOk )
+    {
+        sceneNode->setPosition( rel_r );
+        sceneNode->setOrientation( rel_q );
+    }
 }
 
 bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaternion & rel_q )
@@ -110,10 +138,9 @@ bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaterni
     {
         nodeA = allAncestorsA[i];
         const Ogre::Quaternion q = nodeA->getOrientation();
-        ra = q*ra;
         const Ogre::Vector3    r = nodeA->getPosition();
+        ra = q*ra;
         ra = r + ra;
-
         qa = q * qa;
     }
 
@@ -124,17 +151,16 @@ bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaterni
     {
         Ogre::SceneNode * nodeB = ancestorsB[i];
         const Ogre::Quaternion q = nodeB->getOrientation();
-        rb = q*rb;
         const Ogre::Vector3    r = nodeB->getPosition();
+        rb = q*rb;
         rb = r + rb;
-
         qb = q * qb;
     }
 
-    rel_r = ra - rb;
+    rel_r = rb - ra;
     // This might be wrong. 
     // I probably don't need quaternion at all.
-    rel_q = qa * qb.Inverse();
+    rel_q = qb.Inverse() * qa;
     return true;
 }
 
