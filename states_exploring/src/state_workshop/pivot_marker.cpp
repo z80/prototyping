@@ -57,6 +57,13 @@ bool DesignBlock::connectToNearest( std::vector<DesignBlock> & designs, Ogre::Re
             if ( (&block) == this )
                 continue;
 
+            // And also check if this block is a parent of the "block".
+            // It it is the case skip it. Because it doesn't make sense
+            // to make blocks each other parents.
+            const bool isParentOf = this->block->isParentOf( block.block );
+            if ( isParentOf )
+                continue;
+
             const size_t markersQty = block.markers.size();
             for ( size_t markerInd=0; markerInd<markersQty; markerInd++ )
             {
@@ -87,14 +94,20 @@ bool DesignBlock::connectToNearest( std::vector<DesignBlock> & designs, Ogre::Re
     // Compute what relative position should be.
     // Alost compute relative orientation. Reparent
     // and set position and orientation.
-    PivotMarker * localMarker  = this->markers[bestLocalMarkerInd];
     DesignBlock & parentBlock  = designs[bestBlockInd];
+    PivotMarker * localMarker  = this->markers[bestLocalMarkerInd];
     PivotMarker * parentMarker = parentBlock.markers[bestRemoteMarkerInd];
     Ogre::Vector3    r;
     Ogre::Quaternion q;
-    const bool relPoseOk = parentMarker->relativePose( localMarker, r, q );
+    const bool relPoseOk = localMarker->relativePose( parentMarker, r, q );
     this->block->setSceneParent( parentBlock.block, true );
-    this->block->setR( r );
+
+    // Compute position.
+    const Ogre::Vector3 parentR = parentMarker->relR();
+    Ogre::Vector3 localR  = localMarker->relR();
+    localR = q * localR;
+    localR = parentR - localR;
+    this->block->setR( localR );
     this->block->setQ( q );
 
     return relPoseOk;

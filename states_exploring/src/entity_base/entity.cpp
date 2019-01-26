@@ -81,6 +81,21 @@ void Entity::setSceneParent( Entity * parent, bool inheritRotation )
     }
 }
 
+bool Entity::isParentOf( Entity * entity )
+{
+    Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
+    const Ogre::SceneNode * root = smgr->getRootSceneNode();
+    Ogre::SceneNode * node = entity->sceneNode;
+    while ( ( node != root ) && ( node != 0 ) )
+    {
+        if ( sceneNode == node )
+            return true;
+        node = node->getParentSceneNode();
+    }
+
+    return false;
+}
+
 bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaternion & rel_q )
 {
     // root->a->b->c->d->e->this
@@ -157,7 +172,7 @@ bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaterni
         qb = q * qb;
     }
 
-    rel_r = rb - ra;
+    rel_r = ra - rb;
     // This might be wrong. 
     // I probably don't need quaternion at all.
     rel_q = qb.Inverse() * qa;

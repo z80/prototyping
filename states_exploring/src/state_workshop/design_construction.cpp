@@ -262,6 +262,11 @@ void DesignConstruction::dragStart()
 {
     hintOnDrag();
     setPivotsVisible( true );
+    if ( selectedBlockIndex < 0 )
+        return;
+
+    Block * p = blocks[selectedBlockIndex].block;
+    p->setSceneParent( workshop, true );
 }
 
 void DesignConstruction::dragStop()
