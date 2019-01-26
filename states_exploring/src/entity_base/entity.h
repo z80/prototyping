@@ -28,7 +28,8 @@ public:
     virtual void setQ( const Ogre::Quaternion & q );
     virtual Ogre::Quaternion relQ() const;
     virtual void setSceneParent( Entity * parent, bool inheritRotation = true );
-    bool isParentOf( Entity * entity );
+    bool isParentOf( Entity * entity ) const;
+    Entity * parentEntity() const;
 
     bool relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaternion & rel_q );
 public:

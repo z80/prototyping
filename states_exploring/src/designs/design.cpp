@@ -19,6 +19,21 @@ Design::~Design()
 
 }
 
+Design::Design( const Design & inst )
+{
+    *this = &inst;
+}
+
+const Design & Design::operator=( const Design & inst )
+{
+    if ( this != &inst )
+    {
+        parts  = inst.parts;
+        joints = inst.joints;
+    }
+    return *this;
+}
+
 bool Design::save( const Ogre::String & fname, bool overwrite )
 {
     std::ofstream out( fname );

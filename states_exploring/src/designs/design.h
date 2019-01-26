@@ -25,15 +25,19 @@ public:
     Design();
     ~Design();
 
+    Design( const Design & inst );
+    const Design & operator=( const Design & inst );
+
     bool save( const Ogre::String & fname, bool overwrite=false );
     bool load( const Ogre::String & fname );
     /// 1) Each part is in joints at least once.
     /// 2) Joints connect existing parts.
+    /// 3) No isolated components.
     bool valid() const;
 
 public:
-    std::vector<Ogre::String>    parts;
-    std::vector<Connection>  joints;
+    std::vector<Ogre::String> parts;
+    std::vector<Connection>   joints;
 };
 
 

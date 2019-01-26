@@ -14,6 +14,9 @@ Entity::Entity()
     sceneNode->setInheritOrientation( true );
     sceneNode->setInheritScale( false );
 
+    Ogre::UserObjectBindings & uob = sceneNode->getUserObjectBindings();
+    uob.setUserAny( Ogre::Any( this ) );
+
     mType     = TUnspecified;
 }
 
@@ -81,7 +84,7 @@ void Entity::setSceneParent( Entity * parent, bool inheritRotation )
     }
 }
 
-bool Entity::isParentOf( Entity * entity )
+bool Entity::isParentOf( Entity * entity ) const
 {
     Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
     const Ogre::SceneNode * root = smgr->getRootSceneNode();
@@ -94,6 +97,25 @@ bool Entity::isParentOf( Entity * entity )
     }
 
     return false;
+}
+
+Entity * Entity::parentEntity() const
+{
+    Ogre::SceneNode * n = sceneNode->getParentSceneNode();
+    if ( !n )
+        return 0;
+
+    Ogre::UserObjectBindings & uob = n->getUserObjectBindings();
+    const Ogre::Any & a = uob.getUserAny();
+    if ( !a.has_value() )
+        return 0;
+
+    const Osp::Entity * centity = Ogre::any_cast<Osp::Entity *>( a );
+    if ( !centity )
+        return 0;
+
+    Osp::Entity * entity = const_cast<Osp::Entity *>( entity );
+    return entity;
 }
 
 bool Entity::relativePose( Entity * other, Ogre::Vector3 & rel_r, Ogre::Quaternion & rel_q )

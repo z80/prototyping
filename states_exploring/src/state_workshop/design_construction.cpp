@@ -437,6 +437,13 @@ void DesignConstruction::hintOnRotate()
     techTreePanel->setTooltip( out.str() );
 }
 
+Design DesignConstruction::design()
+{
+    // Just walk over all the blocks and generate connections.
+    // Design validity is up to the design itself.
+
+}
+
 
 
 

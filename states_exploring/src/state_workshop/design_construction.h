@@ -6,6 +6,7 @@
 #include "OgreInput.h"
 #include "tech_tree_panel.h"
 #include "pivot_marker.h"
+#include "design.h"
 
 namespace Osp
 {
@@ -82,6 +83,9 @@ public:
     void hintOnSelect();
     void hintOnDrag();
     void hintOnRotate();
+
+    /// Create a design based on what is in the scene now.
+    Design design();
 
     Site          * workshop;
     TechTreePanel * techTreePanel;
