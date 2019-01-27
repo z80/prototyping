@@ -209,7 +209,7 @@ bool DesignConstruction::trySelect( int & index )
         hintOnNone();
         return false;
     }
-    if ( e->type() != Entity::TPart )
+    if ( e->type() != Entity::TBlock )
     {
         hintOnNone();
         return false;
@@ -439,9 +439,59 @@ void DesignConstruction::hintOnRotate()
 
 Design DesignConstruction::design()
 {
+    const size_t blocksQty = blocks.size();
     // Just walk over all the blocks and generate connections.
     // Design validity is up to the design itself.
+    Design d;
 
+    // For connectivity use a map.
+    typedef std::map<Block *, size_t> BlockInds;
+    BlockInds blockInds;
+
+    // Copy parts list.
+    d.parts.reserve( blocksQty );
+    for ( size_t i=0; i<blocksQty; i++ )
+    {
+        DesignBlock & db = blocks[i];
+        const Ogre::String & stri = db.block->name;
+        d.parts.push_back( stri );
+        // Store block index in design blocks array.
+        blockInds[ db.block ] = i;
+    }
+
+    // Now need to make connections.
+    for ( size_t i=0; i<blocksQty; i++ )
+    {
+        DesignBlock & db = blocks[i];
+        Entity * e = db.block->parentEntity();
+        if ( e->type() != Entity::TBlock )
+            continue;
+        Block * ba = dynamic_cast<Block *>(e);
+        Block * bb = db.block;
+        Ogre::Vector3    rel_r;
+        Ogre::Quaternion rel_q;
+        const bool relOk = ba->relativePose( bb, rel_r, rel_q );
+        if ( !relOk )
+            continue;
+
+        BlockInds::const_iterator itA = blockInds.find( ba );
+        if ( itA == blockInds.end() )
+            continue;
+        BlockInds::const_iterator itB = blockInds.find( bb );
+        if ( itB == blockInds.end() )
+            continue;
+        const size_t indA = itA->second;
+        const size_t indB = itB->second;
+
+        Connection j;
+        j.partA = indA;
+        j.partB = indB;
+        j.r = rel_r;
+        j.q = rel_q;
+        d.joints.push_back( j );
+    }
+
+    return d;
 }
 
 

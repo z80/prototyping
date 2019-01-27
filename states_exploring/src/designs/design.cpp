@@ -21,7 +21,7 @@ Design::~Design()
 
 Design::Design( const Design & inst )
 {
-    *this = &inst;
+    *this = inst;
 }
 
 const Design & Design::operator=( const Design & inst )

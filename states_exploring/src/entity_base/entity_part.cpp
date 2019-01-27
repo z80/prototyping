@@ -56,7 +56,7 @@ void EntityConnection::destroy()
 Block::Block()
     : Entity()
 {
-    mType = TPart;
+    mType = TBlock;
 
     forcesWereApplied = false;
 

@@ -14,7 +14,7 @@ namespace Osp
 class Entity
 {
 public:
-    enum Type { TUnspecified=0, TPart, TPlanet, TSite };
+    enum Type { TUnspecified=0, TBlock, TPlanet, TSite };
     Entity();
     virtual ~Entity();
 
