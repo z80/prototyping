@@ -25,6 +25,7 @@ include_directories( ${OGRE_INCLUDE_DIRS}
                      ${ROOT}/config_reader/src
                      ${ROOT}/3dparty/lua-5.1.5/src
                      ${ROOT}/3dparty/lua-5.1.5/etc
+                     "${ROOT}/3dparty/tinyxml2/"
                      "${ROOT}/3dparty/lemon-1.3.1/"
                      "${PROJECT_BINARY_DIR}/3dparty/lemon-1.3.1" )
 link_directories(${OGRE_LIBRARY_DIRS})
@@ -69,7 +70,11 @@ include_directories( ./src
 
 add_executable( ${proj} ${src} ${IMGUI}/imgui/imgui_demo.cpp )
 target_compile_features( ${proj} PRIVATE cxx_range_for )
-target_link_libraries( ${proj} OgreImgui BtOgre Plugin_OggSound config_reader lua-5.1.5 )
+target_link_libraries( ${proj} OgreImgui
+                               BtOgre
+                               Plugin_OggSound
+                               config_reader
+                               lua-5.1.5 tinyxml2 )
 
 if(NOT FREETYPE_FOUND)
     set(FREETYPE_FOUND "FALSE")

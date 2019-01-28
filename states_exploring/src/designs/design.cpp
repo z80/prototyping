@@ -2,6 +2,8 @@
 #include "design.h"
 #include "state_manager.h"
 #include "config_reader.h"
+#include "tinyxml2.h"
+#include <sstream>
 
 namespace Osp
 {
@@ -36,40 +38,141 @@ const Design & Design::operator=( const Design & inst )
 
 bool Design::save( const Ogre::String & fname, bool overwrite )
 {
-    std::ofstream out( fname );
-    try {
-        out << "parts = {" << std::endl;
-        const size_t partsQty = parts.size();
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement * root = doc.NewElement( fname.c_str() );
+    doc.InsertFirstChild( root );
+
+    // Save blocks.
+    tinyxml2::XMLElement * e = doc.NewElement( "blocks" );
+    const size_t partsQty = parts.size();
+    {
+        std::ostringstream out;
+        out << partsQty;
+        e->SetAttribute( "qty", out.str().c_str() );
+    }
+    {
+        std::ostringstream out;
         for ( size_t i=0; i<partsQty; i++ )
         {
-            const Ogre::String & partName = parts[i];
-            out << "\"" << partName << "\"";
-            if ( i<(partsQty-1) )
-                out << ", ";
+            Ogre::String & name = parts[i];
+            out << name << " ";
         }
-        out << "}" << std::endl;
+        e->SetText( out.str().c_str() );
+    }
+    root->InsertFirstChild( e );
 
-        out << "joints = {" << std::endl;
-
-        out << "}" << std::endl;
-    } catch( ... )
+    // Save connections.
+    e = doc.NewElement( "joints" );
+    root->InsertEndChild( e );
+    const size_t jointsQty = joints.size();
     {
-        return false;
+        std::ostringstream out;
+        out << jointsQty;
+        e->SetAttribute( "qty", out.str().c_str() );
+    }
+    for ( size_t i=0; i<jointsQty; i++ )
+    {
+        const Connection & c = joints[i];
+        tinyxml2::XMLElement * ee = doc.NewElement( "joint" );
+        e->InsertEndChild( ee );
+        {
+            std::ostringstream out;
+            out << c.partA << " " << c.partB;
+            ee->SetText( out.str().c_str() );
+        }
+        tinyxml2::XMLElement * eee = doc.NewElement( "r" );
+        ee->InsertEndChild( eee );
+        {
+            std::ostringstream out;
+            out << c.r.x << " " << c.r.y << " " << c.r.z;
+            eee->SetText( out.str().c_str() );
+        }
+        eee = doc.NewElement( "q" );
+        ee->InsertEndChild( eee );
+        {
+            std::ostringstream out;
+            out << c.q.w << " " << c.q.x << " " << c.q.y << " " << c.q.z;
+            eee->SetText( out.str().c_str() );
+        }
     }
 
-    return true;
+    std::ofstream out( fname );
+    tinyxml2::XMLError eResult = doc.SaveFile( fname.c_str() );
+    //tinyxml2::XMLCheckResult( eResult );
+
+    return ( eResult == tinyxml2::XML_SUCCESS );
 }
 
 bool Design::load( const Ogre::String & fname )
 {
-    Config::ConfigReader * cr = StateManager::getSingletonPtr()->getConfigReader();
-    const bool openOk = cr->openFile( fname.c_str() );
-    if ( !openOk )
-    {
-        const char * err;
-        if ( cr->error( &err ) )
-            Ogre::LogManager::getSingletonPtr()->logError( err );
+    parts.clear();
+    joints.clear();;
+
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLError eResult = doc.LoadFile( fname.c_str() );
+    if ( eResult != tinyxml2::XML_SUCCESS )
         return false;
+
+    tinyxml2::XMLElement * e = doc.FirstChildElement( fname.c_str() );
+    if ( !e )
+        return false;
+
+    // Load block names.
+    tinyxml2::XMLElement * ee = e->FirstChildElement( "blocks" );
+    if ( !ee )
+        return false;
+    size_t qty;
+    {
+        std::istringstream in( ee->Attribute( "qty" ) );
+        in >> qty;
+    }
+    parts.reserve( qty );
+    std::istringstream in( ee->Value() );
+    for ( size_t i=0; i<qty; i++ )
+    {
+        std::string name;
+        in >> name;
+        parts.push_back( name );
+    }
+
+    // Load connections.
+    ee = e->FirstChildElement( "joints" );
+    if ( !ee )
+        return false;
+    {
+        std::istringstream in( ee->Attribute( "qty" ) );
+        in >> qty;
+    }
+    joints.reserve( qty );
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Connection c;
+        tinyxml2::XMLElement * eee;
+        if ( i==0 )
+            eee = ee->FirstChildElement();
+        else
+            eee = eee->NextSiblingElement();
+        if ( !eee )
+            return false;
+        {
+            std::istringstream in( eee->Value() );
+            in >> c.partA;
+            in >> c.partB;
+            tinyxml2::XMLElement * er = eee->FirstChildElement( "r" );
+            if ( !er )
+                return false;
+            {
+                std::istringstream in( ee->Value() );
+                in >> c.r.x >> c.r.y >> c.r.z;
+            }
+            tinyxml2::XMLElement * eq = eee->FirstChildElement( "q" );
+            if ( !eq )
+                return false;
+            {
+                std::istringstream in( ee->Value() );
+                in >> c.q.w >> c.q.x >> c.q.y >> c.q.z;
+            }
+        }
     }
 
     return true;
