@@ -78,7 +78,7 @@ bool Design::save( const Ogre::String & fname, bool overwrite )
         e->InsertEndChild( ee );
         {
             std::ostringstream out;
-            out << c.partA << " " << c.partB;
+            out << c.blockA << " " << c.blockB;
             ee->SetText( out.str().c_str() );
         }
         tinyxml2::XMLElement * eee = doc.NewElement( "r" );
@@ -157,8 +157,8 @@ bool Design::load( const Ogre::String & fname )
             return false;
         {
             std::istringstream in( ee->Value() );
-            in >> c.partA;
-            in >> c.partB;
+            in >> c.blockA;
+            in >> c.blockB;
             tinyxml2::XMLElement * er = ee->FirstChildElement( "r" );
             if ( !er )
                 return false;
@@ -195,8 +195,8 @@ bool Design::valid() const
     for ( size_t i=0; i<jointsQty; i++ )
     {
         const Connection & c = joints[i];
-        ListDigraph::Node a = ListDigraph::nodeFromId(c.partA);
-        ListDigraph::Node b = ListDigraph::nodeFromId(c.partB);
+        ListDigraph::Node a = ListDigraph::nodeFromId(c.blockA);
+        ListDigraph::Node b = ListDigraph::nodeFromId(c.blockB);
         ListDigraph::Arc  arc = g.addArc(a, b);
     }
 

@@ -33,9 +33,9 @@ public:
     Assembly * create( const Design & design );
     Assembly * create( const Ogre::String & fname );
     Assembly * create( const std::vector<Block *> & parts,
-                       const std::vector<EntityConnection *> & connections );
+                       const std::vector<BlockConnection *> & connections );
     /// Removes an assembly. Mostly it removes a pointer from the array.
-    void remove( Assembly * assembly );
+    void destroy( Assembly * assembly );
 
     /// Number of designs.
     int designsQty() const;

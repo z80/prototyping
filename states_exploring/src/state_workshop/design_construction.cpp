@@ -484,8 +484,8 @@ Design DesignConstruction::design()
         const size_t indB = itB->second;
 
         Connection j;
-        j.partA = indA;
-        j.partB = indB;
+        j.blockA = indA;
+        j.blockB = indB;
         j.r = rel_r;
         j.q = rel_q;
         d.joints.push_back( j );

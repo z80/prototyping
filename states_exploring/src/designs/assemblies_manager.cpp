@@ -5,6 +5,10 @@
 #include "entity_planet.h"
 #include "entity_world.h"
 #include "assembly.h"
+#include "part_manager_base.h"
+
+#include "btBulletDynamicsCommon.h"
+
 
 namespace Osp
 {
@@ -33,6 +37,10 @@ void AssembliesManager::setOrigin( EntityPlanet * planet,
 
 Assembly * AssembliesManager::create( const Design & design )
 {
+    const bool designValid = design.valid();
+    if ( !designValid )
+        return 0;
+
     Assembly * a = new Assembly();
     a->assembliesMgr = this;
     //Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
@@ -48,7 +56,45 @@ Assembly * AssembliesManager::create( const Design & design )
 
 
     // Add parts.
+    StateManager * sm = StateManager::getSingletonPtr();
+    PartManagerBase * pm = sm->getPartsManager();
 
+    const size_t blocksQty = design.parts.size();
+    a->blocks.reserve( blocksQty );
+    for ( size_t i=0; i<blocksQty; i++ )
+    {
+        const Ogre::String & name = design.parts[i];
+        Block * block = pm->create( name );
+        block->assembly    = a;
+        block->assemblyInd = i;
+        a->blocks.push_back( block );
+    }
+
+    // Add connections.
+    const size_t jointsQty = design.joints.size();
+    a->connections.reserve( jointsQty );
+    for ( size_t i=0; i<jointsQty; i++ )
+    {
+        const Connection & c = design.joints[i];
+        BlockConnection * joint = new BlockConnection();
+        joint->blockA = a->blocks[c.blockA];
+        joint->blockB = a->blocks[c.blockB];
+        joint->blockB->setSceneParent( joint->blockA );
+        joint->blockB->setR( c.r );
+        joint->blockB->setQ( c.q );
+        btTransform trA;
+        trA.setOrigin( btVector3( c.r.x, c.r.y, c.r.z ) );
+        trA.setRotation( btQuaternion( c.q.w, c.q.x, c.q.y, c.q.z ) );
+        btTransform trB;
+        trB.setIdentity();
+        joint->constraint = new btFixedConstraint( *joint->blockA->rigidBody,
+                                                   *joint->blockB->rigidBody,
+                                                   trA, trB );
+        joint->assembly    = a;
+        joint->assemblyInd = i;
+
+        a->connections.push_back( joint );
+    }
 
     // Compute center of inertia.
     a->computeCenterOfInertia();
@@ -61,34 +107,17 @@ Assembly * AssembliesManager::create( const Design & design )
 
 Assembly * AssembliesManager::create( const Ogre::String & fname )
 {
-    Assembly * a = new Assembly();
-    a->assembliesMgr = this;
-    //Ogre::SceneManager * smgr = StateManager::getSingletonPtr()->getSceneManager();
-    a->sceneNode = planet->sceneNode->createChildSceneNode();
-    Ogre::SceneNode * sn = a->sceneNode;
-    sn->setInheritScale( false );
-    sn->setInheritOrientation( true );
-    sn->setPosition( at );
-    sn->setOrientation( q );
+    Design design;
+    const bool designLoadedOk = design.load( fname );
+    if ( !designLoadedOk )
+        return 0;
 
-    a->parent      = planet;
-    a->nearSurface = true;
-
-
-    // Add parts.
-
-
-    // Compute center of inertia.
-    a->computeCenterOfInertia();
-    a->computeAssemblyRQVW();
-
-    assemblies.push_back( a );
-
+    Assembly * a = create( design );
     return a;
 }
 
 Assembly * AssembliesManager::create( const std::vector<Block *> & parts,
-                                      const std::vector<EntityConnection *> & connections )
+                                      const std::vector<BlockConnection *> & connections )
 {
     Assembly * a = new Assembly();
     a->assembliesMgr = this;
@@ -105,7 +134,7 @@ Assembly * AssembliesManager::create( const std::vector<Block *> & parts,
 
 
     // Add parts.
-    a->parts       = parts;
+    a->blocks       = parts;
     a->connections = connections;
     // Set each part assembly to be this one.
     const size_t partQty = parts.size();
@@ -124,7 +153,7 @@ Assembly * AssembliesManager::create( const std::vector<Block *> & parts,
     return a;
 }
 
-void AssembliesManager::remove( Assembly * assembly )
+void AssembliesManager::destroy( Assembly * assembly )
 {
     const size_t qty = assemblies.size();
     for ( size_t i=0; i<qty; i++ )

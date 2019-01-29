@@ -14,7 +14,7 @@ namespace Osp
 /// Utility function.
 static void removeFromWorld( EntityWorld * w,
                              std::vector<Block *> & parts,
-                             std::vector<EntityConnection *> & conns )
+                             std::vector<BlockConnection *> & conns )
 {
     const size_t partsQty = parts.size();
     for ( size_t i=0; i<partsQty; i++ )
@@ -28,7 +28,7 @@ static void removeFromWorld( EntityWorld * w,
     const size_t connsQty = conns.size();
     for ( size_t i=0; i<connsQty; i++ )
     {
-        EntityConnection * c = conns[i];
+        BlockConnection * c = conns[i];
         if ( c->constraint )
             c->fromWorld( w );
     }
@@ -171,10 +171,10 @@ Ogre::Vector3 Assembly::absoluteW()    const
 void Assembly::integrateDynamics( Ogre::Real t_sec, int timeBoost )
 {
     // Cleanup applied forces flag.
-    const size_t qty = parts.size();
+    const size_t qty = blocks.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         p->resetForcesApplied();
     }
 
@@ -183,10 +183,10 @@ void Assembly::integrateDynamics( Ogre::Real t_sec, int timeBoost )
     if ( nearSurface )
     {
         // Apply planet forces here.
-        const size_t qty = parts.size();
+        const size_t qty = blocks.size();
         for ( size_t i=0; i<qty; i++ )
         {
-            Block * p = parts[i];
+            Block * p = blocks[i];
             parent->addForces( *p );
         }
     }
@@ -200,10 +200,10 @@ bool Assembly::forcesApplied() const
 {
     if ( nearSurface )
         return true;
-    const size_t qty = parts.size();
+    const size_t qty = blocks.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         if ( p->forcesApplied() )
             return true;
     }
@@ -221,10 +221,10 @@ void Assembly::setParent( EntityPlanet * planet )
         computeAssemblyRQVW();
 
         // Return all parts to assembly.
-        const size_t qty = parts.size();
+        const size_t qty = blocks.size();
         for ( size_t i=0; i<qty; i++ )
         {
-            Block * p = parts[i];
+            Block * p = blocks[i];
             p->setR( p->assemblyR );
             p->setQ( p->assemblyQ );
             p->setV( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
@@ -306,10 +306,10 @@ void Assembly::setParentRf( EntityPlanet * planet )
         computeAssemblyRQVW();
 
         // Return all parts to assembly.
-        const size_t qty = parts.size();
+        const size_t qty = blocks.size();
         for ( size_t i=0; i<qty; i++ )
         {
-            Block * p = parts[i];
+            Block * p = blocks[i];
             p->setR( p->assemblyR );
             p->setQ( p->assemblyQ );
             p->setV( Ogre::Vector3( 0.0, 0.0, 0.0 ) );
@@ -329,10 +329,10 @@ void Assembly::setParentRf( EntityPlanet * planet )
     // 1) Compute their poses and pose derivatives.
     computePartsRQVW();
     // 2) Set actual parent to be appropriate planet.
-    const size_t qty = parts.size();
+    const size_t qty = blocks.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         p->sceneNode->getParent()->removeChild(p->sceneNode );
         planet->sceneNode->addChild( p->sceneNode );
     }
@@ -354,9 +354,9 @@ void Assembly::deleteConnection( Block * partA, Block * partB )
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
-        EntityConnection * c = connections[i];
-        if ( ( (c->partA == partA) && (c->partB == partB) ) ||
-             ( (c->partB == partA) && (c->partA == partB) ) )
+        BlockConnection * c = connections[i];
+        if ( ( (c->blockA == partA) && (c->blockB == partB) ) ||
+             ( (c->blockB == partA) && (c->blockA == partB) ) )
         {
             if ( i < (connQty-1) )
                 connections[i] = connections[connQty-1];
@@ -370,13 +370,13 @@ void Assembly::deleteConnection( Block * partA, Block * partB )
     // This is for graph construction.
     for ( size_t i=0; i<connQty; i++ )
     {
-        EntityConnection * c = connections[i];
+        BlockConnection * c = connections[i];
         c->assemblyInd = (int)i;
     }
-    const size_t partQty = parts.size();
+    const size_t partQty = blocks.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         p->assemblyInd = i;
     }
 
@@ -394,14 +394,14 @@ void Assembly::deleteConnection( Block * partA, Block * partB )
     for ( size_t i=0; i<partQty; i++ )
     {
         ListDigraph::Node u = g.addNode();
-        const Block * p = parts[i];
+        const Block * p = blocks[i];
         indsMap[u] = p->assemblyInd;
     }
     for ( size_t i=0; i<connQty; i++ )
     {
-        const EntityConnection * c = connections[i];
-        ListDigraph::Node a = ListDigraph::nodeFromId(c->partA->assemblyInd);
-        ListDigraph::Node b = ListDigraph::nodeFromId(c->partB->assemblyInd);
+        const BlockConnection * c = connections[i];
+        ListDigraph::Node a = ListDigraph::nodeFromId(c->blockA->assemblyInd);
+        ListDigraph::Node b = ListDigraph::nodeFromId(c->blockB->assemblyInd);
         ListDigraph::Arc  arc = g.addArc(a, b);
     }
 
@@ -438,12 +438,12 @@ void Assembly::connectionEstablished( Block * partA, Block * partB )
 
 void Assembly::computeAssemblyRQVW()
 {
-    if ( parts.empty() )
+    if ( blocks.empty() )
         return;
 
     // Right now for simplicity take the very first part
     // and use it as a reference.
-    Block * part = *(parts.begin());
+    Block * part = *(blocks.begin());
     // partR = assR + assQ * assemblyR * assQ.Inverse()
     // assR  = partR - assQ * assemblyR * assQ.Inverse()
     // partQ = assQ * assemblyQ
@@ -472,10 +472,10 @@ void Assembly::computeAssemblyRQVW()
 
 void Assembly::computePartsRQVW()
 {
-    const size_t qty = parts.size();
+    const size_t qty = blocks.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         // partQ = assQ * assemblyQ;
         // partR = assR + partQ * assemblyR * partQ.Inverse()
         // partW = assW
@@ -500,13 +500,13 @@ void Assembly::assignIndices()
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
-        EntityConnection * c = connections[i];
+        BlockConnection * c = connections[i];
         c->assemblyInd = (int)i;
     }
-    const size_t partQty = parts.size();
+    const size_t partQty = blocks.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         p->assemblyInd = i;
     }
 }
@@ -514,10 +514,10 @@ void Assembly::assignIndices()
 void Assembly::computeCenterOfInertia()
 {
     Ogre::Vector3 coi = Ogre::Vector3::ZERO;
-    const size_t partQty = parts.size();
+    const size_t partQty = blocks.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         const Ogre::Vector3 at = p->relR();
         coi = coi + at;
     }
@@ -525,13 +525,13 @@ void Assembly::computeCenterOfInertia()
     coi = coi / qty;
     r = coi;
 
-    q = parts[0]->relQ();
+    q = blocks[0]->relQ();
 
     // Compute relative position and orientation
     // for all parts within assembly.
     for ( size_t i=0; i<partQty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         const Ogre::Vector3 relR = p->relR() - r;
         p->assemblyR = relR;
 
@@ -542,10 +542,10 @@ void Assembly::computeCenterOfInertia()
 
 void Assembly::cleanup()
 {
-    const size_t partQty = parts.size();
+    const size_t partQty = blocks.size();
     for ( size_t i=0; i<partQty; i++ )
     {
-        Block * p = parts[i];
+        Block * p = blocks[i];
         delete p;
     }
 
@@ -555,7 +555,7 @@ void Assembly::cleanup()
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {
-        EntityConnection * c = connections[i];
+        BlockConnection * c = connections[i];
 
         c->fromWorld( w );
         delete c;

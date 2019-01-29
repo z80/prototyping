@@ -11,33 +11,33 @@ namespace Osp
 
 static void deleteSubshapes( btCollisionShape * s );
 
-EntityConnection::EntityConnection()
+BlockConnection::BlockConnection()
 {
-    partA = 0;
-    partB = 0;
+    blockA = 0;
+    blockB = 0;
     assembly    = 0;
     assemblyInd = -1;
     planet      = 0;
     constraint  = 0;
 }
 
-EntityConnection::~EntityConnection()
+BlockConnection::~BlockConnection()
 {
     destroy();
 }
 
-void EntityConnection::toWorld( EntityWorld * w )
+void BlockConnection::toWorld( EntityWorld * w )
 {
     w->phyWorld->addConstraint( constraint, true );
 }
 
-void EntityConnection::fromWorld( EntityWorld * w )
+void BlockConnection::fromWorld( EntityWorld * w )
 {
     w->phyWorld->removeConstraint( constraint );
 }
 
 
-void EntityConnection::destroy()
+void BlockConnection::destroy()
 {
     StateManager * sm = StateManager::getSingletonPtr();
     EntityWorld * w = sm->getWorld();

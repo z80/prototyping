@@ -13,8 +13,8 @@ struct Connection
     // Additional axis for rotation is not needed.
     // It is supposed to be fixed by part design.
     // So really need only "r" and "q".
-    Ogre::int32      partA;
-    Ogre::int32      partB;
+    Ogre::int32      blockA;
+    Ogre::int32      blockB;
     Ogre::Vector3    r;
     Ogre::Quaternion q;
 };

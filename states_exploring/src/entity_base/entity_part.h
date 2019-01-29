@@ -50,23 +50,23 @@ class Block;
 class Assembly;
 
 
-class EntityConnection
+class BlockConnection
 {
 public:
-    EntityConnection();
-    ~EntityConnection();
+    BlockConnection();
+    ~BlockConnection();
 
     void toWorld( EntityWorld * w );
     void fromWorld( EntityWorld * w );
 
     void destroy();
 
-    Block * partA;
-    Block * partB;
+    Block * blockA;
+    Block * blockB;
     btTypedConstraint * constraint;
-    Assembly     * assembly;
-    EntityPlanet * planet;
-    int          assemblyInd;
+    Assembly          * assembly;
+    EntityPlanet      * planet;
+    int                 assemblyInd;
 };
 
 class Block: public Entity
