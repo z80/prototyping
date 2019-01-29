@@ -8,9 +8,6 @@
 namespace Osp
 {
 
-static void saveJoint( const Connection & j, std::ofstream & out );
-static bool loadJoint( Connection & j,       std::ifstream & in );
-
 Design::Design()
 {
 
@@ -113,21 +110,21 @@ bool Design::load( const Ogre::String & fname )
     if ( eResult != tinyxml2::XML_SUCCESS )
         return false;
 
-    tinyxml2::XMLElement * e = doc.FirstChildElement( fname.c_str() );
-    if ( !e )
+    tinyxml2::XMLElement * root = doc.FirstChildElement( fname.c_str() );
+    if ( !root )
         return false;
 
     // Load block names.
-    tinyxml2::XMLElement * ee = e->FirstChildElement( "blocks" );
-    if ( !ee )
+    tinyxml2::XMLElement * e = root->FirstChildElement( "blocks" );
+    if ( !e )
         return false;
     size_t qty;
     {
-        std::istringstream in( ee->Attribute( "qty" ) );
+        std::istringstream in( e->Attribute( "qty" ) );
         in >> qty;
     }
     parts.reserve( qty );
-    std::istringstream in( ee->Value() );
+    std::istringstream in( e->Value() );
     for ( size_t i=0; i<qty; i++ )
     {
         std::string name;
@@ -136,40 +133,40 @@ bool Design::load( const Ogre::String & fname )
     }
 
     // Load connections.
-    ee = e->FirstChildElement( "joints" );
-    if ( !ee )
+    e = root->FirstChildElement( "joints" );
+    if ( !e )
         return false;
     {
-        std::istringstream in( ee->Attribute( "qty" ) );
+        std::istringstream in( e->Attribute( "qty" ) );
         in >> qty;
     }
     joints.reserve( qty );
     for ( size_t i=0; i<qty; i++ )
     {
         Connection c;
-        tinyxml2::XMLElement * eee;
+        tinyxml2::XMLElement * ee;
         if ( i==0 )
-            eee = ee->FirstChildElement();
+            ee = e->FirstChildElement();
         else
-            eee = eee->NextSiblingElement();
-        if ( !eee )
+            ee = ee->NextSiblingElement();
+        if ( !ee )
             return false;
         {
-            std::istringstream in( eee->Value() );
+            std::istringstream in( ee->Value() );
             in >> c.partA;
             in >> c.partB;
-            tinyxml2::XMLElement * er = eee->FirstChildElement( "r" );
+            tinyxml2::XMLElement * er = ee->FirstChildElement( "r" );
             if ( !er )
                 return false;
             {
-                std::istringstream in( ee->Value() );
+                std::istringstream in( er->Value() );
                 in >> c.r.x >> c.r.y >> c.r.z;
             }
-            tinyxml2::XMLElement * eq = eee->FirstChildElement( "q" );
+            tinyxml2::XMLElement * eq = ee->FirstChildElement( "q" );
             if ( !eq )
                 return false;
             {
-                std::istringstream in( ee->Value() );
+                std::istringstream in( eq->Value() );
                 in >> c.q.w >> c.q.x >> c.q.y >> c.q.z;
             }
         }
@@ -186,16 +183,7 @@ bool Design::valid() const
 
 
 
-static void saveJoint( const Connection & j, std::ofstream & out )
-{
 
-}
-
-static bool loadJoint( Connection & j, std::ifstream & in )
-{
-
-    return false;
-}
 
 
 }
