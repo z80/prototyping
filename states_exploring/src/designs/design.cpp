@@ -5,6 +5,10 @@
 #include "tinyxml2.h"
 #include <sstream>
 
+// Check assembly validity.
+#include "lemon/list_graph.h"
+#include "lemon/connectivity.h"
+
 namespace Osp
 {
 
@@ -177,8 +181,31 @@ bool Design::load( const Ogre::String & fname )
 
 bool Design::valid() const
 {
+    using namespace lemon;
+    typedef Undirector<ListDigraph> Graph;
+    ListDigraph g;
+    ListDigraph::NodeMap<int> indsMap(g);
+    const size_t blocksQty = parts.size();
+    for ( size_t i=0; i<blocksQty; i++ )
+    {
+        ListDigraph::Node u = g.addNode();
+        indsMap[u] = (int)i;
+    }
+    const size_t jointsQty = joints.size();
+    for ( size_t i=0; i<jointsQty; i++ )
+    {
+        const Connection & c = joints[i];
+        ListDigraph::Node a = ListDigraph::nodeFromId(c.partA);
+        ListDigraph::Node b = ListDigraph::nodeFromId(c.partB);
+        ListDigraph::Arc  arc = g.addArc(a, b);
+    }
 
-    return true;
+    // 2) Count connected components.
+    Graph graph(g);
+    const int compsQty = countConnectedComponents( graph );
+
+    const bool ok = (compsQty == 1);
+    return ok;
 }
 
 
