@@ -31,7 +31,7 @@ const Design & Design::operator=( const Design & inst )
 {
     if ( this != &inst )
     {
-        parts  = inst.parts;
+        blocks  = inst.blocks;
         joints = inst.joints;
     }
     return *this;
@@ -44,60 +44,69 @@ bool Design::save( const Ogre::String & fname, bool overwrite )
     doc.InsertFirstChild( root );
 
     // Save blocks.
-    tinyxml2::XMLElement * e = doc.NewElement( "blocks" );
-    const size_t partsQty = parts.size();
+    tinyxml2::XMLElement * e_blocks = doc.NewElement( "blocks" );
+    const size_t partsQty = blocks.size();
     {
         std::ostringstream out;
         out << partsQty;
-        e->SetAttribute( "qty", out.str().c_str() );
+        e_blocks->SetAttribute( "qty", out.str().c_str() );
     }
     {
-        std::ostringstream out;
+        /*std::ostringstream out;
         for ( size_t i=0; i<partsQty; i++ )
         {
-            Ogre::String & name = parts[i];
+            Ogre::String & name = blocks[i];
             out << name << " ";
         }
-        e->SetText( out.str().c_str() );
+        e->SetText( out.str().c_str() );*/
+
+        for ( size_t i=0; i<partsQty; i++ )
+        {
+            const Design::Block & block = blocks[i];
+            tinyxml2::XMLElement * e_block = doc.NewElement( block.name.c_str() );
+            e_blocks->InsertEndChild( e_block );
+
+            tinyxml2::XMLElement * er = doc.NewElement( "r" );
+            {
+                std::ostringstream out;
+                out << block.r.x << " " << block.r.y << " " << block.r.z;
+                er->SetText( out.str().c_str() );
+            }
+            e_block->InsertEndChild( er );
+
+            tinyxml2::XMLElement * eq = doc.NewElement( "q" );
+            {
+                std::ostringstream out;
+                out << block.q.w << " " << block.q.x << " " << block.q.y << " " << block.q.z;
+                eq->SetText( out.str().c_str() );
+            }
+            e_block->InsertEndChild( eq );
+        }
+
     }
-    root->InsertFirstChild( e );
+    root->InsertFirstChild( e_blocks );
 
     // Save connections.
-    e = doc.NewElement( "joints" );
-    root->InsertEndChild( e );
+    tinyxml2::XMLElement * e_joints = doc.NewElement( "joints" );
+    root->InsertEndChild( e_joints );
     const size_t jointsQty = joints.size();
     {
         std::ostringstream out;
         out << jointsQty;
-        e->SetAttribute( "qty", out.str().c_str() );
+        e_joints->SetAttribute( "qty", out.str().c_str() );
     }
     for ( size_t i=0; i<jointsQty; i++ )
     {
-        const Connection & c = joints[i];
-        tinyxml2::XMLElement * ee = doc.NewElement( "joint" );
-        e->InsertEndChild( ee );
+        const Joint & c = joints[i];
+        tinyxml2::XMLElement * e_joint = doc.NewElement( "joint" );
+        e_joints->InsertEndChild( e_joint );
         {
             std::ostringstream out;
             out << c.blockA << " " << c.blockB;
-            ee->SetText( out.str().c_str() );
-        }
-        tinyxml2::XMLElement * eee = doc.NewElement( "r" );
-        ee->InsertEndChild( eee );
-        {
-            std::ostringstream out;
-            out << c.r.x << " " << c.r.y << " " << c.r.z;
-            eee->SetText( out.str().c_str() );
-        }
-        eee = doc.NewElement( "q" );
-        ee->InsertEndChild( eee );
-        {
-            std::ostringstream out;
-            out << c.q.w << " " << c.q.x << " " << c.q.y << " " << c.q.z;
-            eee->SetText( out.str().c_str() );
+            e_joint->SetText( out.str().c_str() );
         }
     }
 
-    std::ofstream out( fname );
     tinyxml2::XMLError eResult = doc.SaveFile( fname.c_str() );
     //tinyxml2::XMLCheckResult( eResult );
 
@@ -106,7 +115,7 @@ bool Design::save( const Ogre::String & fname, bool overwrite )
 
 bool Design::load( const Ogre::String & fname )
 {
-    parts.clear();
+    blocks.clear();
     joints.clear();;
 
     tinyxml2::XMLDocument doc;
@@ -119,61 +128,73 @@ bool Design::load( const Ogre::String & fname )
         return false;
 
     // Load block names.
-    tinyxml2::XMLElement * e = root->FirstChildElement( "blocks" );
-    if ( !e )
+    tinyxml2::XMLElement * e_blocks = root->FirstChildElement( "blocks" );
+    if ( !e_blocks )
         return false;
     size_t qty;
     {
-        std::istringstream in( e->Attribute( "qty" ) );
+        std::istringstream in( e_blocks->Attribute( "qty" ) );
         in >> qty;
     }
-    parts.reserve( qty );
-    std::istringstream in( e->Value() );
+    blocks.reserve( qty );
+    std::istringstream in( e_blocks->Value() );
     for ( size_t i=0; i<qty; i++ )
     {
-        std::string name;
-        in >> name;
-        parts.push_back( name );
+        tinyxml2::XMLElement * e_block = 0;
+        if ( i == 0 )
+            e_block = e_blocks->FirstChildElement();
+        else
+            e_block = e_block->NextSiblingElement();
+        if ( !e_block )
+            return false;
+
+        Design::Block b;
+        b.name = e_block->Name();
+
+        // Read position and orientation.
+        tinyxml2::XMLElement * er = e_block->FirstChildElement( "r" );
+        if ( !er )
+            return false;
+        {
+            std::istringstream in( er->Value() );
+            in >> b.r.x >> b.r.y >> b.r.z;
+        }
+        tinyxml2::XMLElement * eq = e_block->FirstChildElement( "q" );
+        if ( !eq )
+            return false;
+        {
+            std::istringstream in( eq->Value() );
+            in >> b.q.w >> b.q.x >> b.q.y >> b.q.z;
+        }
+
+        blocks.push_back( b );
     }
 
     // Load connections.
-    e = root->FirstChildElement( "joints" );
-    if ( !e )
+    e_blocks = root->FirstChildElement( "joints" );
+    if ( !e_blocks )
         return false;
     {
-        std::istringstream in( e->Attribute( "qty" ) );
+        std::istringstream in( e_blocks->Attribute( "qty" ) );
         in >> qty;
     }
     joints.reserve( qty );
     for ( size_t i=0; i<qty; i++ )
     {
-        Connection c;
-        tinyxml2::XMLElement * ee;
+        Joint joint;
+        tinyxml2::XMLElement * e_joint;
         if ( i==0 )
-            ee = e->FirstChildElement();
+            e_joint = e_blocks->FirstChildElement();
         else
-            ee = ee->NextSiblingElement();
-        if ( !ee )
+            e_joint = e_joint->NextSiblingElement();
+        if ( !e_joint )
             return false;
         {
-            std::istringstream in( ee->Value() );
-            in >> c.blockA;
-            in >> c.blockB;
-            tinyxml2::XMLElement * er = ee->FirstChildElement( "r" );
-            if ( !er )
-                return false;
-            {
-                std::istringstream in( er->Value() );
-                in >> c.r.x >> c.r.y >> c.r.z;
-            }
-            tinyxml2::XMLElement * eq = ee->FirstChildElement( "q" );
-            if ( !eq )
-                return false;
-            {
-                std::istringstream in( eq->Value() );
-                in >> c.q.w >> c.q.x >> c.q.y >> c.q.z;
-            }
+            std::istringstream in( e_joint->Value() );
+            in >> joint.blockA;
+            in >> joint.blockB;
         }
+        joints.push_back( joint );
     }
 
     return true;
@@ -185,7 +206,7 @@ bool Design::valid() const
     typedef Undirector<ListDigraph> Graph;
     ListDigraph g;
     ListDigraph::NodeMap<int> indsMap(g);
-    const size_t blocksQty = parts.size();
+    const size_t blocksQty = blocks.size();
     for ( size_t i=0; i<blocksQty; i++ )
     {
         ListDigraph::Node u = g.addNode();
@@ -194,10 +215,10 @@ bool Design::valid() const
     const size_t jointsQty = joints.size();
     for ( size_t i=0; i<jointsQty; i++ )
     {
-        const Connection & c = joints[i];
+        const Joint & c = joints[i];
         ListDigraph::Node a = ListDigraph::nodeFromId(c.blockA);
         ListDigraph::Node b = ListDigraph::nodeFromId(c.blockB);
-        ListDigraph::Arc  arc = g.addArc(a, b);
+        /*ListDigraph::Arc  arc =*/ g.addArc(a, b);
     }
 
     // 2) Count connected components.

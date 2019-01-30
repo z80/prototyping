@@ -8,20 +8,30 @@ namespace Osp
 {
 
 
-struct Connection
-{
-    // Additional axis for rotation is not needed.
-    // It is supposed to be fixed by part design.
-    // So really need only "r" and "q".
-    Ogre::int32      blockA;
-    Ogre::int32      blockB;
-    Ogre::Vector3    r;
-    Ogre::Quaternion q;
-};
+
 
 class Design
 {
 public:
+    struct Joint
+    {
+        // Additional axis for rotation is not needed.
+        // It is supposed to be fixed by part design.
+        // So really need only "r" and "q".
+        Ogre::int32      blockA;
+        Ogre::int32      blockB;
+    };
+
+    struct Block
+    {
+        // Block type name to be able to create one.
+        Ogre::String name;
+        // Position and orientation with respect to
+        // the Site design was made in.
+        Ogre::Vector3    r;
+        Ogre::Quaternion q;
+    };
+
     Design();
     ~Design();
 
@@ -36,8 +46,8 @@ public:
     bool valid() const;
 
 public:
-    std::vector<Ogre::String> parts;
-    std::vector<Connection>   joints;
+    std::vector<Block> blocks;
+    std::vector<Joint> joints;
 };
 
 

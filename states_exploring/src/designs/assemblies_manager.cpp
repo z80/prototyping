@@ -59,12 +59,14 @@ Assembly * AssembliesManager::create( const Design & design )
     StateManager * sm = StateManager::getSingletonPtr();
     PartManagerBase * pm = sm->getPartsManager();
 
-    const size_t blocksQty = design.parts.size();
+    const size_t blocksQty = design.blocks.size();
     a->blocks.reserve( blocksQty );
     for ( size_t i=0; i<blocksQty; i++ )
     {
-        const Ogre::String & name = design.parts[i];
-        Block * block = pm->create( name );
+        const Design::Block & b = design.blocks[i];
+        Block * block = pm->create( b.name );
+        block->setR( b.r );
+        block->setQ( b.q );
         block->assembly    = a;
         block->assemblyInd = i;
         a->blocks.push_back( block );
@@ -75,16 +77,17 @@ Assembly * AssembliesManager::create( const Design & design )
     a->connections.reserve( jointsQty );
     for ( size_t i=0; i<jointsQty; i++ )
     {
-        const Connection & c = design.joints[i];
+        const Design::Joint & c = design.joints[i];
         BlockConnection * joint = new BlockConnection();
         joint->blockA = a->blocks[c.blockA];
         joint->blockB = a->blocks[c.blockB];
+        Ogre::Vector3    rel_r;
+        Ogre::Quaternion rel_q;
+        joint->blockB->relativePose( joint->blockA, rel_r, rel_q );
         joint->blockB->setSceneParent( joint->blockA );
-        joint->blockB->setR( c.r );
-        joint->blockB->setQ( c.q );
         btTransform trA;
-        trA.setOrigin( btVector3( c.r.x, c.r.y, c.r.z ) );
-        trA.setRotation( btQuaternion( c.q.w, c.q.x, c.q.y, c.q.z ) );
+        trA.setOrigin( btVector3( rel_r.x, rel_r.y, rel_r.z ) );
+        trA.setRotation( btQuaternion( rel_q.w, rel_q.x, rel_q.y, rel_q.z ) );
         btTransform trB;
         trB.setIdentity();
         joint->constraint = new btFixedConstraint( *joint->blockA->rigidBody,

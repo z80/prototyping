@@ -449,12 +449,14 @@ Design DesignConstruction::design()
     BlockInds blockInds;
 
     // Copy parts list.
-    d.parts.reserve( blocksQty );
+    d.blocks.reserve( blocksQty );
     for ( size_t i=0; i<blocksQty; i++ )
     {
         DesignBlock & db = blocks[i];
-        const Ogre::String & stri = db.block->name;
-        d.parts.push_back( stri );
+        Design::Block b;
+        b.name = db.block->name;
+        db.block->relativePose( workshop, b.r, b.q );
+        d.blocks.push_back( b );
         // Store block index in design blocks array.
         blockInds[ db.block ] = i;
     }
@@ -468,11 +470,6 @@ Design DesignConstruction::design()
             continue;
         Block * ba = dynamic_cast<Block *>(e);
         Block * bb = db.block;
-        Ogre::Vector3    rel_r;
-        Ogre::Quaternion rel_q;
-        const bool relOk = ba->relativePose( bb, rel_r, rel_q );
-        if ( !relOk )
-            continue;
 
         BlockInds::const_iterator itA = blockInds.find( ba );
         if ( itA == blockInds.end() )
@@ -483,11 +480,9 @@ Design DesignConstruction::design()
         const size_t indA = itA->second;
         const size_t indB = itB->second;
 
-        Connection j;
+        Design::Joint j;
         j.blockA = indA;
         j.blockB = indB;
-        j.r = rel_r;
-        j.q = rel_q;
         d.joints.push_back( j );
     }
 
