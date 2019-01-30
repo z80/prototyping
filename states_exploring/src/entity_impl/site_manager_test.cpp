@@ -25,6 +25,7 @@ SiteManagerTest::~SiteManagerTest()
 void SiteManagerTest::createImpl()
 {
     createAssembly( this );
+    createLaunch( this );
 }
 
 
@@ -84,8 +85,8 @@ static void createLaunch( SiteManagerTest * mgr )
     PlanetManagerBase * pm = StateManager::getSingletonPtr()->getPlanetsManager();
 
     Site * s = new Site();
-    s->function = "assembly";
-    s->name     = "Main assembly";
+    s->function = "launch";
+    s->name     = "Main launch";
     s->planet   = pm->planet( "earth" );
 
     const Ogre::Quaternion q( Ogre::Radian(30.0/180.0*3.1415),
