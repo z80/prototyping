@@ -26,12 +26,12 @@ BlockConnection::~BlockConnection()
     destroy();
 }
 
-void BlockConnection::toWorld( EntityWorld * w )
+void BlockConnection::toWorld( DynamicsWorld * w )
 {
     w->phyWorld->addConstraint( constraint, true );
 }
 
-void BlockConnection::fromWorld( EntityWorld * w )
+void BlockConnection::fromWorld( DynamicsWorld * w )
 {
     w->phyWorld->removeConstraint( constraint );
 }
@@ -40,7 +40,7 @@ void BlockConnection::fromWorld( EntityWorld * w )
 void BlockConnection::destroy()
 {
     StateManager * sm = StateManager::getSingletonPtr();
-    EntityWorld * w = sm->getWorld();
+    DynamicsWorld * w = sm->getWorld();
     if ( constraint )
     {
         w->phyWorld->removeConstraint( constraint );
@@ -151,12 +151,12 @@ void Block::contextMenuEvent()
 
 }
 
-void Block::toWorld( EntityWorld * w )
+void Block::toWorld( DynamicsWorld * w )
 {
     w->phyWorld->addRigidBody( rigidBody );
 }
 
-void Block::fromWorld( EntityWorld * w )
+void Block::fromWorld( DynamicsWorld * w )
 {
     w->phyWorld->removeRigidBody( rigidBody );
 }
@@ -315,7 +315,7 @@ void Block::initDynamics()
 
     rigidBody = new btRigidBody( mass, bodyState, collisionShape, inertia );
 
-    EntityWorld::getSingletonPtr()->addEntity( this );
+    DynamicsWorld::getSingletonPtr()->addEntity( this );
 }
 
 bool Block::forcesApplied() const
@@ -648,7 +648,7 @@ void Block::deleteRigidBody()
 {
     if ( rigidBody )
     {
-        EntityWorld * w = EntityWorld::getSingletonPtr();
+        DynamicsWorld * w = DynamicsWorld::getSingletonPtr();
         if ( w && w->phyWorld )
             w->phyWorld->removeRigidBody( rigidBody );
         if ( bodyState )

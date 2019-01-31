@@ -12,15 +12,15 @@ static const char META_T_NAME[] = "EW";
 
 static int lua_worldCreate( lua_State * L )
 {
-    Osp::EntityWorld * e = StateManager::getSingletonPtr()->getWorld();
+    Osp::DynamicsWorld * e = StateManager::getSingletonPtr()->getWorld();
     if ( !e )
     {
         lua_pushboolean( L, 0 );
         Ogre::LogManager::getSingletonPtr()->logError( "Failed to retrieve world" );
         return 1;
     }
-    Osp::EntityWorld * * p = reinterpret_cast<Osp::EntityWorld * *>(
-                lua_newuserdata( L, sizeof(Osp::EntityWorld *)) );
+    Osp::DynamicsWorld * * p = reinterpret_cast<Osp::DynamicsWorld * *>(
+                lua_newuserdata( L, sizeof(Osp::DynamicsWorld *)) );
     *p = e;
     // Get metatable.
     luaL_getmetatable( L, META_T_NAME );
@@ -38,7 +38,7 @@ static int lua_worldCreate( lua_State * L )
 
 static int lua_worldGc( lua_State * L )
 {
-    Osp::EntityWorld * p = *reinterpret_cast<Osp::EntityWorld * *>(
+    Osp::DynamicsWorld * p = *reinterpret_cast<Osp::DynamicsWorld * *>(
                                     lua_touserdata( L, 1 ) );
 
     // Here do nothing as it is singleton managed
@@ -48,7 +48,7 @@ static int lua_worldGc( lua_State * L )
 
 static int lua_addPart( lua_State * L )
 {
-    Osp::EntityWorld * w = *reinterpret_cast<Osp::EntityWorld * *>(
+    Osp::DynamicsWorld * w = *reinterpret_cast<Osp::DynamicsWorld * *>(
                 lua_touserdata( L, 1 ) );
     Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 2 ) );
@@ -63,7 +63,7 @@ static int lua_addPart( lua_State * L )
 
 static int lua_removePart( lua_State * L )
 {
-    Osp::EntityWorld * w = *reinterpret_cast<Osp::EntityWorld * *>(
+    Osp::DynamicsWorld * w = *reinterpret_cast<Osp::DynamicsWorld * *>(
                 lua_touserdata( L, 1 ) );
     Osp::Block * p = *reinterpret_cast<Osp::Block * *>(
                 lua_touserdata( L, 2 ) );
@@ -78,7 +78,7 @@ static int lua_removePart( lua_State * L )
 
 static int lua_addPlanet( lua_State * L )
 {
-    Osp::EntityWorld * w = *reinterpret_cast<Osp::EntityWorld * *>(
+    Osp::DynamicsWorld * w = *reinterpret_cast<Osp::DynamicsWorld * *>(
                 lua_touserdata( L, 1 ) );
     Osp::EntityPlanet * p = *reinterpret_cast<Osp::EntityPlanet * *>(
                 lua_touserdata( L, 2 ) );
@@ -93,7 +93,7 @@ static int lua_addPlanet( lua_State * L )
 
 static int lua_removePlanet( lua_State * L )
 {
-    Osp::EntityWorld * w = *reinterpret_cast<Osp::EntityWorld * *>(
+    Osp::DynamicsWorld * w = *reinterpret_cast<Osp::DynamicsWorld * *>(
                 lua_touserdata( L, 1 ) );
     Osp::EntityPlanet * p = *reinterpret_cast<Osp::EntityPlanet * *>(
                 lua_touserdata( L, 2 ) );
@@ -108,7 +108,7 @@ static int lua_removePlanet( lua_State * L )
 
 static int lua_frameStarted( lua_State * L )
 {
-    Osp::EntityWorld * w = *reinterpret_cast<Osp::EntityWorld * *>(
+    Osp::DynamicsWorld * w = *reinterpret_cast<Osp::DynamicsWorld * *>(
                 lua_touserdata( L, 1 ) );
     const int top = lua_gettop( L );
     const btScalar dt = (top > 1) ? static_cast<btScalar>( lua_tonumber( L, 2 ) ) : 0.1;

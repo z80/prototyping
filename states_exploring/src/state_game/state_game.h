@@ -50,7 +50,7 @@ private:
     bool disableMouseCtrl;
     bool toWorkshopMode;
 
-    Osp::EntityWorld       * world;
+    Osp::DynamicsWorld       * world;
     Osp::Block      //* plane,
                               * cube;
     Osp::EntityPlanet      * planet;

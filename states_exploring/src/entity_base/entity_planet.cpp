@@ -38,7 +38,7 @@ EntityPlanet::~EntityPlanet()
         if ( motionState )
             delete motionState;
 
-        EntityWorld * w = EntityWorld::getSingletonPtr();
+        DynamicsWorld * w = DynamicsWorld::getSingletonPtr();
         if ( w && w->phyWorld )
             w->phyWorld->removeRigidBody( rigidBody );
         delete rigidBody;

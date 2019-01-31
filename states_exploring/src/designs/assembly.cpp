@@ -12,7 +12,7 @@ namespace Osp
 {
 
 /// Utility function.
-static void removeFromWorld( EntityWorld * w,
+static void removeFromWorld( DynamicsWorld * w,
                              std::vector<Block *> & parts,
                              std::vector<BlockConnection *> & conns )
 {
@@ -551,7 +551,7 @@ void Assembly::cleanup()
 
     StateManager * sm = StateManager::getSingletonPtr();
 
-    EntityWorld * w = sm->getWorld();
+    DynamicsWorld * w = sm->getWorld();
     const size_t connQty = connections.size();
     for ( size_t i=0; i<connQty; i++ )
     {

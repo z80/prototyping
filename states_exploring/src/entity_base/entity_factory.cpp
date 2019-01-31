@@ -16,7 +16,7 @@ template<> EntityFactory * Ogre::Singleton<EntityFactory>::msSingleton = 0;
 class EntityFactory::PD
 {
 public:
-    EntityWorld  * world();
+    DynamicsWorld  * world();
     Block   * cube();
     Block   * plane();
     EntityPlanet * spherePlanet();
@@ -35,9 +35,9 @@ EntityFactory::PD::~PD()
 
 }
 
-EntityWorld  * EntityFactory::PD::world()
+DynamicsWorld  * EntityFactory::PD::world()
 {
-    EntityWorld * w = StateManager::getSingleton().getWorld();
+    DynamicsWorld * w = StateManager::getSingleton().getWorld();
     return w;
 }
 
@@ -74,7 +74,7 @@ Block   * EntityFactory::PD::cube()
 
     AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );
 
-    EntityWorld::getSingletonPtr()->addEntity( p );
+    DynamicsWorld::getSingletonPtr()->addEntity( p );
     return p;
 }
 
@@ -110,7 +110,7 @@ Block   * EntityFactory::PD::plane()
 
     AirMesh::AirMesh::airMesh( p->visualEntity, p->airMesh );
 
-    EntityWorld::getSingletonPtr()->addEntity( p );
+    DynamicsWorld::getSingletonPtr()->addEntity( p );
 
     return p;
 }
@@ -151,7 +151,7 @@ EntityPlanet * EntityFactory::PD::spherePlanet()
     p->atm.radius = R;
     p->g.radius   = R;
 
-    EntityWorld::getSingletonPtr()->addEntity( p );
+    DynamicsWorld::getSingletonPtr()->addEntity( p );
 
     return p;
 

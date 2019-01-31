@@ -21,7 +21,7 @@ Site::Site()
 
 Site::~Site()
 {
-    EntityWorld * w = StateManager::getSingletonPtr()->getWorld();
+    DynamicsWorld * w = StateManager::getSingletonPtr()->getWorld();
     if ( rigidBody )
     {
         btMotionState * motionState = rigidBody->getMotionState();

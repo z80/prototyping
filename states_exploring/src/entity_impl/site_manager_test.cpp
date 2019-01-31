@@ -25,7 +25,7 @@ SiteManagerTest::~SiteManagerTest()
 void SiteManagerTest::createImpl()
 {
     createAssembly( this );
-    //createLaunch( this );
+    createLaunch( this );
 }
 
 
@@ -73,7 +73,7 @@ static void createAssembly( SiteManagerTest * mgr )
 
     // Reparent to the appropriate planet.
     s->setSceneParent( planet );
-    s->setR( r * (30.0 + 1.0) );
+    s->setR( r * (30.0 + 1.5) );
     s->setQ( q );
 
 }
@@ -118,7 +118,7 @@ static void createLaunch( SiteManagerTest * mgr )
 
     // Reparent to the appropriate planet.
     s->setSceneParent( planet );
-    s->setR( r * (30.0 + 1.0) );
+    s->setR( r * (30.0 + 1.5) );
     s->setQ( q );
 }
 

@@ -44,7 +44,7 @@ struct Sound
     } Lt;
 };
 
-class EntityWorld;
+class DynamicsWorld;
 class EntityPlanet;
 class Block;
 class Assembly;
@@ -56,8 +56,8 @@ public:
     BlockConnection();
     ~BlockConnection();
 
-    void toWorld( EntityWorld * w );
-    void fromWorld( EntityWorld * w );
+    void toWorld( DynamicsWorld * w );
+    void fromWorld( DynamicsWorld * w );
 
     void destroy();
 
@@ -90,8 +90,8 @@ public:
 
     /// Virtual because in implementations
     /// there might be more than one rigid body.
-    virtual void toWorld( EntityWorld * w );
-    virtual void fromWorld( EntityWorld * w );
+    virtual void toWorld( DynamicsWorld * w );
+    virtual void fromWorld( DynamicsWorld * w );
 
     bool setEntity( const char * mesh, const char * material = 0 );
     bool setMaterial( const char * material );

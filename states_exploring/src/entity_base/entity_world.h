@@ -23,14 +23,14 @@ namespace Osp
  *
  */
 
-class EntityWorld: public Entity, public Ogre::Singleton<EntityWorld>
+class DynamicsWorld: public Entity, public Ogre::Singleton<DynamicsWorld>
 {
 public:
-    static EntityWorld * createWorld();
+    static DynamicsWorld * createWorld();
     static void deleteWorld();
 
-    EntityWorld( Ogre::SceneManager * scnMgr );
-    ~EntityWorld();
+    DynamicsWorld( Ogre::SceneManager * scnMgr );
+    ~DynamicsWorld();
 
     void integrationStep( Ogre::Real & t_sec, int timeBoost=1 );
 
