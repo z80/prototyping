@@ -29,6 +29,8 @@ public:
     DynamicsWorld();
     ~DynamicsWorld();
 
+    EntityPlanet * planet();
+
     void integrationStep( Ogre::Real & t_sec, int timeBoost=1 );
 
     bool frameStarted( const Ogre::FrameEvent & evt, bool debugDraw = true );

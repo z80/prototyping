@@ -21,7 +21,7 @@ static void removeFromWorld( EntityWorld * w,
     {
         Block * p = parts[i];
         if ( p->rigidBody )
-            p->fromWorld( w );
+            p->fromWorld();
 
     }
 
@@ -30,12 +30,13 @@ static void removeFromWorld( EntityWorld * w,
     {
         BlockConnection * c = conns[i];
         if ( c->constraint )
-            c->fromWorld( w );
+            c->fromWorld();
     }
 }
 
 
 Assembly::Assembly()
+    : Entity()
 {
 
 }
@@ -557,7 +558,7 @@ void Assembly::cleanup()
     {
         BlockConnection * c = connections[i];
 
-        c->fromWorld( w );
+        c->fromWorld();
         delete c;
     }
 

@@ -19,6 +19,7 @@ class StateManager;
 namespace Osp
 {
 
+
 struct Sound
 {
     std::string name;
@@ -48,6 +49,7 @@ class EntityWorld;
 class EntityPlanet;
 class Block;
 class Assembly;
+class DynamicsWorld;
 
 
 class BlockConnection
@@ -56,8 +58,8 @@ public:
     BlockConnection();
     ~BlockConnection();
 
-    void toWorld( EntityWorld * w );
-    void fromWorld( EntityWorld * w );
+    void toWorld( DynamicsWorld * w );
+    void fromWorld();
 
     void destroy();
 
@@ -65,8 +67,8 @@ public:
     Block * blockB;
     btTypedConstraint * constraint;
     Assembly          * assembly;
-    EntityPlanet      * planet;
     int                 assemblyInd;
+    DynamicsWorld     * world;
 };
 
 class Block: public Entity
@@ -90,8 +92,8 @@ public:
 
     /// Virtual because in implementations
     /// there might be more than one rigid body.
-    virtual void toWorld( EntityWorld * w );
-    virtual void fromWorld( EntityWorld * w );
+    virtual void toWorld( DynamicsWorld * w );
+    virtual void fromWorld();
 
     bool setEntity( const char * mesh, const char * material = 0 );
     bool setMaterial( const char * material );
@@ -152,20 +154,16 @@ public:
     /// Need a separate scene node as if any scale is envolved
     /// Ogre goes nuts with _getDerivedOrientation()
     Ogre::SceneNode  * visualNode;
+
+    DynamicsWorld    * world;
     btRigidBody      * rigidBody;
     btCollisionShape * collisionShape;
     BtOgre::RigidBodyState * bodyState;
 
     AirMesh::AirMesh   airMesh;
 
-    EntityPlanet * parent;
-    /// It rotates with planet. If true, only
-    /// relative to the surface velocity matters.
-    /// If false, just moves with respect to it's
-    /// parent planet.
-    bool           nearSurface;
-
     std::vector<Sound>            sounds;
+
     Ogre::Real    mass;
     Ogre::Vector3 inertia;
 

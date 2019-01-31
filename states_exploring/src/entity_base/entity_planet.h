@@ -16,6 +16,7 @@ namespace Config
 namespace Osp
 {
 
+class DynamicsWorld;
 
 class EntityPlanet: public Entity
 {
@@ -64,6 +65,11 @@ public:
 
     Ogre::Entity     * visualEntity;
     Ogre::SceneNode  * visualNode;
+
+    /// Dynamics related stuff
+    DynamicsWorld   * worldClose,
+                    * worldFar;
+
     btRigidBody      * rigidBody;
     btCollisionShape * collisionShape;
     BtOgre::RigidBodyState * bodyState;

@@ -11,7 +11,7 @@ namespace Osp
 
 class AssembliesManager;
 
-class Assembly
+class Assembly: Entity
 {
 public:
     Assembly();

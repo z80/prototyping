@@ -35,6 +35,17 @@ DynamicsWorld::~DynamicsWorld()
     delete mBroadphase;
 }
 
+EntityPlanet * DynamicsWorld::planet()
+{
+    Entity * parent = parentEntity();
+    if ( !parent )
+        return 0;
+    if ( parent->type() != Entity::TPlanet )
+        return 0;
+    EntityPlanet * planet = dynamic_cast<EntityPlanet *>( parent );
+    return planet;
+}
+
 void DynamicsWorld::integrationStep( Ogre::Real & t_sec, int timeBoost )
 {
     for ( int i=0; i<timeBoost; i++ )

@@ -3,6 +3,7 @@
 #include "entity_world.h"
 #include "state_manager.h"
 #include "assembly.h"
+#include "dynamics_world.h"
 
 #include <iostream>
 
@@ -28,6 +29,11 @@ EntityPlanet::EntityPlanet()
     orbitRadius = 100.0;
     orbitPeriod = 180.0;
     orbitTime   = 0.0;
+
+    worldClose = new DynamicsWorld();
+    worldFar   = new DynamicsWorld();
+    worldClose->setSceneParent( this );
+    worldFar->setSceneParent( this );
 }
 
 EntityPlanet::~EntityPlanet()
@@ -144,7 +150,7 @@ void EntityPlanet::setR( const Ogre::Vector3 & at )
     rigidBody->setCenterOfMassTransform( t );
     atm.r0 = r0;
     g.r0   = r0;*/
-    sceneNode->setPosition( at );
+    Entity::setR( at );
 }
 
 void EntityPlanet::setQ( const Ogre::Quaternion & q )
@@ -153,7 +159,7 @@ void EntityPlanet::setQ( const Ogre::Quaternion & q )
     t.setRotation(btQuaternion( q.x, q.y, q.z, q.w ) );
     rigidBody->setCenterOfMassTransform( t );*/
 
-    sceneNode->setOrientation( q );
+    worldClose->setQ( q );
 }
 
 void EntityPlanet::integrateKinematics( Ogre::Real t_sec, int time_boost )

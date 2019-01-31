@@ -3,6 +3,7 @@
 #include "entity_planet.h"
 #include "assembly.h"
 #include "entity_world.h"
+#include "dynamics_world.h"
 #include "state_manager.h"
 #include "part_manager_base.h"
 
@@ -17,7 +18,7 @@ BlockConnection::BlockConnection()
     blockB = 0;
     assembly    = 0;
     assemblyInd = -1;
-    planet      = 0;
+    world       = 0;
     constraint  = 0;
 }
 
@@ -26,26 +27,31 @@ BlockConnection::~BlockConnection()
     destroy();
 }
 
-void BlockConnection::toWorld( EntityWorld * w )
+void BlockConnection::toWorld( DynamicsWorld * w )
 {
+    fromWorld();
+
     w->phyWorld->addConstraint( constraint, true );
+    world = w;
 }
 
-void BlockConnection::fromWorld( EntityWorld * w )
+void BlockConnection::fromWorld()
 {
-    w->phyWorld->removeConstraint( constraint );
+    if ( world )
+        world->phyWorld->removeConstraint( constraint );
+    world = 0;
 }
 
 
 void BlockConnection::destroy()
 {
-    StateManager * sm = StateManager::getSingletonPtr();
-    EntityWorld * w = sm->getWorld();
-    if ( constraint )
+    if ( world )
     {
-        w->phyWorld->removeConstraint( constraint );
-        delete constraint;
+        if ( constraint )
+            world->phyWorld->removeConstraint( constraint );
     }
+    if ( constraint )
+        delete constraint;
 }
 
 
@@ -66,12 +72,11 @@ Block::Block()
 
     visualEntity   = 0;
     visualNode     = 0;
+
+    world          = 0;
     rigidBody      = 0;
     collisionShape = 0;
     bodyState      = 0;
-
-    parent      = 0;
-    nearSurface = true;
 
     assembly    = 0;
     assemblyInd = -1;
@@ -151,14 +156,19 @@ void Block::contextMenuEvent()
 
 }
 
-void Block::toWorld( EntityWorld * w )
+void Block::toWorld( DynamicsWorld * w )
 {
+    fromWorld();
     w->phyWorld->addRigidBody( rigidBody );
+    world = w;
 }
 
-void Block::fromWorld( EntityWorld * w )
+void Block::fromWorld()
 {
-    w->phyWorld->removeRigidBody( rigidBody );
+    if (!world)
+        return;
+    world->phyWorld->removeRigidBody( rigidBody );
+    world = 0;
 }
 
 Ogre::Vector3 Block::relV() const
@@ -577,53 +587,62 @@ bool Block::stopSound( const std::string & name )
 
 Ogre::Vector3    Block::absoluteV() const
 {
+    EntityPlanet * planet = world->planet();
+    if ( !planet )
+        return Ogre::Vector3::ZERO;
+    const bool nearSurface = ( world == planet->worldClose );
     Ogre::Vector3 v = relV();
-    if ( parent )
+    const Ogre::Vector3 v_par = planet->absoluteV();
+    if ( nearSurface )
     {
-        const Ogre::Vector3 v_par = parent->absoluteV();
-        if ( nearSurface )
-        {
-            // First convert speed to global ref. frame and add
-            // rotational speed in that point.
-            const Ogre::Quaternion q_par = parent->absoluteQ();
-            Ogre::Quaternion vq( 0.0, v.x, v.y, v.z );
-            vq = q_par * vq * q_par.Inverse();
-            v = Ogre::Vector3( vq.x, vq.y, vq.z );
+        // First convert speed to global ref. frame and add
+        // rotational speed in that point.
+        const Ogre::Quaternion q_par = planet->absoluteQ();
+        Ogre::Quaternion vq( 0.0, v.x, v.y, v.z );
+        vq = q_par * vq * q_par.Inverse();
+        v = Ogre::Vector3( vq.x, vq.y, vq.z );
 
-            const Ogre::Vector3 at = relR();
-            Ogre::Vector3 v_par_at = parent->rotV( at, true );
-            v = v_par_at + v;
-        }
-        v = v_par + v;
+        const Ogre::Vector3 at = relR();
+        Ogre::Vector3 v_par_at = planet->rotV( at, true );
+        v = v_par_at + v;
     }
+    v = v_par + v;
     return v;
 }
 
 Ogre::Vector3    Block::absoluteR() const
 {
+    EntityPlanet * planet = world->planet();
+    if ( !planet )
+        return Ogre::Vector3::ZERO;
+    const bool nearSurface = ( world == planet->worldClose );
+
     Ogre::Vector3 r = relR();
-    if ( parent )
+
+    const Ogre::Vector3 r_par = planet->absoluteR();
+    if ( nearSurface )
     {
-        const Ogre::Vector3 r_par = parent->absoluteR();
-        if ( nearSurface )
-        {
-            const Ogre::Quaternion q_par = parent->absoluteQ();
-            Ogre::Quaternion rq( 0.0, r.x, r.y, r.z );
-            rq = q_par * rq * q_par.Inverse();
-            r = Ogre::Vector3( rq.x, rq.y, rq.z );
-        }
-        r = r_par + r;
+        const Ogre::Quaternion q_par = planet->absoluteQ();
+        Ogre::Quaternion rq( 0.0, r.x, r.y, r.z );
+        rq = q_par * rq * q_par.Inverse();
+        r = Ogre::Vector3( rq.x, rq.y, rq.z );
     }
+    r = r_par + r;
     return r;
 }
 
 Ogre::Vector3    Block::absoluteW() const
 {
+    EntityPlanet * planet = world->planet();
+    if ( !planet )
+        return Ogre::Vector3::ZERO;
+    const bool nearSurface = ( world == planet->worldClose );
     Ogre::Vector3 w = relW();
-    if ( nearSurface && parent )
+
+    if ( nearSurface )
     {
-        const Ogre::Vector3 w_parent    = parent->absoluteW();
-        const Ogre::Quaternion q_parent = parent->absoluteQ();
+        const Ogre::Vector3 w_parent    = planet->absoluteW();
+        const Ogre::Quaternion q_parent = planet->absoluteQ();
         Ogre::Quaternion wq( 0.0, w.x, w.y, w.z );
         wq = q_parent * wq * q_parent.Inverse();
         w = Ogre::Vector3( wq.x, wq.y, wq.z );
@@ -634,10 +653,15 @@ Ogre::Vector3    Block::absoluteW() const
 
 Ogre::Quaternion Block::absoluteQ() const
 {
+    EntityPlanet * planet = world->planet();
+    if ( !planet )
+        return Ogre::Quaternion::IDENTITY;
+    const bool nearSurface = ( world == planet->worldClose );
+
     Ogre::Quaternion q = relQ();
-    if ( parent && nearSurface )
+    if ( nearSurface )
     {
-        const Ogre::Quaternion q_parent = parent->absoluteQ();
+        const Ogre::Quaternion q_parent = planet->absoluteQ();
         q = q_parent * q;
     }
     return q;
@@ -648,7 +672,7 @@ void Block::deleteRigidBody()
 {
     if ( rigidBody )
     {
-        EntityWorld * w = EntityWorld::getSingletonPtr();
+        DynamicsWorld * w = world;
         if ( w && w->phyWorld )
             w->phyWorld->removeRigidBody( rigidBody );
         if ( bodyState )
@@ -713,6 +737,8 @@ void Block::fromAssembly()
 
     // R = assR + R
     r = assembly->relR() + r;
+
+    assembly->
 
     setR( r );
     setQ( q );
