@@ -21,7 +21,7 @@ namespace Osp
     class Entity;
     class Block;
     class EntityPlanet;
-    class DynamicsWorld;
+    class EntityWorld;
     class PartManagerBase;
     class PlanetManagerBase;
     class SiteManagerBase;
@@ -52,7 +52,7 @@ public:
 
     Ogre::SceneManager        * getSceneManager();
     Ogre::Camera              * getCamera();
-    Osp::DynamicsWorld       * getWorld();
+    Osp::EntityWorld       * getWorld();
     Osp::PartManagerBase   * getPartsManager();
     Osp::PlanetManagerBase * getPlanetsManager();
     Osp::SiteManagerBase   * getSiteManager();
@@ -93,7 +93,7 @@ private:
     Ogre::Camera        * mCamera;
 
 
-    Osp::DynamicsWorld           * mWorld;
+    Osp::EntityWorld           * mWorld;
     Osp::PartManagerBase       * mPartsManager;
     Osp::PlanetManagerBase     * mPlanetsManager;
     Osp::SiteManagerBase * mSiteManager;

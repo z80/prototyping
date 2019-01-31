@@ -125,7 +125,7 @@ Ogre::Camera * StateManager::getCamera()
     return mCamera;
 }
 
-Osp::DynamicsWorld * StateManager::getWorld()
+Osp::EntityWorld * StateManager::getWorld()
 {
     return mWorld;
 }
@@ -334,7 +334,7 @@ void StateManager::shutdown()
     scnMgr->destroyAllManualObjects();
     scnMgr->destroyQuery( raySceneQuery );
 
-    Osp::DynamicsWorld::deleteWorld();
+    Osp::EntityWorld::deleteWorld();
     mWorld = 0;
 
     destroyRTShaderSystem();
@@ -380,7 +380,7 @@ void StateManager::setup()
 
     initSound();
 
-    mWorld          = Osp::DynamicsWorld::createWorld();
+    mWorld          = Osp::EntityWorld::createWorld();
     mPartsManager   = new Osp::PartManagerTest();
     mSiteManager    = new Osp::SiteManagerTest();
     mPlanetsManager = new Osp::PlanetManagerTest();

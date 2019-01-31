@@ -1,6 +1,6 @@
 
-#ifndef __ENTITY_WORLD_H_
-#define __ENTITY_WORLD_H_
+#ifndef __DYNAMICS_WORLD_H_
+#define __DYNAMICS_WORLD_H_
 
 #include "Ogre.h"
 #include "OgreFrameListener.h"
@@ -23,14 +23,11 @@ namespace Osp
  *
  */
 
-class EntityWorld: public Entity, public Ogre::Singleton<EntityWorld>
+class DynamicsWorld: public Entity
 {
 public:
-    static EntityWorld * createWorld();
-    static void deleteWorld();
-
-    EntityWorld( Ogre::SceneManager * scnMgr );
-    ~EntityWorld();
+    DynamicsWorld();
+    ~DynamicsWorld();
 
     void integrationStep( Ogre::Real & t_sec, int timeBoost=1 );
 

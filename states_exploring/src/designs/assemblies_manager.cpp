@@ -199,7 +199,7 @@ void AssembliesManager::integrateDynamics( Ogre::Real time_s, int time_boost )
     // For those poses and velocities are supposed to be recalculated.
     if ( needIntegration )
     {
-        DynamicsWorld * w = StateManager::getSingletonPtr()->getWorld();
+        EntityWorld * w = StateManager::getSingletonPtr()->getWorld();
         w->integrationStep( time_s, time_boost );
         for ( size_t i=0; i<qty; i++ )
         {
