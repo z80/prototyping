@@ -15,7 +15,6 @@ Site::Site()
     mType = TSite;
 
     visualEntity   = 0;
-    planet         = 0;
     rigidBody      = 0;
     collisionShape = 0;
 }

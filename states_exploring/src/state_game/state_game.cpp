@@ -92,7 +92,7 @@ void GameState::resume()
     //mSceneMgr->setSkyBox( true, "Examples/CloudyNoonSkyBox" );
     mSceneMgr->setAmbientLight( Ogre::ColourValue( 0.5, 0.5, 0.5 ) );
 
-    StateManager::getSingletonPtr()->getCameraCtrl()->setTargetNode( cube->sceneNode );
+    //StateManager::getSingletonPtr()->getCameraCtrl()->setTargetNode( cube->sceneNode );
 
     paused = false;
 }
@@ -198,61 +198,10 @@ bool GameState::mouseReleased(const OgreBites::MouseButtonEvent& evt)
 void GameState::createObjects()
 {
     world = StateManager::getSingletonPtr()->getWorld();
-    cube  = StateManager::getSingletonPtr()->getPartsManager()->create( "cube" );
     solSys = StateManager::getSingletonPtr()->getPlanetsManager();
 
     Osp::Site * s = StateManager::getSingletonPtr()->getSiteManager()->current( "assembly" );
-    cube->setSceneParent( s );
-
-    // Debugging object to see at least something.
-    /*{
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, 0.0, -10.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, 0.0, 10.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, 10.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 0.0, -10.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( 10.0, 0.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }
-    {
-        Ogre::Entity* ogreEntity = mSceneMgr->createEntity("ogrehead.mesh");
-        Ogre::SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-        ogreNode->attachObject(ogreEntity);
-        ogreNode->setPosition( -10.0, 0.0, 0.0 );
-        ogreNode->setScale( 0.1, 0.1, 0.1 );
-        ogreNode->setVisible( true );
-    }*/
+    StateManager::getSingletonPtr()->getCameraCtrl()->setTargetNode( s->sceneNode );
 }
 
 void GameState::destroyObjects()
@@ -285,9 +234,10 @@ void GameState::debugOverlay()
        )
     {
         {
-            const Ogre::Vector3 at = cube->sceneNode->getPosition();
+            Osp::Site * s = StateManager::getSingletonPtr()->getSiteManager()->current( "assembly" );
+            const Ogre::Vector3 at = s->relR();
             std::ostringstream out;
-            out << "cube (" << at.x << ", " << at.y << ", " << at.z << ")";
+            out << "site (" << at.x << ", " << at.y << ", " << at.z << ")";
             ImGui::Text( "%s", out.str().c_str() );
         }
         /*{

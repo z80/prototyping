@@ -25,7 +25,7 @@ SiteManagerTest::~SiteManagerTest()
 void SiteManagerTest::createImpl()
 {
     createAssembly( this );
-    createLaunch( this );
+    //createLaunch( this );
 }
 
 
@@ -39,18 +39,7 @@ static void createAssembly( SiteManagerTest * mgr )
     Site * s = new Site();
     s->function = "assembly";
     s->name     = "Main assembly";
-    s->planet   = pm->planet( "earth" );
-
-    const Ogre::Quaternion q( Ogre::Radian(60.0/180.0*3.1415),
-                              Ogre::Vector3( 1.0, 0.0, 0.0 ) );
-    Ogre::Quaternion rq( 0.0, 0.0, 1.0, 0.0 );
-    rq = q * rq * q.Inverse();
-    const Ogre::Vector3 r( rq.x, rq.y, rq.z );
-
-    // Reparent to the appropriate planet.
-    s->setSceneParent( s->planet );
-    s->setR( r * (30.0 + 1.0) );
-    s->setQ( q );
+    EntityPlanet * planet   = pm->planet( "earth" );
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
@@ -61,14 +50,11 @@ static void createAssembly( SiteManagerTest * mgr )
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "M_Pod" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     s->visualEntity->setMaterial( m );
-    s->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("podSceneNode") );
     s->sceneNode->attachObject( s->visualEntity );
 
     BtOgre::StaticMeshToShapeConverter converter( s->visualEntity );
     s->collisionShape = converter.createCylinder();
     btMotionState * bodyState      = new BtOgre::RigidBodyState( s->sceneNode );
-    bodyState->setWorldTransform( btTransform( btQuaternion( q.x, q.y, q.z, q.w ),
-                                               btVector3( r.x, r.y, r.z ) ) );
 
     //Calculate inertia.
     const btScalar mass = 0.0;
@@ -78,6 +64,18 @@ static void createAssembly( SiteManagerTest * mgr )
 
     mgr->sites.push_back( s );
     mgr->setCurrent( "assembly", "Main assembly" );
+
+
+    const Ogre::Quaternion q( Ogre::Radian(60.0/180.0*3.1415),
+                              Ogre::Vector3( 1.0, 0.0, 0.0 ) );
+    Ogre::Vector3 r( 0.0, 1.0, 0.0 );
+    r = q * r;
+
+    // Reparent to the appropriate planet.
+    s->setSceneParent( planet );
+    s->setR( r * (30.0 + 1.0) );
+    s->setQ( q );
+
 }
 
 static void createLaunch( SiteManagerTest * mgr )
@@ -87,18 +85,7 @@ static void createLaunch( SiteManagerTest * mgr )
     Site * s = new Site();
     s->function = "launch";
     s->name     = "Main launch";
-    s->planet   = pm->planet( "earth" );
-
-    const Ogre::Quaternion q( Ogre::Radian(30.0/180.0*3.1415),
-                              Ogre::Vector3( 1.0, 0.0, 0.0 ) );
-    Ogre::Quaternion rq( 0.0, 0.0, 1.0, 0.0 );
-    rq = q * rq * q.Inverse();
-    const Ogre::Vector3 r( rq.x, rq.y, rq.z );
-
-    // Reparent to the appropriate planet.
-    s->setSceneParent( s->planet );
-    s->setR( r * (30.0 + 1.0) );
-    s->setQ( q );
+    EntityPlanet * planet   = pm->planet( "earth" );
 
     Ogre::SceneManager * scnMgr = StateManager::getSingletonPtr()->getSceneManager();
 
@@ -109,14 +96,11 @@ static void createLaunch( SiteManagerTest * mgr )
     Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getByName( "M_Pod" );
     //Ogre::MaterialPtr m = Ogre::MaterialManager::getSingletonPtr()->getDefaultMaterial();
     s->visualEntity->setMaterial( m );
-    s->sceneNode    = scnMgr->getRootSceneNode()->createChildSceneNode( NameGenerator::Next("podSceneNode") );
     s->sceneNode->attachObject( s->visualEntity );
 
     BtOgre::StaticMeshToShapeConverter converter( s->visualEntity );
     s->collisionShape = converter.createCylinder();
     btMotionState * bodyState      = new BtOgre::RigidBodyState( s->sceneNode );
-    bodyState->setWorldTransform( btTransform( btQuaternion( q.x, q.y, q.z, q.w ),
-                                               btVector3( r.x, r.y, r.z ) ) );
 
     //Calculate inertia.
     const btScalar mass = 0.0;
@@ -126,6 +110,16 @@ static void createLaunch( SiteManagerTest * mgr )
 
     mgr->sites.push_back( s );
     mgr->setCurrent( "launch", "Main launch" );
+
+    const Ogre::Quaternion q( Ogre::Radian(30.0/180.0*3.1415),
+                              Ogre::Vector3( 1.0, 0.0, 0.0 ) );
+    Ogre::Vector3 r( 0.0, 1.0, 0.0 );
+    r = q * r;
+
+    // Reparent to the appropriate planet.
+    s->setSceneParent( planet );
+    s->setR( r * (30.0 + 1.0) );
+    s->setQ( q );
 }
 
 }

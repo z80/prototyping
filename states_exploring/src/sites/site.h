@@ -31,17 +31,9 @@ public:
     Ogre::String      function;
 
     /// There should be at least one visual entity, right?
-    Ogre::Entity * visualEntity;
+    Ogre::Entity     * visualEntity;
     btRigidBody      * rigidBody;
     btCollisionShape * collisionShape;
-
-
-    /// Planet it is located on.
-    EntityPlanet    * planet;
-    /// Position on the planet.
-    Ogre::Vector3    r;
-    /// Orientation on the planet.
-    Ogre::Quaternion q;
 };
 
 
