@@ -6,6 +6,7 @@
 #include "site.h"
 #include "part_manager_base.h"
 #include "pivot_marker.h"
+#include "design_manager.h"
 
 #include <iostream>
 #include <sstream>
@@ -22,6 +23,8 @@ DesignConstruction::DesignConstruction()
     rotMouseGain       =  0.001;
     moveMode           =  TFree;
 
+    designManager = new DesignManager();
+
     techTreePanel = new TechTreePanel();
     hintOnNone();
 }
@@ -32,6 +35,9 @@ DesignConstruction::~DesignConstruction()
 
     if ( techTreePanel )
         delete techTreePanel;
+
+    if ( designManager )
+        delete designManager;
 }
 
 /// Enter/Leave workshop.

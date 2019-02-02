@@ -8,6 +8,7 @@ namespace Osp
 {
 
 struct PartDesc;
+class  DesignManager;
 
 class TechTreePanelCallback
 {
@@ -36,6 +37,7 @@ public:
     void drawBackToGamePanel();
     void drawTechPanel( TechTreePanelCallback * cb );
     void drawTipPanel();
+    void drawMainMenu( DesignManager * dm );
 
     const bool isHovered() const;
 public:
@@ -46,6 +48,8 @@ public:
     bool       hovered;
 
     Ogre::String tooltip;
+
+    std::vector<Ogre::String> designNames;
 };
 
 }

@@ -86,6 +86,8 @@ public:
 
     /// Create a design based on what is in the scene now.
     Design design();
+    /// All the designs storage.
+    DesignManager * designManager;
 
     Site          * workshop;
     TechTreePanel * techTreePanel;

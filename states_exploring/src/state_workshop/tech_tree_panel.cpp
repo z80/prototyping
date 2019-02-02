@@ -3,6 +3,7 @@
 #include "state_manager.h"
 #include "config_reader.h"
 #include "tech_tree.h"
+#include "design_manager.h"
 
 namespace Osp
 {
@@ -173,6 +174,28 @@ void TechTreePanel::drawTipPanel()
         ImGui::TextWrapped( "%s", tooltip.c_str() );
     }
     ImGui::End();
+}
+
+void TechTreePanel::drawMainMenu( DesignManager * dm )
+{
+    std::vector<DesignManager::DesignItem> & designs = dm->designs;
+    const size_t qty = designs.size();
+    if ( ImGui::BeginMainMenuBar() )
+    {
+        if ( dm )
+        {
+            if ( ImGui::BeginMenu("Designs") )
+            {
+                for ( size_t i=0; i<qty; i++ )
+                {
+                    if ( ImGui::MenuItem( designs[i].name.c_str(), 0, false, true ) )
+                        ;
+                }
+                ImGui::EndMenu();
+            }
+        }
+        ImGui::EndMainMenuBar();
+    }
 }
 
 const bool TechTreePanel::isHovered() const
