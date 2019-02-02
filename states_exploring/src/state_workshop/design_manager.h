@@ -26,14 +26,14 @@ public:
     bool saveDesign( const Ogre::String & name,
                      const Ogre::String & description,
                      const Design & design );
+    Design loadDesign( int index );
     bool renameDesign( int index,
                        const Ogre::String & nameNew );
     void setDescription( int index,
                          const Ogre::String & description );
     void destroyDesign( int index );
-    std::vector<Ogre::String> designs();
-    bool design( int ind, DesignItem & d );
-    bool design( int ind, Design & d );
+    std::vector<Ogre::String> designNames();
+    const DesignItem & designItem( int ind );
 
 
 public:

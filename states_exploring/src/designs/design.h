@@ -38,7 +38,7 @@ public:
     Design( const Design & inst );
     const Design & operator=( const Design & inst );
 
-    bool save( const Ogre::String & fname, bool overwrite=false );
+    bool save( const Ogre::String & fname, bool overwrite=false ) const;
     bool load( const Ogre::String & fname );
     /// 1) Each part is in joints at least once.
     /// 2) Joints connect existing parts.

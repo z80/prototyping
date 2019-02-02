@@ -1,6 +1,8 @@
 
 #include "design_manager.h"
 #include "tinyxml2.h"
+#include <sstream>
+#include <iomanip>
 
 namespace Osp
 {
@@ -8,18 +10,19 @@ namespace Osp
 static bool designNameExists( DesignManager & dm, const Ogre::String & name );
 static bool loadDesigns( DesignManager & dm );
 static bool saveDesigns( DesignManager & dm );
-static bool loadDesign( DesignManager & dm, int index );
-static bool saveDesign( DesignManager & dm, int index );
+static bool loadDesign( DesignManager & dm, const DesignManager::DesignItem & di, Design & design );
+static bool saveDesign( DesignManager & dm, const DesignManager::DesignItem & di, Design & design );
 static int  uniqueId( DesignManager & dm );
+static std::string designFileName( int index );
 
 DesignManager::DesignManager()
 {
-    ::loadDesigns( *this );
+    Osp::loadDesigns( *this );
 }
 
 DesignManager::~DesignManager()
 {
-    ::saveDesigns( *this );
+    Osp::saveDesigns( *this );
 }
 
 bool DesignManager::saveDesign( const Ogre::String & name,
@@ -29,19 +32,29 @@ bool DesignManager::saveDesign( const Ogre::String & name,
     DesignItem di;
     di.name = name;
     di.desc = description;
-    const int index = (int)designs.size();
+    di.id   = uniqueId( *this );
     designs.push_back( di );
     // And save design file to disk.
-    // tbd...
-    const bool savedOk = ::saveDesign( *this, index );
-    ::saveDesigns( *this );
+    const std::string fname =  designFileName( di.id );
+    const bool savedOk = design.save( fname );
+    Osp::saveDesigns( *this );
     return savedOk;
+}
+
+Design DesignManager::loadDesign( int index )
+{
+    const DesignItem & di = designs[index];
+    const std::string fname =  designFileName( di.id );
+    Design design;
+    design.load( fname );
+    return design;
 }
 
 bool DesignManager::renameDesign( int index,
                                   const Ogre::String & nameNew )
 {
     designs[index].name = nameNew;
+    Osp::saveDesigns( *this );
     return true;
 }
 
@@ -49,7 +62,7 @@ void DesignManager::setDescription( int index,
                                     const Ogre::String & description )
 {
     designs[index].desc = description;
-    return true;
+    Osp::saveDesigns( *this );
 }
 
 void DesignManager::destroyDesign( int index )
@@ -57,12 +70,12 @@ void DesignManager::destroyDesign( int index )
     const int qty = (int)designs.size();
     const int lastInd = qty-1;
     if ( index < lastInd )
-        designs[i] = designs[lastInd];
+        designs[index] = designs[lastInd];
     designs.resize( lastInd );
-    ::saveDesigns( *this );
+    Osp::saveDesigns( *this );
 }
 
-std::vector<Ogre::String> DesignManager::designs()
+std::vector<Ogre::String> DesignManager::designNames()
 {
     const int qty = (int)designs.size();
     std::vector<Ogre::String> names;
@@ -73,20 +86,11 @@ std::vector<Ogre::String> DesignManager::designs()
     return names;
 }
 
-bool DesignManager::design( int ind, DesignManager::DesignItem & d )
+const DesignManager::DesignItem & DesignManager::designItem( int ind )
 {
-    const int qty = (int)designs.size();
-    if ( ind >= qty )
-        return false;
-    d = designs[ind];
-    return true;
+    return designs[ind];
 }
 
-bool DesignManager::design( int ind, Design & d )
-{
-    const bool loadedOk = d.load( "aaa" );
-    return loadedOk;
-}
 
 
 
@@ -96,12 +100,11 @@ bool DesignManager::design( int ind, Design & d )
 static bool designNameExists( DesignManager & dm,
                               const Ogre::String & name )
 {
-    using namespace DesignManager;
-    const std::vector<DesignItem> & designs = dm.designs;
+    const std::vector<DesignManager::DesignItem> & designs = dm.designs;
     const size_t qty = designs.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        const DesignItem & di = designs[i];
+        const DesignManager::DesignItem & di = designs[i];
         if ( di.name == name )
             return true;
     }
@@ -111,34 +114,9 @@ static bool designNameExists( DesignManager & dm,
 
 static bool loadDesigns( DesignManager & dm )
 {
-    return false;
-}
-
-static bool saveDesigns( DesignManager & dm )
-{
-    tinyxml2::XMLDocument doc;
-    tinyxml2::XMLElement * rootE = doc.NewElement( "designs" );
-    const size_t qty = designs.size();
-    for ( size_t i=0; i<qty; i++ )
-    {
-        const DesignManager::DesignItem & di = designs[i];
-        tinyxml2::XMLElement * designE = doc.NewElement( "design" );
-        designE->SetAttribute( "name", di.name.c_str() );
-        {
-            std::ostringstream out;
-            out << di.id;
-            designE->SetAttribute( "id", out.str().c_str() );
-        }
-        designE->SetText( di.desc );
-    }
-    doc.SaveFile( "./designs.xml" );
-    return true;
-}
-
-static bool loadDesign( DesignManager & dm, int index )
-{
     tinyxml2::XMLDocument doc;
     doc.LoadFile( "./designs.xml" );
+
     dm.designs.clear();
 
     tinyxml2::XMLElement * rootE = doc.FirstChildElement( "designs" );
@@ -165,6 +143,32 @@ static bool loadDesign( DesignManager & dm, int index )
     return true;
 }
 
+static bool saveDesigns( DesignManager & dm )
+{
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement * rootE = doc.NewElement( "designs" );
+    const size_t qty = dm.designs.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const DesignManager::DesignItem & di = dm.designs[i];
+        tinyxml2::XMLElement * designE = doc.NewElement( "design" );
+        designE->SetAttribute( "name", di.name.c_str() );
+        {
+            std::ostringstream out;
+            out << di.id;
+            designE->SetAttribute( "id", out.str().c_str() );
+        }
+        designE->SetText( di.desc.c_str() );
+    }
+    doc.SaveFile( "./designs.xml" );
+    return true;
+}
+
+static bool loadDesign( DesignManager & dm, int index )
+{
+
+}
+
 static bool saveDesign( DesignManager & dm, int index )
 {
     return false;
@@ -173,10 +177,10 @@ static bool saveDesign( DesignManager & dm, int index )
 static int  uniqueId( DesignManager & dm )
 {
     std::set<int> ids;
-    const size_t qty = designs.size();
+    const size_t qty = dm.designs.size();
     for ( size_t i=0; i<qty; i++ )
     {
-        const DesignManager::DesignItem & di = designs[i];
+        const DesignManager::DesignItem & di = dm.designs[i];
         ids.insert( di.id );
     }
 
@@ -190,6 +194,14 @@ static int  uniqueId( DesignManager & dm )
     }
 
     return id;
+}
+
+static std::string designFileName( int index )
+{
+    std::ostringstream out;
+    out << "./" << std::setw( 6 ) << std::setfill( '0' )
+        << index << ".xml";
+    return out.str();
 }
 
 

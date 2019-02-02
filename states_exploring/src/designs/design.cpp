@@ -37,7 +37,7 @@ const Design & Design::operator=( const Design & inst )
     return *this;
 }
 
-bool Design::save( const Ogre::String & fname, bool overwrite )
+bool Design::save( const Ogre::String & fname, bool overwrite ) const
 {
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLElement * root = doc.NewElement( fname.c_str() );
