@@ -10,6 +10,7 @@ static bool loadDesigns( DesignManager & dm );
 static bool saveDesigns( DesignManager & dm );
 static bool loadDesign( DesignManager & dm, int index );
 static bool saveDesign( DesignManager & dm, int index );
+static int  uniqueId( DesignManager & dm );
 
 DesignManager::DesignManager()
 {
@@ -37,54 +38,28 @@ bool DesignManager::saveDesign( const Ogre::String & name,
     return savedOk;
 }
 
-bool DesignManager::renameDesign( const Ogre::String & name,
+bool DesignManager::renameDesign( int index,
                                   const Ogre::String & nameNew )
 {
-    const int qty = (int)designs.size();
-    for ( int i=0; i<qty; i++ )
-    {
-        const Ogre::String & n = designs[i].name;
-        if ( name == n )
-        {
-            designs[i].name = nameNew;
-            ::saveDesigns( *this );
-            return;
-        }
-    }
+    designs[index].name = nameNew;
+    return true;
 }
 
-void DesignManager::setDescription( const Ogre::String & name,
+void DesignManager::setDescription( int index,
                                     const Ogre::String & description )
 {
-    const int qty = (int)designs.size();
-    for ( int i=0; i<qty; i++ )
-    {
-        const Ogre::String & n = designs[i].name;
-        if ( name == n )
-        {
-            designs[i].desc = description;
-            ::saveDesigns( *this );
-            return;
-        }
-    }
+    designs[index].desc = description;
+    return true;
 }
 
-void DesignManager::destroyDesign( const Ogre::String & name )
+void DesignManager::destroyDesign( int index )
 {
     const int qty = (int)designs.size();
     const int lastInd = qty-1;
-    for ( int i=0; i<qty; i++ )
-    {
-        const Ogre::String & n = designs[i].name;
-        if ( name == n )
-        {
-            if ( i < lastInd )
-                designs[i] = designs[lastInd];
-            designs.resize( lastInd );
-            ::saveDesigns( *this );
-            return;
-        }
-    }
+    if ( index < lastInd )
+        designs[i] = designs[lastInd];
+    designs.resize( lastInd );
+    ::saveDesigns( *this );
 }
 
 std::vector<Ogre::String> DesignManager::designs()
@@ -141,17 +116,80 @@ static bool loadDesigns( DesignManager & dm )
 
 static bool saveDesigns( DesignManager & dm )
 {
-    return false;
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement * rootE = doc.NewElement( "designs" );
+    const size_t qty = designs.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const DesignManager::DesignItem & di = designs[i];
+        tinyxml2::XMLElement * designE = doc.NewElement( "design" );
+        designE->SetAttribute( "name", di.name.c_str() );
+        {
+            std::ostringstream out;
+            out << di.id;
+            designE->SetAttribute( "id", out.str().c_str() );
+        }
+        designE->SetText( di.desc );
+    }
+    doc.SaveFile( "./designs.xml" );
+    return true;
 }
 
 static bool loadDesign( DesignManager & dm, int index )
 {
-    return false;
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile( "./designs.xml" );
+    dm.designs.clear();
+
+    tinyxml2::XMLElement * rootE = doc.FirstChildElement( "designs" );
+    while ( true )
+    {
+        tinyxml2::XMLElement * designE;
+        if ( dm.designs.empty() )
+            designE = rootE->FirstChildElement();
+        else
+            designE = designE->NextSiblingElement();
+        if ( !designE )
+            break;
+
+        DesignManager::DesignItem di;
+        di.name = designE->Attribute( "name" );
+        {
+            std::istringstream in( designE->Attribute( "id" ) );
+            in >> di.id;
+        }
+        di.desc = designE->GetText();
+        dm.designs.push_back( di );
+    }
+
+    return true;
 }
 
 static bool saveDesign( DesignManager & dm, int index )
 {
     return false;
+}
+
+static int  uniqueId( DesignManager & dm )
+{
+    std::set<int> ids;
+    const size_t qty = designs.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const DesignManager::DesignItem & di = designs[i];
+        ids.insert( di.id );
+    }
+
+    int id = 0;
+    while ( true )
+    {
+        std::set<int>::const_iterator it = ids.find( id );
+        if ( it == ids.end() )
+            break;
+        id += 1;
+    }
+
+    return id;
 }
 
 

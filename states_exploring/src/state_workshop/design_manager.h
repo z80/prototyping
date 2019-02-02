@@ -17,6 +17,7 @@ public:
     {
         Ogre::String name;
         Ogre::String desc;
+        int          id;
     };
 
     DesignManager();
@@ -25,11 +26,11 @@ public:
     bool saveDesign( const Ogre::String & name,
                      const Ogre::String & description,
                      const Design & design );
-    bool renameDesign( const Ogre::String & name,
+    bool renameDesign( int index,
                        const Ogre::String & nameNew );
-    void setDescription( const Ogre::String & name,
+    void setDescription( int index,
                          const Ogre::String & description );
-    void destroyDesign( const Ogre::String & name );
+    void destroyDesign( int index );
     std::vector<Ogre::String> designs();
     bool design( int ind, DesignItem & d );
     bool design( int ind, Design & d );
