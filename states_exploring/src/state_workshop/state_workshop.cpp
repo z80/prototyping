@@ -26,7 +26,8 @@ WorkshopState::WorkshopState()
 
 WorkshopState::~WorkshopState()
 {
-
+    if ( designCtrl )
+        delete designCtrl;
 }
 
 const char * WorkshopState::stateName()
@@ -37,10 +38,8 @@ const char * WorkshopState::stateName()
 
 void WorkshopState::enter()
 {
-    if ( !paused )
-    {
+    if ( !designCtrl )
         designCtrl = new Osp::DesignConstruction();
-    }
 
     Ogre::Viewport * v = StateManager::getSingletonPtr()->getCamera()->getViewport();
     v->setBackgroundColour(ColourValue(0.7, 0.7, 0.4));
@@ -52,9 +51,11 @@ void WorkshopState::enter()
 
 void WorkshopState::exit()
 {
-    pause();
-
-    delete designCtrl;
+    if ( designCtrl )
+    {
+        delete designCtrl;
+        designCtrl = 0;
+    }
 }
 
 void WorkshopState::pause()
