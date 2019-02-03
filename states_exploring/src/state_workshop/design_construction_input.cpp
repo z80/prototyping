@@ -16,6 +16,8 @@ bool DesignConstruction::frameStarted(const Ogre::FrameEvent& evt)
         techTreePanel->drawBackToGamePanel();
         techTreePanel->drawTipPanel();
         techTreePanel->drawMainMenu( designManager );
+        techTreePanel->drawDesignView( designManager );
+        techTreePanel->drawDesignSave( designManager );
     }
     return false;
 }

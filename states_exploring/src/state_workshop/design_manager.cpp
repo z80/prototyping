@@ -115,7 +115,8 @@ static bool designNameExists( DesignManager & dm,
 static bool loadDesigns( DesignManager & dm )
 {
     tinyxml2::XMLDocument doc;
-    doc.LoadFile( "./designs.xml" );
+    if ( doc.LoadFile( "./designs.xml" ) != tinyxml2::XML_SUCCESS )
+        return false;
 
     dm.designs.clear();
 

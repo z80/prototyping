@@ -115,7 +115,7 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
     const ImVec2 wndSz( panelSz, ImGui::GetIO().DisplaySize.y );
     ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
     ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
-    const ImVec2 windowPos = ImVec2( 0, 0 );
+    const ImVec2 windowPos = ImVec2( 0, 10 );
     const ImVec2 windowPosPivot = ImVec2( 0, 0 );
 
     ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
@@ -190,6 +190,7 @@ void TechTreePanel::drawMainMenu( DesignManager * dm )
             {
                 if ( ImGui::MenuItem( "Save design", 0, false, true ) )
                     savingDesign = true;
+                ImGui::EndMenu();
             }
 
             hoveredDesignIndex = -1;
@@ -214,12 +215,69 @@ void TechTreePanel::drawMainMenu( DesignManager * dm )
 
 void TechTreePanel::drawDesignView( DesignManager * dm )
 {
+    if ( hoveredDesignIndex < 0 )
+        return;
+
+    const ImVec2 wndSz( 250, 600 );
+    ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
+    ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
+    const ImVec2 windowPos = ImVec2( (ImGui::GetIO().DisplaySize.x-wndSz.x)/2,
+                                     (ImGui::GetIO().DisplaySize.y-wndSz.y)/2 );
+    const ImVec2 windowPosPivot = ImVec2( 0.0, 0.0 );
+
+    ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
+    if ( ImGui::Begin( "Design view", 0,
+                        ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoTitleBar |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_AlwaysAutoResize |
+                        ImGuiWindowFlags_NoSavedSettings |
+                        ImGuiWindowFlags_NoFocusOnAppearing |
+                        ImGuiWindowFlags_NoNav )
+       )
+    {
+        const DesignManager::DesignItem & di = dm->designItem( hoveredDesignIndex );
+        ImGui::TextWrapped( "%s", di.name.c_str() );
+        ImGui::TextWrapped( "%s", di.desc.c_str() );
+    }
+    ImGui::End();
 
 }
 
 void TechTreePanel::drawDesignSave( DesignManager * dm )
 {
+    if ( !savingDesign )
+        return;
 
+    const ImVec2 wndSz( 250, 600 );
+    ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
+    ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
+    const ImVec2 windowPos = ImVec2( (ImGui::GetIO().DisplaySize.x-wndSz.x)/2,
+                                     (ImGui::GetIO().DisplaySize.y-wndSz.y)/2 );
+    const ImVec2 windowPosPivot = ImVec2( 0.0, 0.0 );
+
+    ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
+    if ( ImGui::Begin( "Design view", 0,
+                        ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoTitleBar |
+                        ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_AlwaysAutoResize |
+                        ImGuiWindowFlags_NoSavedSettings |
+                        ImGuiWindowFlags_NoFocusOnAppearing |
+                        ImGuiWindowFlags_NoNav )
+       )
+    {
+        if ( ImGui::Button( "Save" ) )
+        {
+            //dm->saveDesign(  )
+            savingDesign = false;
+        }
+        if ( ImGui::Button( "Cancel" ) )
+        {
+            savingDesign = false;
+        }
+    }
+    ImGui::End();
 }
 
 const bool TechTreePanel::isHovered() const
