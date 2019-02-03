@@ -115,7 +115,7 @@ void TechTreePanel::drawTechPanel( TechTreePanelCallback * cb )
     const ImVec2 wndSz( panelSz, ImGui::GetIO().DisplaySize.y );
     ImGui::SetNextWindowBgAlpha( alpha ); // Transparent background
     ImGui::SetNextWindowSizeConstraints( wndSz, wndSz );
-    const ImVec2 windowPos = ImVec2( 0, 10 );
+    const ImVec2 windowPos = ImVec2( 0, 20 );
     const ImVec2 windowPosPivot = ImVec2( 0, 0 );
 
     ImGui::SetNextWindowPos( windowPos, ImGuiCond_Always, windowPosPivot );
