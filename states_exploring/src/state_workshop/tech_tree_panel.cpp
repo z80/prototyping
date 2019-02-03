@@ -16,6 +16,8 @@ TechTreePanel::TechTreePanel()
     alpha        = 0.3;
     hovered      = false;
     tooltip      = "Place hints about current state here";
+    hoveredDesignIndex  = -1;
+    savingDesign = false;
 
     initPanelGeometry();
 }
@@ -184,18 +186,40 @@ void TechTreePanel::drawMainMenu( DesignManager * dm )
     {
         if ( dm )
         {
-            if ( ImGui::BeginMenu("Designs") )
+            if ( ImGui::BeginMenu("Design") )
+            {
+                if ( ImGui::MenuItem( "Save design", 0, false, true ) )
+                    savingDesign = true;
+            }
+
+            hoveredDesignIndex = -1;
+            if ( ImGui::BeginMenu("All") )
             {
                 for ( size_t i=0; i<qty; i++ )
                 {
                     if ( ImGui::MenuItem( designs[i].name.c_str(), 0, false, true ) )
-                        ;
+                    {
+                        designItem = designs[i];
+                    }
+                    const bool hovered = ImGui::IsWindowHovered( ImGuiHoveredFlags_None );
+                    if ( hovered )
+                        hoveredDesignIndex = (int)i;
                 }
                 ImGui::EndMenu();
             }
         }
         ImGui::EndMainMenuBar();
     }
+}
+
+void TechTreePanel::drawDesignView( DesignManager * dm )
+{
+
+}
+
+void TechTreePanel::drawDesignSave( DesignManager * dm )
+{
+
 }
 
 const bool TechTreePanel::isHovered() const

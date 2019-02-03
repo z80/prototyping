@@ -3,12 +3,12 @@
 #define __TECH_TREE_PANEL_H_
 
 #include "Ogre.h"
+#include "design_manager.h"
 
 namespace Osp
 {
 
 struct PartDesc;
-class  DesignManager;
 
 class TechTreePanelCallback
 {
@@ -38,6 +38,8 @@ public:
     void drawTechPanel( TechTreePanelCallback * cb );
     void drawTipPanel();
     void drawMainMenu( DesignManager * dm );
+    void drawDesignView( DesignManager * dm );
+    void drawDesignSave( DesignManager * dm );
 
     const bool isHovered() const;
 public:
@@ -49,7 +51,9 @@ public:
 
     Ogre::String tooltip;
 
-    std::vector<Ogre::String> designNames;
+    int  hoveredDesignIndex;
+    bool savingDesign;
+    DesignManager::DesignItem designItem;
 };
 
 }
