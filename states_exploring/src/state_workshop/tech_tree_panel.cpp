@@ -4,6 +4,7 @@
 #include "config_reader.h"
 #include "tech_tree.h"
 #include "design_manager.h"
+#include "design_construction.h"
 
 namespace Osp
 {
@@ -180,8 +181,6 @@ void TechTreePanel::drawTipPanel()
 
 void TechTreePanel::drawMainMenu( DesignManager * dm )
 {
-    std::vector<DesignManager::DesignItem> & designs = dm->designs;
-    const size_t qty = designs.size();
     if ( ImGui::BeginMainMenuBar() )
     {
         if ( dm )
@@ -194,6 +193,9 @@ void TechTreePanel::drawMainMenu( DesignManager * dm )
             }
 
             hoveredDesignIndex = -1;
+
+            std::vector<DesignManager::DesignItem> & designs = dm->designs;
+            const size_t qty = designs.size();
             if ( ImGui::BeginMenu("All") )
             {
                 for ( size_t i=0; i<qty; i++ )
@@ -202,7 +204,7 @@ void TechTreePanel::drawMainMenu( DesignManager * dm )
                     {
                         designItem = designs[i];
                     }
-                    const bool hovered = ImGui::IsWindowHovered( ImGuiHoveredFlags_None );
+                    const bool hovered = ImGui::IsItemHovered( ImGuiHoveredFlags_None );
                     if ( hovered )
                         hoveredDesignIndex = (int)i;
                 }
@@ -244,7 +246,7 @@ void TechTreePanel::drawDesignView( DesignManager * dm )
 
 }
 
-void TechTreePanel::drawDesignSave( DesignManager * dm )
+void TechTreePanel::drawDesignSave( DesignManager * dm, DesignConstruction * dc )
 {
     if ( !savingDesign )
         return;
@@ -267,11 +269,22 @@ void TechTreePanel::drawDesignSave( DesignManager * dm )
                         ImGuiWindowFlags_NoNav )
        )
     {
+        char name[128];
+        char desc[4096];
+        sprintf( name, "%s", this->name.c_str() );
+        sprintf( desc, "%s", this->desc.c_str() );
+        ImGui::InputText( "Design name: ", name, sizeof(name) );
+        ImGui::InputTextMultiline( "Description: ", desc, sizeof(desc),
+                                   ImVec2(-1, ImGui::GetTextLineHeight() * 16) );
+        this->name = name;
+        this->desc = desc;
         if ( ImGui::Button( "Save" ) )
         {
-            //dm->saveDesign(  )
+            Design d = dc->design();
+            dm->saveDesign( name, desc, d );
             savingDesign = false;
         }
+        ImGui::SameLine();
         if ( ImGui::Button( "Cancel" ) )
         {
             savingDesign = false;

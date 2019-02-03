@@ -114,7 +114,7 @@ Entity * Entity::parentEntity() const
     if ( !centity )
         return 0;
 
-    Osp::Entity * entity = const_cast<Osp::Entity *>( entity );
+    Osp::Entity * entity = const_cast<Osp::Entity *>( centity );
     return entity;
 }
 

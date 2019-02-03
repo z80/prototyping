@@ -148,6 +148,7 @@ static bool saveDesigns( DesignManager & dm )
 {
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLElement * rootE = doc.NewElement( "designs" );
+    doc.InsertFirstChild( rootE );
     const size_t qty = dm.designs.size();
     for ( size_t i=0; i<qty; i++ )
     {
@@ -160,6 +161,11 @@ static bool saveDesigns( DesignManager & dm )
             designE->SetAttribute( "id", out.str().c_str() );
         }
         designE->SetText( di.desc.c_str() );
+
+        if ( i==0 )
+            rootE->InsertFirstChild( designE );
+        else
+            rootE->InsertEndChild( designE );
     }
     doc.SaveFile( "./designs.xml" );
     return true;

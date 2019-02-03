@@ -9,6 +9,7 @@ namespace Osp
 {
 
 struct PartDesc;
+class  DesignConstruction;
 
 class TechTreePanelCallback
 {
@@ -39,7 +40,7 @@ public:
     void drawTipPanel();
     void drawMainMenu( DesignManager * dm );
     void drawDesignView( DesignManager * dm );
-    void drawDesignSave( DesignManager * dm );
+    void drawDesignSave( DesignManager * dm, DesignConstruction * dc );
 
     const bool isHovered() const;
 public:
@@ -53,6 +54,7 @@ public:
 
     int  hoveredDesignIndex;
     bool savingDesign;
+    Ogre::String name, desc;
     DesignManager::DesignItem designItem;
 };
 
