@@ -1593,6 +1593,7 @@ macro (setup_library)
         add_custom_command (TARGET ${TARGET_NAME} POST_BUILD COMMAND scp $<TARGET_FILE:${TARGET_NAME}> ${URHO3D_SCP_TO_TARGET} || exit 0
             COMMENT "Scp-ing ${TARGET_NAME} library to target system")
     endif ()
+    add_definitions( -DBT_USE_DOUBLE_PRECISION )
 endmacro ()
 
 # Macro for setting up an executable target with resources to copy/package/bundle/preload
@@ -1737,6 +1738,7 @@ macro (setup_main_executable)
     if (CMAKE_BUILD_TYPE STREQUAL Release AND NOT ANDROID AND NOT WEB AND NOT MSVC)
         add_custom_command (TARGET ${TARGET_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${TARGET_NAME}>)
     endif ()
+    add_definitions( -DBT_USE_DOUBLE_PRECISION )
 endmacro ()
 
 # This cache variable is used to keep track of whether a resource directory has been instructed to be installed by CMake or not
