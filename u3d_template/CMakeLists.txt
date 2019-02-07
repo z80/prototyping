@@ -27,7 +27,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 file(GLOB_RECURSE SRCS src/*.cpp)
 file(GLOB_RECURSE HDRS include/*.h)
 
-add_definitions(-DURHO3D_DATABASE_SQLITE)
+#add_definitions(-DURHO3D_DATABASE_SQLITE)
 
 # Find Urho3D library
 find_package (Urho3D REQUIRED)
