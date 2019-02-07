@@ -10,5 +10,10 @@ _temp
 *.so
 *.a
 CMakeLists.txt.user
+_u_build
+_u_install
+_osp_build
+_osp_install
+
 
 
