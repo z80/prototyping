@@ -50,7 +50,6 @@ add_definitions( -DURHO3D_NETWORK )
 add_definitions( -DURHO3D_PHYSICS )
 add_definitions( -DURHO3D_URHO2D )
 
-
 # Find Urho3D library
 find_package (Urho3D REQUIRED)
 
