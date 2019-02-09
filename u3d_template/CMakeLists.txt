@@ -1,5 +1,8 @@
 # Set project name
 project (EmptyProject)
+
+add_subdirectory( "./3dparty" )
+
 # Set minimum version
 cmake_minimum_required (VERSION 2.8.6)
 if (COMMAND cmake_policy)
@@ -16,6 +19,17 @@ if (COMMAND cmake_policy)
     endif ()
 endif ()
 
+macro( header_directories root_path return_list )
+    file( GLOB_RECURSE new_list ${root_path}/*.h )
+    set( dir_list "" )
+    foreach( file_path ${new_list} )
+        get_filename_component( dir_path ${file_path} PATH )
+        set(dir_list ${dir_list} ${dir_path})
+    endforeach()
+    list( REMOVE_DUPLICATES dir_list )
+    set( ${return_list} ${dir_list} )
+endmacro()
+
 # Set CMake modules search path
 set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake/Modules)
 
@@ -24,25 +38,41 @@ include (UrhoCommon)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 
-file(GLOB_RECURSE SRCS src/*.cpp)
-file(GLOB_RECURSE HDRS include/*.h)
+file( GLOB_RECURSE SRCS src/*.cpp )
+file( GLOB_RECURSE HDRS include/*.h )
 
-add_definitions(-DURHO3D_DATABASE_SQLITE)
+add_definitions( -DURHO3D_DATABASE_SQLITE )
+add_definitions( -DURHO3D_ANGELSCRIPT )
+add_definitions( -DURHO3D_IK )
+add_definitions( -DURHO3D_LUA )
+add_definitions( -DURHO3D_NAVIGATION )
+add_definitions( -DURHO3D_NETWORK )
+add_definitions( -DURHO3D_PHYSICS )
+add_definitions( -DURHO3D_URHO2D )
+
 
 # Find Urho3D library
 find_package (Urho3D REQUIRED)
-include_directories (${URHO3D_INCLUDE_DIRS})
+
+#header_directories( "./" include_dirs )
+
+include_directories( ${URHO3D_INCLUDE_DIRS}
+                     "./3dparty/tinyxml2"
+                     "./3dparty/lemon-1.3.1"
+                     "${CMAKE_CURRENT_BINARY_DIR}/3dparty/lemon-1.3.1" )
+                 message( "dir is: ${CURRENT_BINARY_DIR}" )
 
 # Define target name
 set (TARGET_NAME EmptyProject)
 
-define_source_files (GLOB_CPP_PATTERNS Source/*.c* GLOB_H_PATTERNS Source/*.h* RECURSE GROUP)
+define_source_files(GLOB_CPP_PATTERNS Source/*.c* GLOB_H_PATTERNS Source/*.h* RECURSE GROUP )
 
 #set(INCLUDE_DIRS include rapidjson/include)
 set(INCLUDE_DIRS include)
 
 # Setup target with resource copying
 setup_main_executable ()
+target_link_libraries( ${TARGET_NAME} tinyxml2 lemon )
 
 
 ADD_DEFINITIONS(
