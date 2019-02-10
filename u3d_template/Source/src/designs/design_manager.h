@@ -10,17 +10,22 @@ namespace Osp
 
 using namespace Urho3D;
 
-class DesignManager
+class DesignManager: public Object
 {
+    URHO3D_OBJECT( DesignManager, Object );
 public:
     struct DesignItem
     {
+        /// Design name.
         String name;
+        /// Design description.
         String desc;
-        int          id;
+        /// Identifier defining a file where
+        /// the design is saved.
+        int    id;
     };
 
-    DesignManager();
+    DesignManager( Context * c );
     ~DesignManager();
 
     bool saveDesign( const String & name,

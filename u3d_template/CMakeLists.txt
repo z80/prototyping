@@ -41,7 +41,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 file( GLOB_RECURSE SRCS src/*.cpp )
 file( GLOB_RECURSE HDRS include/*.h )
 
-add_definitions( -DURHO3D_DATABASE_SQLITE )
+#add_definitions( -DURHO3D_DATABASE_SQLITE )
 add_definitions( -DURHO3D_ANGELSCRIPT )
 add_definitions( -DURHO3D_IK )
 add_definitions( -DURHO3D_LUA )
@@ -58,6 +58,14 @@ find_package (Urho3D REQUIRED)
 include_directories( ${URHO3D_INCLUDE_DIRS}
                      "./3dparty/tinyxml2"
                      "./3dparty/lemon-1.3.1"
+                     "./Source"
+                     "./Source/src/utils"
+                     "./Source/src/blocks"
+                     "./Source/src/designs"
+                     "./Source/src/item_base"
+                     "./Source/src/levels"
+                     "./Source/src/workshop"
+                     "./Source/src/workshop/ui"
                      "${CMAKE_CURRENT_BINARY_DIR}/3dparty/lemon-1.3.1" )
                  message( "dir is: ${CURRENT_BINARY_DIR}" )
 

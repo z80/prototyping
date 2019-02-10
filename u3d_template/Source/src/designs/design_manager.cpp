@@ -16,7 +16,8 @@ static bool saveDesign( DesignManager & dm, const DesignManager::DesignItem & di
 static int  uniqueId( DesignManager & dm );
 static String designFileName( int index );
 
-DesignManager::DesignManager()
+DesignManager::DesignManager( Context * c )
+    : Object( c )
 {
     Osp::loadDesigns( *this );
 }
