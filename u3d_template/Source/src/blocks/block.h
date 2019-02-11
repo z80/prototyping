@@ -24,7 +24,7 @@ public:
     /// and finds the closest pivot point on another
     /// object. Returns the object with the closest
     /// pivot point.
-    Block * closestBlock( Node * root, size_t & ownPivot, size_t & otherPivot );
+    Block * tryAttach();
 
 
     /// Each object implementation

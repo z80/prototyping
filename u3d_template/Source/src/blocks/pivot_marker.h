@@ -18,9 +18,10 @@ public:
 
     void setSize( float sz );
 
-private:
+public:
     SharedPtr<Node>        modelNode;
     SharedPtr<StaticModel> model;
+    SharedPtr<PivotMarker> connectedTo;
 };
 
 }
