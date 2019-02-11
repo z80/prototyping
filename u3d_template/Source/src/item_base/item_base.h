@@ -31,10 +31,12 @@ public:
     virtual Quaternion relQ() const;
 
     virtual void setParent( ItemBase * parent, bool inheritRotation = true );
+    virtual void setParent( Node * parent, bool inheritRotation = true );
     bool isParentOf( ItemBase * item ) const;
     ItemBase * parentItem() const;
 
     bool relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q );
+    bool relativePose( Node * other, Vector3 & rel_r, Quaternion & rel_q );
 public:
     Type            _type;
 };

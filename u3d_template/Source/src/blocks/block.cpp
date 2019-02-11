@@ -146,6 +146,27 @@ Block * Block::tryAttach()
     return parentBlock;
 }
 
+bool    Block::detach()
+{
+    Node * root = getRoot( GetNode() );
+    if ( !root )
+        return false;
+
+    const size_t markersQty = pivots.size();
+    for ( size_t i=0; i<markersQty; i++ )
+    {
+        PivotMarker * m = pivots[i];
+        PivotMarker * p = m->connectedTo;
+        if ( p )
+            p->connectedTo = SharedPtr< PivotMarker >( nullptr );
+        m->connectedTo = SharedPtr< PivotMarker >( nullptr );
+    }
+
+    setParent( root );
+
+    return true;
+}
+
 void Block::createPivots( size_t qty )
 {
     Node * node = GetNode();

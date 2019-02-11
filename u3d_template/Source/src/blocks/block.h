@@ -25,6 +25,7 @@ public:
     /// object. Returns the object with the closest
     /// pivot point.
     Block * tryAttach();
+    bool    detach();
 
 
     /// Each object implementation
