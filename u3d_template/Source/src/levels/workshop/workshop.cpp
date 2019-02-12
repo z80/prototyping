@@ -9,6 +9,17 @@
 namespace Osp
 {
 
+URHO3D_EVENT( E_CATEGORY_CLICKED, CategoryClicked )
+{
+    URHO3D_PARAM( P_INDEX, index ); // category index
+}
+
+URHO3D_EVENT( E_CREATE_BLOCK_CLICKED, CreateBlockClicked )
+{
+    URHO3D_PARAM( P_NAME, name ); // Block type name.
+}
+
+
 Workshop::Workshop(Context* context)
     : BaseLevel(context)
 {
@@ -61,10 +72,71 @@ void Workshop::CreateUI()
 
     Localization * localization = GetSubsystem<Localization>();
 
-    _window = new Window( context_ );
-    _uiRoot->AddChild( _window );
-    _window->SetAlignment( HA_LEFT, VA_CENTER );
-    _window->SetSize( 128, _uiRoot->GetHeight() );
+    _panelMain = new Window( context_ );
+    _uiRoot->AddChild( _panelMain );
+    _panelMain->SetAlignment( HA_LEFT, VA_CENTER );
+    _panelMain->SetSize( 128, _uiRoot->GetHeight() );
+    _panelMain->SetLayout( LM_HORIZONTAL );
+    _panelMain->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+
+    _panelGroups = new Window( context_ );
+    _panelMain->AddChild( _panelGroups );
+    _panelGroups->SetAlignment( HA_LEFT, VA_CENTER );
+    _panelGroups->SetSize( 64, _uiRoot->GetHeight() );
+    _panelGroups->SetLayout( LM_VERTICAL );
+    _panelGroups->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+
+    // Create categories.
+    std::vector<CategoryDesc> & cats = techTree->getPanelContent();
+    const size_t qty = cats.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const CategoryDesc & c = cats[i];
+
+        Button * b = _panelGroups->CreateChild<Button>();
+        XMLFile * style = cache->GetResource<XMLFile>( c.icon );
+        b->SetDefaultStyle( style );
+        SubscribeToEvent( b, E_RELEASED,
+            [&]( StringHash eventType, VariantMap & eventData)
+            {
+                 VariantMap & data = GetEventDataMap();
+                 data[ "index" ] = i;
+                 SendEvent( E_CATEGORY_CLICKED, data );
+            });
+    }
+}
+
+void Workshop::createBlocksUi( int groupInd )
+{
+    std::vector<CategoryDesc> & cats = techTree->getPanelContent();
+    const size_t qty = cats.size();
+    if ( groupInd >= qty )
+        return;
+
+    // This is supposed to destroy the panel with all buttons.
+    if( _panelBlocks )
+        _panelMain->RemoveChild( _panelBlocks );
+
+    _panelBlocks = new Window( context_ );
+    _panelMain->AddChild( _panelBlocks );
+    _panelBlocks->SetAlignment( HA_LEFT, VA_CENTER );
+    _panelBlocks->SetSize( 64, _uiRoot->GetHeight() );
+    _panelBlocks->SetLayout( LM_VERTICAL );
+    _panelBlocks->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+
+
+    const CategoryDesc & c = cats[groupInd];
+    const size_t typesQty = c.items.size();
+    for ( size_t i=0; i<typesQty; i++ )
+    {
+
+    }
+}
+
+void Workshop::SubscribeToEvents()
+{
+    SubscribeToEvent( E_CATEGORY_CLICKED,     URHO3D_HANDLER( Workshop, HandlePanelGroupClicked ) );
+    SubscribeToEvent( E_CREATE_BLOCK_CLICKED, URHO3D_HANDLER( Workshop, HandlePanelBlockClicked ) )
 }
 
 Button* Workshop::CreateButton(const String& text, int width, IntVector2 position)
@@ -85,6 +157,17 @@ Button* Workshop::CreateButton(const String& text, int width, IntVector2 positio
 
     return button;
 }
+
+void Workshop::HandlePanelGroupClicked( StringHash eventType, VariantMap & eventData )
+{
+
+}
+
+void Workshop::HandlePanelBlockClicked( StringHash eventType, VariantMap & eventData )
+{
+
+}
+
 
 
 }
