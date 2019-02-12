@@ -56,7 +56,7 @@ void Workshop::Init()
 
 void Workshop::CreateScene()
 {
-
+    scene_->LoadXML( "Data/prefabs/workshop.xml" );
 }
 
 void Workshop::CreateUI()
