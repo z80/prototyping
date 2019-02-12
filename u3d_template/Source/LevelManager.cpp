@@ -5,6 +5,7 @@
 #include "Levels/ExitGame.h"
 #include "Levels/Loading.h"
 #include "Levels/Credits.h"
+#include "workshop.h"
 #include "MyEvents.h"
 
 
