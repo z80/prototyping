@@ -10,9 +10,7 @@ namespace Osp
 {
 
 Workshop::Workshop(Context* context)
-    : BaseLevel(context),
-      _showGUI(true),
-      _active(true)
+    : BaseLevel(context)
 {
 }
 
