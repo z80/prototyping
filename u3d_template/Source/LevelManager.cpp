@@ -33,6 +33,8 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Levels::ExitGame>();
     context_->RegisterFactory<Levels::Loading>();
     context_->RegisterFactory<Levels::Credits>();
+
+    context_->RegisterFactory<Osp::Workshop>();
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)

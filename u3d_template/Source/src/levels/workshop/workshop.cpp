@@ -64,7 +64,7 @@ void Workshop::CreateUI()
     _window = new Window( context_ );
     _uiRoot->AddChild( _window );
     _window->SetAlignment( HA_LEFT, VA_CENTER );
-    _window->SetSize( 64, _uiRoot->GetHeight() );
+    _window->SetSize( 128, _uiRoot->GetHeight() );
 }
 
 Button* Workshop::CreateButton(const String& text, int width, IntVector2 position)
