@@ -50,6 +50,9 @@ void Workshop::Init()
     // Create the UI content
     CreateUI();
 
+    // Subscribing to events.
+    SubscribeToEvents();
+
 //    data["Title"] = "Hey!";
 //    data["Message"] = "Seems like everything is ok!";
 //    SendEvent("ShowAlertMessage", data);
@@ -64,8 +67,8 @@ void Workshop::CreateScene()
 void Workshop::CreateUI()
 {
     createSectionsUi();
-    //createBlocksUi(0);
-    //createModeUi();
+    createBlocksUi(0);
+    createModeUi();
 }
 
 void Workshop::createSectionsUi()
@@ -108,6 +111,7 @@ void Workshop::createSectionsUi()
 
         Button * b = _panelGroups->CreateChild<Button>();
         b->SetStyleAuto();
+        b->SetMaxSize( 48, 48 );
 
         SubscribeToEvent( b, E_RELEASED,
             std::bind( &Workshop::HandlePanelGroupClicked,
@@ -135,6 +139,7 @@ void Workshop::createBlocksUi( int groupInd )
     _panelBlocks->SetAlignment( HA_LEFT, VA_CENTER );
     //_panelBlocks->SetSize( 64, _uiRoot->GetHeight() );
     _panelBlocks->SetSize( 64, 64 );
+    _panelBlocks->SetMinSize( 64, 64 );
     _panelBlocks->SetLayout( LM_VERTICAL );
     _panelBlocks->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
 
@@ -149,6 +154,7 @@ void Workshop::createBlocksUi( int groupInd )
 
         Button * b = _panelBlocks->CreateChild<Button>();
         b->SetStyleAuto();
+        b->SetMaxSize( 48, 48 );
         SubscribeToEvent( b, E_RELEASED,
                           std::bind( &Workshop::HandlePanelBlockClicked,
                                      this, pd.name ) );
@@ -167,6 +173,7 @@ void Workshop::createModeUi()
     const int w = _uiRoot->GetWidth()/3;
     const int h = _uiRoot->GetHeight()/10;
     _panelMode->SetSize( w, h );
+    _panelMode->SetMinSize( w, h );
     _panelMode->SetLayout( LM_HORIZONTAL );
     _panelMode->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
 
@@ -216,7 +223,7 @@ void Workshop::HandlePanelBlockClicked( const String name )
 {
     VariantMap & data = GetEventDataMap();
     data[ "name" ] = name;
-    SendEvent( E_CATEGORY_CLICKED, data );
+    SendEvent( E_CREATE_BLOCK_CLICKED, data );
 }
 
 void Workshop::HandlePanelGroupSelected( StringHash eventType, VariantMap & eventData )
