@@ -7,7 +7,7 @@ namespace Osp
 
 TechTree::TechTree()
 {
-
+    debugInit();
 }
 
 TechTree::~TechTree()
@@ -36,6 +36,35 @@ std::vector<CategoryDesc> & TechTree::getPanelContent()
 std::vector<PartDesc> & TechTree::getPartDescs()
 {
     return partDescs;
+}
+
+void TechTree::debugInit()
+{
+    PartDesc pd;
+    pd.name        = "Box";
+    pd.description = "Test box-like construction block";
+    pd.category    = "test";
+    pd.icon        = "Textures/Spot.png";
+
+    ConnectionDesc conn;
+    conn.r = Vector3( 0.0, 1.0, 0.0 );
+    pd.connections.push_back( conn );
+
+    conn.r = Vector3( 0.0, -1.0, 0.0 );
+    pd.connections.push_back( conn );
+
+    partDescs.push_back( pd );
+
+    pd.name = "Box_2";
+    partDescs.push_back( pd );
+
+    CategoryDesc cd;
+    cd.name = "Category 1";
+    cd.description = "None";
+    cd.items.push_back( 0 );
+    cd.items.push_back( 1 );
+
+    panelContent.push_back( cd );
 }
 
 }

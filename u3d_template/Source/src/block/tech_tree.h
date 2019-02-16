@@ -61,6 +61,8 @@ public:
 public:
     std::vector<PartDesc>     partDescs;
     std::vector<CategoryDesc> panelContent;
+
+    void debugInit();
 };
 
 

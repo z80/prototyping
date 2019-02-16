@@ -4,7 +4,7 @@
 #include "MyEvents.h"
 #include "Audio/AudioManagerDefs.h"
 #include "Messages/Achievements.h"
-
+#include "block.h"
 
 namespace Osp
 {
@@ -21,7 +21,8 @@ URHO3D_EVENT( E_CREATE_BLOCK_CLICKED, CreateBlockClicked )
 
 
 Workshop::Workshop(Context* context)
-    : BaseLevel(context)
+    : BaseLevel(context),
+      mode( None )
 {
 }
 
@@ -56,15 +57,21 @@ void Workshop::Init()
 
 void Workshop::CreateScene()
 {
-    scene_->LoadXML( "Data/prefabs/workshop.xml" );
+    //scene_->LoadXML( "Data/prefabs/workshop.xml" );
+    rootNode = scene_->GetChild( "Workshop" );
 }
 
 void Workshop::CreateUI()
 {
+    createSectionsUi();
+    //createBlocksUi(0);
+    //createModeUi();
+}
+
+void Workshop::createSectionsUi()
+{
     _uiRoot = GetSubsystem<UI>()->GetRoot();
-    ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * style = cache->GetResource<XMLFile>( "UI/DefaultStyle.xml" );
-    _uiRoot->SetDefaultStyle( style );
+    //_uiRoot->SetLayout( LM_FREE );
 
     Input* input = GetSubsystem<Input>();
     if ( !input->IsMouseVisible() )
@@ -72,43 +79,47 @@ void Workshop::CreateUI()
 
     Localization * localization = GetSubsystem<Localization>();
 
-    _panelMain = new Window( context_ );
-    _uiRoot->AddChild( _panelMain );
-    _panelMain->SetAlignment( HA_LEFT, VA_CENTER );
-    _panelMain->SetSize( 128, _uiRoot->GetHeight() );
-    _panelMain->SetLayout( LM_HORIZONTAL );
-    _panelMain->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+    _panelMain = _uiRoot->CreateChild<Window>();
 
-    _panelGroups = new Window( context_ );
-    _panelMain->AddChild( _panelGroups );
-    _panelGroups->SetAlignment( HA_LEFT, VA_CENTER );
-    _panelGroups->SetSize( 64, _uiRoot->GetHeight() );
+    _panelMain->SetStyleAuto();
+    _panelMain->SetAlignment(HA_LEFT, VA_CENTER);
+    _panelMain->SetSize(400, 500);
+    _panelMain->BringToFront();
+
+    return;
+
+     _panelGroups = _panelMain->CreateChild<Window>();
+
+    _panelMain->SetStyleAuto();
+    _panelGroups->SetAlignment( HA_LEFT, VA_TOP );
+    //_panelGroups->SetSize( 128, _uiRoot->GetHeight() );
+    _panelGroups->SetSize( 256, 256 );
     _panelGroups->SetLayout( LM_VERTICAL );
     _panelGroups->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
 
     // Create categories.
-    std::vector<CategoryDesc> & cats = techTree->getPanelContent();
+    std::vector<CategoryDesc> & cats = techTree.getPanelContent();
     const size_t qty = cats.size();
     for ( size_t i=0; i<qty; i++ )
     {
         const CategoryDesc & c = cats[i];
 
         Button * b = _panelGroups->CreateChild<Button>();
-        XMLFile * style = cache->GetResource<XMLFile>( c.icon );
-        b->SetDefaultStyle( style );
+        b->SetStyleAuto();
         SubscribeToEvent( b, E_RELEASED,
             [&]( StringHash eventType, VariantMap & eventData)
             {
-                 VariantMap & data = GetEventDataMap();
-                 data[ "index" ] = i;
-                 SendEvent( E_CATEGORY_CLICKED, data );
+                const int ind = i;
+                VariantMap & data = GetEventDataMap();
+                data[ "index" ] = ind;
+                SendEvent( E_CATEGORY_CLICKED, data );
             });
     }
 }
 
 void Workshop::createBlocksUi( int groupInd )
 {
-    std::vector<CategoryDesc> & cats = techTree->getPanelContent();
+    std::vector<CategoryDesc> & cats = techTree.getPanelContent();
     const size_t qty = cats.size();
     if ( groupInd >= qty )
         return;
@@ -117,26 +128,66 @@ void Workshop::createBlocksUi( int groupInd )
     if( _panelBlocks )
         _panelMain->RemoveChild( _panelBlocks );
 
-    _panelBlocks = new Window( context_ );
-    _panelMain->AddChild( _panelBlocks );
+     _panelBlocks = _panelMain->CreateChild<Window>();
+
+    _panelBlocks->SetStyleAuto();
     _panelBlocks->SetAlignment( HA_LEFT, VA_CENTER );
-    _panelBlocks->SetSize( 64, _uiRoot->GetHeight() );
+    //_panelBlocks->SetSize( 64, _uiRoot->GetHeight() );
+    _panelBlocks->SetSize( 64, 64 );
     _panelBlocks->SetLayout( LM_VERTICAL );
     _panelBlocks->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
 
 
+    const std::vector<PartDesc> & blockDescs = techTree.getPartDescs();
     const CategoryDesc & c = cats[groupInd];
     const size_t typesQty = c.items.size();
     for ( size_t i=0; i<typesQty; i++ )
     {
+        const int ind = c.items[i];
+        const PartDesc & pd = blockDescs[ind];
+
+        Button * b = _panelBlocks->CreateChild<Button>();
+        b->SetStyleAuto();
+        SubscribeToEvent( b, E_RELEASED,
+            [&]( StringHash eventType, VariantMap & eventData )
+            {
+                const String name = pd.name;
+                VariantMap & data = GetEventDataMap();
+                data[ "name" ] = name;
+                SendEvent( E_CATEGORY_CLICKED, data );
+            });
 
     }
+}
+
+void Workshop::createModeUi()
+{
+    _uiRoot = GetSubsystem<UI>()->GetRoot();
+
+    _panelMode = _uiRoot->CreateChild<Window>();
+
+    _panelMode->SetStyleAuto();
+    _panelMode->SetAlignment( HA_RIGHT, VA_BOTTOM );
+    const int w = _uiRoot->GetWidth()/3;
+    const int h = _uiRoot->GetHeight()/10;
+    _panelMode->SetSize( w, h );
+    _panelMode->SetLayout( LM_HORIZONTAL );
+    _panelMode->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+
+
+    Text * t = _panelMode->CreateChild<Text>();
+
+    t->SetStyleAuto();
+    t->SetEditable( false );
+    _panelMode->AddChild( t );
+
+    _modeText = t;
 }
 
 void Workshop::SubscribeToEvents()
 {
     SubscribeToEvent( E_CATEGORY_CLICKED,     URHO3D_HANDLER( Workshop, HandlePanelGroupClicked ) );
-    SubscribeToEvent( E_CREATE_BLOCK_CLICKED, URHO3D_HANDLER( Workshop, HandlePanelBlockClicked ) )
+    SubscribeToEvent( E_CREATE_BLOCK_CLICKED, URHO3D_HANDLER( Workshop, HandlePanelBlockClicked ) );
 }
 
 Button* Workshop::CreateButton(const String& text, int width, IntVector2 position)
@@ -160,17 +211,27 @@ Button* Workshop::CreateButton(const String& text, int width, IntVector2 positio
 
 void Workshop::HandlePanelGroupClicked( StringHash eventType, VariantMap & eventData )
 {
-
+    const Variant v = eventData[ "index" ];
+    const int ind = v.GetInt();
+    createBlocksUi( ind );
 }
 
 void Workshop::HandlePanelBlockClicked( StringHash eventType, VariantMap & eventData )
 {
+    const Variant v = eventData[ "name" ];
+    const String typeName = v.GetString();
+    // Create a part of this name.
+    Object * o = context_->CreateObject( StringHash(typeName) );
+    if ( !o )
+        return;
 
+    Block * b = o->Cast<Block>();
+    b->setParent( rootNode );
+    mode = Drag;
 }
 
 
 
 }
-
 
 
