@@ -60,7 +60,11 @@ void Workshop::Init()
 
 void Workshop::CreateScene()
 {
-    //scene_->LoadXML( "Data/prefabs/workshop.xml" );
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    XMLFile * f = cache->GetResource<XMLFile>( "prefabs/workshop.xml" );
+    if ( !f )
+        return;
+    //scene_->LoadXML( f-> );
     rootNode = scene_->GetChild( "Workshop" );
 }
 
