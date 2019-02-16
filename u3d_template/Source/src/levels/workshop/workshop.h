@@ -10,7 +10,7 @@ namespace Osp
 
 class Workshop: public BaseLevel
 {
-URHO3D_OBJECT( Workshop, BaseLevel );
+URHO3D_OBJECT( Workshop, BaseLevel )
 
 public:
     enum Mode { None, Drag, Rotate };
@@ -48,8 +48,10 @@ private:
 public:
     /// UI events processing.
     /// Blocks panel.
-    void HandlePanelGroupClicked( StringHash eventType, VariantMap & eventData );
-    void HandlePanelBlockClicked( StringHash eventType, VariantMap & eventData );
+    void HandlePanelGroupClicked( int ind );
+    void HandlePanelBlockClicked( const String name );
+    void HandlePanelGroupSelected( StringHash eventType, VariantMap & eventData );
+    void HandlePanelBlockSelected( StringHash eventType, VariantMap & eventData );
 };
 
 }

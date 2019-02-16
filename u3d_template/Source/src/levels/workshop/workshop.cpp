@@ -84,18 +84,20 @@ void Workshop::createSectionsUi()
     _panelMain->SetStyleAuto();
     _panelMain->SetAlignment(HA_LEFT, VA_CENTER);
     _panelMain->SetSize(400, 500);
+    _panelMain->SetMinSize( 400, 500 );
+    _panelMain->SetLayout( LM_HORIZONTAL );
     _panelMain->BringToFront();
-
-    return;
 
      _panelGroups = _panelMain->CreateChild<Window>();
 
-    _panelMain->SetStyleAuto();
+    _panelGroups->SetStyleAuto();
     _panelGroups->SetAlignment( HA_LEFT, VA_TOP );
     //_panelGroups->SetSize( 128, _uiRoot->GetHeight() );
     _panelGroups->SetSize( 256, 256 );
+    _panelGroups->SetMinSize( 400, 500 );
     _panelGroups->SetLayout( LM_VERTICAL );
     _panelGroups->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+
 
     // Create categories.
     std::vector<CategoryDesc> & cats = techTree.getPanelContent();
@@ -106,15 +108,14 @@ void Workshop::createSectionsUi()
 
         Button * b = _panelGroups->CreateChild<Button>();
         b->SetStyleAuto();
+
         SubscribeToEvent( b, E_RELEASED,
-            [&]( StringHash eventType, VariantMap & eventData)
-            {
-                const int ind = i;
-                VariantMap & data = GetEventDataMap();
-                data[ "index" ] = ind;
-                SendEvent( E_CATEGORY_CLICKED, data );
-            });
+            std::bind( &Workshop::HandlePanelGroupClicked,
+                       this, i ) );
     }
+
+    return;
+
 }
 
 void Workshop::createBlocksUi( int groupInd )
@@ -149,13 +150,8 @@ void Workshop::createBlocksUi( int groupInd )
         Button * b = _panelBlocks->CreateChild<Button>();
         b->SetStyleAuto();
         SubscribeToEvent( b, E_RELEASED,
-            [&]( StringHash eventType, VariantMap & eventData )
-            {
-                const String name = pd.name;
-                VariantMap & data = GetEventDataMap();
-                data[ "name" ] = name;
-                SendEvent( E_CATEGORY_CLICKED, data );
-            });
+                          std::bind( &Workshop::HandlePanelBlockClicked,
+                                     this, pd.name ) );
 
     }
 }
@@ -186,8 +182,8 @@ void Workshop::createModeUi()
 
 void Workshop::SubscribeToEvents()
 {
-    SubscribeToEvent( E_CATEGORY_CLICKED,     URHO3D_HANDLER( Workshop, HandlePanelGroupClicked ) );
-    SubscribeToEvent( E_CREATE_BLOCK_CLICKED, URHO3D_HANDLER( Workshop, HandlePanelBlockClicked ) );
+    SubscribeToEvent( E_CATEGORY_CLICKED,     URHO3D_HANDLER( Workshop, HandlePanelGroupSelected ) );
+    SubscribeToEvent( E_CREATE_BLOCK_CLICKED, URHO3D_HANDLER( Workshop, HandlePanelBlockSelected ) );
 }
 
 Button* Workshop::CreateButton(const String& text, int width, IntVector2 position)
@@ -209,14 +205,28 @@ Button* Workshop::CreateButton(const String& text, int width, IntVector2 positio
     return button;
 }
 
-void Workshop::HandlePanelGroupClicked( StringHash eventType, VariantMap & eventData )
+void Workshop::HandlePanelGroupClicked( int ind )
+{
+    VariantMap & data = GetEventDataMap();
+    data[ "index" ] = ind;
+    SendEvent( E_CATEGORY_CLICKED, data );
+}
+
+void Workshop::HandlePanelBlockClicked( const String name )
+{
+    VariantMap & data = GetEventDataMap();
+    data[ "name" ] = name;
+    SendEvent( E_CATEGORY_CLICKED, data );
+}
+
+void Workshop::HandlePanelGroupSelected( StringHash eventType, VariantMap & eventData )
 {
     const Variant v = eventData[ "index" ];
     const int ind = v.GetInt();
     createBlocksUi( ind );
 }
 
-void Workshop::HandlePanelBlockClicked( StringHash eventType, VariantMap & eventData )
+void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & eventData )
 {
     const Variant v = eventData[ "name" ];
     const String typeName = v.GetString();
