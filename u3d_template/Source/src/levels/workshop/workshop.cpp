@@ -1,10 +1,16 @@
 
 #include "workshop.h"
+#include "Urho3D/Core/CoreEvents.h"
+#include "Urho3D/Input/InputEvents.h"
+#include "Urho3D/UI/UIEvents.h"
+
 #include "Global.h"
 #include "MyEvents.h"
 #include "Audio/AudioManagerDefs.h"
 #include "Messages/Achievements.h"
 #include "block.h"
+
+using namespace Urho3D;
 
 namespace Osp
 {
@@ -22,7 +28,9 @@ URHO3D_EVENT( E_CREATE_BLOCK_CLICKED, CreateBlockClicked )
 
 Workshop::Workshop(Context* context)
     : BaseLevel(context),
-      mode( None )
+      mode( None ),
+      mouseX(0),
+      mouseY(0)
 {
 }
 
@@ -193,6 +201,15 @@ void Workshop::createModeUi()
 
 void Workshop::SubscribeToEvents()
 {
+    SubscribeToEvent(E_PHYSICSPRESTEP, URHO3D_HANDLER( Workshop, HandlePhysicsPreStep) );
+    SubscribeToEvent(E_POSTUPDATE,     URHO3D_HANDLER( Workshop, HandlePostUpdate) );
+
+    SubscribeToEvent( E_MOUSEBUTTONDOWN, URHO3D_HANDLER( Workshop, HandleMouseDown ) );
+    SubscribeToEvent( E_MOUSEBUTTONUP,   URHO3D_HANDLER( Workshop, HandleMouseUp ) );
+    SubscribeToEvent( E_MOUSEMOVE,       URHO3D_HANDLER( Workshop, HandleMouseMove ) );
+    SubscribeToEvent( E_KEYDOWN,         URHO3D_HANDLER( Workshop, HandleKeyDown ) );
+    SubscribeToEvent( E_KEYUP,           URHO3D_HANDLER( Workshop, HandleKeyUp ) );
+
     SubscribeToEvent( E_CATEGORY_CLICKED,     URHO3D_HANDLER( Workshop, HandlePanelGroupSelected ) );
     SubscribeToEvent( E_CREATE_BLOCK_CLICKED, URHO3D_HANDLER( Workshop, HandlePanelBlockSelected ) );
 }
@@ -215,6 +232,148 @@ Button* Workshop::CreateButton(const String& text, int width, IntVector2 positio
 
     return button;
 }
+
+bool Workshop::select()
+{
+
+}
+
+void Workshop::cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n )
+{
+    Camera * c = _cameras[0];
+    Vector3 a( 0.0, 0.0, -1.0 );
+    const Quaternion q = c->GetNode()->GetRotation();
+    a = q * a;
+    // Check if "y" abs value is > 0.707 or not.
+    const float TH = 0.707f;
+    const bool vert = ( std::abs( a.y ) <= TH );
+    if ( vert )
+    {
+        x = Vector3( 1.0, 0.0, 0.0 );
+        x = q * x;
+
+        y = Vector3( 0.0, 1.0, 0.0 );
+        n = x.CrossProduct( y );
+        return;
+    }
+    x = Ogre::Vector3( 1.0, 0.0, 0.0 );
+    x = q * x;
+    x = Ogre::Vector3( x.x, 0.0, x.z );
+    x.normalise();
+
+    n =  Ogre::Vector3( 0.0, 1.0, 0.0 );
+    y = n.crossProduct( x );
+}
+
+void Workshop::mouseIntersection( Vector3 & at, const Vector3 & origin )
+{
+
+}
+
+void Workshop::drag()
+{
+
+}
+
+void Workshop::dragStart()
+{
+
+}
+
+void Workshop::dragStop()
+{
+
+}
+
+void Workshop::rotate()
+{
+
+}
+
+void Workshop::rotateStart()
+{
+
+}
+
+void Workshop::rotateStop()
+{
+
+}
+
+
+void Workshop::HandlePhysicsPreStep( StringHash t, VariantMap & e )
+{
+
+}
+
+void Workshop::HandlePostUpdate( StringHash t, VariantMap & e )
+{
+
+}
+
+void Workshop::HandleMouseDown( StringHash t, VariantMap & e )
+{
+    const int b = e[MouseButtonDown::P_BUTTON].GetInt();
+    if ( b == SDL_BUTTON_LMASK )
+    {
+        // Prepare to select.
+    }
+    else if ( b == SDL_BUTTON_RMASK )
+    {
+        // Context menu???
+    }
+}
+
+void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
+{
+    const int b = e[MouseButtonUp::P_BUTTON].GetInt();
+    if ( mode != None )
+    {
+        if ( b == SDL_BUTTON_LMASK )
+        {
+            // Prepare to select.
+        }
+        else if ( b == SDL_BUTTON_RMASK )
+        {
+            // Context menu???
+        }
+    }
+}
+
+void Workshop::HandleMouseMove( StringHash t, VariantMap & e )
+{
+    mouseX = e[MouseMove::P_X].GetInt();
+    mouseY = e[MouseMove::P_Y].GetInt();
+    if ( mode == Drag )
+        ;
+    else if ( mode == Rotate )
+        ;
+}
+
+void Workshop::HandleKeyDown( StringHash t, VariantMap & e )
+{
+    const int key = e[KeyDown::P_KEY].GetInt();
+    if ( selectedBlock )
+    {
+        if ( key == KEY_G )
+            mode = Drag;
+        else if ( key == KEY_R )
+            mode = Rotate;
+        else if (( key == KEY_ESCAPE ) && (mode != None))
+            mode = None;
+    }
+    if ( key == KEY_ESCAPE )
+    {
+        // Need to show game menu here.
+    }
+
+}
+
+void Workshop::HandleKeyUp( StringHash t, VariantMap & e )
+{
+    // Do nothing.
+}
+
 
 void Workshop::HandlePanelGroupClicked( int ind )
 {

@@ -4,6 +4,7 @@
 
 #include "BaseLevel.h"
 #include "tech_tree.h"
+#include "block.h"
 
 namespace Osp
 {
@@ -41,11 +42,40 @@ private:
                          _panelMode;
     SharedPtr<UIElement> _modeText;
 
-    SharedPtr<Node> rootNode;
-    Mode            mode;
+    SharedPtr<Node>  rootNode;
+    SharedPtr<Block> selectedBlock;
+    Mode             mode;
+    int mouseX, mouseY;
 
     TechTree techTree;
 public:
+    bool select();
+    void cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n );
+    void mouseIntersection( Vector3 & at, const Vector3 & origin=Vector3::ZERO );
+    void drag();
+    void dragStart();
+    void dragStop();
+    void rotate();
+    void rotateStart();
+    void rotateStop();
+
+
+
+    // Subscribe to fixed timestep physics updates for setting or applying controls
+    void HandlePhysicsPreStep( StringHash t, VariantMap & e );
+    // Subscribe HandlePostUpdate() method for processing update events. Subscribe to PostUpdate instead
+    // of the usual Update so that physics simulation has already proceeded for the frame, and can
+    // accurately follow the object with the camera
+    void HandlePostUpdate( StringHash t, VariantMap & e );
+
+    // Keyboard and mouse input for editor.
+    void HandleMouseDown( StringHash t, VariantMap & e );
+    void HandleMouseUp( StringHash t, VariantMap & e );
+    void HandleMouseMove( StringHash t, VariantMap & e );
+    void HandleKeyDown( StringHash t, VariantMap & e );
+    void HandleKeyUp( StringHash t, VariantMap & e );
+
+
     /// UI events processing.
     /// Blocks panel.
     void HandlePanelGroupClicked( int ind );
