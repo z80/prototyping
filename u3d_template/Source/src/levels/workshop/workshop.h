@@ -38,8 +38,7 @@ private:
     SharedPtr<UIElement> _uiRoot;
     SharedPtr<Window>    _panelMain,
                          _panelGroups,
-                         _panelBlocks,
-                         _panelMode;
+                         _panelBlocks;
     SharedPtr<UIElement> _modeText;
 
     SharedPtr<Node>  rootNode;

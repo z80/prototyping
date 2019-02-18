@@ -176,25 +176,17 @@ void Workshop::createBlocksUi( int groupInd )
 
 void Workshop::createModeUi()
 {
+    Graphics * graphics = GetSubsystem<Graphics>();
+    const int w = graphics->GetWidth();
+    const int h = graphics->GetHeight();
+
     _uiRoot = GetSubsystem<UI>()->GetRoot();
 
-    _panelMode = _uiRoot->CreateChild<Window>();
-
-    _panelMode->SetStyleAuto();
-    _panelMode->SetAlignment( HA_RIGHT, VA_BOTTOM );
-    const int w = _uiRoot->GetWidth()/3;
-    const int h = _uiRoot->GetHeight()/10;
-    _panelMode->SetSize( w, h );
-    _panelMode->SetMinSize( w, h );
-    _panelMode->SetLayout( LM_HORIZONTAL );
-    _panelMode->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
-
-
-    Text * t = _panelMode->CreateChild<Text>();
-
+    Text * t = _uiRoot->CreateChild<Text>();
     t->SetStyleAuto();
     t->SetEditable( false );
-    _panelMode->AddChild( t );
+    t->SetPosition( w / 2, h * 8 / 10 );
+    t->SetText( "Hello!" );
 
     _modeText = t;
 }
