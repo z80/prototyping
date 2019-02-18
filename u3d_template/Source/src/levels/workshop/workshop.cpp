@@ -235,18 +235,52 @@ Button* Workshop::CreateButton(const String& text, int width, IntVector2 positio
 
 bool Workshop::select()
 {
+    UI * ui = GetSubsystem<UI>();
+    IntVector2 pos = ui->GetCursorPosition();
+    // Check the cursor is visible and there is no UI element in front of the cursor
+    if (!ui->GetCursor()->IsVisible() || ui->GetElementAt(pos, true))
+        return false;
 
+    Graphics * graphics = GetSubsystem<Graphics>();
+    Node   * camNode = _cameras[0];
+    Camera * camera  = camNode->GetComponent<Camera>();
+    Ray cameraRay = camera->GetScreenRay((float)pos.x_ / graphics->GetWidth(), (float)pos.y_ / graphics->GetHeight());
+
+    // Pick only geometry objects, not eg. zones or lights, only get the first (closest) hit
+    PODVector<RayQueryResult> results;
+    const float maxDistance = 300.0f;
+    RayOctreeQuery query(results, cameraRay, RAY_OBB, maxDistance, DRAWABLE_GEOMETRY );
+    scene_->GetComponent<Octree>()->RaycastSingle( query );
+    if ( !results.Size() )
+        return false;
+
+    RayQueryResult& result = results[0];
+    //hitPos = result.position_;
+    Node * n = result.node_;
+    if ( !n )
+        return false;
+
+    Object * o = n->GetComponent( StringHash("Block") );
+    if ( !o )
+        return false;
+    Block * b = o->Cast<Block>();
+    if ( !b )
+        return false;
+    selectedBlock = SharedPtr<Block>( b );
+
+    return true;
 }
 
 void Workshop::cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n )
 {
-    Camera * c = _cameras[0];
+    Node * camNode = _cameras[0];
+    Camera * cam = camNode->GetComponent<Camera>();
     Vector3 a( 0.0, 0.0, -1.0 );
-    const Quaternion q = c->GetNode()->GetRotation();
+    const Quaternion q = camNode->GetRotation();
     a = q * a;
     // Check if "y" abs value is > 0.707 or not.
     const float TH = 0.707f;
-    const bool vert = ( std::abs( a.y ) <= TH );
+    const bool vert = ( std::abs( a.y_ ) <= TH );
     if ( vert )
     {
         x = Vector3( 1.0, 0.0, 0.0 );
@@ -256,18 +290,51 @@ void Workshop::cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n )
         n = x.CrossProduct( y );
         return;
     }
-    x = Ogre::Vector3( 1.0, 0.0, 0.0 );
+    x = Vector3( 1.0, 0.0, 0.0 );
     x = q * x;
-    x = Ogre::Vector3( x.x, 0.0, x.z );
-    x.normalise();
+    x = Vector3( x.x_, 0.0, x.z_ );
+    x.Normalize();
 
-    n =  Ogre::Vector3( 0.0, 1.0, 0.0 );
-    y = n.crossProduct( x );
+    n = Vector3( 0.0, 1.0, 0.0 );
+    y = n.CrossProduct( x );
 }
 
 void Workshop::mouseIntersection( Vector3 & at, const Vector3 & origin )
 {
+    UI * ui = GetSubsystem<UI>();
+    const IntVector2 pos = ui->GetCursorPosition();
 
+    Graphics * graphics = GetSubsystem<Graphics>();
+
+    Node * camNode = _cameras[0];
+    Camera * cam = camNode->GetComponent<Camera>();
+    const int w = graphics->GetWidth();
+    const int h = graphics->GetHeight();
+    //Ray cameraRay = cam->GetScreenRay((float)pos.x_ / , (float)pos.y_ / graphics->GetHeight());
+    const float fov   = cam->GetFov();
+    const float ratio = cam->GetAspectRatio();
+    const float tx = std::tan( fov / 2.0 );
+    const float ty = std::tan( fov / ratio / 2.0 );
+    const float ax = float(2*pos.x_ - w) / float( w );
+    const float ay = float(h - 2*pos.y_) / float( h );
+    Vector3 a( ax*tx, ay*ty, -1.0 );
+
+    Vector3    rel_r = Vector3::ZERO;
+    Quaternion rel_q;
+    {
+        Node * rootNode = scene_->GetChild( "Workshop" );
+        ItemBase::relativePose( camNode, rootNode, rel_r, rel_q );
+
+        a = rel_q*a + rel_r;
+    }
+
+    Vector3 x, y, n;
+    cameraPlane( x, y, n );
+    float t_den = a.DotProduct( n );
+    if ( std::abs( t_den ) < 0.001 )
+        at = Vector3( 0.0, 0.0, 0.0 );
+    const float t = (origin-rel_r).DotProduct( n ) / t_den;
+    at = a*t + rel_r;
 }
 
 void Workshop::drag()

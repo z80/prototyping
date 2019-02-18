@@ -37,6 +37,7 @@ public:
 
     bool relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q );
     bool relativePose( Node * other, Vector3 & rel_r, Quaternion & rel_q );
+    static bool relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & rel_q );
 public:
     Type            _type;
 };
