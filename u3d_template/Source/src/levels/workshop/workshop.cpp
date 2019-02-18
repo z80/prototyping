@@ -450,11 +450,11 @@ void Workshop::HandlePostUpdate( StringHash t, VariantMap & e )
 void Workshop::HandleMouseDown( StringHash t, VariantMap & e )
 {
     const int b = e[MouseButtonDown::P_BUTTON].GetInt();
-    if ( b == SDL_BUTTON_LMASK )
+    if ( b == SDL_BUTTON_LEFT )
     {
         // Prepare to select.
     }
-    else if ( b == SDL_BUTTON_RMASK )
+    else if ( b == SDL_BUTTON_RIGHT )
     {
         // Context menu???
     }
@@ -465,7 +465,7 @@ void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
     const int b = e[MouseButtonUp::P_BUTTON].GetInt();
     if ( mode != None )
     {
-        if ( b == SDL_BUTTON_LMASK )
+        if ( b == SDL_BUTTON_LEFT )
         {
             // Prepare to select.
             if ( mode == None )
@@ -475,7 +475,7 @@ void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
             else if ( mode == Rotate )
                 rotateStop();
         }
-        else if ( b == SDL_BUTTON_RMASK )
+        else if ( b == SDL_BUTTON_RIGHT )
         {
             // Context menu???
         }
