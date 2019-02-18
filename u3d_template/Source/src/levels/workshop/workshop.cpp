@@ -260,6 +260,8 @@ bool Workshop::select()
         return false;
     selectedBlock = SharedPtr<Block>( b );
 
+    hintSelected();
+
     return true;
 }
 
@@ -329,19 +331,80 @@ void Workshop::mouseIntersection( Vector3 & at, const Vector3 & origin )
     at = a*t + rel_r;
 }
 
+void Workshop::hintDefault()
+{
+    _modeText->SetText( "Create blocks using side panel.\n"
+                        "Select existing blocks with LMB.\n"
+                        "Use RMB for context menu." );
+}
+
+void Workshop::hintSelected()
+{
+    _modeText->SetText( "Use \"g\" to drag object and \n"
+                        "\"r\" to rotate it. Click LMB "
+                        "to finish modification." );
+}
+
+void Workshop::hintDragged()
+{
+    _modeText->SetText( "Object is being dragged. Press "
+                        "LMB to finish ot ESC to cancel." );
+}
+
+void Workshop::hintRotated()
+{
+    _modeText->SetText( "Object is being rotated. Press "
+                        "LMB to finish ot ESC to cancel." );
+}
+
+void Workshop::showPivots( bool en )
+{
+    Node * rootNode = scene_->GetChild( "Workshop" );
+    PODVector<Component *> comps;
+    rootNode->GetComponents( comps, StringHash( "Block" ), true );
+    const size_t qty = comps.Size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Component * c = comps[i];
+        Block * b = c->Cast<Block>();
+        if ( !b )
+            continue;
+        b->setPivotsVisible( en );
+    }
+}
+
 void Workshop::drag()
 {
+    Vector3 at;
+    mouseIntersection( at );
+    if ( !selectedBlock )
+    {
+        dragStop();
+        hintDefault();
+        return;
+    }
 
+    selectedBlock->setR( at );
 }
 
 void Workshop::dragStart()
 {
+    if ( !selectedBlock )
+        return;
+    hintDragged();
+    showPivots( true );
 
+    selectedBlock->detach();
 }
 
 void Workshop::dragStop()
 {
+    if ( !selectedBlock )
+        return;
+    hintSelected();
+    showPivots( false );
 
+    selectedBlock->tryAttach();
 }
 
 void Workshop::rotate()
@@ -351,12 +414,22 @@ void Workshop::rotate()
 
 void Workshop::rotateStart()
 {
+    if ( !selectedBlock )
+        return;
+    hintRotated();
+    showPivots( true );
 
+    selectedBlock->detach();
 }
 
 void Workshop::rotateStop()
 {
+    if ( !selectedBlock )
+        return;
+    hintSelected();
+    showPivots( false );
 
+    selectedBlock->tryAttach();
 }
 
 
@@ -368,6 +441,10 @@ void Workshop::HandlePhysicsPreStep( StringHash t, VariantMap & e )
 void Workshop::HandlePostUpdate( StringHash t, VariantMap & e )
 {
 
+    if ( mode == Drag )
+        drag();
+    else if ( mode == Rotate )
+        rotate();
 }
 
 void Workshop::HandleMouseDown( StringHash t, VariantMap & e )
@@ -391,6 +468,12 @@ void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
         if ( b == SDL_BUTTON_LMASK )
         {
             // Prepare to select.
+            if ( mode == None )
+                select();
+            else if ( mode == Drag )
+                dragStop();
+            else if ( mode == Rotate )
+                rotateStop();
         }
         else if ( b == SDL_BUTTON_RMASK )
         {
@@ -415,11 +498,21 @@ void Workshop::HandleKeyDown( StringHash t, VariantMap & e )
     if ( selectedBlock )
     {
         if ( key == KEY_G )
-            mode = Drag;
+            dragStart();
         else if ( key == KEY_R )
-            mode = Rotate;
-        else if (( key == KEY_ESCAPE ) && (mode != None))
-            mode = None;
+            rotateStart();
+        else if ( key == KEY_ESCAPE )
+        {
+            if ( mode == Drag )
+                dragStop();
+            else if ( mode == Rotate )
+                rotateStop();
+            else if ( mode == None )
+            {
+                selectedBlock = nullptr;
+                hintDefault();
+            }
+        }
     }
     if ( key == KEY_ESCAPE )
     {
@@ -464,9 +557,10 @@ void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & even
     if ( !o )
         return;
 
+    rootNode = scene_->GetChild( "Workshop" );
     Block * b = o->Cast<Block>();
     b->setParent( rootNode );
-    mode = Drag;
+    dragStart();
 }
 
 

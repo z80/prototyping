@@ -39,7 +39,7 @@ private:
     SharedPtr<Window>    _panelMain,
                          _panelGroups,
                          _panelBlocks;
-    SharedPtr<UIElement> _modeText;
+    SharedPtr<Text>      _modeText;
 
     SharedPtr<Node>  rootNode;
     SharedPtr<Block> selectedBlock;
@@ -51,6 +51,13 @@ public:
     bool select();
     void cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n );
     void mouseIntersection( Vector3 & at, const Vector3 & origin=Vector3::ZERO );
+
+    void hintDefault();
+    void hintSelected();
+    void hintDragged();
+    void hintRotated();
+
+    void showPivots( bool en );
     void drag();
     void dragStart();
     void dragStop();
