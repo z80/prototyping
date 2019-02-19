@@ -13,8 +13,8 @@ CameraOrb2::CameraOrb2( Context * c )
 
     az = 0.0f;
     el = 30.0 / 180.0 * 3.14;
-    r = 20.0;
-    va = 0.3;
+    r = -3.0;
+    va = 1.3;
     vr = 1.1;
 
     // Came camera position match the numbers.
@@ -81,9 +81,9 @@ void CameraOrb2::HandleMouseWheel( StringHash t, VariantMap & e )
     const int w = e[MouseWheel::P_WHEEL].GetInt();
 
     if ( w > 0 )
-        r = r * vr;
-    else
         r = r / vr;
+    else
+        r = r * vr;
 
     updateCamera();
 }
