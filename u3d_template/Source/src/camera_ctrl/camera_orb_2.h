@@ -24,8 +24,8 @@ public:
     void HandleMouseMove( StringHash t, VariantMap & e );
     void HandleMouseWheel( StringHash t, VariantMap & e );
 
-private:
     void updateCamera();
+private:
     float az, el, r;
     float va, vr;
     bool  activated;

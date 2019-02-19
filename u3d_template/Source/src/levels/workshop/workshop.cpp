@@ -8,6 +8,7 @@
 #include "MyEvents.h"
 #include "Audio/AudioManagerDefs.h"
 #include "Messages/Achievements.h"
+#include "Input/ControllerInput.h"
 #include "block.h"
 #include "camera_orb_2.h"
 
@@ -41,17 +42,20 @@ Workshop::~Workshop()
 
 void Workshop::Init()
 {
+    if (!scene_)
+    {
+        // There is no scene, get back to the main menu
+        VariantMap& eventData = GetEventDataMap();
+        eventData["Name"] = "MainMenu";
+        SendEvent(MyEvents::E_SET_LEVEL, eventData);
+
+        return;
+    }
+
+    BaseLevel::Init();
+
     // Disable achievement showing for this level
     GetSubsystem<Achievements>()->SetShowAchievements(true);
-
-    if (data_.Contains("Message")) {
-        //SharedPtr<Urho3D::MessageBox> messageBox(new Urho3D::MessageBox(context_, data_["Message"].GetString(), "Oh crap!"));
-        VariantMap data = GetEventDataMap();
-        data["Title"] = "Error!";
-        data["Message"] = data_["Message"].GetString();
-        SendEvent("ShowAlertMessage", data);
-    }
-    BaseLevel::Init();
 
     // Create the scene content
     CreateScene();
@@ -69,16 +73,27 @@ void Workshop::Init()
 
 void Workshop::CreateScene()
 {
+    Input * inp = GetSubsystem<Input>();
+    inp->SetMouseVisible( true );
+
+    ControllerInput * controllerInput = GetSubsystem<ControllerInput>();
+    Vector<int> controlIndexes = controllerInput->GetControlIndexes();
+    InitViewports(controlIndexes);
+
     ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/Workshop.xml" );
+    XMLFile * f = cache->GetResource<XMLFile>( "Scenes/Workshop.xml" );
     if ( !f )
         return;
-    scene_->LoadXML( f->GetRoot() );
-    rootNode = scene_->GetChild( "Workshop" );
+    const bool loadedOk = scene_->LoadXML( f->GetRoot() );
+    rootNode = scene_->GetChild( "Workshop", true );
+    //rootNode = scene_->GetChild( StringHash( "Workshop" ), true );
 
     Node * camNode = _cameras[0];
-    camNode->SetParent( rootNode );
-    camNode->CreateComponent<CameraOrb2>();
+    /*Camera * cam = camNode->GetComponent<Camera>();
+    camNode->SetParent( rootNode );*/
+
+    CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
+    //camCtrl->updateCamera();
 }
 
 void Workshop::CreateUI()

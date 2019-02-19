@@ -18,7 +18,7 @@ CameraOrb2::CameraOrb2( Context * c )
     vr = 1.1;
 
     // Came camera position match the numbers.
-    updateCamera();
+    //updateCamera();
 }
 
 CameraOrb2::~CameraOrb2()
@@ -75,8 +75,8 @@ void CameraOrb2::HandleMouseMove( StringHash t, VariantMap & e )
 
 void CameraOrb2::HandleMouseWheel( StringHash t, VariantMap & e )
 {
-    if ( !activated )
-        return;
+    //if ( !activated )
+    //    return;
 
     const int w = e[MouseWheel::P_WHEEL].GetInt();
 
