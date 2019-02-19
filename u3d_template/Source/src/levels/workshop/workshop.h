@@ -46,7 +46,7 @@ private:
     Mode             mode;
     int mouseX, mouseY;
 
-    TechTree techTree;
+    SharedPtr<TechTree> techTree;
 public:
     bool select();
     void cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n );

@@ -22,6 +22,11 @@ Block::~Block()
 
 }
 
+void Block::placePivots()
+{
+
+}
+
 void Block::setPivotsVisible( bool en )
 {
     const size_t qty = pivots.size();

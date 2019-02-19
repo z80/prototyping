@@ -7,6 +7,8 @@
 #include "Levels/Credits.h"
 #include "MyEvents.h"
 
+#include "camera_orb_2.h"
+#include "tech_tree.h"
 #include "workshop.h"
 #include "box.h"
 
@@ -35,6 +37,8 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Levels::Loading>();
     context_->RegisterFactory<Levels::Credits>();
 
+    context_->RegisterFactory<Osp::CameraOrb2>();
+    context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
     context_->RegisterFactory<Osp::Workshop>();
     context_->RegisterFactory<Osp::Box>();
 }

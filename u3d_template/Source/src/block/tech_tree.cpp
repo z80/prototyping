@@ -5,7 +5,8 @@
 namespace Osp
 {
 
-TechTree::TechTree()
+TechTree::TechTree( Context * c )
+    : Object( c )
 {
     debugInit();
 }

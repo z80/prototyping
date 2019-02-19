@@ -1,5 +1,6 @@
 
 #include "box.h"
+#include "tech_tree.h"
 
 namespace Osp
 {
@@ -19,6 +20,11 @@ Box::Box( Context * c )
 Box::~Box()
 {
 
+}
+
+void Box::placePivots()
+{
+    TechTree * tt = GetSubsystem( StringHash( "TechTree" ) )->Cast<TechTree>();
 }
 
 

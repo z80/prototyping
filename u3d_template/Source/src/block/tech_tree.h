@@ -48,10 +48,11 @@ struct CategoryDesc
     std::vector<int> items;
 };
 
-class TechTree
+class TechTree: public Object
 {
+    URHO3D_OBJECT( TechTree, Object )
 public:
-    TechTree();
+    TechTree( Context * c );
     ~TechTree();
 
     const PartDesc & partDesc( const String & name );

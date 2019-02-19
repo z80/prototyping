@@ -14,6 +14,8 @@ public:
     Box( Context * c );
     ~Box();
 
+    void placePivots();
+
     SharedPtr<StaticModel> visualModel;
 };
 

@@ -135,7 +135,7 @@ void Workshop::createSectionsUi()
 
 
     // Create categories.
-    std::vector<CategoryDesc> & cats = techTree.getPanelContent();
+    std::vector<CategoryDesc> & cats = techTree->getPanelContent();
     const size_t qty = cats.size();
     for ( size_t i=0; i<qty; i++ )
     {
@@ -156,7 +156,7 @@ void Workshop::createSectionsUi()
 
 void Workshop::createBlocksUi( int groupInd )
 {
-    std::vector<CategoryDesc> & cats = techTree.getPanelContent();
+    std::vector<CategoryDesc> & cats = techTree->getPanelContent();
     const size_t qty = cats.size();
     if ( groupInd >= qty )
         return;
@@ -176,7 +176,7 @@ void Workshop::createBlocksUi( int groupInd )
     _panelBlocks->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
 
 
-    const std::vector<PartDesc> & blockDescs = techTree.getPartDescs();
+    const std::vector<PartDesc> & blockDescs = techTree->getPartDescs();
     const CategoryDesc & c = cats[groupInd];
     const size_t typesQty = c.items.size();
     for ( size_t i=0; i<typesQty; i++ )
