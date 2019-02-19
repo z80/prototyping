@@ -6,6 +6,8 @@
 #include "SceneManager.h"
 #include "MyEvents.h"
 
+#include "camera_orb_2.h"
+
 URHO3D_DEFINE_APPLICATION_MAIN(BaseApplication);
 
 BaseApplication::BaseApplication(Context* context) :
@@ -25,6 +27,7 @@ BaseApplication::BaseApplication(Context* context) :
     context_->RegisterFactory<AudioManager>();
     context_->RegisterFactory<ConsoleHandler>();
     context_->RegisterFactory<SceneManager>();
+    context_->RegisterFactory<Osp::CameraOrb2>();
 
     _configurationFile = GetSubsystem<FileSystem>()->GetProgramDir() + "/Data/Config/config.cfg";
 

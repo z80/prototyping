@@ -9,6 +9,7 @@
 #include "Audio/AudioManagerDefs.h"
 #include "Messages/Achievements.h"
 #include "block.h"
+#include "camera_orb_2.h"
 
 using namespace Urho3D;
 
@@ -69,11 +70,15 @@ void Workshop::Init()
 void Workshop::CreateScene()
 {
     ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * f = cache->GetResource<XMLFile>( "prefabs/workshop.xml" );
+    XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/Workshop.xml" );
     if ( !f )
         return;
-    //scene_->LoadXML( f-> );
+    scene_->LoadXML( f->GetRoot() );
     rootNode = scene_->GetChild( "Workshop" );
+
+    Node * camNode = _cameras[0];
+    camNode->SetParent( rootNode );
+    camNode->CreateComponent<CameraOrb2>();
 }
 
 void Workshop::CreateUI()

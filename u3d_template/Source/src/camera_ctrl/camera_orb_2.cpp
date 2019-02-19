@@ -16,6 +16,9 @@ CameraOrb2::CameraOrb2( Context * c )
     r = 20.0;
     va = 0.3;
     vr = 1.1;
+
+    // Came camera position match the numbers.
+    updateCamera();
 }
 
 CameraOrb2::~CameraOrb2()
