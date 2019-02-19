@@ -23,7 +23,7 @@
 		<attribute name="Variables" />
 		<component type="Zone" id="16777230">
 			<attribute name="Ambient Color" value="0.3 0.3 0.3 1" />
-			<attribute name="Fog Color" value="1 1 1 1" />
+			<attribute name="Fog Color" value="1 1 1 0" />
 			<attribute name="Fog Start" value="800" />
 			<attribute name="Fog End" value="1500" />
 		</component>

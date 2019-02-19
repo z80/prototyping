@@ -62,6 +62,7 @@ include_directories( ${URHO3D_INCLUDE_DIRS}
                      "./Source/UI"
                      "./Source/src/utils"
                      "./Source/src/block"
+                     "./Source/src/blocks"
                      "./Source/src/design"
                      "./Source/src/item_base"
                      "./Source/src/camera_ctrl"

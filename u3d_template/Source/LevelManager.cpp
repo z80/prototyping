@@ -5,9 +5,10 @@
 #include "Levels/ExitGame.h"
 #include "Levels/Loading.h"
 #include "Levels/Credits.h"
-#include "workshop.h"
 #include "MyEvents.h"
 
+#include "workshop.h"
+#include "box.h"
 
 LevelManager::LevelManager(Context* context) :
 Object(context)
@@ -35,6 +36,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Levels::Credits>();
 
     context_->RegisterFactory<Osp::Workshop>();
+    context_->RegisterFactory<Osp::Box>();
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)
