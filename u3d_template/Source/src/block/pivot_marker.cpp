@@ -18,7 +18,7 @@ void PivotMarker::createContent()
 
     // Separate node to attach object to. It is because scale might change.
     // And it is necessary to have a node tree with no scales envolved.
-    modelNode = GetNode()->CreateChild();
+    modelNode = GetNode()->CreateChild( NameGenerator::Next( "PivotMarker" ) );
     model     = modelNode->CreateComponent<StaticModel>();
     model->SetModel( cache->GetResource<Model>("Models/Sphere.mdl") );
     model->SetMaterial( cache->GetResource<Material>("Materials/Stone.xml") );

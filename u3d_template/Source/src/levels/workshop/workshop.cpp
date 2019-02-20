@@ -9,8 +9,12 @@
 #include "Audio/AudioManagerDefs.h"
 #include "Messages/Achievements.h"
 #include "Input/ControllerInput.h"
+
+#include "name_generator.h"
 #include "block.h"
 #include "camera_orb_2.h"
+
+#include <iostream>
 
 using namespace Urho3D;
 
@@ -91,8 +95,7 @@ void Workshop::CreateScene()
     //rootNode = scene_->GetChild( StringHash( "Workshop" ), true );
 
     Node * camNode = _cameras[0];
-    /*Camera * cam = camNode->GetComponent<Camera>();
-    camNode->SetParent( rootNode );*/
+    camNode->SetParent( rootNode );
 
     CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
@@ -252,8 +255,8 @@ bool Workshop::select()
     UI * ui = GetSubsystem<UI>();
     IntVector2 pos = ui->GetCursorPosition();
     // Check the cursor is visible and there is no UI element in front of the cursor
-    if (!ui->GetCursor()->IsVisible() || ui->GetElementAt(pos, true))
-        return false;
+    //if ( !ui->GetCursor()->IsVisible() || ui->GetElementAt(pos, true))
+    //    return false;
 
     Graphics * graphics = GetSubsystem<Graphics>();
     Node   * camNode = _cameras[0];
@@ -263,25 +266,44 @@ bool Workshop::select()
     // Pick only geometry objects, not eg. zones or lights, only get the first (closest) hit
     PODVector<RayQueryResult> results;
     const float maxDistance = 300.0f;
-    RayOctreeQuery query(results, cameraRay, RAY_OBB, maxDistance, DRAWABLE_GEOMETRY );
+    RayOctreeQuery query(results, cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY );
     scene_->GetComponent<Octree>()->RaycastSingle( query );
-    if ( !results.Size() )
+    const size_t qty = results.Size();
+    if ( !qty )
+    {
+        selectedBlock.Reset();
+        hintDefault();
         return false;
+    }
 
     RayQueryResult& result = results[0];
     //hitPos = result.position_;
     Node * n = result.node_;
+    std::cout << "node name: " << n->GetName().CString() << std::endl;
     if ( !n )
+    {
+        selectedBlock.Reset();
+        hintDefault();
         return false;
+    }
 
-    Object * o = n->GetComponent( StringHash("Block") );
-    if ( !o )
-        return false;
-    Block * b = o->Cast<Block>();
+    const Vector<SharedPtr<Component> > & comps = n->GetComponents();
+    const size_t compsQty = comps.Size();
+    Block * b = nullptr;
+    for ( size_t i=0; i<compsQty; i++ )
+    {
+        b = comps[i]->Cast<Block>();
+        if ( b )
+            break;
+    }
     if ( !b )
+    {
+        selectedBlock.Reset();
+        hintDefault();
         return false;
-    selectedBlock = SharedPtr<Block>( b );
+    }
 
+    selectedBlock = SharedPtr<Block>( b );
     hintSelected();
 
     return true;
@@ -317,6 +339,8 @@ void Workshop::cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n )
 
 void Workshop::mouseIntersection( Vector3 & at, const Vector3 & origin )
 {
+    const float DEG2RAD = 3.1415f / 180.0f;
+
     UI * ui = GetSubsystem<UI>();
     const IntVector2 pos = ui->GetCursorPosition();
 
@@ -327,13 +351,13 @@ void Workshop::mouseIntersection( Vector3 & at, const Vector3 & origin )
     const int w = graphics->GetWidth();
     const int h = graphics->GetHeight();
     //Ray cameraRay = cam->GetScreenRay((float)pos.x_ / , (float)pos.y_ / graphics->GetHeight());
-    const float fov   = cam->GetFov();
+    const float fov   = cam->GetFov() * DEG2RAD;
     const float ratio = cam->GetAspectRatio();
     const float tx = std::tan( fov / 2.0 );
     const float ty = std::tan( fov / ratio / 2.0 );
     const float ax = float(2*pos.x_ - w) / float( w );
     const float ay = float(h - 2*pos.y_) / float( h );
-    Vector3 a( ax*tx, ay*ty, -1.0 );
+    Vector3 a( ax*tx, ay*ty, 1.0 );
 
     Vector3    rel_r = Vector3::ZERO;
     Quaternion rel_q;
@@ -491,22 +515,19 @@ void Workshop::HandleMouseDown( StringHash t, VariantMap & e )
 void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
 {
     const int b = e[MouseButtonUp::P_BUTTON].GetInt();
-    if ( mode != None )
+    if ( b == SDL_BUTTON_LEFT )
     {
-        if ( b == SDL_BUTTON_LEFT )
-        {
-            // Prepare to select.
-            if ( mode == None )
-                select();
-            else if ( mode == Drag )
-                dragStop();
-            else if ( mode == Rotate )
-                rotateStop();
-        }
-        else if ( b == SDL_BUTTON_RIGHT )
-        {
-            // Context menu???
-        }
+        // Prepare to select.
+        if ( mode == None )
+            select();
+        else if ( mode == Drag )
+            dragStop();
+        else if ( mode == Rotate )
+            rotateStop();
+    }
+    else if ( b == SDL_BUTTON_RIGHT )
+    {
+        // Context menu???
     }
 }
 
@@ -582,13 +603,16 @@ void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & even
     const String typeName = v.GetString();
     rootNode = scene_->GetChild( "Workshop" );
     // Create a part of this name.
-    Node * n = rootNode->CreateChild();
+    Node * n = rootNode->CreateChild( NameGenerator::Next( typeName ) );
+    std::cout << "new block node name: " << n->GetName().CString() << std::endl;
     Object * o = n->CreateComponent( StringHash( typeName ) );
     if ( !o )
         return;
 
     Block * b = o->Cast<Block>();
     b->createContent();
+
+    selectedBlock = SharedPtr<Block>( b );
 
     b->setParent( rootNode );
     dragStart();
