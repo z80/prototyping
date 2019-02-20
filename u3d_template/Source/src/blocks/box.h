@@ -14,7 +14,7 @@ public:
     Box( Context * c );
     ~Box();
 
-    void placePivots();
+    virtual void createContent();
 
     SharedPtr<StaticModel> visualModel;
 };

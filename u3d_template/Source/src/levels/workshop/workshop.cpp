@@ -54,6 +54,8 @@ void Workshop::Init()
 
     BaseLevel::Init();
 
+    techTree = GetSubsystem<TechTree>();
+
     // Disable achievement showing for this level
     GetSubsystem<Achievements>()->SetShowAchievements(true);
 
@@ -415,6 +417,7 @@ void Workshop::dragStart()
     showPivots( true );
 
     selectedBlock->detach();
+    mode = Drag;
 }
 
 void Workshop::dragStop()
@@ -425,6 +428,8 @@ void Workshop::dragStop()
     showPivots( false );
 
     selectedBlock->tryAttach();
+
+    mode = None;
 }
 
 void Workshop::rotate()
@@ -440,6 +445,8 @@ void Workshop::rotateStart()
     showPivots( true );
 
     selectedBlock->detach();
+
+    mode = Rotate;
 }
 
 void Workshop::rotateStop()
@@ -450,6 +457,7 @@ void Workshop::rotateStop()
     showPivots( false );
 
     selectedBlock->tryAttach();
+    mode = None;
 }
 
 
@@ -507,9 +515,9 @@ void Workshop::HandleMouseMove( StringHash t, VariantMap & e )
     mouseX = e[MouseMove::P_X].GetInt();
     mouseY = e[MouseMove::P_Y].GetInt();
     if ( mode == Drag )
-        ;
+        drag();
     else if ( mode == Rotate )
-        ;
+        rotate();
 }
 
 void Workshop::HandleKeyDown( StringHash t, VariantMap & e )
@@ -572,13 +580,16 @@ void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & even
 {
     const Variant v = eventData[ "name" ];
     const String typeName = v.GetString();
+    rootNode = scene_->GetChild( "Workshop" );
     // Create a part of this name.
-    Object * o = context_->CreateObject( StringHash(typeName) );
+    Node * n = rootNode->CreateChild();
+    Object * o = n->CreateComponent( StringHash( typeName ) );
     if ( !o )
         return;
 
-    rootNode = scene_->GetChild( "Workshop" );
     Block * b = o->Cast<Block>();
+    b->createContent();
+
     b->setParent( rootNode );
     dragStart();
 }

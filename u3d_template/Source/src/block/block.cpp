@@ -1,6 +1,7 @@
 
 #include "block.h"
 #include "name_generator.h"
+#include "tech_tree.h"
 #include <stack>
 
 using namespace Urho3D;
@@ -11,8 +12,9 @@ namespace Osp
 
 static const StringHash STRING_HASH( "Block" );
 
-Block::Block( Context * c )
-    : ItemBase( c )
+Block::Block( Context * c, const String & name )
+    : ItemBase( c ),
+      name( name )
 {
 
 }
@@ -22,9 +24,9 @@ Block::~Block()
 
 }
 
-void Block::placePivots()
+void Block::createContent()
 {
-
+    placePivots();
 }
 
 void Block::setPivotsVisible( bool en )
@@ -37,7 +39,7 @@ void Block::setPivotsVisible( bool en )
             continue;
         // Right now I don't know how to show/hide
         // nodes :(
-        //m->model->SetSetEnabled( en );
+        m->model->SetViewMask( en ? 0xFFFFFFFF : 0 );
     }
 }
 
@@ -172,6 +174,33 @@ bool    Block::detach()
     return true;
 }
 
+void Block::placePivots()
+{
+    TechTree * tt = GetSubsystem( StringHash( "TechTree" ) )->Cast<TechTree>();
+    const PartDesc & pd = tt->partDesc( name );
+    const size_t qty = pd.connections.size();
+
+    createPivots( qty );
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const ConnectionDesc & cd = pd.connections[i];
+        SharedPtr<PivotMarker> pm = pivots[i];
+        pm->setR( cd.r );
+    }
+}
+
+void Block::clearPivots()
+{
+    const size_t qty = pivots.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        SharedPtr<PivotMarker> pm = pivots[i];
+        Node * n = pm->GetNode();
+        n->Remove();
+    }
+    pivots.clear();
+}
+
 void Block::createPivots( size_t qty )
 {
     Node * node = GetNode();
@@ -180,7 +209,8 @@ void Block::createPivots( size_t qty )
     for ( size_t i=0; i<qty; i++ )
     {
         Node * n = node->CreateChild( NameGenerator::Next( "Pivot" ) );
-        PivotMarker * c = dynamic_cast<PivotMarker *>( n->CreateComponent( StringHash( "PivotMarker" ) ) );
+        PivotMarker * c = n->CreateComponent( StringHash( "PivotMarker" ) )->Cast<PivotMarker>();
+        c->createContent();
         SharedPtr<PivotMarker> pm( c );
         pivots.push_back( pm );
     }

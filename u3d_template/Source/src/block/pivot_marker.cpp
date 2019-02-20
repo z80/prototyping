@@ -10,14 +10,19 @@ namespace Osp
 PivotMarker::PivotMarker( Context * c )
     : ItemBase( c )
 {
+}
+
+void PivotMarker::createContent()
+{
     ResourceCache * cache = GetSubsystem<ResourceCache>();
 
-    Scene * scene = GetScene();
-    // Create the scene node & visual representation. This will be a replicated object
-    modelNode = scene->CreateChild( NameGenerator::Next( "Pivot" ) );
+    // Separate node to attach object to. It is because scale might change.
+    // And it is necessary to have a node tree with no scales envolved.
+    modelNode = GetNode()->CreateChild();
     model     = modelNode->CreateComponent<StaticModel>();
     model->SetModel( cache->GetResource<Model>("Models/Sphere.mdl") );
-    model->SetMaterial( cache->GetResource<Material>("Materials/StoneSmall.xml") );
+    model->SetMaterial( cache->GetResource<Material>("Materials/Stone.xml") );
+    model->SetCastShadows( true );
 }
 
 PivotMarker::~PivotMarker()

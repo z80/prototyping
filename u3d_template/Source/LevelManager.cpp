@@ -39,6 +39,7 @@ void LevelManager::RegisterAllFactories()
 
     context_->RegisterFactory<Osp::CameraOrb2>();
     context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
+    context_->RegisterFactory<Osp::PivotMarker>();
     context_->RegisterFactory<Osp::Workshop>();
     context_->RegisterFactory<Osp::Box>();
 }

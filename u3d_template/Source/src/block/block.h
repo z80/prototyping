@@ -14,8 +14,10 @@ class Block: public ItemBase
 {
     URHO3D_OBJECT( Block, ItemBase );
 public:
-    Block( Context * c );
+    Block( Context * c, const String & name );
     virtual ~Block();
+
+    virtual void createContent();
 
     void setPivotsVisible( bool en );
     void setPivotSize( float sz );
@@ -28,11 +30,13 @@ public:
     bool    detach();
 
 
+public:
     /// Each object implementation
     /// places markers individually.
-    virtual void placePivots() = 0;
-public:
+    void placePivots();
+    void clearPivots();
     void createPivots( size_t qty );
+    String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
 };
 

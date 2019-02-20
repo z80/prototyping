@@ -58,10 +58,10 @@ void Level::Init()
     // Subscribe to global events for camera movement
     SubscribeToEvents();
 
-    Input* input = GetSubsystem<Input>();
+    /*Input* input = GetSubsystem<Input>();
     if (input->IsMouseVisible()) {
         input->SetMouseVisible(false);
-    }
+    }*/
 
     Node* movableNode = scene_->GetChild("PathNode");
     _path = movableNode->GetComponent<SplinePath>();

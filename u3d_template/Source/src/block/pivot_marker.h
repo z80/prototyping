@@ -15,6 +15,7 @@ class PivotMarker: public ItemBase
 public:
     PivotMarker( Context * c );
     ~PivotMarker();
+    void createContent();
 
     void setSize( float sz );
 
