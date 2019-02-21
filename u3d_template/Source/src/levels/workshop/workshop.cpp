@@ -423,6 +423,30 @@ void Workshop::hintRotated()
                         "LMB to finish ot ESC to cancel." );
 }
 
+void Workshop::windowBlockParams()
+{
+    Graphics * graphics = GetSubsystem<Graphics>();
+    const int w = graphics->GetWidth();
+    const int h = graphics->GetHeight();
+
+    _uiRoot = GetSubsystem<UI>()->GetRoot();
+
+    Window * w = _uiRoot->CreateChild<Window>();
+    w->SetStyleAuto();
+    w->SetMinSize( 150, 300 );
+    w->SetMaxSize( 150, 300 );
+    w->SetLayout( LM_VERTICAL );
+    w->SetAlignment( HA_RIGHT, VA_TOP );
+    w->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+
+    LineEdit * posX = w->CreateChild<LineEdit>();
+    posX->SetName( "posX" );
+    LineEdit * posY = w->CreateChild<LineEdit>();
+    posY->SetName( "posY" );
+    LineEdit * posZ = w->CreateChild<LineEdit>();
+    posZ->SetName( "posZ" );
+}
+
 void Workshop::showPivots( bool en )
 {
     Node * rootNode = scene_->GetChild( "Workshop" );

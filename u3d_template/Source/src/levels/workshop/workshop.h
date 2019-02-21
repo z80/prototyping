@@ -57,6 +57,8 @@ public:
     void hintDragged();
     void hintRotated();
 
+    void windowBlockParams();
+
     void showPivots( bool en );
     void drag();
     void dragStart();
