@@ -10,8 +10,6 @@ namespace Osp
 {
 
 
-static const StringHash STRING_HASH( "Block" );
-
 Block::Block( Context * c, const String & name )
     : ItemBase( c ),
       name( name )
@@ -224,9 +222,21 @@ static Node * getRoot( Node * n )
     Node * root = n->GetParent();
     while ( true )
     {
-        Component * c = root->GetComponent( STRING_HASH );
-        if ( !c )
+        const Vector<SharedPtr<Component> > comps = root->GetComponents();
+        // Search for a block and if there is no block
+        // it is the one.
+        const size_t qty = comps.Size();
+        Block * b = nullptr;
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Component * c = comps[i];
+            b = c->Cast<Block>();
+            if ( b )
+                break;
+        }
+        if ( !b )
             break;
+
         root = root->GetParent();
         if ( !root )
             return nullptr;
