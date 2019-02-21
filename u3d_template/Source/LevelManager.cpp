@@ -9,6 +9,7 @@
 
 #include "camera_orb_2.h"
 #include "tech_tree.h"
+#include "design_manager.h"
 #include "workshop.h"
 #include "box.h"
 
@@ -39,8 +40,10 @@ void LevelManager::RegisterAllFactories()
 
     context_->RegisterFactory<Osp::CameraOrb2>();
     context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
+    context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
     context_->RegisterFactory<Osp::PivotMarker>();
     context_->RegisterFactory<Osp::Workshop>();
+    // Here should be all the blocks available.
     context_->RegisterFactory<Osp::Box>();
 }
 
