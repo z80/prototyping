@@ -365,7 +365,7 @@ void Workshop::mouseIntersection( Vector3 & at, const Vector3 & origin )
         Node * rootNode = scene_->GetChild( "Workshop" );
         ItemBase::relativePose( camNode, rootNode, rel_r, rel_q );
 
-        a = rel_q*a + rel_r;
+        a = rel_q*a/* + rel_r*/;
     }
 
     Vector3 x, y, n;
@@ -421,14 +421,16 @@ void Workshop::showPivots( bool en )
 
 void Workshop::drag()
 {
-    Vector3 at;
-    mouseIntersection( at );
     if ( !selectedBlock )
     {
         dragStop();
         hintDefault();
         return;
     }
+
+    const Vector3 origin = selectedBlock->relR();
+    Vector3 at;
+    mouseIntersection( at, origin );
 
     selectedBlock->setR( at );
 }
