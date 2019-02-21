@@ -426,8 +426,8 @@ void Workshop::hintRotated()
 void Workshop::windowBlockParams()
 {
     Graphics * graphics = GetSubsystem<Graphics>();
-    const int w = graphics->GetWidth();
-    const int h = graphics->GetHeight();
+    const int wi = graphics->GetWidth();
+    const int he = graphics->GetHeight();
 
     _uiRoot = GetSubsystem<UI>()->GetRoot();
 
