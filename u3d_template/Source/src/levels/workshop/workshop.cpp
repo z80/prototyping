@@ -313,7 +313,7 @@ void Workshop::cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n )
 {
     Node * camNode = _cameras[0];
     Camera * cam = camNode->GetComponent<Camera>();
-    Vector3 a( 0.0, 0.0, -1.0 );
+    Vector3 a( 0.0, 0.0, 1.0 );
     const Quaternion q = camNode->GetRotation();
     a = q * a;
     // Check if "y" abs value is > 0.707 or not.
@@ -350,26 +350,46 @@ void Workshop::mouseIntersection( Vector3 & at, const Vector3 & origin )
     Camera * cam = camNode->GetComponent<Camera>();
     const int w = graphics->GetWidth();
     const int h = graphics->GetHeight();
-    //Ray cameraRay = cam->GetScreenRay((float)pos.x_ / , (float)pos.y_ / graphics->GetHeight());
-    const float fov   = cam->GetFov() * DEG2RAD;
+
+    /*Ray cameraRay = cam->GetScreenRay((float)pos.x_ / w, (float)pos.y_ / h);
+
+    const float fovX  = cam->GetFov() * DEG2RAD / 2.0f;
     const float ratio = cam->GetAspectRatio();
-    const float tx = std::tan( fov / 2.0 );
-    const float ty = std::tan( fov / ratio / 2.0 );
+    const float fovY  = fovX / ratio;
+    const float tx = std::tan( fovX );
+    const float ty = std::tan( fovY );
     const float ax = float(2*pos.x_ - w) / float( w );
     const float ay = float(h - 2*pos.y_) / float( h );
-    Vector3 a( ax*tx, ay*ty, 1.0 );
+    Vector3 a( ax*tx, ay*ty, 1.0 );*/
 
+    const Matrix4 projInverse = cam->GetProjection().Inverse();
+
+    float x_ = float(pos.x_) / float(w);
+    float y_ = float(pos.y_) / float(h);
+    // The parameters range from 0.0 to 1.0. Expand to normalized device coordinates (-1.0 to 1.0) & flip Y axis
+    x_ = 2.0f * x_ - 1.0f;
+    y_ = 1.0f - 2.0f * y_;
+    Vector3 near(x_, y_, 0.0f);
+    Vector3 far(x_, y_, 1.0f);
+
+    const Vector3 origin_    = projInverse * near;
+    const Vector3 direction_ = ((projInverse * far) - origin_).Normalized();
+
+    Vector3    a = Vector3::ZERO;
     Vector3    rel_r = Vector3::ZERO;
     Quaternion rel_q;
     {
         Node * rootNode = scene_->GetChild( "Workshop" );
         ItemBase::relativePose( camNode, rootNode, rel_r, rel_q );
 
-        a = rel_q*a/* + rel_r*/;
+        a = rel_q*direction_;
+        rel_r = rel_r + rel_q*origin_;
     }
 
     Vector3 x, y, n;
     cameraPlane( x, y, n );
+    // (a*t + r_rel - origin)*n = 0
+    // (a,n)*t = (origin-r_rel,n)
     float t_den = a.DotProduct( n );
     if ( std::abs( t_den ) < 0.001 )
         at = Vector3( 0.0, 0.0, 0.0 );
@@ -438,7 +458,11 @@ void Workshop::drag()
 void Workshop::dragStart()
 {
     if ( !selectedBlock )
+    {
+        dragStop();
+        hintDefault();
         return;
+    }
     hintDragged();
     showPivots( true );
 
@@ -449,7 +473,11 @@ void Workshop::dragStart()
 void Workshop::dragStop()
 {
     if ( !selectedBlock )
+    {
+        dragStop();
+        hintDefault();
         return;
+    }
     hintSelected();
     showPivots( false );
 
@@ -460,13 +488,24 @@ void Workshop::dragStop()
 
 void Workshop::rotate()
 {
+    if ( !selectedBlock )
+    {
+        dragStop();
+        hintDefault();
+        return;
+    }
+
 
 }
 
 void Workshop::rotateStart()
 {
     if ( !selectedBlock )
+    {
+        dragStop();
+        hintDefault();
         return;
+    }
     hintRotated();
     showPivots( true );
 
@@ -478,7 +517,11 @@ void Workshop::rotateStart()
 void Workshop::rotateStop()
 {
     if ( !selectedBlock )
+    {
+        dragStop();
+        hintDefault();
         return;
+    }
     hintSelected();
     showPivots( false );
 
