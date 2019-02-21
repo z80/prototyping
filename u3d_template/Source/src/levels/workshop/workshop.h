@@ -27,6 +27,7 @@ protected:
 private:
     void CreateScene();
     void CreateUI();
+    void createTechPanel();
     void createSectionsUi();
     void createBlocksUi( int groupInd );
     void createModeUi();
@@ -35,10 +36,7 @@ private:
 
     Button * CreateButton( const String & text, int width, IntVector2 position );
 
-    SharedPtr<UIElement> _uiRoot;
-    SharedPtr<Window>    _panelMain,
-                         _panelGroups,
-                         _panelBlocks;
+    SharedPtr<Window>    _panelTech;
     SharedPtr<Text>      _modeText;
 
     SharedPtr<Node>  rootNode;

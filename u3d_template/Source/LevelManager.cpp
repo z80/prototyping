@@ -43,7 +43,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
     context_->RegisterFactory<Osp::PivotMarker>();
     context_->RegisterFactory<Osp::Workshop>();
-    // Here should be all the blocks available.
+    // Here should be all the blocks available after this line.
     context_->RegisterFactory<Osp::Box>();
 }
 

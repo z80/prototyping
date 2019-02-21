@@ -103,42 +103,48 @@ void Workshop::CreateScene()
 
 void Workshop::CreateUI()
 {
-    //createSectionsUi();
-    //createBlocksUi(0);
+    createSectionsUi();
+    createBlocksUi(0);
     createModeUi();
     createAuxilaryPanel();
 }
 
+void Workshop::createTechPanel()
+{
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * p = root->GetChild( "TechPanel", true );
+    if ( p )
+        return;
+
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    XMLFile * f = cache->GetResource<XMLFile>( "UI/TechPanel.xml" );
+    if ( !f )
+        return;
+
+    SharedPtr<UIElement> panel = ui->LoadLayout( f );
+    root->AddChild( panel );
+
+    panel->SetAlignment( HA_LEFT, VA_TOP );
+    panel->SetSize( 128, 512 );
+}
+
 void Workshop::createSectionsUi()
 {
-    _uiRoot = GetSubsystem<UI>()->GetRoot();
-    //_uiRoot->SetLayout( LM_FREE );
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
 
     Input* input = GetSubsystem<Input>();
     if ( !input->IsMouseVisible() )
         input->SetMouseVisible(true);
 
-    Localization * localization = GetSubsystem<Localization>();
+    createTechPanel();
+    UIElement * p = root->GetChild( "Categories", true );
+    if ( !p )
+        return;
 
-    _panelMain = _uiRoot->CreateChild<Window>();
-
-    _panelMain->SetStyleAuto();
-    _panelMain->SetAlignment(HA_LEFT, VA_CENTER);
-    _panelMain->SetSize(400, 500);
-    _panelMain->SetMinSize( 400, 500 );
-    _panelMain->SetLayout( LM_HORIZONTAL );
-    _panelMain->BringToFront();
-
-     _panelGroups = _panelMain->CreateChild<Window>();
-
-    _panelGroups->SetStyleAuto();
-    _panelGroups->SetAlignment( HA_LEFT, VA_TOP );
-    //_panelGroups->SetSize( 128, _uiRoot->GetHeight() );
-    _panelGroups->SetSize( 256, 256 );
-    _panelGroups->SetMinSize( 400, 500 );
-    _panelGroups->SetLayout( LM_VERTICAL );
-    _panelGroups->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
-
+    // Remove all existing categories.
+    p->RemoveAllChildren();
 
     // Create categories.
     std::vector<CategoryDesc> & cats = techTree->getPanelContent();
@@ -147,7 +153,7 @@ void Workshop::createSectionsUi()
     {
         const CategoryDesc & c = cats[i];
 
-        Button * b = _panelGroups->CreateChild<Button>();
+        Button * b = p->CreateChild<Button>();
         b->SetStyleAuto();
         b->SetMaxSize( 48, 48 );
 
@@ -167,20 +173,20 @@ void Workshop::createBlocksUi( int groupInd )
     if ( groupInd >= qty )
         return;
 
-    // This is supposed to destroy the panel with all buttons.
-    if( _panelBlocks )
-        _panelMain->RemoveChild( _panelBlocks );
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
 
-     _panelBlocks = _panelMain->CreateChild<Window>();
+    Input* input = GetSubsystem<Input>();
+    if ( !input->IsMouseVisible() )
+        input->SetMouseVisible(true);
 
-    _panelBlocks->SetStyleAuto();
-    _panelBlocks->SetAlignment( HA_LEFT, VA_CENTER );
-    //_panelBlocks->SetSize( 64, _uiRoot->GetHeight() );
-    _panelBlocks->SetSize( 64, 64 );
-    _panelBlocks->SetMinSize( 64, 64 );
-    _panelBlocks->SetLayout( LM_VERTICAL );
-    _panelBlocks->SetLayoutBorder( IntRect( 5, 5, 5, 5 ) );
+    createTechPanel();
+    UIElement * p = root->GetChild( "Blocks", true );
+    if ( !p )
+        return;
 
+    // Remove all existing blocks.
+    p->RemoveAllChildren();
 
     const std::vector<PartDesc> & blockDescs = techTree->getPartDescs();
     const CategoryDesc & c = cats[groupInd];
@@ -190,13 +196,12 @@ void Workshop::createBlocksUi( int groupInd )
         const int ind = c.items[i];
         const PartDesc & pd = blockDescs[ind];
 
-        Button * b = _panelBlocks->CreateChild<Button>();
+        Button * b = p->CreateChild<Button>();
         b->SetStyleAuto();
         b->SetMaxSize( 48, 48 );
         SubscribeToEvent( b, E_RELEASED,
                           std::bind( &Workshop::HandlePanelBlockClicked,
                                      this, pd.name ) );
-
     }
 }
 
@@ -206,9 +211,9 @@ void Workshop::createModeUi()
     const int w = graphics->GetWidth();
     const int h = graphics->GetHeight();
 
-    _uiRoot = GetSubsystem<UI>()->GetRoot();
+    UIElement * root = GetSubsystem<UI>()->GetRoot();
 
-    Text * t = _uiRoot->CreateChild<Text>();
+    Text * t = root->CreateChild<Text>();
     t->SetStyleAuto();
     t->SetEditable( false );
     t->SetPosition( w / 2, h * 8 / 10 );
@@ -430,9 +435,9 @@ void Workshop::windowBlockParams()
     const int wi = graphics->GetWidth();
     const int he = graphics->GetHeight();
 
-    _uiRoot = GetSubsystem<UI>()->GetRoot();
+    UIElement * root = GetSubsystem<UI>()->GetRoot();
 
-    Window * w = _uiRoot->CreateChild<Window>();
+    Window * w = root->CreateChild<Window>();
     w->SetStyleAuto();
     w->SetMinSize( 150, 300 );
     w->SetMaxSize( 150, 300 );
