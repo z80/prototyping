@@ -58,6 +58,7 @@ public:
     void hintRotated();
 
     void windowBlockParams();
+    void createAuxilaryPanel();
 
     void showPivots( bool en );
     void drag();
@@ -90,6 +91,10 @@ public:
     void HandlePanelBlockClicked( const String name );
     void HandlePanelGroupSelected( StringHash eventType, VariantMap & eventData );
     void HandlePanelBlockSelected( StringHash eventType, VariantMap & eventData );
+
+    /// UI Save/load design.
+    void HandleSaveDesignDialog( StringHash eventType, VariantMap & eventData );
+    void HandleLoadDesignDialog( StringHash eventType, VariantMap & eventData );
 };
 
 }

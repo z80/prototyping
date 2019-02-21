@@ -103,9 +103,10 @@ void Workshop::CreateScene()
 
 void Workshop::CreateUI()
 {
-    createSectionsUi();
-    createBlocksUi(0);
+    //createSectionsUi();
+    //createBlocksUi(0);
     createModeUi();
+    createAuxilaryPanel();
 }
 
 void Workshop::createSectionsUi()
@@ -447,6 +448,32 @@ void Workshop::windowBlockParams()
     posZ->SetName( "posZ" );
 }
 
+void Workshop::createAuxilaryPanel()
+{
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    XMLFile * f = cache->GetResource<XMLFile>( "UI/AuxPanel.xml" );
+    if ( !f )
+        return;
+
+    UI * ui = GetSubsystem<UI>();
+    UIElement * uiRoot = ui->GetRoot();
+
+    SharedPtr<UIElement> panel = ui->LoadLayout( f );
+    uiRoot->AddChild( panel );
+
+    panel->SetPosition( 0, 0 );
+    panel->SetAlignment( HA_RIGHT, VA_TOP );
+    //panel->SetMinSize( 96, 128 );
+    //panel->SetVisible( true );
+
+    UIElement * save = panel->GetChild( "SaveDesign", true );
+    SubscribeToEvent( save, E_RELEASED,
+                       URHO3D_HANDLER( Workshop, HandleSaveDesignDialog ) );
+    UIElement * load = panel->GetChild( "LoadDesign", true );
+    SubscribeToEvent( load, E_RELEASED,
+                       URHO3D_HANDLER( Workshop, HandleLoadDesignDialog ) );
+}
+
 void Workshop::showPivots( bool en )
 {
     Node * rootNode = scene_->GetChild( "Workshop" );
@@ -686,6 +713,17 @@ void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & even
     b->setParent( rootNode );
     dragStart();
 }
+
+void Workshop::HandleSaveDesignDialog( StringHash eventType, VariantMap & eventData )
+{
+
+}
+
+void Workshop::HandleLoadDesignDialog( StringHash eventType, VariantMap & eventData )
+{
+
+}
+
 
 
 
