@@ -62,7 +62,8 @@ Block * Block::tryAttach()
 {
     // First search for a Node not containing Blocks.
     // That is supposed to be a parent. E.i. Assembly scene.
-    Node * root = getRoot( GetNode() );
+    Node * blockNode = GetNode();
+    Node * root = getRoot( blockNode );
     std::stack< Node * > stack;
     stack.push( root );
     std::vector< Block * > blocks;
@@ -244,11 +245,20 @@ static void dfsBlocks( std::stack< Node * > & stack,
     for ( size_t i=0; i<qty; i++ )
     {
         Node * childNode = nn[i];
-        Component * c = childNode->GetComponent( STRING_HASH );
-        if ( !c )
-            continue;
-        Block * b = dynamic_cast< Block * >( c );
-        nodes.push_back( b );
+
+        const Vector<SharedPtr<Component> > & comps = childNode->GetComponents();
+        const size_t compsQty = comps.Size();
+        Block * b = nullptr;
+        for ( size_t i=0; i<compsQty; i++ )
+        {
+            b = comps[i]->Cast<Block>();
+            if ( b )
+            {
+                nodes.push_back( b );;
+                break;
+            }
+        }
+
         stack.push( childNode );
         dfsBlocks( stack, nodes );
     }
