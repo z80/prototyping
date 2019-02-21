@@ -467,11 +467,13 @@ void Workshop::createAuxilaryPanel()
     //panel->SetVisible( true );
 
     UIElement * save = panel->GetChild( "SaveDesign", true );
-    SubscribeToEvent( save, E_RELEASED,
-                       URHO3D_HANDLER( Workshop, HandleSaveDesignDialog ) );
+    if ( save )
+        SubscribeToEvent( save, E_RELEASED,
+                           URHO3D_HANDLER( Workshop, HandleSaveDesignDialog ) );
     UIElement * load = panel->GetChild( "LoadDesign", true );
-    SubscribeToEvent( load, E_RELEASED,
-                       URHO3D_HANDLER( Workshop, HandleLoadDesignDialog ) );
+    if ( load )
+        SubscribeToEvent( load, E_RELEASED,
+                           URHO3D_HANDLER( Workshop, HandleLoadDesignDialog ) );
 }
 
 void Workshop::showPivots( bool en )
