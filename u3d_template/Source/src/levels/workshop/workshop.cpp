@@ -113,8 +113,8 @@ void Workshop::createTechPanel()
 {
     UI * ui = GetSubsystem<UI>();
     UIElement * root = ui->GetRoot();
-    UIElement * p = root->GetChild( "TechPanel", true );
-    if ( p )
+    UIElement * pnl = root->GetChild( "TechPanel", true );
+    if ( pnl )
         return;
 
     /*ResourceCache * cache = GetSubsystem<ResourceCache>();
@@ -125,10 +125,29 @@ void Workshop::createTechPanel()
     SharedPtr<UIElement> panel = ui->LoadLayout( f );
     root->AddChild( panel );*/
 
-    Window * panel = root->CreateChild<Window>();
+    Window * panel = root->CreateChild<Window>( "TechPanel" );
+    panel->SetStyleAuto();
     panel->SetAlignment( HA_LEFT, VA_TOP );
     panel->SetSize( 128, 512 );
-    panel->SetLayout( L );
+    panel->SetLayout( LM_HORIZONTAL );
+    panel->SetLayoutBorder( IntRect( 5, 5, 5 ,5 ) );
+    panel->SetLayoutSpacing( 5 );
+
+    Window * p = panel->CreateChild<Window>( "Categories" );
+    p->SetStyleAuto();
+    p->SetAlignment( HA_LEFT, VA_TOP );
+    p->SetSize( 64, 512 );
+    p->SetLayout( LM_VERTICAL );
+    p->SetLayoutBorder( IntRect( 5, 5, 5 ,5 ) );
+    p->SetLayoutSpacing( 5 );
+
+    p = panel->CreateChild<Window>( "Blocks" );
+    p->SetStyleAuto();
+    p->SetAlignment( HA_LEFT, VA_TOP );
+    p->SetSize( 64, 512 );
+    p->SetLayout( LM_VERTICAL );
+    p->SetLayoutBorder( IntRect( 5, 5, 5 ,5 ) );
+    p->SetLayoutSpacing( 5 );
 }
 
 void Workshop::createSectionsUi()
@@ -146,10 +165,7 @@ void Workshop::createSectionsUi()
         return;
 
     // Remove all existing categories.
-    p->EnableLayoutUpdate();
     p->RemoveAllChildren();
-    //p->SetMinHeight( 512 );
-    //p->SetLayout( LM_VERTICAL );
 
     // Create categories.
     std::vector<CategoryDesc> & cats = techTree->getPanelContent();
@@ -195,9 +211,6 @@ void Workshop::createBlocksUi( int groupInd )
 
     // Remove all existing blocks.
     p->RemoveAllChildren();
-    p->RemoveAllChildren();
-    p->SetMinHeight( 512 );
-    p->SetLayout( LM_VERTICAL );
 
     const std::vector<PartDesc> & blockDescs = techTree->getPartDescs();
     const CategoryDesc & c = cats[groupInd];
