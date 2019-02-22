@@ -117,16 +117,18 @@ void Workshop::createTechPanel()
     if ( p )
         return;
 
-    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    /*ResourceCache * cache = GetSubsystem<ResourceCache>();
     XMLFile * f = cache->GetResource<XMLFile>( "UI/TechPanel.xml" );
     if ( !f )
         return;
 
     SharedPtr<UIElement> panel = ui->LoadLayout( f );
-    root->AddChild( panel );
+    root->AddChild( panel );*/
 
+    Window * panel = root->CreateChild<Window>();
     panel->SetAlignment( HA_LEFT, VA_TOP );
     panel->SetSize( 128, 512 );
+    panel->SetLayout( L );
 }
 
 void Workshop::createSectionsUi()
@@ -144,7 +146,10 @@ void Workshop::createSectionsUi()
         return;
 
     // Remove all existing categories.
+    p->EnableLayoutUpdate();
     p->RemoveAllChildren();
+    //p->SetMinHeight( 512 );
+    //p->SetLayout( LM_VERTICAL );
 
     // Create categories.
     std::vector<CategoryDesc> & cats = techTree->getPanelContent();
@@ -153,9 +158,12 @@ void Workshop::createSectionsUi()
     {
         const CategoryDesc & c = cats[i];
 
-        Button * b = p->CreateChild<Button>();
+        Button * b = new Button( context_ );
         b->SetStyleAuto();
+        b->SetPosition( 0, 0 );
+        b->SetMinSize( 48, 48 );
         b->SetMaxSize( 48, 48 );
+        p->AddChild( b );
 
         SubscribeToEvent( b, E_RELEASED,
             std::bind( &Workshop::HandlePanelGroupClicked,
@@ -187,6 +195,9 @@ void Workshop::createBlocksUi( int groupInd )
 
     // Remove all existing blocks.
     p->RemoveAllChildren();
+    p->RemoveAllChildren();
+    p->SetMinHeight( 512 );
+    p->SetLayout( LM_VERTICAL );
 
     const std::vector<PartDesc> & blockDescs = techTree->getPartDescs();
     const CategoryDesc & c = cats[groupInd];
@@ -196,9 +207,12 @@ void Workshop::createBlocksUi( int groupInd )
         const int ind = c.items[i];
         const PartDesc & pd = blockDescs[ind];
 
-        Button * b = p->CreateChild<Button>();
+        Button * b = new Button( context_ );
         b->SetStyleAuto();
+        b->SetPosition( 0, 0 );
+        b->SetMinSize( 48, 48 );
         b->SetMaxSize( 48, 48 );
+        p->AddChild( b );
         SubscribeToEvent( b, E_RELEASED,
                           std::bind( &Workshop::HandlePanelBlockClicked,
                                      this, pd.name ) );
