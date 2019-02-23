@@ -93,6 +93,8 @@ public:
     /// UI Save/load design.
     void HandleSaveDesignDialog( StringHash eventType, VariantMap & eventData );
     void HandleLoadDesignDialog( StringHash eventType, VariantMap & eventData );
+    void HandleSaveDesignOk( StringHash eventType, VariantMap & eventData );
+    void HandleSaveDesignCancel( StringHash eventType, VariantMap & eventData );
 };
 
 }

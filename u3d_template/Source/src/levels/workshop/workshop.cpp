@@ -750,13 +750,47 @@ void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & even
 
 void Workshop::HandleSaveDesignDialog( StringHash eventType, VariantMap & eventData )
 {
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    SharedPtr<UIElement> e = root->GetChild( "SaveDesign", true );
+    if ( !e )
+    {
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        XMLFile * f = cache->GetResource<XMLFile>( "UI/SaveDesign.xml" );
+        if ( !f )
+            return;
 
+        UI * ui = GetSubsystem<UI>();
+        UIElement * uiRoot = ui->GetRoot();
+
+        e = ui->LoadLayout( f );
+        uiRoot->AddChild( e );
+
+        UIElement * okBtn = e->GetChild( "Ok", true );
+        if ( okBtn )
+            SubscribeToEvent( okBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleSaveDesignOk ) );
+        UIElement * cancelBtn = e->GetChild( "Cancel", true );
+        if ( cancelBtn )
+            SubscribeToEvent( cancelBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleSaveDesignCancel ) );
+
+    }
 }
 
 void Workshop::HandleLoadDesignDialog( StringHash eventType, VariantMap & eventData )
 {
 
 }
+
+void Workshop::HandleSaveDesignOk( StringHash eventType, VariantMap & eventData )
+{
+
+}
+
+void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventData )
+{
+
+}
+
 
 
 
