@@ -752,7 +752,7 @@ void Workshop::HandleSaveDesignDialog( StringHash eventType, VariantMap & eventD
 {
     UI * ui = GetSubsystem<UI>();
     UIElement * root = ui->GetRoot();
-    SharedPtr<UIElement> e = root->GetChild( "SaveDesign", true );
+    UIElement * e = root->GetChild( "SaveDesign", true );
     if ( !e )
     {
         ResourceCache * cache = GetSubsystem<ResourceCache>();
