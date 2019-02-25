@@ -818,41 +818,11 @@ void Workshop::HandleSaveDesignDialog( StringHash eventType, VariantMap & eventD
 {
     UI * ui = GetSubsystem<UI>();
     UIElement * root = ui->GetRoot();
-    UIElement * e = root->GetChild( "SaveDesign", true );
+    UIElement * e = root->GetChild( "DesignSave", true );
     if ( !e )
     {
         ResourceCache * cache = GetSubsystem<ResourceCache>();
-        XMLFile * f = cache->GetResource<XMLFile>( "UI/SaveDesign.xml" );
-        if ( !f )
-            return;
-
-        UI * ui = GetSubsystem<UI>();
-        UIElement * uiRoot = ui->GetRoot();
-
-        e = ui->LoadLayout( f );
-        uiRoot->AddChild( e );
-
-        UIElement * okBtn = e->GetChild( "Ok", true );
-        if ( okBtn )
-            SubscribeToEvent( okBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleSaveDesignOk ) );
-        UIElement * cancelBtn = e->GetChild( "Cancel", true );
-        if ( cancelBtn )
-            SubscribeToEvent( cancelBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleSaveDesignCancel ) );
-
-    }
-
-    e->SetVisible( true );
-}
-
-void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventData )
-{
-    UI * ui = GetSubsystem<UI>();
-    UIElement * root = ui->GetRoot();
-    UIElement * e = root->GetChild( "OpenDesign", true );
-    if ( !e )
-    {
-        ResourceCache * cache = GetSubsystem<ResourceCache>();
-        XMLFile * f = cache->GetResource<XMLFile>( "UI/OpenDesign.xml" );
+        XMLFile * f = cache->GetResource<XMLFile>( "UI/DesignSave.xml" );
         if ( !f )
             return;
 
@@ -878,7 +848,7 @@ void Workshop::HandleSaveDesignOk( StringHash eventType, VariantMap & eventData 
 {
     UI * ui = GetSubsystem<UI>();
     UIElement * root = ui->GetRoot();
-    UIElement * e = root->GetChild( "SaveDesign", true );
+    UIElement * e = root->GetChild( "DesignSave", true );
     if ( !e )
         return;
     e->SetVisible( false );
@@ -899,10 +869,78 @@ void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventD
 {
     UI * ui = GetSubsystem<UI>();
     UIElement * root = ui->GetRoot();
-    UIElement * e = root->GetChild( "SaveDesign", true );
+    UIElement * e = root->GetChild( "DesignSave", true );
     if ( e )
         e->SetVisible( false );
 }
+
+
+void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventData )
+{
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * e = root->GetChild( "DesignOpen", true );
+    if ( !e )
+    {
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        XMLFile * f = cache->GetResource<XMLFile>( "UI/DesignOpen.xml" );
+        if ( !f )
+            return;
+
+        UI * ui = GetSubsystem<UI>();
+        UIElement * uiRoot = ui->GetRoot();
+
+        e = ui->LoadLayout( f );
+        uiRoot->AddChild( e );
+
+        UIElement * okBtn = e->GetChild( "Ok", true );
+        if ( okBtn )
+            SubscribeToEvent( okBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleOpenDesignOk ) );
+        UIElement * cancelBtn = e->GetChild( "Cancel", true );
+        if ( cancelBtn )
+            SubscribeToEvent( cancelBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleOpenDesignCancel ) );
+
+        UIElement * el = e->GetChild( "DesignList", true );
+        if ( !el )
+            return;
+        ListView * l = el->Cast<ListView>();
+        if ( !l )
+            return;
+        // Fill designs list with content.
+        DesignManager * dm = GetSubsystem<DesignManager>();
+        std::vector<String> allNames = dm->designNames();
+        const size_t qty = allNames.size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Text * t = new Text( context_ );
+            const String & name = allNames[i];
+            t->SetText( name );
+            l->AddItem( t );
+        }
+    }
+
+    e->SetVisible( true );
+}
+
+void Workshop::HandleOpenDesignOk( StringHash eventType, VariantMap & eventData )
+{
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * e = root->GetChild( "DesignOpen", true );
+    if ( !e )
+        return;
+}
+
+void Workshop::HandleOpenDesignCancel( StringHash eventType, VariantMap & eventData )
+{
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * e = root->GetChild( "DesignOpen", true );
+    if ( !e )
+        return;
+
+}
+
 
 
 
