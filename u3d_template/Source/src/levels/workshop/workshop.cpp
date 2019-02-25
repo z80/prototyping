@@ -284,9 +284,69 @@ Button* Workshop::CreateButton(const String& text, int width, IntVector2 positio
     return button;
 }
 
-Design & Workshop::design()
+Design Workshop::design()
 {
+    // First need to traverse all children and choose
+    // ones which can be casted to "block" type.
+    PODVector<Node*> allCh = rootNode->GetChildren( true );
+    const size_t allChQty = allCh.Size();
+    typedef std::map<Block *, size_t> BlockInds;
+    // For connectivity use a map.
+    BlockInds blockInds;
+    Vector<SharedPtr<Component> > comps;
+    size_t ind = 0;
+    // Just walk over all the blocks and generate connections.
+    // Design validity is up to the design itself.
+    Design d;
+    Vector<Block *> blocks;
+    for ( size_t i=0; i<allChQty; i++ )
+    {
+        Node * n = allCh[i];
+        comps = n->GetComponents();
+        const size_t compsQty = comps.Size();
+        for ( size_t j=0; j<compsQty; j++ )
+        {
+            Block * b = comps[j]->Cast<Block>();
+            if ( !b )
+                continue;
+            // Save inds and blocks.
+            blockInds[b] = ind;
+            blocks.Push( b );
+            break;
+        }
+    }
 
+    const size_t blocksQty = (size_t)ind;
+
+    d.blocks.reserve( blocksQty );
+    for ( size_t i=0; i<blocksQty; i++ )
+    {
+        Block * block = blocks[i];
+        Design::Block db;
+        db.typeName = block->name;
+        block->relativePose( rootNode, db.r, db.q );
+        d.blocks.push_back( db );
+
+        // Now need to make connections.
+        Block * parentBlock = block->parentBlock();
+        if ( !parentBlock )
+            continue;
+        BlockInds::const_iterator itA = blockInds.find( block );
+        if ( itA == blockInds.end() )
+            continue;
+        BlockInds::const_iterator itB = blockInds.find( parentBlock );
+        if ( itB == blockInds.end() )
+            continue;
+        const size_t indA = itA->second;
+        const size_t indB = itB->second;
+
+        Design::Joint j;
+        j.blockA = indA;
+        j.blockB = indB;
+        d.joints.push_back( j );
+    }
+
+    return d;
 }
 
 bool Workshop::select()
@@ -511,7 +571,7 @@ void Workshop::createAuxilaryPanel()
     UIElement * load = panel->GetChild( "LoadDesign", true );
     if ( load )
         SubscribeToEvent( load, E_RELEASED,
-                           URHO3D_HANDLER( Workshop, HandleLoadDesignDialog ) );
+                           URHO3D_HANDLER( Workshop, HandleOpenDesignDialog ) );
 }
 
 void Workshop::showPivots( bool en )
@@ -784,9 +844,34 @@ void Workshop::HandleSaveDesignDialog( StringHash eventType, VariantMap & eventD
     e->SetVisible( true );
 }
 
-void Workshop::HandleLoadDesignDialog( StringHash eventType, VariantMap & eventData )
+void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventData )
 {
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * e = root->GetChild( "OpenDesign", true );
+    if ( !e )
+    {
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        XMLFile * f = cache->GetResource<XMLFile>( "UI/OpenDesign.xml" );
+        if ( !f )
+            return;
 
+        UI * ui = GetSubsystem<UI>();
+        UIElement * uiRoot = ui->GetRoot();
+
+        e = ui->LoadLayout( f );
+        uiRoot->AddChild( e );
+
+        UIElement * okBtn = e->GetChild( "Ok", true );
+        if ( okBtn )
+            SubscribeToEvent( okBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleSaveDesignOk ) );
+        UIElement * cancelBtn = e->GetChild( "Cancel", true );
+        if ( cancelBtn )
+            SubscribeToEvent( cancelBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleSaveDesignCancel ) );
+
+    }
+
+    e->SetVisible( true );
 }
 
 void Workshop::HandleSaveDesignOk( StringHash eventType, VariantMap & eventData )
@@ -794,9 +879,9 @@ void Workshop::HandleSaveDesignOk( StringHash eventType, VariantMap & eventData 
     UI * ui = GetSubsystem<UI>();
     UIElement * root = ui->GetRoot();
     UIElement * e = root->GetChild( "SaveDesign", true );
-    e->SetVisible( false );
     if ( !e )
         return;
+    e->SetVisible( false );
 
     Text * tname = e->GetChild( "Name", true )->Cast<Text>();
     Text * tdesc = e->GetChild( "Desc", true )->Cast<Text>();
@@ -804,15 +889,19 @@ void Workshop::HandleSaveDesignOk( StringHash eventType, VariantMap & eventData 
     const String n = tname->GetText();
     const String d = tdesc->GetText();
 
-    Design & design =
+    const Design dn = design();
 
-    DesignManager * dm = GetSubsystem<Osp::DesignManager>();
-    dm->saveDesign( n, d, design );
+    DesignManager * dm = GetSubsystem<DesignManager>();
+    dm->saveDesign( n, d, dn );
 }
 
 void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventData )
 {
-
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * e = root->GetChild( "SaveDesign", true );
+    if ( e )
+        e->SetVisible( false );
 }
 
 

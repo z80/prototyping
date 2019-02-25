@@ -29,6 +29,7 @@ public:
     Block * tryAttach();
     bool    detach();
 
+    Block * parentBlock();
 
 public:
     /// Each object implementation

@@ -99,12 +99,18 @@ ItemBase * ItemBase::parentItem() const
     if ( !n )
         return 0;
 
-    Component * c = n->GetComponent( StringHash("ItemBase") );
-    if ( !c )
-        return nullptr;
+    static Vector< SharedPtr<Component> > comps;
+    comps = n->GetComponents();
+    const size_t qty = comps.Size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        ItemBase * ib = comps[i]->Cast<ItemBase>();
+        if ( !ib )
+            continue;
+        return ib;
+    }
 
-    ItemBase * item = dynamic_cast<ItemBase *>( c );
-    return item;
+    return nullptr;
 }
 
 bool ItemBase::relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q )

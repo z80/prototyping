@@ -173,6 +173,26 @@ bool    Block::detach()
     return true;
 }
 
+Block * Block::parentBlock()
+{
+    Node * n = GetNode()->GetParent();
+    if ( !n )
+        return 0;
+
+    static Vector< SharedPtr<Component> > comps;
+    comps = n->GetComponents();
+    const size_t qty = comps.Size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Block * b = comps[i]->Cast<Block>();
+        if ( !b )
+            continue;
+        return b;
+    }
+
+    return nullptr;
+}
+
 void Block::placePivots()
 {
     TechTree * tt = GetSubsystem( StringHash( "TechTree" ) )->Cast<TechTree>();
