@@ -11,6 +11,7 @@
 #include "Input/ControllerInput.h"
 
 #include "name_generator.h"
+#include "design_manager.h"
 #include "block.h"
 #include "camera_orb_2.h"
 
@@ -281,6 +282,11 @@ Button* Workshop::CreateButton(const String& text, int width, IntVector2 positio
     buttonText->SetText(text);
 
     return button;
+}
+
+Design & Workshop::design()
+{
+
 }
 
 bool Workshop::select()
@@ -774,6 +780,8 @@ void Workshop::HandleSaveDesignDialog( StringHash eventType, VariantMap & eventD
             SubscribeToEvent( cancelBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleSaveDesignCancel ) );
 
     }
+
+    e->SetVisible( true );
 }
 
 void Workshop::HandleLoadDesignDialog( StringHash eventType, VariantMap & eventData )
@@ -783,7 +791,23 @@ void Workshop::HandleLoadDesignDialog( StringHash eventType, VariantMap & eventD
 
 void Workshop::HandleSaveDesignOk( StringHash eventType, VariantMap & eventData )
 {
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * e = root->GetChild( "SaveDesign", true );
+    e->SetVisible( false );
+    if ( !e )
+        return;
 
+    Text * tname = e->GetChild( "Name", true )->Cast<Text>();
+    Text * tdesc = e->GetChild( "Desc", true )->Cast<Text>();
+
+    const String n = tname->GetText();
+    const String d = tdesc->GetText();
+
+    Design & design =
+
+    DesignManager * dm = GetSubsystem<Osp::DesignManager>();
+    dm->saveDesign( n, d, design );
 }
 
 void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventData )

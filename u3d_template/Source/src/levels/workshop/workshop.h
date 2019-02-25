@@ -5,6 +5,7 @@
 #include "BaseLevel.h"
 #include "tech_tree.h"
 #include "block.h"
+#include "design_manager.h"
 
 namespace Osp
 {
@@ -46,6 +47,8 @@ private:
 
     SharedPtr<TechTree> techTree;
 public:
+    Design & design();
+
     bool select();
     void cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n );
     void mouseIntersection( Vector3 & at, const Vector3 & origin=Vector3::ZERO );
