@@ -48,6 +48,8 @@ private:
     SharedPtr<TechTree> techTree;
 public:
     Design design();
+    void   clearDesign();
+    void   setDesign( const Design & d );
 
     bool select();
     void cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n );
@@ -99,6 +101,7 @@ public:
     void HandleSaveDesignCancel( StringHash eventType, VariantMap & eventData );
 
     void HandleOpenDesignDialog( StringHash eventType, VariantMap & eventData );
+    void HandleDesignSelected( StringHash eventType, VariantMap & eventData );
     void HandleOpenDesignOk( StringHash eventType, VariantMap & eventData );
     void HandleOpenDesignCancel( StringHash eventType, VariantMap & eventData );
 };

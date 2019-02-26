@@ -349,6 +349,78 @@ Design Workshop::design()
     return d;
 }
 
+void Workshop::clearDesign()
+{
+    // First need to traverse all children and choose
+    // ones which can be casted to "block" type.
+    PODVector<Node*> allCh = rootNode->GetChildren( true );
+    const size_t allChQty = allCh.Size();
+    // Just walk over all the blocks and generate connections.
+    // Design validity is up to the design itself.
+    Design d;
+    Vector< SharedPtr<Node> > blocks;
+    Vector<SharedPtr<Component> > comps;
+    for ( size_t i=0; i<allChQty; i++ )
+    {
+        Node * n = allCh[i];
+        comps = n->GetComponents();
+        const size_t compsQty = comps.Size();
+        for ( size_t j=0; j<compsQty; j++ )
+        {
+            Block * b = comps[j]->Cast<Block>();
+            if ( !b )
+                continue;
+            // Save inds and blocks.
+            blocks.Push( SharedPtr<Node>( b->GetNode() ) );
+            break;
+        }
+    }
+
+    const size_t blocksQty = blocks.Size();
+    for ( size_t i=0; i<blocksQty; i++ )
+    {
+        SharedPtr<Node> n = blocks[i];
+        if (n)
+            n->Remove();
+    }
+}
+
+void Workshop::setDesign( const Design & d )
+{
+    rootNode = scene_->GetChild( "Workshop", true );
+
+    const size_t blocksQty = d.blocks.size();
+    Vector<Block *> blocks;
+    blocks.Reserve( blocksQty );
+    for ( size_t i=0; i<blocksQty; i++ )
+    {
+        const Design::Block & db = d.blocks[i];
+        const String typeName = db.typeName;
+        // Create a part of this name.
+        Node * n = rootNode->CreateChild( NameGenerator::Next( typeName ) );
+        std::cout << "new block node name: " << n->GetName().CString() << std::endl;
+        Object * o = n->CreateComponent( StringHash( typeName ) );
+        if ( !o )
+            return;
+
+        Block * b = o->Cast<Block>();
+        b->createContent();
+        b->setR( db.r );
+        b->setQ( db.q );
+
+        blocks.Push( b );
+    }
+
+    const size_t jointsQty = d.joints.size();
+    for ( size_t i=0; i<jointsQty; i++ )
+    {
+        const Design::Joint & joint = d.joints[i];
+        Block * a = blocks[joint.blockA];
+        Block * b = blocks[joint.blockB];
+        a->setParent( b );
+    }
+}
+
 bool Workshop::select()
 {
     UI * ui = GetSubsystem<UI>();
@@ -797,7 +869,7 @@ void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & even
 {
     const Variant v = eventData[ "name" ];
     const String typeName = v.GetString();
-    rootNode = scene_->GetChild( "Workshop" );
+    rootNode = scene_->GetChild( "Workshop", true );
     // Create a part of this name.
     Node * n = rootNode->CreateChild( NameGenerator::Next( typeName ) );
     std::cout << "new block node name: " << n->GetName().CString() << std::endl;
@@ -899,27 +971,59 @@ void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventD
         UIElement * cancelBtn = e->GetChild( "Cancel", true );
         if ( cancelBtn )
             SubscribeToEvent( cancelBtn, E_RELEASED, URHO3D_HANDLER( Workshop, HandleOpenDesignCancel ) );
+    }
 
-        UIElement * el = e->GetChild( "DesignList", true );
-        if ( !el )
-            return;
-        ListView * l = el->Cast<ListView>();
-        if ( !l )
-            return;
-        // Fill designs list with content.
-        DesignManager * dm = GetSubsystem<DesignManager>();
-        std::vector<String> allNames = dm->designNames();
-        const size_t qty = allNames.size();
-        for ( size_t i=0; i<qty; i++ )
-        {
-            Text * t = new Text( context_ );
-            const String & name = allNames[i];
-            t->SetText( name );
-            l->AddItem( t );
-        }
+    UIElement * el = e->GetChild( "DesignList", true );
+    if ( !el )
+        return;
+    ListView * l = el->Cast<ListView>();
+    if ( !l )
+        return;
+    // Fill designs list with content.
+    DesignManager * dm = GetSubsystem<DesignManager>();
+    std::vector<String> allNames = dm->designNames();
+    const size_t qty = allNames.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Text * t = new Text( context_ );
+        const String & name = allNames[i];
+        t->SetText( name );
+        t->SetAttribute( "name", name );
+        l->AddItem( t );
+        SubscribeToEvent( t, E_UIMOUSECLICK, URHO3D_HANDLER( Workshop, HandleDesignSelected ) );
     }
 
     e->SetVisible( true );
+}
+
+void Workshop::HandleDesignSelected( StringHash eventType, VariantMap & eventData )
+{
+    UI * ui = GetSubsystem<UI>();
+    UIElement * root = ui->GetRoot();
+    UIElement * e = root->GetChild( "DesignOpen", true );
+    if ( !e )
+        return;
+
+    // Need to provide description in appropriate text area.
+    UIElement * desc_ = e->GetChild( "Desc", true );
+    if ( !desc_ )
+        return;
+
+    Text * desc = desc_->Cast<Text>();
+    if ( !desc )
+        return;
+
+    UIElement * el = e->GetChild( "DesignList", true );
+    if ( !el )
+        return;
+    ListView * l = el->Cast<ListView>();
+    if ( !l )
+        return;
+
+    const size_t ind = l->GetSelection();
+    DesignManager * dm = GetSubsystem<DesignManager>();
+    const DesignManager::DesignItem & di = dm->designItem( ind );
+    desc->SetText( di.desc );
 }
 
 void Workshop::HandleOpenDesignOk( StringHash eventType, VariantMap & eventData )
@@ -929,6 +1033,20 @@ void Workshop::HandleOpenDesignOk( StringHash eventType, VariantMap & eventData 
     UIElement * e = root->GetChild( "DesignOpen", true );
     if ( !e )
         return;
+
+    UIElement * el = e->GetChild( "DesignList", true );
+    if ( !el )
+        return;
+    ListView * l = el->Cast<ListView>();
+    if ( !l )
+        return;
+
+    const size_t ind = l->GetSelection();
+    DesignManager * dm = GetSubsystem<DesignManager>();
+    const Design d = dm->loadDesign( ind );
+    // Now need to do something with it.
+
+    e->SetVisible( false );
 }
 
 void Workshop::HandleOpenDesignCancel( StringHash eventType, VariantMap & eventData )
@@ -939,6 +1057,7 @@ void Workshop::HandleOpenDesignCancel( StringHash eventType, VariantMap & eventD
     if ( !e )
         return;
 
+    e->SetVisible( false );
 }
 
 
