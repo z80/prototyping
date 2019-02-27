@@ -121,7 +121,7 @@ bool Design::load( const String & fname )
     if ( eResult != tinyxml2::XML_SUCCESS )
         return false;
 
-    tinyxml2::XMLElement * root = doc.FirstChildElement( fname.CString() );
+    tinyxml2::XMLElement * root = doc.FirstChildElement( "design" );
     if ( !root )
         return false;
 

@@ -312,6 +312,7 @@ Design Workshop::design()
             // Save inds and blocks.
             blockInds[b] = ind;
             blocks.Push( b );
+            ind += 1;
             break;
         }
     }
@@ -901,7 +902,8 @@ void Workshop::HandleSaveDesignDialog( StringHash eventType, VariantMap & eventD
         UI * ui = GetSubsystem<UI>();
         UIElement * uiRoot = ui->GetRoot();
 
-        e = ui->LoadLayout( f );
+        SharedPtr<UIElement> ee = ui->LoadLayout( f );
+        e = ee.Get();
         uiRoot->AddChild( e );
 
         UIElement * okBtn = e->GetChild( "Ok", true );
@@ -925,8 +927,8 @@ void Workshop::HandleSaveDesignOk( StringHash eventType, VariantMap & eventData 
         return;
     e->SetVisible( false );
 
-    Text * tname = e->GetChild( "Name", true )->Cast<Text>();
-    Text * tdesc = e->GetChild( "Desc", true )->Cast<Text>();
+    LineEdit * tname = e->GetChild( "Name", true )->Cast<LineEdit>();
+    LineEdit * tdesc = e->GetChild( "Desc", true )->Cast<LineEdit>();
 
     const String n = tname->GetText();
     const String d = tdesc->GetText();
@@ -962,7 +964,8 @@ void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventD
         UI * ui = GetSubsystem<UI>();
         UIElement * uiRoot = ui->GetRoot();
 
-        e = ui->LoadLayout( f );
+        SharedPtr<UIElement> ee = ui->LoadLayout( f );
+        e = ee.Get();
         uiRoot->AddChild( e );
 
         UIElement * okBtn = e->GetChild( "Ok", true );
@@ -979,6 +982,21 @@ void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventD
     ListView * l = el->Cast<ListView>();
     if ( !l )
         return;
+
+    // Clean up list view.
+    {
+        const Vector<SharedPtr<UIElement> > ch = l->GetChildren();
+        const size_t qty = ch.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            UIElement * e = ch[i];
+            Text * t = e->Cast<Text>();
+            if ( t )
+                l->RemoveChild( e );
+        }
+    }
+
+
     // Fill designs list with content.
     DesignManager * dm = GetSubsystem<DesignManager>();
     std::vector<String> allNames = dm->designNames();
@@ -988,7 +1006,9 @@ void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventD
         Text * t = new Text( context_ );
         const String & name = allNames[i];
         t->SetText( name );
-        t->SetAttribute( "name", name );
+        t->SetMinSize( 128, 24 );
+        t->SetStyleAuto();
+        //t->SetAttribute( "name", name );
         l->AddItem( t );
         SubscribeToEvent( t, E_UIMOUSECLICK, URHO3D_HANDLER( Workshop, HandleDesignSelected ) );
     }
@@ -1009,7 +1029,7 @@ void Workshop::HandleDesignSelected( StringHash eventType, VariantMap & eventDat
     if ( !desc_ )
         return;
 
-    Text * desc = desc_->Cast<Text>();
+    LineEdit * desc = desc_->Cast<LineEdit>();
     if ( !desc )
         return;
 
