@@ -990,6 +990,7 @@ void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventD
         for ( size_t i=0; i<qty; i++ )
         {
             UIElement * e = ch[i];
+            //l->RemoveChild( e );
             Text * t = e->Cast<Text>();
             if ( t )
                 l->RemoveChild( e );
@@ -1064,9 +1065,12 @@ void Workshop::HandleOpenDesignOk( StringHash eventType, VariantMap & eventData 
     const size_t ind = l->GetSelection();
     DesignManager * dm = GetSubsystem<DesignManager>();
     const Design d = dm->loadDesign( ind );
-    // Now need to do something with it.
 
     e->SetVisible( false );
+
+    // Applying design to the scene.
+    clearDesign();
+    setDesign( d );
 }
 
 void Workshop::HandleOpenDesignCancel( StringHash eventType, VariantMap & eventData )
