@@ -753,6 +753,13 @@ void Workshop::rotateStop()
     mode = None;
 }
 
+void Workshop::deleteSelectedBlock()
+{
+    if ( !selectedBlock )
+        return;
+    selectedBlock->Remove();
+}
+
 
 void Workshop::HandlePhysicsPreStep( StringHash t, VariantMap & e )
 {
@@ -819,6 +826,8 @@ void Workshop::HandleKeyDown( StringHash t, VariantMap & e )
             dragStart();
         else if ( key == KEY_R )
             rotateStart();
+        else if ( (key == KEY_X) || (key == KEY_DELETE) )
+            deleteSelectedBlock();
         else if ( key == KEY_ESCAPE )
         {
             if ( mode == Drag )

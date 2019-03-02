@@ -70,6 +70,7 @@ public:
     void rotate();
     void rotateStart();
     void rotateStop();
+    void deleteSelectedBlock();
 
 
 
