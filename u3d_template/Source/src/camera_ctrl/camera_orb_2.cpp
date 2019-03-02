@@ -7,7 +7,8 @@ namespace Osp
 {
 
 CameraOrb2::CameraOrb2( Context * c )
-    : Component( c )
+    : Component( c ),
+      origin( Vector3::ZERO )
 {
     SubscribeToEvents();
 
@@ -102,11 +103,16 @@ void CameraOrb2::updateCamera()
     const Quaternion q = qy * qx;
 
     Vector3 vr( 0.0, 0.0, r );
-    vr = q * vr;
+    vr = q * vr + origin;
 
     Node * n = cam->GetNode();
     n->SetRotation( q );
     n->SetPosition( vr );
+}
+
+void CameraOrb2::setOrigin( const Vector3 & at )
+{
+    origin = at;
 }
 
 

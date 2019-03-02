@@ -25,10 +25,13 @@ public:
     void HandleMouseWheel( StringHash t, VariantMap & e );
 
     void updateCamera();
+
+    void setOrigin( const Vector3 & at );
 private:
     float az, el, r;
     float va, vr;
     bool  activated;
+    Vector3 origin;
 };
 
 }
