@@ -14,6 +14,7 @@
 		<attribute name="Position" value="5 5" />
 		<attribute name="Size" value="290 250" />
 		<attribute name="Pivot" value="0 0" />
+		<attribute name="Select On Click End" value="true" />
 		<element type="ScrollBar" internal="true" style="none">
 			<attribute name="Size" value="290 16" />
 			<attribute name="Min Anchor" value="0 1" />

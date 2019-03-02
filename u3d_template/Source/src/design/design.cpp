@@ -154,14 +154,18 @@ bool Design::load( const String & fname )
         if ( !er )
             return false;
         {
-            std::istringstream in( er->Value() );
+            const char * text = er->GetText();
+            //const char * stri = er->Value();
+            std::istringstream in( text );
             in >> b.r.x_ >> b.r.y_ >> b.r.z_;
         }
         tinyxml2::XMLElement * eq = e_block->FirstChildElement( "q" );
         if ( !eq )
             return false;
         {
-            std::istringstream in( eq->Value() );
+            const char * text = eq->GetText();
+            //const char * stri = eq->Value();
+            std::istringstream in( text );
             in >> b.q.w_ >> b.q.x_ >> b.q.y_ >> b.q.z_;
         }
 
