@@ -13,6 +13,11 @@ struct ConnectionDesc
 {
     /// Where on a part connection point is.
     Vector3    r;
+    /// Alignment vector.
+    Vector3    a;
+    /// Allow connections anywhere or only to another connection
+    /// point.
+    bool       attachAnywhere;
 };
 
 struct PartDesc
