@@ -1025,15 +1025,17 @@ void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventD
 
     // Clean up list view.
     {
-        const Vector<SharedPtr<UIElement> > ch = l->GetChildren();
+        const PODVector<UIElement * > ch = l->GetChildrenWithTag( "DesignItem", true );
         const size_t qty = ch.Size();
         for ( size_t i=0; i<qty; i++ )
         {
             UIElement * e = ch[i];
+            e->Remove();
             //l->RemoveChild( e );
-            Text * t = e->Cast<Text>();
-            if ( t )
-                l->RemoveChild( e );
+            //l->RemoveChild( e );
+            //Text * t = e->Cast<Text>();
+            //if ( t )
+            //    l->RemoveChild( e );
         }
     }
 
@@ -1050,8 +1052,14 @@ void Workshop::HandleOpenDesignDialog( StringHash eventType, VariantMap & eventD
         t->SetMinSize( 128, 24 );
         t->SetStyleAuto();
         //t->SetAttribute( "name", name );
+        t->AddTag( "DesignItem" );
         l->AddItem( t );
-        SubscribeToEvent( t, E_UIMOUSECLICK, URHO3D_HANDLER( Workshop, HandleDesignSelected ) );
+    }
+
+    for ( size_t i=0; i<qty; i++ )
+    {
+        UIElement * e = l->GetItem( i );
+        SubscribeToEvent( e, E_CLICK, URHO3D_HANDLER( Workshop, HandleDesignSelected ) );
     }
 
     e->SetVisible( true );
