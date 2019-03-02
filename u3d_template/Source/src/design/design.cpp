@@ -136,9 +136,9 @@ bool Design::load( const String & fname )
     }
     blocks.reserve( qty );
     std::istringstream in( e_blocks->Value() );
+    tinyxml2::XMLElement * e_block = 0;
     for ( size_t i=0; i<qty; i++ )
     {
-        tinyxml2::XMLElement * e_block = 0;
         if ( i == 0 )
             e_block = e_blocks->FirstChildElement();
         else
@@ -181,10 +181,10 @@ bool Design::load( const String & fname )
         in >> qty;
     }
     joints.reserve( qty );
+    tinyxml2::XMLElement * e_joint = 0;
     for ( size_t i=0; i<qty; i++ )
     {
         Joint joint;
-        tinyxml2::XMLElement * e_joint;
         if ( i==0 )
             e_joint = e_blocks->FirstChildElement();
         else
@@ -192,7 +192,8 @@ bool Design::load( const String & fname )
         if ( !e_joint )
             return false;
         {
-            std::istringstream in( e_joint->Value() );
+            const char * text = e_joint->GetText();
+            std::istringstream in( text );
             in >> joint.blockA;
             in >> joint.blockB;
         }

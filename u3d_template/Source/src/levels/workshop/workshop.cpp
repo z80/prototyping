@@ -420,6 +420,8 @@ void Workshop::setDesign( const Design & d )
         Block * b = blocks[joint.blockB];
         a->setParent( b );
     }
+
+    showPivots( false );
 }
 
 bool Workshop::select()
@@ -650,16 +652,27 @@ void Workshop::createAuxilaryPanel()
 void Workshop::showPivots( bool en )
 {
     Node * rootNode = scene_->GetChild( "Workshop" );
-    PODVector<Component *> comps;
-    rootNode->GetComponents( comps, StringHash( "Block" ), true );
-    const size_t qty = comps.Size();
-    for ( size_t i=0; i<qty; i++ )
+    if ( !rootNode )
+        return;
+    PODVector<Node*> allCh = rootNode->GetChildren( true );
+    const size_t allChQty = allCh.Size();
+    // Just walk over all the blocks and generate connections.
+    // Design validity is up to the design itself.
+    Vector< SharedPtr<Node> > blocks;
+    Vector<SharedPtr<Component> > comps;
+    for ( size_t i=0; i<allChQty; i++ )
     {
-        Component * c = comps[i];
-        Block * b = c->Cast<Block>();
-        if ( !b )
-            continue;
-        b->setPivotsVisible( en );
+        Node * n = allCh[i];
+        comps = n->GetComponents();
+        const size_t compsQty = comps.Size();
+        for ( size_t j=0; j<compsQty; j++ )
+        {
+            Block * b = comps[j]->Cast<Block>();
+            if ( !b )
+                continue;
+            b->setPivotsVisible( en );
+            break;
+        }
     }
 }
 
@@ -777,6 +790,15 @@ void Workshop::HandlePostUpdate( StringHash t, VariantMap & e )
 
 void Workshop::HandleMouseDown( StringHash t, VariantMap & e )
 {
+    // Here need to filter out events over UI.
+    UI * ui = GetSubsystem<UI>();
+    const IntVector2 v = ui->GetCursorPosition();
+    /// Return UI element at global screen coordinates. By default returns only input-enabled elements.
+    UIElement * w = ui->GetElementAt( v, false );
+    if ( w )
+        return;
+
+
     const int b = e[MouseButtonDown::P_BUTTON].GetInt();
     if ( b == SDL_BUTTON_LEFT )
     {
@@ -790,6 +812,15 @@ void Workshop::HandleMouseDown( StringHash t, VariantMap & e )
 
 void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
 {
+    // Here need to filter out events over UI.
+    UI * ui = GetSubsystem<UI>();
+    const IntVector2 v = ui->GetCursorPosition();
+    /// Return UI element at global screen coordinates. By default returns only input-enabled elements.
+    UIElement * w = ui->GetElementAt( v, false );
+    if ( w )
+        return;
+
+
     const int b = e[MouseButtonUp::P_BUTTON].GetInt();
     if ( b == SDL_BUTTON_LEFT )
     {
