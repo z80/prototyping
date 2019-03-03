@@ -43,7 +43,8 @@ private:
     SharedPtr<Node>  rootNode;
     SharedPtr<Block> selectedBlock;
     Mode             mode;
-    int mouseX, mouseY;
+    int mouseX,     mouseY,
+        mousePrevX, mousePrevY;
 
     SharedPtr<TechTree> techTree;
 public:

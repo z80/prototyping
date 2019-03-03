@@ -37,7 +37,9 @@ Workshop::Workshop(Context* context)
     : BaseLevel(context),
       mode( None ),
       mouseX(0),
-      mouseY(0)
+      mouseY(0),
+      mousePrevX(0),
+      mousePrevY(0)
 {
 }
 
@@ -733,6 +735,8 @@ void Workshop::rotate()
     }
 
 
+
+
 }
 
 void Workshop::rotateStart()
@@ -746,7 +750,13 @@ void Workshop::rotateStart()
     hintRotated();
     showPivots( true );
 
-    selectedBlock->detach();
+    //selectedBlock->detach();
+
+    //UI * ui = GetSubsystem<UI>();
+    //const IntVector2 v = ui->GetCursorPosition();
+    //Vector3 v3;
+    //Quaternion q;
+    //q.FromRotationTo( v3, v3 );
 
     mode = Rotate;
 }
@@ -762,7 +772,7 @@ void Workshop::rotateStop()
     hintSelected();
     showPivots( false );
 
-    selectedBlock->tryAttach();
+    //selectedBlock->tryAttach();
     mode = None;
 }
 
@@ -840,6 +850,8 @@ void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
 
 void Workshop::HandleMouseMove( StringHash t, VariantMap & e )
 {
+    mousePrevX = mouseX;
+    mousePrevY = mouseY;
     mouseX = e[MouseMove::P_X].GetInt();
     mouseY = e[MouseMove::P_Y].GetInt();
     if ( mode == Drag )
