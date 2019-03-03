@@ -9,6 +9,8 @@ using namespace Urho3D;
 namespace Osp
 {
 
+class Block;
+
 class PivotMarker: public ItemBase
 {
     URHO3D_OBJECT( PivotMarker, ItemBase );
@@ -19,10 +21,15 @@ public:
 
     void setSize( float sz );
 
+    Block * block();
+    PivotMarker * markerConnectedTo();
+    Block * blockConnectedTo();
+
 public:
     SharedPtr<Node>        modelNode;
     SharedPtr<StaticModel> model;
     SharedPtr<PivotMarker> connectedTo;
+    Vector3 axis;
 };
 
 }

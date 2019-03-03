@@ -734,9 +734,32 @@ void Workshop::rotate()
         return;
     }
 
+    Vector3 a, r0;
+    Quaternion rel_q;
+    const bool relPoseOk = selectedBlock->relativePose( rootNode, r0, rel_q );
+    Vector3    at;
+    mouseIntersection( mouseIntersectionPrev, at );
 
+    Block * parentBlock = selectedBlock->parentBlock();
+    if ( parentBlock )
+    {
+        a = selectedBlock->axisToParent();
+    }
+    else
+    {
+        Vector3 x, y;
+        cameraPlane( x, y, a );
+        a = rel_q.Inverse() * a;
+    }
+    const Vector3 r1 = (mouseIntersectionPrev - r0).Normalized();
+    const Vector3 r2 = (at - r0).Normalized();
+    Quaternion dq;
+    dq.FromRotationTo( r1, r2 );
+    Quaternion q = selectedBlock->relQ();
+    q = q * dq;
+    selectedBlock->setQ( q );
 
-
+    mouseIntersectionPrev = at;
 }
 
 void Workshop::rotateStart()
@@ -747,6 +770,14 @@ void Workshop::rotateStart()
         hintDefault();
         return;
     }
+
+    {
+        Vector3    at;
+        Quaternion q;
+        const bool res = selectedBlock->relativePose( rootNode, at, q );
+        mouseIntersection( mouseIntersectionPrev, at );
+    }
+
     hintRotated();
     showPivots( true );
 

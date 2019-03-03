@@ -45,6 +45,7 @@ private:
     Mode             mode;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
+    Vector3         mouseIntersectionPrev;
 
     SharedPtr<TechTree> techTree;
 public:

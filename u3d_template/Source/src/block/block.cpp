@@ -193,6 +193,27 @@ Block * Block::parentBlock()
     return nullptr;
 }
 
+const Vector3 Block::axisToParent()
+{
+    Block * p = parentBlock();
+    if ( !p )
+        return Vector3::ZERO;
+
+    const size_t qty = pivots.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        PivotMarker * m = pivots[i];
+        Block * markerBlock = m->blockConnectedTo();
+        if ( markerBlock == p )
+        {
+            // Need appropriate ConnectionDesc.
+            //return m->
+        }
+    }
+
+    return Vector3::ZERO;
+}
+
 void Block::placePivots()
 {
     TechTree * tt = GetSubsystem( StringHash( "TechTree" ) )->Cast<TechTree>();
@@ -205,6 +226,7 @@ void Block::placePivots()
         const ConnectionDesc & cd = pd.connections[i];
         SharedPtr<PivotMarker> pm = pivots[i];
         pm->setR( cd.r );
+        pm->axis = cd.a;
     }
 }
 

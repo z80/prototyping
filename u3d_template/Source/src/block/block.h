@@ -31,6 +31,8 @@ public:
 
     Block * parentBlock();
 
+    const Vector3 axisToParent();
+
 public:
     /// Each object implementation
     /// places markers individually.
