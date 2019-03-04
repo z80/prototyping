@@ -49,9 +49,13 @@ void TechTree::debugInit()
 
     ConnectionDesc conn;
     conn.r = Vector3( 0.0, 1.0, 0.0 );
+    conn.a = Vector3( 0.0, 1.0, 0.0 );
+    conn.attachAnywhere = false;
     pd.connections.push_back( conn );
 
     conn.r = Vector3( 0.0, -1.0, 0.0 );
+    conn.a = Vector3( 0.0, -1.0, 0.0 );
+    conn.attachAnywhere = false;
     pd.connections.push_back( conn );
 
     partDescs.push_back( pd );

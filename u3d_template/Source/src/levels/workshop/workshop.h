@@ -45,7 +45,10 @@ private:
     Mode             mode;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
-    Vector3         mouseIntersectionPrev;
+    // For rotations.
+    Quaternion      qOrig;
+    Vector3         rotAxis;
+    Vector3         mouseIntersectionOrig;
 
     SharedPtr<TechTree> techTree;
 public:

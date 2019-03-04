@@ -734,32 +734,21 @@ void Workshop::rotate()
         return;
     }
 
-    Vector3 a, r0;
+    Vector3    r0;
     Quaternion rel_q;
-    const bool relPoseOk = selectedBlock->relativePose( rootNode, r0, rel_q );
     Vector3    at;
-    mouseIntersection( mouseIntersectionPrev, at );
+    const bool relPoseOk = selectedBlock->relativePose( rootNode, r0, rel_q );
+    mouseIntersection( at, r0 );
 
-    Block * parentBlock = selectedBlock->parentBlock();
-    if ( parentBlock )
-    {
-        a = selectedBlock->axisToParent();
-    }
-    else
-    {
-        Vector3 x, y;
-        cameraPlane( x, y, a );
-        a = rel_q.Inverse() * a;
-    }
-    const Vector3 r1 = (mouseIntersectionPrev - r0).Normalized();
+    const Vector3 r1 = (mouseIntersectionOrig - r0).Normalized();
     const Vector3 r2 = (at - r0).Normalized();
+    const float angle = r1.Angle( r2 );
     Quaternion dq;
-    dq.FromRotationTo( r1, r2 );
-    Quaternion q = selectedBlock->relQ();
-    q = q * dq;
+    dq.FromAngleAxis( angle, rotAxis );
+    Quaternion q = dq * qOrig;
+    const float l = q.LengthSquared();
+    q.Normalize();
     selectedBlock->setQ( q );
-
-    mouseIntersectionPrev = at;
 }
 
 void Workshop::rotateStart()
@@ -771,23 +760,28 @@ void Workshop::rotateStart()
         return;
     }
 
+    Block * parentBlock = selectedBlock->parentBlock();
+    if ( parentBlock )
     {
-        Vector3    at;
-        Quaternion q;
-        const bool res = selectedBlock->relativePose( rootNode, at, q );
-        mouseIntersection( mouseIntersectionPrev, at );
+        rotAxis = selectedBlock->axisToParent();
     }
+    else
+    {
+        Vector3 x, y;
+        cameraPlane( x, y, rotAxis );
+        Vector3    at;
+        Quaternion rel_q;
+        const bool res = selectedBlock->relativePose( rootNode, at, qOrig );
+        rotAxis = rel_q.Inverse() * rotAxis;
+    }
+
+    selectedBlock->detach();
+    Vector3    at;
+    const bool res = selectedBlock->relativePose( rootNode, at, qOrig );
+    mouseIntersection( mouseIntersectionOrig, at );
 
     hintRotated();
     showPivots( true );
-
-    //selectedBlock->detach();
-
-    //UI * ui = GetSubsystem<UI>();
-    //const IntVector2 v = ui->GetCursorPosition();
-    //Vector3 v3;
-    //Quaternion q;
-    //q.FromRotationTo( v3, v3 );
 
     mode = Rotate;
 }
@@ -803,7 +797,7 @@ void Workshop::rotateStop()
     hintSelected();
     showPivots( false );
 
-    //selectedBlock->tryAttach();
+    selectedBlock->tryAttach();
     mode = None;
 }
 

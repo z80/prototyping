@@ -206,8 +206,8 @@ const Vector3 Block::axisToParent()
         Block * markerBlock = m->blockConnectedTo();
         if ( markerBlock == p )
         {
-            // Need appropriate ConnectionDesc.
-            //return m->
+            // Need appropriate axis.
+            return m->axis;
         }
     }
 
