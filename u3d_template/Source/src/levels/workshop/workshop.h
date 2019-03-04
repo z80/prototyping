@@ -47,6 +47,7 @@ private:
         mousePrevX, mousePrevY;
     // For rotations.
     Quaternion      qOrig;
+    bool            rotateAttached;
     Vector3         rotAxis;
     Vector3         mouseIntersectionOrig;
 

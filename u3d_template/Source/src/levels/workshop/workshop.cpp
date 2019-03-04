@@ -745,7 +745,7 @@ void Workshop::rotate()
     const float angle = r1.Angle( r2 );
     Quaternion dq;
     dq.FromAngleAxis( angle, rotAxis );
-    Quaternion q = dq * qOrig;
+    Quaternion q = rotateAttached ? (qOrig * dq) : (dq * qOrig);
     const float l = q.LengthSquared();
     q.Normalize();
     selectedBlock->setQ( q );
@@ -764,6 +764,7 @@ void Workshop::rotateStart()
     if ( parentBlock )
     {
         rotAxis = selectedBlock->axisToParent();
+        rotateAttached = true;
     }
     else
     {
@@ -773,6 +774,7 @@ void Workshop::rotateStart()
         Quaternion rel_q;
         const bool res = selectedBlock->relativePose( rootNode, at, qOrig );
         rotAxis = rel_q.Inverse() * rotAxis;
+        rotateAttached = false;
     }
 
     selectedBlock->detach();
