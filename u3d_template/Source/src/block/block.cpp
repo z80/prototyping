@@ -136,7 +136,7 @@ Block * Block::tryAttach()
     if ( !relPoseOk )
         return nullptr;
     this->setParent( parentBlock, true );
-    alignOrientation( localMarker->axis, parentMarker->axis );
+    alignOrientation( localMarker->connectionDesc.a, parentMarker->connectionDesc.a );
 
     // Compute position.
     const Vector3 parentR = parentMarker->relR();
@@ -172,7 +172,7 @@ Block * Block::tryAttachToSurface()
     for ( size_t pivotInd=0; pivotInd<localMakersQty; pivotInd++ )
     {
         localMarker = pivots[pivotInd];
-        axis = localMarker->axis;
+        axis = localMarker->connectionDesc.a;
         Vector3    rel_r;
         Quaternion rel_q;
         const bool res = localMarker->relativePose( s, rel_r, rel_q );
@@ -290,7 +290,7 @@ const Vector3 Block::axisToParent()
         if ( markerBlock == p )
         {
             // Need appropriate axis.
-            return m->axis;
+            return m->connectionDesc.a;
         }
     }
 
@@ -309,7 +309,7 @@ void Block::placePivots()
         const ConnectionDesc & cd = pd.connections[i];
         SharedPtr<PivotMarker> pm = pivots[i];
         pm->setR( cd.r );
-        pm->axis = cd.a;
+        pm->connectionDesc = cd;
     }
 }
 

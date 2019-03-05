@@ -12,7 +12,7 @@ namespace Osp
 
 class Block: public ItemBase
 {
-    URHO3D_OBJECT( Block, ItemBase );
+    URHO3D_OBJECT( Block, ItemBase )
 public:
     Block( Context * c, const String & name );
     virtual ~Block();
