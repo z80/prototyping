@@ -73,7 +73,7 @@ Block * Block::tryAttach()
     SharedPtr<PivotMarker> p = pivots[0];
     if ( !p )
         return nullptr;
-    const float R = p->GetNode()->GetScale().x_ * 2.0f;
+    const float R = p->GetNode()->GetScale().x_;
 
     const size_t blocksQty      = blocks.size();
     float      minDist = -1.0f;
