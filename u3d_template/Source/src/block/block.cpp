@@ -172,6 +172,9 @@ Block * Block::tryAttachToSurface()
     for ( size_t pivotInd=0; pivotInd<localMakersQty; pivotInd++ )
     {
         localMarker = pivots[pivotInd];
+        if ( !localMarker->connectionDesc.attachAnywhere )
+            continue;
+
         axis = localMarker->connectionDesc.a;
         Vector3    rel_r;
         Quaternion rel_q;
