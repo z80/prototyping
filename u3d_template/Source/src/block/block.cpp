@@ -136,6 +136,7 @@ Block * Block::tryAttach()
     if ( !relPoseOk )
         return nullptr;
     this->setParent( parentBlock, true );
+    alignOrientation( localMarker->axis, parentMarker->axis );
 
     // Compute position.
     const Vector3 parentR = parentMarker->relR();
@@ -143,13 +144,95 @@ Block * Block::tryAttach()
     localR = q * localR;
     localR = parentR - localR;
     this->setR( localR );
-    this->setQ( q );
+    //this->setQ( q );
 
     // And set mutual pivot refs.
     parentMarker->connectedTo = SharedPtr<PivotMarker>( localMarker );
     localMarker->connectedTo  = SharedPtr<PivotMarker>( parentMarker );
 
+
     return parentBlock;
+}
+
+Block * Block::tryAttachToSurface()
+{
+    const size_t localMakersQty = pivots.size();
+    if ( localMakersQty == 0 )
+        return nullptr;
+    // Check if it has at least one pivot. Ad get radius from there.
+    SharedPtr<PivotMarker> p = pivots[0];
+    const float R = p->modelNode->GetScale().x_;
+
+    Scene * s = GetScene();
+
+    Block * block = 0;
+    Vector3 position, normal;
+    Vector3 axis;
+    PivotMarker * localMarker = 0;
+    for ( size_t pivotInd=0; pivotInd<localMakersQty; pivotInd++ )
+    {
+        localMarker = pivots[pivotInd];
+        axis = localMarker->axis;
+        Vector3    rel_r;
+        Quaternion rel_q;
+        const bool res = localMarker->relativePose( s, rel_r, rel_q );
+        const Vector3 origin    = rel_r;
+        const Vector3 direction = rel_q * axis;
+        const Ray ray( origin, direction );
+
+        PODVector<RayQueryResult> results;
+        const float maxDistance = R;
+        RayOctreeQuery query( results, ray, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY );
+        s->GetComponent<Octree>()->RaycastSingle( query );
+        const size_t qty = results.Size();
+        for ( size_t drawableInd=0; drawableInd<qty; drawableInd++ )
+        {
+            const RayQueryResult & r = results[drawableInd];
+            Node * n = r.node_;
+
+            const Vector<SharedPtr<Component> > & comps = n->GetComponents();
+            const size_t compsQty = comps.Size();
+            for ( size_t compInd=0; compInd<compsQty; compInd++ )
+            {
+                Component * c = comps[compInd];
+                Block * b = c->Cast<Block>();
+                if ( b )
+                {
+                    block = b;
+                    position = r.position_;
+                    normal   = r.normal_;
+                    break;
+                }
+            }
+            if ( block )
+               break;
+        }
+
+        if ( block )
+            break;
+    }
+
+    if ( !block )
+        return nullptr;
+
+
+    Vector3    rel_r;
+    Quaternion rel_q;
+    const bool res = block->relativePose( s, rel_r, rel_q );
+    position = rel_q.Inverse() * (position - rel_r);
+    normal   = rel_q.Inverse() * normal;
+
+    setParent( block );
+    alignOrientation( axis, normal );
+
+    Vector3       localR  = localMarker->relR();
+    rel_q = relQ();
+    localR = rel_q * localR;
+    localR = position - localR;
+    this->setR( localR );
+
+
+    return nullptr;
 }
 
 bool    Block::detach()
@@ -255,6 +338,17 @@ void Block::createPivots( size_t qty )
         SharedPtr<PivotMarker> pm( c );
         pivots.push_back( pm );
     }
+}
+
+void Block::alignOrientation( const Vector3 & ownA, const Vector3 & parentA )
+{
+    const Quaternion q = relQ();
+    Vector3 a = -q*ownA;
+    Quaternion adjQ;
+    adjQ.FromRotationTo( a, parentA );
+    adjQ = q * adjQ;
+    adjQ.Normalize();
+    setQ( adjQ );
 }
 
 
