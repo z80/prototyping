@@ -807,7 +807,7 @@ void Workshop::deleteSelectedBlock()
 {
     if ( !selectedBlock )
         return;
-    selectedBlock->Remove();
+    selectedBlock->GetNode()->Remove();
 }
 
 

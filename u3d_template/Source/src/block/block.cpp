@@ -175,10 +175,11 @@ void Block::createPivots( size_t qty )
 void Block::alignOrientation( const Vector3 & ownA, const Vector3 & parentA )
 {
     const Quaternion q = relQ();
-    Vector3 a = -q*ownA;
+    Vector3 a = q*ownA;
+    a = -a;
     Quaternion adjQ;
     adjQ.FromRotationTo( a, parentA );
-    adjQ = q * adjQ;
+    adjQ = adjQ * q;
     adjQ.Normalize();
     setQ( adjQ );
 }
@@ -265,7 +266,8 @@ Block * Block::tryAttachToConnectionPoint()
         return nullptr;
     this->setParent( parentBlock, true );
     alignOrientation( localMarker->connectionDesc.a, parentMarker->connectionDesc.a );
-
+    // After aligning orientation update quaternion.
+    q = relQ();
     // Compute position.
     const Vector3 parentR = parentMarker->relR();
     Vector3       localR  = localMarker->relR();
