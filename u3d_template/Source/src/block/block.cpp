@@ -56,7 +56,135 @@ void Block::setPivotSize( float sz )
 static Node * getRoot( Node * n );
 static void dfsBlocks( std::stack< Node * > & stack, std::vector< Block * > & nodes );
 
+
 Block * Block::tryAttach()
+{
+    Block * b = tryAttachToConnectionPoint();
+    if ( b )
+        return b;
+
+    b = tryAttachToSurface();
+    return b;
+}
+
+bool    Block::detach()
+{
+    Node * root = getRoot( GetNode() );
+    if ( !root )
+        return false;
+
+    const size_t markersQty = pivots.size();
+    for ( size_t i=0; i<markersQty; i++ )
+    {
+        PivotMarker * m = pivots[i];
+        PivotMarker * p = m->connectedTo;
+        if ( p )
+            p->connectedTo = SharedPtr< PivotMarker >( nullptr );
+        m->connectedTo = SharedPtr< PivotMarker >( nullptr );
+    }
+
+    setParent( root );
+
+    return true;
+}
+
+Block * Block::parentBlock()
+{
+    Node * n = GetNode()->GetParent();
+    if ( !n )
+        return 0;
+
+    static Vector< SharedPtr<Component> > comps;
+    comps = n->GetComponents();
+    const size_t qty = comps.Size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Block * b = comps[i]->Cast<Block>();
+        if ( !b )
+            continue;
+        return b;
+    }
+
+    return nullptr;
+}
+
+const Vector3 Block::axisToParent()
+{
+    Block * p = parentBlock();
+    if ( !p )
+        return Vector3::ZERO;
+
+    const size_t qty = pivots.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        PivotMarker * m = pivots[i];
+        Block * markerBlock = m->blockConnectedTo();
+        if ( markerBlock == p )
+        {
+            // Need appropriate axis.
+            return m->connectionDesc.a;
+        }
+    }
+
+    return Vector3::ZERO;
+}
+
+void Block::placePivots()
+{
+    TechTree * tt = GetSubsystem( StringHash( "TechTree" ) )->Cast<TechTree>();
+    const PartDesc & pd = tt->partDesc( name );
+    const size_t qty = pd.connections.size();
+
+    createPivots( qty );
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const ConnectionDesc & cd = pd.connections[i];
+        SharedPtr<PivotMarker> pm = pivots[i];
+        pm->setR( cd.r );
+        pm->connectionDesc = cd;
+    }
+}
+
+void Block::clearPivots()
+{
+    const size_t qty = pivots.size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        SharedPtr<PivotMarker> pm = pivots[i];
+        Node * n = pm->GetNode();
+        n->Remove();
+    }
+    pivots.clear();
+}
+
+void Block::createPivots( size_t qty )
+{
+    Node * node = GetNode();
+    pivots.clear();
+    pivots.reserve( qty );
+    for ( size_t i=0; i<qty; i++ )
+    {
+        Node * n = node->CreateChild( NameGenerator::Next( "Pivot" ) );
+        PivotMarker * c = n->CreateComponent( StringHash( "PivotMarker" ) )->Cast<PivotMarker>();
+        c->createContent();
+        SharedPtr<PivotMarker> pm( c );
+        pivots.push_back( pm );
+    }
+}
+
+void Block::alignOrientation( const Vector3 & ownA, const Vector3 & parentA )
+{
+    const Quaternion q = relQ();
+    Vector3 a = -q*ownA;
+    Quaternion adjQ;
+    adjQ.FromRotationTo( a, parentA );
+    adjQ = q * adjQ;
+    adjQ.Normalize();
+    setQ( adjQ );
+}
+
+
+Block * Block::tryAttachToConnectionPoint()
 {
     // First search for a Node not containing Blocks.
     // That is supposed to be a parent. E.i. Assembly scene.
@@ -236,122 +364,6 @@ Block * Block::tryAttachToSurface()
 
 
     return nullptr;
-}
-
-bool    Block::detach()
-{
-    Node * root = getRoot( GetNode() );
-    if ( !root )
-        return false;
-
-    const size_t markersQty = pivots.size();
-    for ( size_t i=0; i<markersQty; i++ )
-    {
-        PivotMarker * m = pivots[i];
-        PivotMarker * p = m->connectedTo;
-        if ( p )
-            p->connectedTo = SharedPtr< PivotMarker >( nullptr );
-        m->connectedTo = SharedPtr< PivotMarker >( nullptr );
-    }
-
-    setParent( root );
-
-    return true;
-}
-
-Block * Block::parentBlock()
-{
-    Node * n = GetNode()->GetParent();
-    if ( !n )
-        return 0;
-
-    static Vector< SharedPtr<Component> > comps;
-    comps = n->GetComponents();
-    const size_t qty = comps.Size();
-    for ( size_t i=0; i<qty; i++ )
-    {
-        Block * b = comps[i]->Cast<Block>();
-        if ( !b )
-            continue;
-        return b;
-    }
-
-    return nullptr;
-}
-
-const Vector3 Block::axisToParent()
-{
-    Block * p = parentBlock();
-    if ( !p )
-        return Vector3::ZERO;
-
-    const size_t qty = pivots.size();
-    for ( size_t i=0; i<qty; i++ )
-    {
-        PivotMarker * m = pivots[i];
-        Block * markerBlock = m->blockConnectedTo();
-        if ( markerBlock == p )
-        {
-            // Need appropriate axis.
-            return m->connectionDesc.a;
-        }
-    }
-
-    return Vector3::ZERO;
-}
-
-void Block::placePivots()
-{
-    TechTree * tt = GetSubsystem( StringHash( "TechTree" ) )->Cast<TechTree>();
-    const PartDesc & pd = tt->partDesc( name );
-    const size_t qty = pd.connections.size();
-
-    createPivots( qty );
-    for ( size_t i=0; i<qty; i++ )
-    {
-        const ConnectionDesc & cd = pd.connections[i];
-        SharedPtr<PivotMarker> pm = pivots[i];
-        pm->setR( cd.r );
-        pm->connectionDesc = cd;
-    }
-}
-
-void Block::clearPivots()
-{
-    const size_t qty = pivots.size();
-    for ( size_t i=0; i<qty; i++ )
-    {
-        SharedPtr<PivotMarker> pm = pivots[i];
-        Node * n = pm->GetNode();
-        n->Remove();
-    }
-    pivots.clear();
-}
-
-void Block::createPivots( size_t qty )
-{
-    Node * node = GetNode();
-    pivots.clear();
-    pivots.reserve( qty );
-    for ( size_t i=0; i<qty; i++ )
-    {
-        Node * n = node->CreateChild( NameGenerator::Next( "Pivot" ) );
-        PivotMarker * c = n->CreateComponent( StringHash( "PivotMarker" ) )->Cast<PivotMarker>();
-        c->createContent();
-        SharedPtr<PivotMarker> pm( c );
-        pivots.push_back( pm );
-    }
-}
-
-void Block::alignOrientation( const Vector3 & ownA, const Vector3 & parentA )
-{
-    const Quaternion q = relQ();
-    Vector3 a = -q*ownA;
-    Quaternion adjQ;
-    adjQ.FromRotationTo( a, parentA );
-    adjQ = q * adjQ;
-    adjQ.Normalize();
-    setQ( adjQ );
 }
 
 

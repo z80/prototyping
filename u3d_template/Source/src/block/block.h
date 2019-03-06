@@ -27,7 +27,6 @@ public:
     /// object. Returns the object with the closest
     /// pivot point.
     Block * tryAttach();
-    Block * tryAttachToSurface();
     bool    detach();
 
     Block * parentBlock();
@@ -42,6 +41,11 @@ public:
     void createPivots( size_t qty );
     /// Align orientation after attaching the object to it's parent.
     void alignOrientation( const Vector3 & ownA, const Vector3 & parentA );
+    /// Attaching functionality.
+    Block * tryAttachToConnectionPoint();
+    Block * tryAttachToSurface();
+
+
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
 };
