@@ -60,6 +60,7 @@ include_directories( ${URHO3D_INCLUDE_DIRS}
                      "./3dparty/lemon-1.3.1"
                      "./Source"
                      "./Source/UI"
+                     "./Source/src/dynamics"
                      "./Source/src/utils"
                      "./Source/src/block"
                      "./Source/src/blocks"
