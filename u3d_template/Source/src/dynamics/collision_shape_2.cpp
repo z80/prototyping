@@ -55,7 +55,7 @@
 #include <Bullet/BulletCollision/CollisionShapes/btStaticPlaneShape.h>
 #include <Bullet/BulletCollision/Gimpact/btGImpactShape.h>
 #include <Bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
-#include <../ThirdParty/StanHull/hull.h>
+#include <StanHull/hull.h>
 
 namespace Urho3D
 {
@@ -424,7 +424,7 @@ CollisionGeometryData2* CreateCollisionGeometryData2(ShapeType2 shapeType, Custo
     }
 }
 
-btCollisionShape* CreateCollisionGeometryData2Shape(ShapeType2 shapeType, CollisionGeometryData2* geometry, const Vector3& scale)
+btCollisionShape* CreateCollisionGeometryDataShape2(ShapeType2 shapeType, CollisionGeometryData2* geometry, const Vector3& scale)
 {
     switch (shapeType)
     {
@@ -524,18 +524,18 @@ void CollisionShape2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
         // Special case code for convex hull: bypass Bullet's own rendering to draw triangles correctly, not just edges
         if (shapeType_ == SHAPE_CONVEXHULL)
         {
-            auto*ConvexData2 = static_cast<ConvexData2*>(GetGeometryData());
+            auto* convexData = static_cast<ConvexData2*>(GetGeometryData());
             auto* body = GetComponent<RigidBody2>();
             Color color = bodyActive ? Color::WHITE : Color::GREEN;
             Matrix3x4 shapeTransform(worldTransform * position_, worldTransform.Rotation() * rotation_, worldTransform.Scale());
 
-            if (ConvexData2)
+            if ( convexData)
             {
-                for (unsigned i = 0; i < ConvexData2->indexCount_; i += 3)
+                for (unsigned i = 0; i <  convexData->indexCount_; i += 3)
                 {
-                    Vector3 a = shapeTransform * ConvexData2->vertexData_[ConvexData2->indexData_[i + 0]];
-                    Vector3 b = shapeTransform * ConvexData2->vertexData_[ConvexData2->indexData_[i + 1]];
-                    Vector3 c = shapeTransform * ConvexData2->vertexData_[ConvexData2->indexData_[i + 2]];
+                    Vector3 a = shapeTransform *  convexData->vertexData_[ convexData->indexData_[i + 0]];
+                    Vector3 b = shapeTransform *  convexData->vertexData_[ convexData->indexData_[i + 1]];
+                    Vector3 c = shapeTransform *  convexData->vertexData_[ convexData->indexData_[i + 2]];
                     debug->AddLine(a, b, color, depthTest);
                     debug->AddLine(b, c, color, depthTest);
                     debug->AddLine(a, c, color, depthTest);
@@ -1104,9 +1104,9 @@ void CollisionShape2::UpdateCachedGeometryShape(CollisionGeometryDataCache2 & ca
         auto* custom = dynamic_cast<CustomGeometry*>(scene->GetComponent(customGeometryID_));
         if (custom)
         {
-            geometry_ = CreateCollisionGeometryData(shapeType_, custom);
+            geometry_ = CreateCollisionGeometryData2(shapeType_, custom);
             assert(geometry_);
-            shape_ = CreateCollisionGeometryDatahape(shapeType_, geometry_.Get(), cachedWorldScale_ * size_);
+            shape_ = CreateCollisionGeometryDataShape2(shapeType_, geometry_.Get(), cachedWorldScale_ * size_);
             assert(shape_);
         }
         else
@@ -1122,14 +1122,14 @@ void CollisionShape2::UpdateCachedGeometryShape(CollisionGeometryDataCache2 & ca
             geometry_ = cachedGeometry->second_;
         else
         {
-            geometry_ = CreateCollisionGeometryData(shapeType_, model_, lodLevel_);
+            geometry_ = CreateCollisionGeometryData2(shapeType_, model_, lodLevel_);
             assert(geometry_);
             // Check if model has dynamic buffers, do not cache in that case
             if (!HasDynamicBuffers(model_, lodLevel_))
                 cache[id] = geometry_;
         }
 
-        shape_ = CreateCollisionGeometryDataShape(shapeType_, geometry_.Get(), cachedWorldScale_ * size_);
+        shape_ = CreateCollisionGeometryDataShape2(shapeType_, geometry_.Get(), cachedWorldScale_ * size_);
         assert(shape_);
         // Watch for live reloads of the collision model to reload the geometry if necessary
         SubscribeToEvent(model_, E_RELOADFINISHED, URHO3D_HANDLER(CollisionShape2, HandleModelReloadFinished));

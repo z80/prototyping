@@ -179,7 +179,7 @@ void RigidBody2::setWorldTransform(const btTransform& worldTrans)
             ApplyWorldTransform(newWorldPosition, newWorldRotation);
         else
         {
-            DelayedWorldTransform delayed;
+            DelayedWorldTransform2 delayed;
             delayed.rigidBody_ = this;
             delayed.parentRigidBody_ = parentRigidBody;
             delayed.worldPosition_ = newWorldPosition;

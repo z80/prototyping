@@ -54,7 +54,7 @@ namespace Urho3D
 {
 
 const char* PHYSICS_CATEGORY_2 = "Physics2";
-extern const char* SUBSYSTEM_CATEGORY_2;
+extern const char* SUBSYSTEM_CATEGORY;
 
 static const int MAX_SOLVER_ITERATIONS = 256;
 static const Vector3 DEFAULT_GRAVITY = Vector3(0.0f, -9.81f, 0.0f);
@@ -66,12 +66,12 @@ static bool CompareRaycastResults(const PhysicsRaycastResult2& lhs, const Physic
     return lhs.distance_ < rhs.distance_;
 }
 
-void InternalPreTickCallback(btDynamicsWorld* world, btScalar timeStep)
+void InternalPreTickCallback2(btDynamicsWorld* world, btScalar timeStep)
 {
     static_cast<PhysicsWorld2*>(world->getWorldUserInfo())->PreStep(timeStep);
 }
 
-void InternalTickCallback(btDynamicsWorld* world, btScalar timeStep)
+void InternalTickCallback2(btDynamicsWorld* world, btScalar timeStep)
 {
     static_cast<PhysicsWorld2*>(world->getWorldUserInfo())->PostStep(timeStep);
 }
@@ -167,8 +167,8 @@ PhysicsWorld2::PhysicsWorld2(Context* context) :
     world_->getDispatchInfo().m_useContinuous = true;
     world_->getSolverInfo().m_splitImpulse = false; // Disable by default for performance
     world_->setDebugDrawer(this);
-    world_->setInternalTickCallback(InternalPreTickCallback, static_cast<void*>(this), true);
-    world_->setInternalTickCallback(InternalTickCallback, static_cast<void*>(this), false);
+    world_->setInternalTickCallback(InternalPreTickCallback2, static_cast<void*>(this), true);
+    world_->setInternalTickCallback(InternalTickCallback2, static_cast<void*>(this), false);
     world_->setSynchronizeAllMotionStates(true);
 }
 
@@ -230,7 +230,7 @@ void PhysicsWorld2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
 {
     if (debug)
     {
-        URHO3D_PROFILE(PhysicsDrawDebug);
+        URHO3D_PROFILE(PhysicsDrawDebug2);
 
         debugRenderer_ = debug;
         debugDepthTest_ = depthTest;
@@ -255,7 +255,7 @@ void PhysicsWorld2::draw3dText(const btVector3& location, const char* textString
 
 void PhysicsWorld2::Update(float timeStep)
 {
-    URHO3D_PROFILE(UpdatePhysics);
+    URHO3D_PROFILE(UpdatePhysics2);
 
     float internalTimeStep = 1.0f / fps_;
     int maxSubSteps = (int)(timeStep * fps_) + 1;
@@ -288,10 +288,10 @@ void PhysicsWorld2::Update(float timeStep)
     // Apply delayed (parented) world transforms now
     while (!delayedWorldTransforms_.Empty())
     {
-        for (HashMap<RigidBody2*, DelayedWorldTransform>::Iterator i = delayedWorldTransforms_.Begin();
+        for (HashMap<RigidBody2*, DelayedWorldTransform2>::Iterator i = delayedWorldTransforms_.Begin();
              i != delayedWorldTransforms_.End();)
         {
-            const DelayedWorldTransform& transform = i->second_;
+            const DelayedWorldTransform2 & transform = i->second_;
 
             // If parent's transform has already been assigned, can proceed
             if (!delayedWorldTransforms_.Contains(transform.parentRigidBody_))
@@ -371,7 +371,7 @@ void PhysicsWorld2::SetMaxNetworkAngularVelocity(float velocity)
 
 void PhysicsWorld2::Raycast(PODVector<PhysicsRaycastResult2>& result, const Ray& ray, float maxDistance, unsigned collisionMask)
 {
-    URHO3D_PROFILE(PhysicsRaycast);
+    URHO3D_PROFILE(PhysicsRaycast2);
 
     if (maxDistance >= M_INFINITY)
         URHO3D_LOGWARNING("Infinite maxDistance in physics raycast is not supported");
@@ -385,7 +385,7 @@ void PhysicsWorld2::Raycast(PODVector<PhysicsRaycastResult2>& result, const Ray&
 
     for (int i = 0; i < rayCallback.m_collisionObjects.size(); ++i)
     {
-        PhysicsRaycastResult newResult;
+        PhysicsRaycastResult2 newResult;
         newResult.body_ = static_cast<RigidBody2*>(rayCallback.m_collisionObjects[i]->getUserPointer());
         newResult.position_ = ToVector3(rayCallback.m_hitPointWorld[i]);
         newResult.normal_ = ToVector3(rayCallback.m_hitNormalWorld[i]);
@@ -397,9 +397,9 @@ void PhysicsWorld2::Raycast(PODVector<PhysicsRaycastResult2>& result, const Ray&
     Sort(result.Begin(), result.End(), CompareRaycastResults);
 }
 
-void PhysicsWorld2::RaycastSingle(PhysicsRaycastResult& result, const Ray& ray, float maxDistance, unsigned collisionMask)
+void PhysicsWorld2::RaycastSingle(PhysicsRaycastResult2& result, const Ray& ray, float maxDistance, unsigned collisionMask)
 {
-    URHO3D_PROFILE(PhysicsRaycastSingle);
+    URHO3D_PROFILE(PhysicsRaycastSingle2);
 
     if (maxDistance >= M_INFINITY)
         URHO3D_LOGWARNING("Infinite maxDistance in physics raycast is not supported");
@@ -429,9 +429,9 @@ void PhysicsWorld2::RaycastSingle(PhysicsRaycastResult& result, const Ray& ray, 
     }
 }
 
-void PhysicsWorld2::RaycastSingleSegmented(PhysicsRaycastResult& result, const Ray& ray, float maxDistance, float segmentDistance, unsigned collisionMask, float overlapDistance)
+void PhysicsWorld2::RaycastSingleSegmented(PhysicsRaycastResult2& result, const Ray& ray, float maxDistance, float segmentDistance, unsigned collisionMask, float overlapDistance)
 {
-    URHO3D_PROFILE(PhysicsRaycastSingleSegmented);
+    URHO3D_PROFILE(PhysicsRaycastSingleSegmented2);
 
     assert(overlapDistance < segmentDistance);
 
@@ -481,9 +481,9 @@ void PhysicsWorld2::RaycastSingleSegmented(PhysicsRaycastResult& result, const R
     result.body_ = nullptr;
 }
 
-void PhysicsWorld2::SphereCast(PhysicsRaycastResult& result, const Ray& ray, float radius, float maxDistance, unsigned collisionMask)
+void PhysicsWorld2::SphereCast(PhysicsRaycastResult2& result, const Ray& ray, float radius, float maxDistance, unsigned collisionMask)
 {
-    URHO3D_PROFILE(PhysicsSphereCast);
+    URHO3D_PROFILE(PhysicsSphereCast2);
 
     if (maxDistance >= M_INFINITY)
         URHO3D_LOGWARNING("Infinite maxDistance in physics sphere cast is not supported");
@@ -684,7 +684,7 @@ void PhysicsWorld2::GetCollidingBodies(PODVector<RigidBody2*>& result, const Rig
 
     result.Clear();
 
-    for (HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair>::Iterator i = currentCollisions_.Begin();
+    for (HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair2>::Iterator i = currentCollisions_.Begin();
          i != currentCollisions_.End(); ++i)
     {
         if (i->first_.first_ == body)
@@ -800,12 +800,12 @@ void PhysicsWorld2::HandleSceneSubsystemUpdate(StringHash eventType, VariantMap&
 void PhysicsWorld2::PreStep(float timeStep)
 {
     // Send pre-step event
-    using namespace PhysicsPreStep;
+    using namespace PhysicsPreStep2;
 
     VariantMap& eventData = GetEventDataMap();
     eventData[P_WORLD] = this;
     eventData[P_TIMESTEP] = timeStep;
-    SendEvent(E_PHYSICSPRESTEP, eventData);
+    SendEvent(E_PHYSICSPRESTEP_2, eventData);
 
     // Start profiling block for the actual simulation step
 #ifdef URHO3D_PROFILING
@@ -826,12 +826,12 @@ void PhysicsWorld2::PostStep(float timeStep)
     SendCollisionEvents();
 
     // Send post-step event
-    using namespace PhysicsPostStep;
+    using namespace PhysicsPostStep2;
 
     VariantMap& eventData = GetEventDataMap();
     eventData[P_WORLD] = this;
     eventData[P_TIMESTEP] = timeStep;
-    SendEvent(E_PHYSICSPOSTSTEP, eventData);
+    SendEvent(E_PHYSICSPOSTSTEP_2, eventData);
 }
 
 void PhysicsWorld2::SendCollisionEvents()
@@ -942,7 +942,7 @@ void PhysicsWorld2::SendCollisionEvents()
                 }
             }
 
-            physicsCollisionData_[PhysicsCollision::P_CONTACTS] = contacts_.GetBuffer();
+            physicsCollisionData_[PhysicsCollision2::P_CONTACTS] = contacts_.GetBuffer();
 
             // Send separate collision start event if collision is new
             if (newCollision)
@@ -1022,7 +1022,7 @@ void PhysicsWorld2::SendCollisionEvents()
     {
         physicsCollisionData_[PhysicsCollisionEnd2::P_WORLD] = this;
 
-        for (HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair>::Iterator
+        for (HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair2>::Iterator
                  i = previousCollisions_.Begin(); i != previousCollisions_.End(); ++i)
         {
             if (!currentCollisions_.Contains(i->first_))
@@ -1054,7 +1054,7 @@ void PhysicsWorld2::SendCollisionEvents()
                 physicsCollisionData_[PhysicsCollisionEnd2::P_NODEB] = nodeB;
                 physicsCollisionData_[PhysicsCollisionEnd2::P_TRIGGER] = trigger;
 
-                SendEvent(E_PHYSICSCOLLISIONEND, physicsCollisionData_);
+                SendEvent(E_PHYSICSCOLLISIONEND_2, physicsCollisionData_);
                 // Skip rest of processing if either of the nodes or bodies is removed as a response to the event
                 if (!nodeWeakA || !nodeWeakB || !i->first_.first_ || !i->first_.second_)
                     continue;

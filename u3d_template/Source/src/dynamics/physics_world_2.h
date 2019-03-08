@@ -131,8 +131,8 @@ class URHO3D_API PhysicsWorld2 : public Component, public btIDebugDraw
 {
     URHO3D_OBJECT(PhysicsWorld2, Component);
 
-    friend void InternalPreTickCallback(btDynamicsWorld* world, btScalar timeStep);
-    friend void InternalTickCallback(btDynamicsWorld* world, btScalar timeStep);
+    friend void InternalPreTickCallback2(btDynamicsWorld* world, btScalar timeStep);
+    friend void InternalTickCallback2(btDynamicsWorld* world, btScalar timeStep);
 
 public:
     /// Construct.
@@ -197,7 +197,7 @@ public:
     void SphereCast
         (PhysicsRaycastResult2& result, const Ray& ray, float radius, float maxDistance, unsigned collisionMask = M_MAX_UNSIGNED);
     /// Perform a physics world swept convex test using a user-supplied collision shape and return the first hit.
-    void ConvexCast(PhysicsRaycastResult2& result, CollisionShape* shape, const Vector3& startPos, const Quaternion& startRot,
+    void ConvexCast(PhysicsRaycastResult2& result, CollisionShape2* shape, const Vector3& startPos, const Quaternion& startRot,
         const Vector3& endPos, const Quaternion& endRot, unsigned collisionMask = M_MAX_UNSIGNED);
     /// Perform a physics world swept convex test using a user-supplied Bullet collision shape and return the first hit.
     void ConvexCast(PhysicsRaycastResult2& result, btCollisionShape* shape, const Vector3& startPos, const Quaternion& startRot,
@@ -268,13 +268,13 @@ public:
     void CleanupGeometryCache();
 
     /// Return trimesh collision geometry cache.
-    CollisionGeometryDataCache& GetTriMeshCache() { return triMeshCache_; }
+    CollisionGeometryDataCache2& GetTriMeshCache() { return triMeshCache_; }
 
     /// Return convex collision geometry cache.
-    CollisionGeometryDataCache& GetConvexCache() { return convexCache_; }
+    CollisionGeometryDataCache2& GetConvexCache() { return convexCache_; }
 
     /// Return GImpact trimesh collision geometry cache.
-    CollisionGeometryDataCache& GetGImpactTrimeshCache() { return gimpactTrimeshCache_; }
+    CollisionGeometryDataCache2& GetGImpactTrimeshCache() { return gimpactTrimeshCache_; }
 
     /// Set node dirtying to be disregarded.
     void SetApplyingTransforms(bool enable) { applyingTransforms_ = enable; }
@@ -321,9 +321,9 @@ private:
     /// Constraints in the world.
     PODVector<Constraint2*> constraints_;
     /// Collision pairs on this frame.
-    HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair> currentCollisions_;
+    HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair2> currentCollisions_;
     /// Collision pairs on the previous frame. Used to check if a collision is "new." Manifolds are not guaranteed to exist anymore.
-    HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair> previousCollisions_;
+    HashMap<Pair<WeakPtr<RigidBody2>, WeakPtr<RigidBody2> >, ManifoldPair2> previousCollisions_;
     /// Delayed (parented) world transform assignments.
     HashMap<RigidBody2*, DelayedWorldTransform2> delayedWorldTransforms_;
     /// Cache for trimesh geometry data by model and LOD level.

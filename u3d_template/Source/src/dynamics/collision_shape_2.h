@@ -44,7 +44,7 @@ class Model;
 class PhysicsWorld2;
 class RigidBody2;
 class Terrain;
-class TriangleMeshInterface;
+class TriangleMeshInterface2;
 
 /// Collision shape type.
 enum ShapeType2
@@ -79,7 +79,7 @@ struct TriangleMeshData2 : public CollisionGeometryData2
     explicit TriangleMeshData2(CustomGeometry* custom);
 
     /// Bullet triangle mesh interface.
-    UniquePtr<TriangleMeshInterface> meshInterface_;
+    UniquePtr<TriangleMeshInterface2> meshInterface_;
     /// Bullet triangle mesh collision shape.
     UniquePtr<btBvhTriangleMeshShape> shape_;
     /// Bullet triangle info map.
@@ -95,7 +95,7 @@ struct GImpactMeshData2 : public CollisionGeometryData2
     explicit GImpactMeshData2(CustomGeometry* custom);
 
     /// Bullet triangle mesh interface.
-    UniquePtr<TriangleMeshInterface> meshInterface_;
+    UniquePtr<TriangleMeshInterface2> meshInterface_;
 };
 
 /// Convex hull geometry data.
