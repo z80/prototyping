@@ -742,11 +742,20 @@ void Workshop::rotate()
 
     const Vector3 r1 = (mouseIntersectionOrig - r0).Normalized();
     const Vector3 r2 = (at - r0).Normalized();
-    Quaternion dq;
-    dq.FromRotationTo( r1, r2 );
-    Quaternion q = rotateAttached ? (qOrig * dq) : (dq * qOrig);
-    const float l = q.LengthSquared();
-    q.Normalize();
+    Quaternion dq, q;
+    if ( rotateAttached )
+    {
+        const float angle = r1.Angle( r2 );
+        dq.FromAngleAxis( angle, rotAxis );
+        q = qOrig * dq;
+    }
+    else
+    {
+        dq.FromRotationTo( r1, r2 );
+        q = dq * qOrig;
+        const float l = q.LengthSquared();
+        q.Normalize();
+    }
     selectedBlock->setQ( q );
 }
 
