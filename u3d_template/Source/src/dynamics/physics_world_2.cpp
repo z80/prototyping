@@ -1082,6 +1082,9 @@ void PhysicsWorld2::SendCollisionEvents()
 
 void RegisterPhysicsLibrary2(Context* context)
 {
+    // My modification.
+    context->RegisterFactory<PhysicsWorld2>();
+
     CollisionShape2::RegisterObject(context);
     RigidBody2::RegisterObject(context);
     Constraint2::RegisterObject(context);
