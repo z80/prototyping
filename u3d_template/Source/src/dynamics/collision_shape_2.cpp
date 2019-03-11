@@ -915,6 +915,27 @@ void CollisionShape2::OnNodeSet(Node* node)
     }
 }
 
+void CollisionShape2::RemoveFromWorld()
+{
+    // Cleanup
+    ReleaseShape();
+
+    if (physicsWorld_)
+        physicsWorld_->RemoveCollisionShape(this);
+
+    physicsWorld_.Reset();
+}
+
+void CollisionShape2::InsertIntoWorld()
+{
+
+}
+
+void CollisionShape2::updateInWorld()
+{
+
+}
+
 void CollisionShape2::OnSceneSet(Scene* scene)
 {
     if (scene)

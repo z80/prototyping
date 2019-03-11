@@ -362,6 +362,9 @@ private:
     DebugRenderer* debugRenderer_{};
     /// Debug draw flags.
     int debugMode_{};
+
+public:
+    static PhysicsWorld2 * getWorld( Node * node );
 };
 
 /// Register Physics library objects.

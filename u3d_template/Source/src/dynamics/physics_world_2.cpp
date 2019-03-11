@@ -1080,6 +1080,16 @@ void PhysicsWorld2::SendCollisionEvents()
     previousCollisions_ = currentCollisions_;
 }
 
+PhysicsWorld2 * PhysicsWorld2::getWorld( Node * node )
+{
+    if ( !node )
+        return nullptr;
+
+    Node * pn = node->GetParent();
+    PhysicsWorld2 * w2 = pn->GetComponent<PhysicsWorld2>();
+    return w2;
+}
+
 void RegisterPhysicsLibrary2(Context* context)
 {
     // My modification.
