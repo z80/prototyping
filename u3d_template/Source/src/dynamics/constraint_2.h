@@ -203,6 +203,13 @@ private:
     bool framesDirty_;
     /// Constraint creation retry flag if attributes initially set without scene.
     bool retryCreation_;
+
+private:
+    void subscribeToParentChanges();
+    void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
+    void OnNodeAdded( StringHash eventType, VariantMap & eventData );
+    void removeFromWorld();
+    void addToWorld();
 };
 
 }

@@ -31,6 +31,7 @@
 #include "physics_world_2.h"
 #include "rigid_body_2.h"
 #include "../Scene/Scene.h"
+#include "../Scene/SceneEvents.h"
 
 #include <Bullet/BulletDynamics/ConstraintSolver/btConeTwistConstraint.h>
 #include <Bullet/BulletDynamics/ConstraintSolver/btHingeConstraint.h>
@@ -419,11 +420,15 @@ void Constraint2::OnNodeSet(Node* node)
     {
         node->AddListener(this);
         cachedWorldScale_ = node->GetWorldScale();
+
+        // Add parent change listeners and add to world.
+        subscribeToParentChanges();
     }
 }
 
 void Constraint2::OnSceneSet(Scene* scene)
 {
+    /*
     if (scene)
     {
         if (scene == node_)
@@ -446,6 +451,7 @@ void Constraint2::OnSceneSet(Scene* scene)
         // Recreate when moved to a scene again
         retryCreation_ = true;
     }
+    */
 }
 
 void Constraint2::OnMarkedDirty(Node* node)
@@ -590,6 +596,70 @@ void Constraint2::AdjustOtherBodyPosition()
     }
 
     MarkFramesDirty();
+}
+
+void Constraint2::subscribeToParentChanges()
+{
+    SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( Constraint2, OnNodeRemoved ) );
+    SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( Constraint2, OnNodeAdded ) );
+
+    addToWorld();
+}
+
+void Constraint2::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeRemoved::P_NODE];
+    Node * self = n.GetCustomPtr<Node>();
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeRemoved::P_PARENT] ;
+    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    removeFromWorld();
+}
+
+void Constraint2::OnNodeAdded( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeAdded::P_NODE];
+    Node * self = n.GetCustomPtr<Node>();
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeAdded::P_PARENT] ;
+    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    addToWorld();
+}
+
+void Constraint2::removeFromWorld()
+{
+    ReleaseConstraint();
+
+    if (physicsWorld_)
+        physicsWorld_->RemoveConstraint(this);
+
+    // Recreate when moved to a scene again
+    retryCreation_ = true;
+}
+
+void Constraint2::addToWorld()
+{
+    Node * node = GetNode();
+    PhysicsWorld2 * newWorld = PhysicsWorld2::getWorld( node );
+    if ( !newWorld )
+        return;
+
+    physicsWorld_ = WeakPtr<PhysicsWorld2>( newWorld );
+    physicsWorld_->AddConstraint(this);
+
+    // Create constraint now if necessary (attributes modified before adding to scene)
+    if (retryCreation_)
+        CreateConstraint();
 }
 
 }
