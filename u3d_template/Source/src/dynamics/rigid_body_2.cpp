@@ -922,7 +922,12 @@ void RigidBody2::OnMarkedDirty(Node* node)
 void RigidBody2::OnNodeSet(Node* node)
 {
     if (node)
+    {
         node->AddListener(this);
+
+        // Listen to parent changes and add to world.
+        subscribeToParentChanges();
+    }
 }
 
 void RigidBody2::OnSceneSet(Scene* scene)
