@@ -307,6 +307,13 @@ private:
     bool enableMassUpdate_;
     /// Internal flag whether has simulated at least once.
     mutable bool hasSimulated_;
+
+private:
+    void subscribeToParentChanges();
+    void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
+    void OnNodeAdded( StringHash eventType, VariantMap & eventData );
+    void removeFromWorld();
+    void addToWorld();
 };
 
 }

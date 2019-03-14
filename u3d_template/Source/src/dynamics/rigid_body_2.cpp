@@ -927,6 +927,7 @@ void RigidBody2::OnNodeSet(Node* node)
 
 void RigidBody2::OnSceneSet(Scene* scene)
 {
+    /*
     if (scene)
     {
         if (scene == node_)
@@ -944,6 +945,7 @@ void RigidBody2::OnSceneSet(Scene* scene)
         if (physicsWorld_)
             physicsWorld_->RemoveRigidBody(this);
     }
+    */
 }
 
 void RigidBody2::AddBodyToWorld()
@@ -1044,6 +1046,65 @@ void RigidBody2::HandleTargetRotation(StringHash eventType, VariantMap& eventDat
     // Copy the smoothing target rotation to the rigid body
     if (!physicsWorld_ || !physicsWorld_->IsApplyingTransforms())
         SetRotation(static_cast<SmoothedTransform*>(GetEventSender())->GetTargetWorldRotation());
+}
+
+void RigidBody2::subscribeToParentChanges()
+{
+    SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( RigidBody2, OnNodeRemoved ) );
+    SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( RigidBody2, OnNodeAdded ) );
+
+    addToWorld();
+}
+
+void RigidBody2::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeRemoved::P_NODE];
+    Node * self = n.GetCustomPtr<Node>();
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeRemoved::P_PARENT] ;
+    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    removeFromWorld();
+}
+
+void RigidBody2::OnNodeAdded( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeAdded::P_NODE];
+    Node * self = n.GetCustomPtr<Node>();
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeAdded::P_PARENT] ;
+    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    addToWorld();
+}
+
+void RigidBody2::removeFromWorld()
+{
+    ReleaseBody();
+
+    if (physicsWorld_)
+        physicsWorld_->RemoveRigidBody(this);
+}
+
+void RigidBody2::addToWorld()
+{
+    Node * node = GetNode();
+    PhysicsWorld2 * newWorld = PhysicsWorld2::getWorld( node );
+    if ( !newWorld )
+        return;
+
+    physicsWorld_ = WeakPtr<PhysicsWorld2>( newWorld );
+    physicsWorld_->AddRigidBody(this);
+
+    AddBodyToWorld();
 }
 
 }
