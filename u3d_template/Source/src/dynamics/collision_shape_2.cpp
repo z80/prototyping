@@ -913,11 +913,15 @@ void CollisionShape2::OnNodeSet(Node* node)
 
         // Terrain collision shape depends on the terrain component's geometry updates. Subscribe to them
         SubscribeToEvent(node, E_TERRAINCREATED, URHO3D_HANDLER(CollisionShape2, HandleTerrainCreated));
+
+        // Listen to parent changes.
+        subscribeToParentChanges();
     }
 }
 
 void CollisionShape2::OnSceneSet(Scene* scene)
 {
+    /*
     if (scene)
     {
         if (scene == node_)
@@ -943,6 +947,7 @@ void CollisionShape2::OnSceneSet(Scene* scene)
         // Recreate when moved to a scene again
         retryCreation_ = true;
     }
+    */
 }
 
 void CollisionShape2::OnMarkedDirty(Node* node)
@@ -1225,6 +1230,8 @@ void CollisionShape2::subscribeToParentChanges()
 {
     SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( CollisionShape2, OnNodeRemoved ) );
     SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( CollisionShape2, OnNodeAdded ) );
+
+    addToWorld();
 }
 
 void CollisionShape2::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
@@ -1259,12 +1266,31 @@ void CollisionShape2::OnNodeAdded( StringHash eventType, VariantMap & eventData 
 
 void CollisionShape2::removeFromWorld()
 {
+    ReleaseShape();
 
+    if (physicsWorld_)
+        physicsWorld_->RemoveCollisionShape(this);
+
+    // Recreate when moved to a scene again
+    retryCreation_ = true;
 }
 
 void CollisionShape2::addToWorld()
 {
+    Node * node = GetNode();
+    PhysicsWorld2 * newWorld = PhysicsWorld2::getWorld( node );
+    if ( !newWorld )
+        return;
 
+    physicsWorld_ = WeakPtr<PhysicsWorld2>( newWorld );
+    physicsWorld_->AddCollisionShape(this);
+
+    // Create shape now if necessary (attributes modified before adding to scene)
+    if (retryCreation_)
+    {
+        UpdateShape();
+        NotifyRigidBody();
+    }
 }
 
 
