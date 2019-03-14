@@ -40,6 +40,7 @@
 #include "../Resource/ResourceCache.h"
 #include "../Resource/ResourceEvents.h"
 #include "../Scene/Scene.h"
+#include "../Scene/SceneEvents.h"
 
 #include <Bullet/BulletCollision/CollisionDispatch/btInternalEdgeUtility.h>
 #include <Bullet/BulletCollision/CollisionShapes/btBoxShape.h>
@@ -1216,5 +1217,55 @@ void CollisionShape2::HandleModelReloadFinished(StringHash eventType, VariantMap
         NotifyRigidBody();
     }
 }
+
+
+
+
+void CollisionShape2::subscribeToParentChanges()
+{
+    SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( CollisionShape2, OnNodeRemoved ) );
+    SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( CollisionShape2, OnNodeAdded ) );
+}
+
+void CollisionShape2::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeRemoved::P_NODE];
+    Node * self = n.GetCustomPtr<Node>();
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeRemoved::P_PARENT] ;
+    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    removeFromWorld();
+}
+
+void CollisionShape2::OnNodeAdded( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeAdded::P_NODE];
+    Node * self = n.GetCustomPtr<Node>();
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeAdded::P_PARENT] ;
+    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    addToWorld();
+}
+
+void CollisionShape2::removeFromWorld()
+{
+
+}
+
+void CollisionShape2::addToWorld()
+{
+
+}
+
 
 }
