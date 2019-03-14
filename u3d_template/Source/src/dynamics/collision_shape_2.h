@@ -252,8 +252,6 @@ protected:
     /// Handle node being assigned.
     void OnNodeSet(Node* node) override;
 
-    void RemoveFromWorldWorld();
-    void InsertIntoWorld();
     /// Handle scene being assigned.
     void OnSceneSet(Scene* scene) override;
     /// Handle node transform being dirtied.
