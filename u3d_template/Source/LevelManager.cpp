@@ -7,10 +7,12 @@
 #include "Levels/Credits.h"
 #include "MyEvents.h"
 
+#include "workshop.h"
+#include "one_planet.h"
+
 #include "camera_orb_2.h"
 #include "tech_tree.h"
 #include "design_manager.h"
-#include "workshop.h"
 #include "box.h"
 #include "physics_world_2.h"
 
@@ -41,6 +43,7 @@ void LevelManager::RegisterAllFactories()
 
     // Here should be my levels.
     context_->RegisterFactory<Osp::Workshop>();
+    context_->RegisterFactory<Osp::OnePlanet>();
 
     // My modified dynamics wrapper.
     RegisterPhysicsLibrary2( context_ );
