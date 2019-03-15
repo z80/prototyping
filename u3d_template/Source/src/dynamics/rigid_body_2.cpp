@@ -844,14 +844,14 @@ void RigidBody2::UpdateGravity()
 
 void RigidBody2::SetNetAngularVelocityAttr(const PODVector<unsigned char>& value)
 {
-    float maxVelocity = physicsWorld_ ? physicsWorld_->GetMaxNetworkAngularVelocity() : DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY;
+    float maxVelocity = physicsWorld_ ? physicsWorld_->GetMaxNetworkAngularVelocity() : DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY_2;
     MemoryBuffer buf(value);
     SetAngularVelocity(buf.ReadPackedVector3(maxVelocity));
 }
 
 const PODVector<unsigned char>& RigidBody2::GetNetAngularVelocityAttr() const
 {
-    float maxVelocity = physicsWorld_ ? physicsWorld_->GetMaxNetworkAngularVelocity() : DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY;
+    float maxVelocity = physicsWorld_ ? physicsWorld_->GetMaxNetworkAngularVelocity() : DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY_2;
     attrBuffer_.Clear();
     attrBuffer_.WritePackedVector3(GetAngularVelocity(), maxVelocity);
     return attrBuffer_.GetBuffer();

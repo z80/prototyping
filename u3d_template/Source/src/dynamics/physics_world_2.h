@@ -120,8 +120,8 @@ struct PhysicsWorldConfig2
     btCollisionConfiguration * collisionConfig_;
 };
 
-static const int DEFAULT_FPS = 60;
-static const float DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY = 100.0f;
+static const int DEFAULT_FPS_2 = 60;
+static const float DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY_2 = 100.0f;
 
 /// Cache of collision geometry data.
 using CollisionGeometryDataCache2 = HashMap<Pair<Model*, unsigned>, SharedPtr<CollisionGeometryData2> >;
@@ -339,13 +339,13 @@ private:
     /// Preallocated buffer for physics collision contact data.
     VectorBuffer contacts_;
     /// Simulation substeps per second.
-    unsigned fps_{DEFAULT_FPS};
+    unsigned fps_{DEFAULT_FPS_2};
     /// Maximum number of simulation substeps per frame. 0 (default) unlimited, or negative values for adaptive timestep.
     int maxSubSteps_{};
     /// Time accumulator for non-interpolated mode.
     float timeAcc_{};
     /// Maximum angular velocity for network replication.
-    float maxNetworkAngularVelocity_{DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY};
+    float maxNetworkAngularVelocity_{DEFAULT_MAX_NETWORK_ANGULAR_VELOCITY_2};
     /// Automatic simulation update enabled flag.
     bool updateEnabled_{true};
     /// Interpolation flag.

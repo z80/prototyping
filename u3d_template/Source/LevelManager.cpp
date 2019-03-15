@@ -12,6 +12,7 @@
 #include "design_manager.h"
 #include "workshop.h"
 #include "box.h"
+#include "physics_world_2.h"
 
 LevelManager::LevelManager(Context* context) :
 Object(context)
@@ -38,11 +39,17 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Levels::Loading>();
     context_->RegisterFactory<Levels::Credits>();
 
+    // Here should be my levels.
+    context_->RegisterFactory<Osp::Workshop>();
+
+    // My modified dynamics wrapper.
+    RegisterPhysicsLibrary2( context_ );
+    // My helper objects.
     context_->RegisterFactory<Osp::CameraOrb2>();
     context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
     context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
     context_->RegisterFactory<Osp::PivotMarker>();
-    context_->RegisterFactory<Osp::Workshop>();
+
     // Here should be all the blocks available after this line.
     context_->RegisterFactory<Osp::Box>();
 }
