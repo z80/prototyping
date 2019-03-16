@@ -106,6 +106,8 @@ public:
     void HandleSaveDesignDialog( StringHash eventType, VariantMap & eventData );
     void HandleSaveDesignOk( StringHash eventType, VariantMap & eventData );
     void HandleSaveDesignCancel( StringHash eventType, VariantMap & eventData );
+    /// Execute "try".
+    void HandleTry( StringHash eventType, VariantMap & eventData );
 
     void HandleOpenDesignDialog( StringHash eventType, VariantMap & eventData );
     void HandleDesignSelected( StringHash eventType, VariantMap & eventData );

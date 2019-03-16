@@ -649,6 +649,11 @@ void Workshop::createAuxilaryPanel()
     if ( load )
         SubscribeToEvent( load, E_RELEASED,
                            URHO3D_HANDLER( Workshop, HandleOpenDesignDialog ) );
+
+    UIElement * tryBtn = panel->GetChild( "Try", true );
+    if ( tryBtn )
+        SubscribeToEvent( tryBtn, E_RELEASED,
+                          URHO3D_HANDLER( Workshop, HandleTry ) );
 }
 
 void Workshop::showPivots( bool en )
@@ -1033,6 +1038,13 @@ void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventD
     UIElement * e = root->GetChild( "DesignSave", true );
     if ( e )
         e->SetVisible( false );
+}
+
+void Workshop::HandleTry( StringHash eventType, VariantMap & eventData )
+{
+    VariantMap& eData = GetEventDataMap();
+    eData["Name"] = "OnePlanet";
+    SendEvent(MyEvents::E_SET_LEVEL, eData);
 }
 
 
