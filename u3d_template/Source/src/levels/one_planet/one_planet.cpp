@@ -102,7 +102,26 @@ void OnePlanet::CreateScene()
 
 void OnePlanet::CreateUI()
 {
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    XMLFile * f = cache->GetResource<XMLFile>( "UI/ToWorkshopPanel.xml" );
+    if ( !f )
+        return;
 
+    UI * ui = GetSubsystem<UI>();
+    UIElement * uiRoot = ui->GetRoot();
+
+    SharedPtr<UIElement> panel = ui->LoadLayout( f );
+    uiRoot->AddChild( panel );
+
+    panel->SetPosition( 0, 0 );
+    panel->SetAlignment( HA_RIGHT, VA_TOP );
+    //panel->SetMinSize( 96, 128 );
+    //panel->SetVisible( true );
+
+    UIElement * tryBtn = panel->GetChild( "ToWorkshop", true );
+    if ( tryBtn )
+        SubscribeToEvent( tryBtn, E_RELEASED,
+                          URHO3D_HANDLER( OnePlanet, HandleToWorkshop ) );
 }
 
 
@@ -257,6 +276,13 @@ void OnePlanet::HandleKeyDown( StringHash t, VariantMap & e )
 void OnePlanet::HandleKeyUp( StringHash t, VariantMap & e )
 {
     // Do nothing.
+}
+
+void OnePlanet::HandleToWorkshop( StringHash t, VariantMap & e )
+{
+    VariantMap& eData = GetEventDataMap();
+    eData["Name"] = "Workshop";
+    SendEvent(MyEvents::E_SET_LEVEL, eData);
 }
 
 

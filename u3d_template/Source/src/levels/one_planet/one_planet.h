@@ -49,7 +49,8 @@ public:
     void HandleKeyDown( StringHash t, VariantMap & e );
     void HandleKeyUp( StringHash t, VariantMap & e );
 
-
+    // Change to workshop.
+    void HandleToWorkshop( StringHash t, VariantMap & e );
 };
 
 }
