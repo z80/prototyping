@@ -159,7 +159,7 @@ void OnePlanet::createObjects()
     PhysicsWorld2 * w = root->CreateComponent<PhysicsWorld2>();
     physicsWorld = SharedPtr<PhysicsWorld2>( w );
 
-    Node = * surf = root->CreateChild( "Surface" );
+    Node * surf = root->CreateChild( "Surface" );
     RigidBody2 * body = surf->CreateComponent<RigidBody2>();
     CollisionShape2 * s = surf->CreateComponent<CollisionShape2>();
 
