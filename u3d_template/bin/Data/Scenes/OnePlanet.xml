@@ -5,7 +5,7 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="0" />
-	<attribute name="Next Replicated Node ID" value="3" />
+	<attribute name="Next Replicated Node ID" value="4" />
 	<attribute name="Next Replicated Component ID" value="7" />
 	<attribute name="Next Local Node ID" value="16777218" />
 	<attribute name="Next Local Component ID" value="16777229" />
@@ -21,26 +21,47 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="Zone" id="5">
-			<attribute name="Bounding Box Min" value="-1000 -1000 -1000" />
-			<attribute name="Bounding Box Max" value="1000 1000 1000" />
-			<attribute name="Ambient Color" value="0.7 0.7 0.7 1" />
+		<component type="StaticModel" id="3">
+			<attribute name="Model" value="Model;Models/Surface.mdl" />
+			<attribute name="Material" value="Material;Materials/Stone.xml" />
 		</component>
-		<component type="Skybox" id="6" />
+		<component type="Zone" id="4">
+			<attribute name="Is Enabled" value="false" />
+			<attribute name="Bounding Box Min" value="-10000 -10000 -10000" />
+			<attribute name="Bounding Box Max" value="10000 10000 10000" />
+		</component>
+		<component type="Zone" id="5">
+			<attribute name="Bounding Box Min" value="-10000 -10000 -10000" />
+			<attribute name="Bounding Box Max" value="10000 10000 10000" />
+			<attribute name="Ambient Color" value="0.5 0.5 0.5 1" />
+		</component>
 		<node id="16777217">
 			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="OnePlanet" />
+			<attribute name="Name" value="" />
 			<attribute name="Tags" />
-			<attribute name="Position" value="0 0 0" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="100 100 100" />
+			<attribute name="Position" value="-1.13129 1.08414 0" />
+			<attribute name="Rotation" value="0.911654 0.410958 0 0" />
+			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<component type="StaticModel" id="16777228">
-				<attribute name="Model" value="Model;Data/Models/Sphere.mdl" />
-				<attribute name="Material" value="Material;Data/Materials/Stone.xml" />
-				<attribute name="Is Occluder" value="true" />
-				<attribute name="Cast Shadows" value="true" />
+			<component type="Light" id="16777228">
+				<attribute name="Light Type" value="Directional" />
+				<attribute name="Specular Intensity" value="0.3" />
+				<attribute name="Brightness Multiplier" value="0.7" />
 			</component>
 		</node>
+	</node>
+	<node id="3">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="RenderCamera" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="0 0 0" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="Camera" id="6">
+			<attribute name="Near Clip" value="0.01" />
+			<attribute name="FOV" value="90" />
+			<attribute name="Auto Aspect Ratio" value="false" />
+		</component>
 	</node>
 </scene>
