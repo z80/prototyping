@@ -14,6 +14,7 @@
 #include "design_manager.h"
 #include "block.h"
 #include "camera_orb_2.h"
+#include "physics_events_2.h"
 
 #include <iostream>
 
@@ -254,8 +255,8 @@ void Workshop::createModeUi()
 
 void Workshop::SubscribeToEvents()
 {
-    SubscribeToEvent(E_PHYSICSPRESTEP, URHO3D_HANDLER( Workshop, HandlePhysicsPreStep) );
-    SubscribeToEvent(E_POSTUPDATE,     URHO3D_HANDLER( Workshop, HandlePostUpdate) );
+    SubscribeToEvent(E_PHYSICSPRESTEP_2, URHO3D_HANDLER( Workshop, HandlePhysicsPreStep) );
+    SubscribeToEvent(E_POSTUPDATE,       URHO3D_HANDLER( Workshop, HandlePostUpdate) );
 
     SubscribeToEvent( E_MOUSEBUTTONDOWN, URHO3D_HANDLER( Workshop, HandleMouseDown ) );
     SubscribeToEvent( E_MOUSEBUTTONUP,   URHO3D_HANDLER( Workshop, HandleMouseUp ) );

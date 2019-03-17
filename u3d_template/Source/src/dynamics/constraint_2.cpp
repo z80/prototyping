@@ -55,7 +55,7 @@ extern const char* PHYSICS_CATEGORY_2;
 
 Constraint2::Constraint2(Context* context) :
     Component(context),
-    constraintType_(CONSTRAINT_POINT),
+    constraintType_(CONSTRAINT_POINT_2),
     position_(Vector3::ZERO),
     rotation_(Quaternion::IDENTITY),
     otherPosition_(Vector3::ZERO),
@@ -85,7 +85,7 @@ void Constraint2::RegisterObject(Context* context)
     context->RegisterFactory<Constraint2>(PHYSICS_CATEGORY_2);
 
     URHO3D_ACCESSOR_ATTRIBUTE("Is Enabled", IsEnabled, SetEnabled, bool, true, AM_DEFAULT);
-    URHO3D_ENUM_ATTRIBUTE_EX("Constraint Type", constraintType_, MarkConstraintDirty, typeNames2, CONSTRAINT_POINT, AM_DEFAULT);
+    URHO3D_ENUM_ATTRIBUTE_EX("Constraint Type", constraintType_, MarkConstraintDirty, typeNames2, CONSTRAINT_POINT_2, AM_DEFAULT);
     URHO3D_ATTRIBUTE_EX("Position", Vector3, position_, AdjustOtherBodyPosition, Vector3::ZERO, AM_DEFAULT);
     URHO3D_ATTRIBUTE_EX("Rotation", Quaternion, rotation_, MarkFramesDirty, Quaternion::IDENTITY, AM_DEFAULT);
     URHO3D_ATTRIBUTE_EX("Other Body Position", Vector3, otherPosition_, MarkFramesDirty, Vector3::ZERO, AM_DEFAULT);
@@ -199,13 +199,13 @@ void Constraint2::SetAxis(const Vector3& axis)
 {
     switch (constraintType_)
     {
-    case CONSTRAINT_POINT:
-    case CONSTRAINT_HINGE:
+    case CONSTRAINT_POINT_2:
+    case CONSTRAINT_HINGE_2:
         rotation_ = Quaternion(Vector3::FORWARD, axis);
         break;
 
-    case CONSTRAINT_SLIDER:
-    case CONSTRAINT_CONETWIST:
+    case CONSTRAINT_SLIDER_2:
+    case CONSTRAINT_CONETWIST_2:
         rotation_ = Quaternion(Vector3::RIGHT, axis);
         break;
 
@@ -241,13 +241,13 @@ void Constraint2::SetOtherAxis(const Vector3& axis)
 {
     switch (constraintType_)
     {
-    case CONSTRAINT_POINT:
-    case CONSTRAINT_HINGE:
+    case CONSTRAINT_POINT_2:
+    case CONSTRAINT_HINGE_2:
         otherRotation_ = Quaternion(Vector3::FORWARD, axis);
         break;
 
-    case CONSTRAINT_SLIDER:
-    case CONSTRAINT_CONETWIST:
+    case CONSTRAINT_SLIDER_2:
+    case CONSTRAINT_CONETWIST_2:
         otherRotation_ = Quaternion(Vector3::RIGHT, axis);
         break;
 
@@ -489,14 +489,14 @@ void Constraint2::CreateConstraint()
 
     switch (constraintType_)
     {
-    case CONSTRAINT_POINT:
+    case CONSTRAINT_POINT_2:
         {
             constraint_ = new btPoint2PointConstraint(*ownBody, *otherBody, ToBtVector3(ownBodyScaledPosition),
                 ToBtVector3(otherBodyScaledPosition));
         }
         break;
 
-    case CONSTRAINT_HINGE:
+    case CONSTRAINT_HINGE_2:
         {
             btTransform ownFrame(ToBtQuaternion(rotation_), ToBtVector3(ownBodyScaledPosition));
             btTransform otherFrame(ToBtQuaternion(otherRotation_), ToBtVector3(otherBodyScaledPosition));
@@ -504,7 +504,7 @@ void Constraint2::CreateConstraint()
         }
         break;
 
-    case CONSTRAINT_SLIDER:
+    case CONSTRAINT_SLIDER_2:
         {
             btTransform ownFrame(ToBtQuaternion(rotation_), ToBtVector3(ownBodyScaledPosition));
             btTransform otherFrame(ToBtQuaternion(otherRotation_), ToBtVector3(otherBodyScaledPosition));
@@ -512,7 +512,7 @@ void Constraint2::CreateConstraint()
         }
         break;
 
-    case CONSTRAINT_CONETWIST:
+    case CONSTRAINT_CONETWIST_2:
         {
             btTransform ownFrame(ToBtQuaternion(rotation_), ToBtVector3(ownBodyScaledPosition));
             btTransform otherFrame(ToBtQuaternion(otherRotation_), ToBtVector3(otherBodyScaledPosition));

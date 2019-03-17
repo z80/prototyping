@@ -41,9 +41,9 @@ class SmoothedTransform;
 /// Rigid body collision event signaling mode.
 enum CollisionEventMode2
 {
-    COLLISION_NEVER = 0,
-    COLLISION_ACTIVE,
-    COLLISION_ALWAYS
+    COLLISION_NEVER_2 = 0,
+    COLLISION_ACTIVE_2,
+    COLLISION_ALWAYS_2
 };
 
 /// Physics rigid body component.

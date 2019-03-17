@@ -49,16 +49,16 @@ class TriangleMeshInterface2;
 /// Collision shape type.
 enum ShapeType2
 {
-    SHAPE_BOX = 0,
-    SHAPE_SPHERE,
-    SHAPE_STATICPLANE,
-    SHAPE_CYLINDER,
-    SHAPE_CAPSULE,
-    SHAPE_CONE,
-    SHAPE_TRIANGLEMESH,
-    SHAPE_CONVEXHULL,
-    SHAPE_TERRAIN,
-    SHAPE_GIMPACTMESH
+    SHAPE_BOX_2 = 0,
+    SHAPE_SPHERE_2,
+    SHAPE_STATICPLANE_2,
+    SHAPE_CYLINDER_2,
+    SHAPE_CAPSULE_2,
+    SHAPE_CONE_2,
+    SHAPE_TRIANGLEMESH_2,
+    SHAPE_CONVEXHULL_2,
+    SHAPE_TERRAIN_2,
+    SHAPE_GIMPACTMESH_2
 };
 
 /// Base class for collision shape geometry data.

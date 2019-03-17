@@ -15,6 +15,12 @@
 #include "block.h"
 #include "camera_orb_2.h"
 
+#include "physics_world_2.h"
+#include "collision_shape_2.h"
+#include "rigid_body_2.h"
+#include "constraint_2.h"
+#include "physics_events_2.h"
+
 #include <iostream>
 
 using namespace Urho3D;
@@ -98,6 +104,8 @@ void OnePlanet::CreateScene()
 
     CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
+
+    createObjects();
 }
 
 void OnePlanet::CreateUI()
@@ -130,8 +138,11 @@ void OnePlanet::CreateUI()
 
 void OnePlanet::SubscribeToEvents()
 {
-    SubscribeToEvent(E_PHYSICSPRESTEP, URHO3D_HANDLER( OnePlanet, HandlePhysicsPreStep) );
-    SubscribeToEvent(E_POSTUPDATE,     URHO3D_HANDLER( OnePlanet, HandlePostUpdate) );
+    SubscribeToEvent( E_UPDATE,           URHO3D_HANDLER( OnePlanet, HandleUpdate ) );
+    SubscribeToEvent( E_POSTRENDERUPDATE, URHO3D_HANDLER( OnePlanet, HandlePostRenderUpdate ) );
+
+    SubscribeToEvent(E_PHYSICSPRESTEP_2, URHO3D_HANDLER( OnePlanet, HandlePhysicsPreStep) );
+    SubscribeToEvent(E_POSTUPDATE,       URHO3D_HANDLER( OnePlanet, HandlePostUpdate) );
 
     SubscribeToEvent( E_MOUSEBUTTONDOWN, URHO3D_HANDLER( OnePlanet, HandleMouseDown ) );
     SubscribeToEvent( E_MOUSEBUTTONUP,   URHO3D_HANDLER( OnePlanet, HandleMouseUp ) );
@@ -140,6 +151,22 @@ void OnePlanet::SubscribeToEvents()
     SubscribeToEvent( E_KEYUP,           URHO3D_HANDLER( OnePlanet, HandleKeyUp ) );
 }
 
+void OnePlanet::createObjects()
+{
+    Node * root = scene_->GetChild( "Root", true );
+    if ( !root )
+        return;
+    PhysicsWorld2 * w = root->CreateComponent<PhysicsWorld2>();
+    physicsWorld = SharedPtr<PhysicsWorld2>( w );
+
+    Node = * surf = root->CreateChild( "Surface" );
+    RigidBody2 * body = surf->CreateComponent<RigidBody2>();
+    CollisionShape2 * s = surf->CreateComponent<CollisionShape2>();
+
+    ResourceCache * c = GetSubsystem<ResourceCache>();
+    Model * model = c->GetResource<Model>( "Models/Surface.mdl" );
+    s->SetTriangleMesh( model );
+}
 
 
 bool OnePlanet::select()
@@ -199,11 +226,26 @@ bool OnePlanet::select()
 
 
 
+void OnePlanet::HandleUpdate( StringHash t, VariantMap & e )
+{
+    if ( physicsWorld )
+    {
+        const Variant & v = e[Update::P_TIMESTEP];
+        const float dt = v.GetFloat();
+        physicsWorld->Update( dt );
+    }
+}
 
+void OnePlanet::HandlePostRenderUpdate( StringHash t, VariantMap & e )
+{
+    if ( physicsWorld )
+        physicsWorld->DrawDebugGeometry( true );
+}
 
 void OnePlanet::HandlePhysicsPreStep( StringHash t, VariantMap & e )
 {
-
+    const Variant & v = e[Update::P_TIMESTEP];
+    const float dt = v.GetFloat();
 }
 
 void OnePlanet::HandlePostUpdate( StringHash t, VariantMap & e )

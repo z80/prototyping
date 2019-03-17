@@ -867,9 +867,9 @@ void PhysicsWorld2::SendCollisionEvents()
             // Skip collision event signaling if both objects are static, or if collision event mode does not match
             if (bodyA->GetMass() == 0.0f && bodyB->GetMass() == 0.0f)
                 continue;
-            if (bodyA->GetCollisionEventMode() == COLLISION_NEVER || bodyB->GetCollisionEventMode() == COLLISION_NEVER)
+            if (bodyA->GetCollisionEventMode() == COLLISION_NEVER_2 || bodyB->GetCollisionEventMode() == COLLISION_NEVER_2)
                 continue;
-            if (bodyA->GetCollisionEventMode() == COLLISION_ACTIVE && bodyB->GetCollisionEventMode() == COLLISION_ACTIVE &&
+            if (bodyA->GetCollisionEventMode() == COLLISION_ACTIVE_2 && bodyB->GetCollisionEventMode() == COLLISION_ACTIVE_2 &&
                 !bodyA->IsActive() && !bodyB->IsActive())
                 continue;
 
@@ -1037,9 +1037,9 @@ void PhysicsWorld2::SendCollisionEvents()
                 // Skip collision event signaling if both objects are static, or if collision event mode does not match
                 if (bodyA->GetMass() == 0.0f && bodyB->GetMass() == 0.0f)
                     continue;
-                if (bodyA->GetCollisionEventMode() == COLLISION_NEVER || bodyB->GetCollisionEventMode() == COLLISION_NEVER)
+                if (bodyA->GetCollisionEventMode() == COLLISION_NEVER_2 || bodyB->GetCollisionEventMode() == COLLISION_NEVER_2)
                     continue;
-                if (bodyA->GetCollisionEventMode() == COLLISION_ACTIVE && bodyB->GetCollisionEventMode() == COLLISION_ACTIVE &&
+                if (bodyA->GetCollisionEventMode() == COLLISION_ACTIVE_2 && bodyB->GetCollisionEventMode() == COLLISION_ACTIVE_2 &&
                     !bodyA->IsActive() && !bodyB->IsActive())
                     continue;
 

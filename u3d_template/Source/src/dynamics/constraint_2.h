@@ -33,10 +33,10 @@ namespace Urho3D
 /// Supported constraint types.
 enum ConstraintType2
 {
-    CONSTRAINT_POINT = 0,
-    CONSTRAINT_HINGE,
-    CONSTRAINT_SLIDER,
-    CONSTRAINT_CONETWIST
+    CONSTRAINT_POINT_2 = 0,
+    CONSTRAINT_HINGE_2,
+    CONSTRAINT_SLIDER_2,
+    CONSTRAINT_CONETWIST_2
 };
 
 class PhysicsWorld2;

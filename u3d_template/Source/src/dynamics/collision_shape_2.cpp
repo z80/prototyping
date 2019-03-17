@@ -399,11 +399,11 @@ CollisionGeometryData2* CreateCollisionGeometryData2(ShapeType2 shapeType, Model
 {
     switch (shapeType)
     {
-    case SHAPE_TRIANGLEMESH:
+    case SHAPE_TRIANGLEMESH_2:
         return new TriangleMeshData2(model, lodLevel);
-    case SHAPE_CONVEXHULL:
+    case SHAPE_CONVEXHULL_2:
         return new ConvexData2(model, lodLevel);
-    case SHAPE_GIMPACTMESH:
+    case SHAPE_GIMPACTMESH_2:
         return new GImpactMeshData2(model, lodLevel);
     default:
         return nullptr;
@@ -414,11 +414,11 @@ CollisionGeometryData2* CreateCollisionGeometryData2(ShapeType2 shapeType, Custo
 {
     switch (shapeType)
     {
-    case SHAPE_TRIANGLEMESH:
+    case SHAPE_TRIANGLEMESH_2:
         return new TriangleMeshData2(custom);
-    case SHAPE_CONVEXHULL:
+    case SHAPE_CONVEXHULL_2:
         return new ConvexData2(custom);
-    case SHAPE_GIMPACTMESH:
+    case SHAPE_GIMPACTMESH_2:
         return new GImpactMeshData2(custom);
     default:
         return nullptr;
@@ -429,19 +429,19 @@ btCollisionShape* CreateCollisionGeometryDataShape2(ShapeType2 shapeType, Collis
 {
     switch (shapeType)
     {
-    case SHAPE_TRIANGLEMESH:
+    case SHAPE_TRIANGLEMESH_2:
         {
             auto* triMesh = static_cast<TriangleMeshData2*>(geometry);
             return new btScaledBvhTriangleMeshShape(triMesh->shape_.Get(), ToBtVector3(scale));
         }
-    case SHAPE_CONVEXHULL:
+    case SHAPE_CONVEXHULL_2:
         {
             auto* convex = static_cast<ConvexData2*>(geometry);
             auto* shape = new btConvexHullShape((btScalar*)convex->vertexData_.Get(), convex->vertexCount_, sizeof(Vector3));
             shape->setLocalScaling(ToBtVector3(scale));
             return shape;
         }
-    case SHAPE_GIMPACTMESH:
+    case SHAPE_GIMPACTMESH_2:
         {
             auto* gimpactMesh = static_cast<GImpactMeshData2*>(geometry);
             auto* shape = new btGImpactMeshShape(gimpactMesh->meshInterface_.Get());
@@ -456,7 +456,7 @@ btCollisionShape* CreateCollisionGeometryDataShape2(ShapeType2 shapeType, Collis
 
 CollisionShape2::CollisionShape2(Context* context) :
     Component(context),
-    shapeType_(SHAPE_BOX),
+    shapeType_(SHAPE_BOX_2),
     position_(Vector3::ZERO),
     rotation_(Quaternion::IDENTITY),
     size_(Vector3::ONE),
@@ -482,7 +482,7 @@ void CollisionShape2::RegisterObject(Context* context)
     context->RegisterFactory<CollisionShape2>(PHYSICS_CATEGORY_2);
 
     URHO3D_ACCESSOR_ATTRIBUTE("Is Enabled", IsEnabled, SetEnabled, bool, true, AM_DEFAULT);
-    URHO3D_ENUM_ATTRIBUTE_EX("Shape Type", shapeType_, MarkShapeDirty, typeNames, SHAPE_BOX, AM_DEFAULT);
+    URHO3D_ENUM_ATTRIBUTE_EX("Shape Type", shapeType_, MarkShapeDirty, typeNames, SHAPE_BOX_2, AM_DEFAULT);
     URHO3D_ATTRIBUTE_EX("Size", Vector3, size_, MarkShapeDirty, Vector3::ONE, AM_DEFAULT);
     URHO3D_ACCESSOR_ATTRIBUTE("Offset Position", GetPosition, SetPosition, Vector3, Vector3::ZERO, AM_DEFAULT);
     URHO3D_ACCESSOR_ATTRIBUTE("Offset Rotation", GetRotation, SetRotation, Quaternion, Quaternion::IDENTITY, AM_DEFAULT);
@@ -523,7 +523,7 @@ void CollisionShape2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
             worldTransform = node_->GetWorldTransform();
 
         // Special case code for convex hull: bypass Bullet's own rendering to draw triangles correctly, not just edges
-        if (shapeType_ == SHAPE_CONVEXHULL)
+        if (shapeType_ == SHAPE_CONVEXHULL_2)
         {
             auto* convexData = static_cast<ConvexData2*>(GetGeometryData());
             auto* body = GetComponent<RigidBody2>();
@@ -550,7 +550,7 @@ void CollisionShape2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
 
             Vector3 position = position_;
             // For terrains, undo the height centering performed automatically by Bullet
-            if (shapeType_ == SHAPE_TERRAIN && geometry_)
+            if (shapeType_ == SHAPE_TERRAIN_2 && geometry_)
             {
                 auto* heightfield = static_cast<HeightfieldData2*>(geometry_.Get());
                 position.y_ += (heightfield->minHeight_ + heightfield->maxHeight_) * 0.5f;
@@ -573,7 +573,7 @@ void CollisionShape2::SetBox(const Vector3& size, const Vector3& position, const
     if (model_)
         UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
-    shapeType_ = SHAPE_BOX;
+    shapeType_ = SHAPE_BOX_2;
     size_ = size;
     position_ = position;
     rotation_ = rotation;
@@ -590,7 +590,7 @@ void CollisionShape2::SetSphere(float diameter, const Vector3& position, const Q
     if (model_)
         UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
-    shapeType_ = SHAPE_SPHERE;
+    shapeType_ = SHAPE_SPHERE_2;
     size_ = Vector3(diameter, diameter, diameter);
     position_ = position;
     rotation_ = rotation;
@@ -607,7 +607,7 @@ void CollisionShape2::SetStaticPlane(const Vector3& position, const Quaternion& 
     if (model_)
         UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
-    shapeType_ = SHAPE_STATICPLANE;
+    shapeType_ = SHAPE_STATICPLANE_2;
     position_ = position;
     rotation_ = rotation;
     model_.Reset();
@@ -623,7 +623,7 @@ void CollisionShape2::SetCylinder(float diameter, float height, const Vector3& p
     if (model_)
         UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
-    shapeType_ = SHAPE_CYLINDER;
+    shapeType_ = SHAPE_CYLINDER_2;
     size_ = Vector3(diameter, height, diameter);
     position_ = position;
     rotation_ = rotation;
@@ -640,7 +640,7 @@ void CollisionShape2::SetCapsule(float diameter, float height, const Vector3& po
     if (model_)
         UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
-    shapeType_ = SHAPE_CAPSULE;
+    shapeType_ = SHAPE_CAPSULE_2;
     size_ = Vector3(diameter, height, diameter);
     position_ = position;
     rotation_ = rotation;
@@ -657,7 +657,7 @@ void CollisionShape2::SetCone(float diameter, float height, const Vector3& posit
     if (model_)
         UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
-    shapeType_ = SHAPE_CONE;
+    shapeType_ = SHAPE_CONE_2;
     size_ = Vector3(diameter, height, diameter);
     position_ = position;
     rotation_ = rotation;
@@ -672,37 +672,37 @@ void CollisionShape2::SetCone(float diameter, float height, const Vector3& posit
 void CollisionShape2::SetTriangleMesh(Model* model, unsigned lodLevel, const Vector3& scale, const Vector3& position,
     const Quaternion& rotation)
 {
-    SetModelShape(SHAPE_TRIANGLEMESH, model, lodLevel, scale, position, rotation);
+    SetModelShape(SHAPE_TRIANGLEMESH_2, model, lodLevel, scale, position, rotation);
 }
 
 void CollisionShape2::SetCustomTriangleMesh(CustomGeometry* custom, const Vector3& scale, const Vector3& position,
     const Quaternion& rotation)
 {
-    SetCustomShape(SHAPE_TRIANGLEMESH, custom, scale, position, rotation);
+    SetCustomShape(SHAPE_TRIANGLEMESH_2, custom, scale, position, rotation);
 }
 
 void CollisionShape2::SetConvexHull(Model* model, unsigned lodLevel, const Vector3& scale, const Vector3& position,
     const Quaternion& rotation)
 {
-    SetModelShape(SHAPE_CONVEXHULL, model, lodLevel, scale, position, rotation);
+    SetModelShape(SHAPE_CONVEXHULL_2, model, lodLevel, scale, position, rotation);
 }
 
 void CollisionShape2::SetCustomConvexHull(CustomGeometry* custom, const Vector3& scale, const Vector3& position,
     const Quaternion& rotation)
 {
-    SetCustomShape(SHAPE_CONVEXHULL, custom, scale, position, rotation);
+    SetCustomShape(SHAPE_CONVEXHULL_2, custom, scale, position, rotation);
 }
 
 void CollisionShape2::SetGImpactMesh(Model* model, unsigned lodLevel, const Vector3& scale, const Vector3& position,
     const Quaternion& rotation)
 {
-    SetModelShape(SHAPE_GIMPACTMESH, model, lodLevel, scale, position, rotation);
+    SetModelShape(SHAPE_GIMPACTMESH_2, model, lodLevel, scale, position, rotation);
 }
 
 void CollisionShape2::SetCustomGImpactMesh(CustomGeometry* custom, const Vector3& scale, const Vector3& position,
     const Quaternion& rotation)
 {
-    SetCustomShape(SHAPE_GIMPACTMESH, custom, scale, position, rotation);
+    SetCustomShape(SHAPE_GIMPACTMESH_2, custom, scale, position, rotation);
 }
 
 void CollisionShape2::SetTerrain(unsigned lodLevel)
@@ -717,7 +717,7 @@ void CollisionShape2::SetTerrain(unsigned lodLevel)
     if (model_)
         UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
-    shapeType_ = SHAPE_TERRAIN;
+    shapeType_ = SHAPE_TERRAIN_2;
     lodLevel_ = lodLevel;
 
     UpdateShape();
@@ -799,7 +799,7 @@ void CollisionShape2::SetModel(Model* model)
             UnsubscribeFromEvent(model_, E_RELOADFINISHED);
 
         model_ = model;
-        if (shapeType_ >= SHAPE_TRIANGLEMESH)
+        if (shapeType_ >= SHAPE_TRIANGLEMESH_2)
         {
             UpdateShape();
             NotifyRigidBody();
@@ -813,7 +813,7 @@ void CollisionShape2::SetLodLevel(unsigned lodLevel)
     if (lodLevel != lodLevel_)
     {
         lodLevel_ = lodLevel;
-        if (shapeType_ >= SHAPE_TRIANGLEMESH)
+        if (shapeType_ >= SHAPE_TRIANGLEMESH_2)
         {
             UpdateShape();
             NotifyRigidBody();
@@ -856,7 +856,7 @@ void CollisionShape2::NotifyRigidBody(bool updateMass)
             // Then add with updated offset
             Vector3 position = position_;
             // For terrains, undo the height centering performed automatically by Bullet
-            if (shapeType_ == SHAPE_TERRAIN && geometry_)
+            if (shapeType_ == SHAPE_TERRAIN_2 && geometry_)
             {
                 auto* heightfield = static_cast<HeightfieldData2*>(geometry_.Get());
                 position.y_ += (heightfield->minHeight_ + heightfield->maxHeight_) * 0.5f;
@@ -965,20 +965,20 @@ void CollisionShape2::OnMarkedDirty(Node* node)
 
         switch (shapeType_)
         {
-        case SHAPE_BOX:
-        case SHAPE_SPHERE:
-        case SHAPE_CYLINDER:
-        case SHAPE_CAPSULE:
-        case SHAPE_CONE:
+        case SHAPE_BOX_2:
+        case SHAPE_SPHERE_2:
+        case SHAPE_CYLINDER_2:
+        case SHAPE_CAPSULE_2:
+        case SHAPE_CONE_2:
             shape_->setLocalScaling(ToBtVector3(newWorldScale));
             break;
 
-        case SHAPE_TRIANGLEMESH:
-        case SHAPE_CONVEXHULL:
+        case SHAPE_TRIANGLEMESH_2:
+        case SHAPE_CONVEXHULL_2:
             shape_->setLocalScaling(ToBtVector3(newWorldScale * size_));
             break;
 
-        case SHAPE_TERRAIN:
+        case SHAPE_TERRAIN_2:
             {
                 auto* heightfield = static_cast<HeightfieldData2*>(geometry_.Get());
                 shape_->setLocalScaling(ToBtVector3(Vector3(heightfield->spacing_.x_, 1.0f, heightfield->spacing_.z_) *
@@ -1023,48 +1023,48 @@ void CollisionShape2::UpdateShape()
 
         switch (shapeType_)
         {
-        case SHAPE_BOX:
+        case SHAPE_BOX_2:
             shape_ = new btBoxShape(ToBtVector3(size_ * 0.5f));
             shape_->setLocalScaling(ToBtVector3(cachedWorldScale_));
             break;
 
-        case SHAPE_SPHERE:
+        case SHAPE_SPHERE_2:
             shape_ = new btSphereShape(size_.x_ * 0.5f);
             shape_->setLocalScaling(ToBtVector3(cachedWorldScale_));
             break;
 
-        case SHAPE_STATICPLANE:
+        case SHAPE_STATICPLANE_2:
             shape_ = new btStaticPlaneShape(btVector3(0.0f, 1.0f, 0.0f), 0.0f);
             break;
 
-        case SHAPE_CYLINDER:
+        case SHAPE_CYLINDER_2:
             shape_ = new btCylinderShape(btVector3(size_.x_ * 0.5f, size_.y_ * 0.5f, size_.x_ * 0.5f));
             shape_->setLocalScaling(ToBtVector3(cachedWorldScale_));
             break;
 
-        case SHAPE_CAPSULE:
+        case SHAPE_CAPSULE_2:
             shape_ = new btCapsuleShape(size_.x_ * 0.5f, Max(size_.y_ - size_.x_, 0.0f));
             shape_->setLocalScaling(ToBtVector3(cachedWorldScale_));
             break;
 
-        case SHAPE_CONE:
+        case SHAPE_CONE_2:
             shape_ = new btConeShape(size_.x_ * 0.5f, size_.y_);
             shape_->setLocalScaling(ToBtVector3(cachedWorldScale_));
             break;
 
-        case SHAPE_TRIANGLEMESH:
+        case SHAPE_TRIANGLEMESH_2:
             UpdateCachedGeometryShape(physicsWorld_->GetTriMeshCache());
             break;
 
-        case SHAPE_CONVEXHULL:
+        case SHAPE_CONVEXHULL_2:
             UpdateCachedGeometryShape(physicsWorld_->GetConvexCache());
             break;
 
-        case SHAPE_GIMPACTMESH:
+        case SHAPE_GIMPACTMESH_2:
             UpdateCachedGeometryShape(physicsWorld_->GetGImpactTrimeshCache());
             break;
 
-        case SHAPE_TERRAIN:
+        case SHAPE_TERRAIN_2:
             size_ = size_.Abs();
             {
                 auto* terrain = GetComponent<Terrain>();
@@ -1205,7 +1205,7 @@ btCollisionShape* CollisionShape2::UpdateDerivedShape(int shapeType, const Vecto
 
 void CollisionShape2::HandleTerrainCreated(StringHash eventType, VariantMap& eventData)
 {
-    if (shapeType_ == SHAPE_TERRAIN)
+    if (shapeType_ == SHAPE_TERRAIN_2)
     {
         UpdateShape();
         NotifyRigidBody();
@@ -1216,7 +1216,7 @@ void CollisionShape2::HandleModelReloadFinished(StringHash eventType, VariantMap
 {
     if (physicsWorld_)
         physicsWorld_->RemoveCachedGeometry(model_);
-    if (shapeType_ == SHAPE_TRIANGLEMESH || shapeType_ == SHAPE_CONVEXHULL)
+    if (shapeType_ == SHAPE_TRIANGLEMESH_2 || shapeType_ == SHAPE_CONVEXHULL_2)
     {
         UpdateShape();
         NotifyRigidBody();

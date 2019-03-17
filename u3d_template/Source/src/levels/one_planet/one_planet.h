@@ -7,6 +7,11 @@
 #include "block.h"
 #include "design_manager.h"
 
+namespace Urho3D
+{
+    class PhysicsWorld2;
+}
+
 namespace Osp
 {
 
@@ -30,11 +35,17 @@ private:
 
 
     SharedPtr<Node>  rootNode;
+    SharedPtr<PhysicsWorld2> physicsWorld;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
 public:
+    void createObjects();
+
+
     bool select();
 
+    void HandleUpdate( StringHash t, VariantMap & e );
+    void HandlePostRenderUpdate( StringHash t, VariantMap & e );
     // Subscribe to fixed timestep physics updates for setting or applying controls
     void HandlePhysicsPreStep( StringHash t, VariantMap & e );
     // Subscribe HandlePostUpdate() method for processing update events. Subscribe to PostUpdate instead

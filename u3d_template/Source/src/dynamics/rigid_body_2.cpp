@@ -68,7 +68,7 @@ RigidBody2::RigidBody2(Context* context) :
     mass_(DEFAULT_MASS_2),
     collisionLayer_(DEFAULT_COLLISION_LAYER_2),
     collisionMask_(DEFAULT_COLLISION_MASK_2),
-    collisionEventMode_(COLLISION_ACTIVE),
+    collisionEventMode_(COLLISION_ACTIVE_2),
     lastPosition_(Vector3::ZERO),
     lastRotation_(Quaternion::IDENTITY),
     kinematic_(false),
@@ -121,7 +121,7 @@ void RigidBody2::RegisterObject(Context* context)
     URHO3D_ACCESSOR_ATTRIBUTE("CCD Motion Threshold", GetCcdMotionThreshold, SetCcdMotionThreshold, float, 0.0f, AM_DEFAULT);
     URHO3D_ACCESSOR_ATTRIBUTE("Network Angular Velocity", GetNetAngularVelocityAttr, SetNetAngularVelocityAttr, PODVector<unsigned char>,
         Variant::emptyBuffer, AM_NET | AM_LATESTDATA | AM_NOEDIT);
-    URHO3D_ENUM_ATTRIBUTE_EX("Collision Event Mode", collisionEventMode_, MarkBodyDirty, collisionEventModeNames2, COLLISION_ACTIVE, AM_DEFAULT);
+    URHO3D_ENUM_ATTRIBUTE_EX("Collision Event Mode", collisionEventMode_, MarkBodyDirty, collisionEventModeNames2, COLLISION_ACTIVE_2, AM_DEFAULT);
     URHO3D_ACCESSOR_ATTRIBUTE("Use Gravity", GetUseGravity, SetUseGravity, bool, true, AM_DEFAULT);
     URHO3D_ATTRIBUTE_EX("Is Kinematic", bool, kinematic_, MarkBodyDirty, false, AM_DEFAULT);
     URHO3D_ATTRIBUTE_EX("Is Trigger", bool, trigger_, MarkBodyDirty, false, AM_DEFAULT);
