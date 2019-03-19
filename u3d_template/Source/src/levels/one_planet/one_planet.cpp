@@ -159,6 +159,9 @@ void OnePlanet::createObjects()
     PhysicsWorld2 * w = root->CreateComponent<PhysicsWorld2>();
     physicsWorld = SharedPtr<PhysicsWorld2>( w );
 
+    // For drawind debug geometry.
+    root->CreateComponent<DebugRenderer>();
+
     Node * surf = root->CreateChild( "Surface" );
     RigidBody2 * body = surf->CreateComponent<RigidBody2>();
     CollisionShape2 * s = surf->CreateComponent<CollisionShape2>();
