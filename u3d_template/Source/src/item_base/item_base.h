@@ -15,7 +15,7 @@ using namespace Urho3D;
  */
 class ItemBase: public Component
 {
-    URHO3D_OBJECT( ItemBase, Component );
+    URHO3D_OBJECT( ItemBase, Component )
 public:
     enum Type { TUnspecified=0, TBlock, TPlanet, TSite };
     ItemBase( Context * context );

@@ -369,6 +369,14 @@ Block * Block::tryAttachToSurface()
 }
 
 
+void Block::OnNodeSet( Node * node )
+{
+    Component::OnNodeSet( node );
+    if ( node )
+        createContent();
+}
+
+
 
 static Node * getRoot( Node * n )
 {

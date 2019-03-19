@@ -31,6 +31,9 @@ public:
     SharedPtr<StaticModel> model;
     SharedPtr<PivotMarker> connectedTo;
     ConnectionDesc connectionDesc;
+
+protected:
+    virtual void OnNodeSet( Node * node );
 };
 
 }

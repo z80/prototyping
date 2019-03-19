@@ -66,6 +66,13 @@ Block * PivotMarker::blockConnectedTo()
     return b;
 }
 
+void PivotMarker::OnNodeSet( Node * node )
+{
+    Component::OnNodeSet( node );
+    if ( node )
+        createContent();
+}
+
 
 }
 

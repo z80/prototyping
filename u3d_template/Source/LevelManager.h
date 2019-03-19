@@ -10,6 +10,8 @@ public:
 
     ~LevelManager();
 
+    VariantMap & levelData();
+
 private:
     /**
      * Register all system levels
@@ -75,4 +77,8 @@ private:
      * Name of the previous level
      */
     String previousLevel_;
+
+
+    /// Data levels can exchange or store.
+    VariantMap crossLevelData;
 };

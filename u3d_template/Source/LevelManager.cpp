@@ -30,6 +30,10 @@ LevelManager::~LevelManager()
 {
 }
 
+VariantMap & LevelManager::levelData()
+{
+    return crossLevelData;
+}
 
 void LevelManager::RegisterAllFactories()
 {

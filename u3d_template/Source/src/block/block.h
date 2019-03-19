@@ -48,6 +48,8 @@ public:
 
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
+protected:
+    virtual void OnNodeSet( Node * node );
 };
 
 }

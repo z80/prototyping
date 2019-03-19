@@ -408,7 +408,6 @@ void Workshop::setDesign( const Design & d )
             return;
 
         Block * b = o->Cast<Block>();
-        b->createContent();
         b->setR( db.r );
         b->setQ( db.q );
 
@@ -972,7 +971,6 @@ void Workshop::HandlePanelBlockSelected( StringHash eventType, VariantMap & even
         return;
 
     Block * b = o->Cast<Block>();
-    b->createContent();
 
     selectedBlock = SharedPtr<Block>( b );
 
