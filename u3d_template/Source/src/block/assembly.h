@@ -7,6 +7,11 @@
 
 using namespace Urho3D;
 
+namespace Urho3D
+{
+    class Constraint2;
+}
+
 namespace Osp
 {
 
@@ -17,18 +22,21 @@ public:
     Assembly( Context * c );
     ~Assembly();
 
-    void create( const Design & d );
+    static Assembly * create( Node * root, const Design & d );
     bool toWorld();
     void fromWorld();
 
 public:
     void destroy();
     bool inDynamicsWorld;
-    Vector< SharedPtr<Block> > blocks;
+    Vector< SharedPtr<Block> >       blocks;
+    Vector< SharedPtr<Constraint2> > joints;
+
 };
 
 }
 
+#endif
 
 
 

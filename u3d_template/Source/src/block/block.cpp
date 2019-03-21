@@ -2,6 +2,8 @@
 #include "block.h"
 #include "name_generator.h"
 #include "tech_tree.h"
+#include "rigid_body_2.h"
+
 #include <stack>
 
 using namespace Urho3D;
@@ -24,7 +26,19 @@ Block::~Block()
 
 void Block::createContent()
 {
+    // Create pivots.
     placePivots();
+
+    // Create rigid body.
+    Node * n = GetNode();
+    n->CreateComponent<RigidBody2>();
+}
+
+RigidBody2 * Block::rigidBody()
+{
+    Node * n = GetNode();
+    RigidBody2 * rb = n->GetComponent<RigidBody2>();
+    return rb;
 }
 
 void Block::setPivotsVisible( bool en )

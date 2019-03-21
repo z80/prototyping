@@ -7,6 +7,11 @@
 
 using namespace Urho3D;
 
+namespace Urho3D
+{
+    class RigidBody2;
+}
+
 namespace Osp
 {
 
@@ -19,6 +24,7 @@ public:
 
     virtual void createContent();
 
+    RigidBody2 * rigidBody();
     void setPivotsVisible( bool en );
     void setPivotSize( float sz );
     /// Blocks are in a tree with "root" as
