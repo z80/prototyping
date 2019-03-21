@@ -2,6 +2,8 @@
 #include "assembly.h"
 #include "name_generator.h"
 #include "constraint_2.h"
+#include "rigid_body_2.h"
+#include "physics_world_2.h"
 
 namespace Osp
 {
@@ -81,15 +83,66 @@ bool Assembly::toWorld()
 {
     // Check if dynamics world exists there.
     // And if it does parent all blocks to it.
+    Node * node = GetNode();
+    PhysicsWorld2 * w = PhysicsWorld2::getWorld( node );
+    if ( !w )
+        return false;
+
+    node = node->GetParent();
 
     // Traverse all blocks and joints and add those to world.
+    {
+        const size_t qty = blocks.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Block * b = blocks[i];
+            if ( !b )
+                continue;
+            Node * bn = b->GetNode();
+            bn->SetParent( node );
+        }
+    }
+    {
+        const size_t qty = joints.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Constraint2 * c = joints[i];
+            if ( !c )
+                continue;
+            Node * jn = c->GetNode();
+            jn->SetParent( node );
+        }
+    }
 
-    return false;
+    return true;
 }
 
 void Assembly::fromWorld()
 {
-
+    Node * root = GetNode();
+    // Traverse all blocks and joints and add those to world.
+    {
+        const size_t qty = blocks.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Block * b = blocks[i];
+            if ( !b )
+                continue;
+            Node * bn = b->GetNode();
+            bn->SetParent( root );
+        }
+    }
+    {
+        const size_t qty = joints.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Constraint2 * c = joints[i];
+            if ( !c )
+                continue;
+            Node * jn = c->GetNode();
+            jn->SetParent( root );
+        }
+    }
 }
 
 void Assembly::destroy()
