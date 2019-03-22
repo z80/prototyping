@@ -40,7 +40,7 @@ private:
         mousePrevX, mousePrevY;
 public:
     void createObjects();
-
+    void createDesign();
 
     bool select();
 

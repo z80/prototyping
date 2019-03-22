@@ -9,6 +9,7 @@
 #include "Audio/AudioManagerDefs.h"
 #include "Messages/Achievements.h"
 #include "Input/ControllerInput.h"
+#include "LevelManager.h"
 
 #include "name_generator.h"
 #include "design_manager.h"
@@ -1041,6 +1042,16 @@ void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventD
 
 void Workshop::HandleTry( StringHash eventType, VariantMap & eventData )
 {
+    LevelManager * lm = GetSubsystem<LevelManager>();
+    if ( !lm )
+        URHO3D_LOGERROR( "Can\'t get LevelManager" );
+
+    SharedPtr<Design> sd( new Design() );
+    *(sd.Get()) = design();
+
+    VariantMap & ld = lm->levelData();
+    ld[ "Design" ] = sd;
+
     VariantMap& eData = GetEventDataMap();
     eData["Name"] = "OnePlanet";
     SendEvent(MyEvents::E_SET_LEVEL, eData);

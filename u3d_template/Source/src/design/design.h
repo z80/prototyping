@@ -10,7 +10,7 @@ namespace Osp
 using namespace Urho3D;
 
 
-class Design
+class Design: public Urho3D::RefCounted
 {
 public:
     struct Joint

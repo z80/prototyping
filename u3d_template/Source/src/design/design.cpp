@@ -11,6 +11,7 @@ namespace Osp
 {
 
 Design::Design()
+    : Urho3D::RefCounted()
 {
 
 }

@@ -9,10 +9,12 @@
 #include "Audio/AudioManagerDefs.h"
 #include "Messages/Achievements.h"
 #include "Input/ControllerInput.h"
+#include "LevelManager.h"
 
 #include "name_generator.h"
 #include "design_manager.h"
 #include "block.h"
+#include "assembly.h"
 #include "camera_orb_2.h"
 
 #include "physics_world_2.h"
@@ -169,6 +171,33 @@ void OnePlanet::createObjects()
     ResourceCache * c = GetSubsystem<ResourceCache>();
     Model * model = c->GetResource<Model>( "Models/Surface.mdl" );
     s->SetTriangleMesh( model );
+
+    createDesign();
+}
+
+void OnePlanet::createDesign()
+{
+    Node * root = scene_->GetChild( "Root", true );
+    if ( !root )
+        return;
+
+    LevelManager * lm = GetSubsystem<LevelManager>();
+    if ( !lm )
+        URHO3D_LOGERROR( "Can\'t get LevelManager" );
+
+    VariantMap & ld = lm->levelData();
+    const bool hasDesign = ld.Contains( "Design" );
+    if ( !hasDesign )
+    {
+        URHO3D_LOGINFO( "No design is sent here" );
+        return;
+    }
+
+    Variant & v = ld[ "Design" ];
+    SharedPtr<Design> d = v.GetCustom< SharedPtr<Design> >();
+    ld.Clear();
+
+    Assembly::create( root, *d );
 }
 
 
