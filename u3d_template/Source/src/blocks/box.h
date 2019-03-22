@@ -14,7 +14,7 @@ public:
     Box( Context * c );
     ~Box();
 
-    virtual void createContent();
+    virtual void createContent( Node * node );
 
     SharedPtr<StaticModel> visualModel;
 };

@@ -22,7 +22,7 @@ public:
     Block( Context * c, const String & name );
     virtual ~Block();
 
-    virtual void createContent();
+    virtual void createContent( Node * n );
 
     RigidBody2 * rigidBody();
     void setPivotsVisible( bool en );

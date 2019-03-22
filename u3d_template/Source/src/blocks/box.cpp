@@ -15,13 +15,12 @@ Box::~Box()
 
 }
 
-void Box::createContent()
+void Box::createContent( Node * node )
 {
-    Block::createContent();
+    Block::createContent( node );
 
-    Node * n = GetNode();
     //n->CreateChild();
-    StaticModel * obj = n->CreateComponent<StaticModel>();
+    StaticModel * obj = node->CreateComponent<StaticModel>();
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
     obj->SetModel( cache->GetResource<Model>( "Models/Box.mdl" ) );

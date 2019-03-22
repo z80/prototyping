@@ -24,13 +24,12 @@ Block::~Block()
 
 }
 
-void Block::createContent()
+void Block::createContent( Node * n )
 {
     // Create pivots.
     placePivots();
 
     // Create rigid body.
-    Node * n = GetNode();
     n->CreateComponent<RigidBody2>();
 }
 
@@ -180,7 +179,6 @@ void Block::createPivots( size_t qty )
     {
         Node * n = node->CreateChild( NameGenerator::Next( "Pivot" ) );
         PivotMarker * c = n->CreateComponent( StringHash( "PivotMarker" ) )->Cast<PivotMarker>();
-        c->createContent();
         SharedPtr<PivotMarker> pm( c );
         pivots.push_back( pm );
     }
@@ -387,7 +385,7 @@ void Block::OnNodeSet( Node * node )
 {
     Component::OnNodeSet( node );
     if ( node )
-        createContent();
+        createContent( node );
 }
 
 

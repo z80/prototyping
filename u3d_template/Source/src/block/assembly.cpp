@@ -9,9 +9,9 @@ namespace Osp
 {
 
 Assembly::Assembly( Context * c )
-    : Component( c )
+    : LogicComponent( c )
 {
-
+    inWorld = false;
 }
 
 Assembly::~Assembly()
@@ -77,6 +77,8 @@ Assembly * Assembly::create( Node * root, const Design & d )
             a->joints.Push( SharedPtr<Constraint2>( c ) );
         }
     }
+
+    a->inWorld = a->toWorld();
 }
 
 bool Assembly::toWorld()
@@ -145,6 +147,17 @@ void Assembly::fromWorld()
     }
 }
 
+void Assembly::Update( float timeStep )
+{
+
+}
+
+void Assembly::PostUpdate( float timeStep )
+{
+    // Here recompute position and orientation.
+    updatePoseInWorld();
+}
+
 void Assembly::destroy()
 {
     {
@@ -166,6 +179,33 @@ void Assembly::destroy()
                 c->Remove();
         }
     }
+}
+
+bool Assembly::updatePoseInWorld()
+{
+    if ( !inWorld )
+        return false;
+
+    // Retrieve all the blocks.
+    Vector3 r( Vector3::ZERO );
+    const size_t qty = blocks.Size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        SharedPtr<Block> sb = blocks[i];
+        if ( !sb )
+        {
+            URHO3D_LOGERROR( "Assembly::updatePoseInWorld() one of blocks doesn\'t exist!" );
+            continue;
+        }
+        const Vector3 ri = sb->relR();
+        r += ri;
+    }
+    const float _1_qty = 1.0/static_cast<float>( qty );
+    r = r * _1_qty;
+    Node * n = GetNode();
+    n->SetPosition( r );
+
+    return true;
 }
 
 

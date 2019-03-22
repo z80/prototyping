@@ -15,7 +15,7 @@ namespace Urho3D
 namespace Osp
 {
 
-class Assembly: public Component
+class Assembly: public LogicComponent
 {
     URHO3D_OBJECT( Assembly, Component )
 public:
@@ -26,12 +26,20 @@ public:
     bool toWorld();
     void fromWorld();
 
+protected:
+    void Update(float timeStep) override;
+    void PostUpdate(float timeStep) override;
+
 public:
+    /// Cleanup all blocks and joints.
     void destroy();
-    bool inDynamicsWorld;
+    /// If in world nodes are integrated by dynamics world.
+    /// According to all node positions update node position
+    /// and orientation.
+    bool updatePoseInWorld();
     Vector< SharedPtr<Block> >       blocks;
     Vector< SharedPtr<Constraint2> > joints;
-
+    bool inWorld;
 };
 
 }

@@ -13,13 +13,13 @@ PivotMarker::PivotMarker( Context * c )
 {
 }
 
-void PivotMarker::createContent()
+void PivotMarker::createContent( Node * node )
 {
     ResourceCache * cache = GetSubsystem<ResourceCache>();
 
     // Separate node to attach object to. It is because scale might change.
     // And it is necessary to have a node tree with no scales envolved.
-    modelNode = GetNode()->CreateChild( NameGenerator::Next( "PivotMarker" ) );
+    modelNode = node->CreateChild( NameGenerator::Next( "PivotMarker" ) );
     model     = modelNode->CreateComponent<StaticModel>();
     model->SetModel( cache->GetResource<Model>("Models/Sphere.mdl") );
     model->SetMaterial( cache->GetResource<Material>("Materials/Stone.xml") );
@@ -70,7 +70,7 @@ void PivotMarker::OnNodeSet( Node * node )
 {
     Component::OnNodeSet( node );
     if ( node )
-        createContent();
+        createContent( node );
 }
 
 
