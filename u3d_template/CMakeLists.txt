@@ -1,5 +1,8 @@
+
+set( proj_name "osp" )
+
 # Set project name
-project (EmptyProject)
+project( ${proj_name} )
 
 add_subdirectory( "./3dparty" )
 
@@ -73,10 +76,10 @@ include_directories( ${URHO3D_INCLUDE_DIRS}
                      "./Source/src/levels/workshop/ui"
                      "./Source/src/levels/one_planet"
                      "${CMAKE_CURRENT_BINARY_DIR}/3dparty/lemon-1.3.1" )
-                 message( "dir is: ${CURRENT_BINARY_DIR}" )
+message( "dir is: ${CURRENT_BINARY_DIR}" )
 
 # Define target name
-set (TARGET_NAME EmptyProject)
+set( TARGET_NAME ${proj_name} )
 
 define_source_files(GLOB_CPP_PATTERNS Source/*.c* GLOB_H_PATTERNS Source/*.h* RECURSE GROUP )
 
