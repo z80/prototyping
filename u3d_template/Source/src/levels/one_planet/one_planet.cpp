@@ -185,19 +185,8 @@ void OnePlanet::createDesign()
     if ( !lm )
         URHO3D_LOGERROR( "Can\'t get LevelManager" );
 
-    VariantMap & ld = lm->levelData();
-    const bool hasDesign = ld.Contains( "Design" );
-    if ( !hasDesign )
-    {
-        URHO3D_LOGINFO( "No design is sent here" );
-        return;
-    }
-
-    Variant & v = ld[ "Design" ];
-    SharedPtr<Design> d = v.GetCustom< SharedPtr<Design> >();
-    ld.Clear();
-
-    Assembly::create( root, *d );
+    Design d = lm->design();
+    Assembly::create( root, d );
 }
 
 

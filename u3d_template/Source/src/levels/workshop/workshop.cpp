@@ -1046,11 +1046,8 @@ void Workshop::HandleTry( StringHash eventType, VariantMap & eventData )
     if ( !lm )
         URHO3D_LOGERROR( "Can\'t get LevelManager" );
 
-    SharedPtr<Design> sd( new Design() );
-    *(sd.Get()) = design();
-
-    VariantMap & ld = lm->levelData();
-    ld[ "Design" ] = sd;
+    Design d = design();
+    lm->design() = d;
 
     VariantMap& eData = GetEventDataMap();
     eData["Name"] = "OnePlanet";

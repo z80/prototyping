@@ -10,6 +10,7 @@
 #include "workshop.h"
 #include "one_planet.h"
 
+#include "assembly.h"
 #include "camera_orb_2.h"
 #include "tech_tree.h"
 #include "design_manager.h"
@@ -35,6 +36,11 @@ VariantMap & LevelManager::levelData()
     return crossLevelData;
 }
 
+Osp::Design & LevelManager::design()
+{
+    return _design;
+}
+
 void LevelManager::RegisterAllFactories()
 {
     // Register classes
@@ -56,6 +62,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
     context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
     context_->RegisterFactory<Osp::PivotMarker>();
+    context_->RegisterFactory<Osp::Assembly>();
 
     // Here should be all the blocks available after this line.
     context_->RegisterFactory<Osp::Box>();
