@@ -624,12 +624,12 @@ void Constraint2::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
 void Constraint2::OnNodeAdded( StringHash eventType, VariantMap & eventData )
 {
     Variant & n = eventData[NodeAdded::P_NODE];
-    Node * self = n.GetCustomPtr<Node>();
+    Node * self = static_cast<Node *>( n.GetPtr() );
     Node * node = GetNode();
     if ( self != node )
         return;
     Variant & v = eventData[NodeAdded::P_PARENT] ;
-    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * msgParent = static_cast<Node *>( v.GetPtr() );
     Node * parent = GetNode()->GetParent();
     if ( parent != msgParent )
         return;

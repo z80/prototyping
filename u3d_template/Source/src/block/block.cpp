@@ -3,6 +3,7 @@
 #include "name_generator.h"
 #include "tech_tree.h"
 #include "rigid_body_2.h"
+#include "collision_shape_2.h"
 
 #include <stack>
 
@@ -38,6 +39,13 @@ RigidBody2 * Block::rigidBody()
     Node * n = GetNode();
     RigidBody2 * rb = n->GetComponent<RigidBody2>();
     return rb;
+}
+
+CollisionShape2 * Block::collisionShape()
+{
+    Node * n = GetNode();
+    CollisionShape2 * cs = n->GetComponent<CollisionShape2>();
+    return cs;
 }
 
 void Block::setPivotsVisible( bool en )

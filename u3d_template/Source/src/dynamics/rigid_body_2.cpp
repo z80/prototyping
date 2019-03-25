@@ -1064,12 +1064,12 @@ void RigidBody2::subscribeToParentChanges()
 void RigidBody2::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
 {
     Variant & n = eventData[NodeRemoved::P_NODE];
-    Node * self = n.GetCustomPtr<Node>();
+    Node * self = static_cast<Node *>( n.GetPtr() );
     Node * node = GetNode();
     if ( self != node )
         return;
     Variant & v = eventData[NodeRemoved::P_PARENT] ;
-    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * msgParent = static_cast<Node *>( v.GetPtr() );
     Node * parent = GetNode()->GetParent();
     if ( parent != msgParent )
         return;
@@ -1079,12 +1079,12 @@ void RigidBody2::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
 void RigidBody2::OnNodeAdded( StringHash eventType, VariantMap & eventData )
 {
     Variant & n = eventData[NodeAdded::P_NODE];
-    Node * self = n.GetCustomPtr<Node>();
+    Node * self = static_cast<Node *>( n.GetPtr() );
     Node * node = GetNode();
     if ( self != node )
         return;
     Variant & v = eventData[NodeAdded::P_PARENT] ;
-    Node * msgParent = v.GetCustomPtr<Node>();
+    Node * msgParent = static_cast<Node *>( v.GetPtr() );
     Node * parent = GetNode()->GetParent();
     if ( parent != msgParent )
         return;
