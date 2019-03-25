@@ -67,12 +67,12 @@ Assembly * Assembly::create( Node * root, const Design & d )
             c->SetOtherBody( blockA->rigidBody() );
             c->SetWorldPosition( r );
 
-            const Vector3 axis( 0.0, 0.0, 1.0 );
+            /*const Vector3 axis( 0.0, 0.0, 1.0 );
             const Vector2 lim( 0.0, 0.0 );
             c->SetAxis( axis );
             c->SetOtherAxis( axis );
             c->SetHighLimit( lim );
-            c->SetLowLimit( lim );
+            c->SetLowLimit( lim );*/
 
             a->joints.Push( SharedPtr<Constraint2>( c ) );
         }
