@@ -9,8 +9,8 @@ using namespace Urho3D;
 
 namespace Urho3D
 {
-    class RigidBody2;
-    class CollisionShape2;
+    class RigidBody;
+    class CollisionShape;
 }
 
 namespace Osp
@@ -25,8 +25,8 @@ public:
 
     virtual void createContent( Node * n );
 
-    RigidBody2 * rigidBody();
-    CollisionShape2 * collisionShape();
+    RigidBody * rigidBody();
+    CollisionShape * collisionShape();
     void setPivotsVisible( bool en );
     void setPivotSize( float sz );
     /// Blocks are in a tree with "root" as
@@ -53,6 +53,11 @@ public:
     Block * tryAttachToConnectionPoint();
     Block * tryAttachToSurface();
 
+
+    /// Called by Assembly when assembly parent is changed.
+    /// Need to create/destroy rigid body and collision shape here.
+    virtual void toWorld();
+    virtual void fromWorld();
 
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;

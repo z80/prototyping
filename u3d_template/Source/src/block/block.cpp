@@ -2,8 +2,8 @@
 #include "block.h"
 #include "name_generator.h"
 #include "tech_tree.h"
-#include "rigid_body_2.h"
-#include "collision_shape_2.h"
+#include "Urho3D/Physics/RigidBody.h"
+#include "Urho3D/Physics/CollisionShape.h"
 
 #include <stack>
 
@@ -29,22 +29,19 @@ void Block::createContent( Node * n )
 {
     // Create pivots.
     placePivots();
-
-    // Create rigid body.
-    n->CreateComponent<RigidBody2>();
 }
 
-RigidBody2 * Block::rigidBody()
+RigidBody * Block::rigidBody()
 {
     Node * n = GetNode();
-    RigidBody2 * rb = n->GetComponent<RigidBody2>();
+    RigidBody * rb = n->GetComponent<RigidBody>();
     return rb;
 }
 
-CollisionShape2 * Block::collisionShape()
+CollisionShape * Block::collisionShape()
 {
     Node * n = GetNode();
-    CollisionShape2 * cs = n->GetComponent<CollisionShape2>();
+    CollisionShape * cs = n->GetComponent<CollisionShape>();
     return cs;
 }
 
@@ -58,7 +55,7 @@ void Block::setPivotsVisible( bool en )
             continue;
         // Right now I don't know how to show/hide
         // nodes :(
-        m->model->SetViewMask( en ? 0xFFFFFFFF : 0 );
+        m->model->SetEnabled( en );
     }
 }
 
@@ -387,6 +384,24 @@ Block * Block::tryAttachToSurface()
 
     return nullptr;
 }
+
+void Block::toWorld()
+{
+    // By default nothing is done here.
+    // Need to implement it in each implementation.
+}
+
+void Block::fromWorld()
+{
+    RigidBody * rb = rigidBody();
+    if ( rb )
+        rb->Remove();
+
+    CollisionShape * cs = collisionShape();
+    if ( cs )
+        cs->Remove();
+}
+
 
 
 void Block::OnNodeSet( Node * node )

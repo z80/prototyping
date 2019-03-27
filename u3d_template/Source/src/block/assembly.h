@@ -9,7 +9,8 @@ using namespace Urho3D;
 
 namespace Urho3D
 {
-    class Constraint2;
+    class Constraint;
+    class PhysicsWorld;
 }
 
 namespace Osp
@@ -37,9 +38,14 @@ public:
     /// According to all node positions update node position
     /// and orientation.
     bool updatePoseInWorld();
-    Vector< SharedPtr<Block> >       blocks;
-    Vector< SharedPtr<Constraint2> > joints;
-    bool inWorld;
+
+
+    Vector< SharedPtr<Block> >      blocks;
+    Vector< SharedPtr<Constraint> > joints;
+    Design design;
+
+public:
+    static PhysicsWorld * getWorld( Node * node );
 };
 
 }

@@ -1,9 +1,9 @@
 
 #include "assembly.h"
 #include "name_generator.h"
-#include "constraint_2.h"
-#include "rigid_body_2.h"
-#include "physics_world_2.h"
+#include "Urho3D/Physics/RigidBody.h"
+#include "Urho3D/Physics/Constraint.h"
+#include "Urho3D/Physics/PhysicsWorld.h"
 
 namespace Osp
 {
@@ -11,7 +11,6 @@ namespace Osp
 Assembly::Assembly( Context * c )
     : LogicComponent( c )
 {
-    inWorld = false;
 }
 
 Assembly::~Assembly()
@@ -27,6 +26,7 @@ Assembly * Assembly::create( Node * root, const Design & d )
     Node * node = root->CreateChild( NameGenerator::Next( "Assembly" ) );
 
     Assembly * a = node->CreateComponent<Assembly>();
+    a->design = d;
     // Create blocks.
     {
         const size_t blocksQty = d.blocks.size();
@@ -46,39 +46,7 @@ Assembly * Assembly::create( Node * root, const Design & d )
         }
     }
 
-    // Create connections.
-    {
-        const size_t connsQty = d.joints.size();
-        for ( size_t i=0; i<connsQty; i++ )
-        {
-            const Design::Joint & dj = d.joints[i];
-            const int indA = dj.blockA;
-            const int indB = dj.blockB;
-
-            SharedPtr<Block> blockA = a->blocks[indA];
-            SharedPtr<Block> blockB = a->blocks[indB];
-
-            // For now place joint point in the middle.
-            const Vector3 r = blockB->relR();
-            Node * node = blockB->GetNode();
-            Constraint2 * c = node->CreateComponent<Constraint2>();
-            c->SetConstraintType( CONSTRAINT_POINT_2 );
-            c->SetDisableCollision( true );
-            c->SetOtherBody( blockA->rigidBody() );
-            c->SetWorldPosition( r );
-
-            /*const Vector3 axis( 0.0, 0.0, 1.0 );
-            const Vector2 lim( 0.0, 0.0 );
-            c->SetAxis( axis );
-            c->SetOtherAxis( axis );
-            c->SetHighLimit( lim );
-            c->SetLowLimit( lim );*/
-
-            a->joints.Push( SharedPtr<Constraint2>( c ) );
-        }
-    }
-
-    a->inWorld = a->toWorld();
+    a->toWorld();
 }
 
 bool Assembly::toWorld()
@@ -86,11 +54,9 @@ bool Assembly::toWorld()
     // Check if dynamics world exists there.
     // And if it does parent all blocks to it.
     Node * node = GetNode();
-    PhysicsWorld2 * w = PhysicsWorld2::getWorld( node );
+    PhysicsWorld * w = Assembly::getWorld( node );
     if ( !w )
         return false;
-
-    node = node->GetParent();
 
     // Traverse all blocks and joints and add those to world.
     {
@@ -100,19 +66,41 @@ bool Assembly::toWorld()
             Block * b = blocks[i];
             if ( !b )
                 continue;
-            Node * bn = b->GetNode();
-            bn->SetParent( node );
+            // Add block to world. It should create and initialize
+            // rigid body and collision shape.
+            b->toWorld();
         }
     }
     {
-        const size_t qty = joints.Size();
-        for ( size_t i=0; i<qty; i++ )
+        // Create joints.
+        Design & d = design;
+        const size_t connsQty = d.joints.size();
+        for ( size_t i=0; i<connsQty; i++ )
         {
-            Constraint2 * c = joints[i];
-            if ( !c )
-                continue;
-            Node * jn = c->GetNode();
-            jn->SetParent( node );
+            const Design::Joint & dj = d.joints[i];
+            const int indA = dj.blockA;
+            const int indB = dj.blockB;
+
+            SharedPtr<Block> blockA = this->blocks[indA];
+            SharedPtr<Block> blockB = this->blocks[indB];
+
+            // For now place joint point in the middle.
+            const Vector3 r = blockB->relR();
+            Node * node = blockB->GetNode();
+            Constraint * c = node->CreateComponent<Constraint>();
+            c->SetConstraintType( CONSTRAINT_HINGE );
+            c->SetDisableCollision( true );
+            c->SetOtherBody( blockA->rigidBody() );
+            c->SetWorldPosition( r );
+
+            const Vector3 axis( 0.0, 0.0, 1.0 );
+            const Vector2 lim( 0.0, 0.0 );
+            c->SetAxis( axis );
+            c->SetOtherAxis( axis );
+            c->SetHighLimit( lim );
+            c->SetLowLimit( lim );
+
+            this->joints.Push( SharedPtr<Constraint>( c ) );
         }
     }
 
@@ -130,6 +118,9 @@ void Assembly::fromWorld()
             Block * b = blocks[i];
             if ( !b )
                 continue;
+            // Remove block from world. It should destroy
+            // all dynamics related objects (rigid body and collision shape).
+            b->fromWorld();
             Node * bn = b->GetNode();
             bn->SetParent( root );
         }
@@ -138,12 +129,12 @@ void Assembly::fromWorld()
         const size_t qty = joints.Size();
         for ( size_t i=0; i<qty; i++ )
         {
-            Constraint2 * c = joints[i];
+            Constraint * c = joints[i];
             if ( !c )
                 continue;
-            Node * jn = c->GetNode();
-            jn->SetParent( root );
+            c->Remove();
         }
+        joints.Clear();
     }
 }
 
@@ -174,7 +165,7 @@ void Assembly::destroy()
         const size_t qty = joints.Size();
         for ( size_t i=0; i<qty; i++ )
         {
-            Constraint2 * c = joints[i];
+            Constraint * c = joints[i];
             if ( c )
                 c->Remove();
         }
@@ -183,9 +174,6 @@ void Assembly::destroy()
 
 bool Assembly::updatePoseInWorld()
 {
-    if ( !inWorld )
-        return false;
-
     // Retrieve all the blocks.
     Vector3 r( Vector3::ZERO );
     const size_t qty = blocks.Size();
@@ -206,6 +194,15 @@ bool Assembly::updatePoseInWorld()
     n->SetPosition( r );
 
     return true;
+}
+
+PhysicsWorld * Assembly::getWorld( Node * node )
+{
+    Scene * s = node->GetScene();
+    if ( !s )
+        return nullptr;
+    PhysicsWorld * w = s->GetComponent<PhysicsWorld>();
+    return w;
 }
 
 

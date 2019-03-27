@@ -35,7 +35,7 @@ private:
 
 
     SharedPtr<Node>  rootNode;
-    SharedPtr<PhysicsWorld2> physicsWorld;
+    SharedPtr<PhysicsWorld> physicsWorld;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
 public:

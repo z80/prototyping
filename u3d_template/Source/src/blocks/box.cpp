@@ -1,8 +1,8 @@
 
 #include "box.h"
 #include "tech_tree.h"
-#include "rigid_body_2.h"
-#include "collision_shape_2.h"
+#include "Urho3D/Physics/RigidBody.h"
+#include "Urho3D/Physics/CollisionShape.h"
 
 namespace Osp
 {
@@ -28,13 +28,24 @@ void Box::createContent( Node * node )
     obj->SetModel( cache->GetResource<Model>( "Models/Box.mdl" ) );
     obj->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
     obj->SetCastShadows( true );
+}
 
-    RigidBody2 * rb = rigidBody();
+void Box::toWorld()
+{
+    Node * node = GetNode();
+
+    RigidBody * rb = node->CreateComponent<RigidBody>();
     rb->SetMass( 1.0 );
 
-    CollisionShape2 * cs = node->CreateComponent<CollisionShape2>();
+    CollisionShape * cs = node->CreateComponent<CollisionShape>();
     cs->SetBox( Vector3( 1.0, 1.0, 1.0 ) );
 }
+
+void Box::fromWorld()
+{
+    Block::fromWorld();
+}
+
 
 
 }

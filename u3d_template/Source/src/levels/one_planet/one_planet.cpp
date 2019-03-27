@@ -17,11 +17,19 @@
 #include "assembly.h"
 #include "camera_orb_2.h"
 
+/*
 #include "physics_world_2.h"
 #include "collision_shape_2.h"
 #include "rigid_body_2.h"
 #include "constraint_2.h"
 #include "physics_events_2.h"
+*/
+#include "Urho3D/Physics/PhysicsWorld.h"
+#include "Urho3D/Physics/CollisionShape.h"
+#include "Urho3D/Physics/RigidBody.h"
+#include "Urho3D/Physics/Constraint.h"
+#include "Urho3D/Physics/PhysicsEvents.h"
+
 
 #include <iostream>
 
@@ -143,7 +151,7 @@ void OnePlanet::SubscribeToEvents()
     SubscribeToEvent( E_UPDATE,           URHO3D_HANDLER( OnePlanet, HandleUpdate ) );
     SubscribeToEvent( E_POSTRENDERUPDATE, URHO3D_HANDLER( OnePlanet, HandlePostRenderUpdate ) );
 
-    SubscribeToEvent(E_PHYSICSPRESTEP_2, URHO3D_HANDLER( OnePlanet, HandlePhysicsPreStep) );
+    SubscribeToEvent(E_PHYSICSPRESTEP,   URHO3D_HANDLER( OnePlanet, HandlePhysicsPreStep) );
     SubscribeToEvent(E_POSTUPDATE,       URHO3D_HANDLER( OnePlanet, HandlePostUpdate) );
 
     SubscribeToEvent( E_MOUSEBUTTONDOWN, URHO3D_HANDLER( OnePlanet, HandleMouseDown ) );
@@ -158,15 +166,18 @@ void OnePlanet::createObjects()
     Node * root = scene_->GetChild( "Root", true );
     if ( !root )
         return;
-    PhysicsWorld2 * w = root->CreateComponent<PhysicsWorld2>();
-    physicsWorld = SharedPtr<PhysicsWorld2>( w );
+    PhysicsWorld * w = scene_->GetComponent<PhysicsWorld>();
+    if ( !w )
+        w = scene_->CreateComponent<PhysicsWorld>();
+    DebugRenderer * dr = scene_->GetComponent<DebugRenderer>();
+    if ( !dr )
+        dr = scene_->CreateComponent<DebugRenderer>();
 
-    // For drawind debug geometry.
-    root->CreateComponent<DebugRenderer>();
+    physicsWorld = SharedPtr<PhysicsWorld>( w );
 
     Node * surf = root->CreateChild( "Surface" );
-    RigidBody2 * body = surf->CreateComponent<RigidBody2>();
-    CollisionShape2 * s = surf->CreateComponent<CollisionShape2>();
+    RigidBody * body = surf->CreateComponent<RigidBody>();
+    CollisionShape * s = surf->CreateComponent<CollisionShape>();
 
     ResourceCache * c = GetSubsystem<ResourceCache>();
     Model * model = c->GetResource<Model>( "Models/Surface.mdl" );

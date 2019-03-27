@@ -15,6 +15,8 @@ public:
     ~Box();
 
     virtual void createContent( Node * node );
+    virtual void toWorld();
+    virtual void fromWorld();
 
     SharedPtr<StaticModel> visualModel;
 };
