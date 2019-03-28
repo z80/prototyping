@@ -2,10 +2,13 @@
 #include "block.h"
 #include "name_generator.h"
 #include "tech_tree.h"
+#include "assembly.h"
+
 #include "Urho3D/Physics/RigidBody.h"
 #include "Urho3D/Physics/CollisionShape.h"
 
 #include <stack>
+
 
 using namespace Urho3D;
 
@@ -389,8 +392,12 @@ Block * Block::tryAttachToSurface()
 
 void Block::toWorld()
 {
-    // By default nothing is done here.
-    // Need to implement it in each implementation.
+    // Subscribing to world updates to track body state.
+    Node * n = GetNode();
+    PhysicsWorld * w = Assembly::getWorld( n );
+    if ( !w )
+        return;
+    SubscribeToEvent(w, E_PHYSICSPOSTSTEP, URHO3D_HANDLER( Block, OnPhysicsPostStep ) );
 }
 
 void Block::fromWorld()
@@ -402,6 +409,12 @@ void Block::fromWorld()
     CollisionShape * cs = collisionShape();
     if ( cs )
         cs->Remove();
+
+    Node * n = GetNode();
+    PhysicsWorld * w = Assembly::getWorld( n );
+    if ( !w )
+        return;
+    UnsubscribeFromEvent( w, E_PHYSICSPOSTSTEP );
 }
 
 
@@ -411,6 +424,18 @@ void Block::OnNodeSet( Node * node )
     Component::OnNodeSet( node );
     if ( node )
         createContent( node );
+}
+
+void Block::OnPhysicsPostStep( StringHash t, VariantMap & e )
+{
+    RigidBody * rb = rigidBody();
+    if ( !rb )
+        return;
+    // Need to update dynamical properties (probably...).
+    //rb->GetPosition();
+    //rb->GetRotation();
+    //rb->GetVelocityAtPoint();
+    //rb->GetAngularVelocity();
 }
 
 

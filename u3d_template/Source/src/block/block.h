@@ -62,7 +62,10 @@ public:
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
 protected:
-    virtual void OnNodeSet( Node * node );
+    void OnNodeSet( Node * node );
+
+    // Events reaction.
+    void OnPhysicsPostStep( StringHash t, VariantMap & e );
 };
 
 }
