@@ -40,8 +40,8 @@ Workshop::Workshop(Context* context)
       mode( None ),
       mouseX(0),
       mouseY(0),
-      mousePrevX(0),
-      mousePrevY(0)
+      mouseX_0(0),
+      mouseY_0(0)
 {
 }
 
@@ -170,7 +170,21 @@ void Workshop::createSectionsUi()
         return;
 
     // Remove all existing categories.
-    p->RemoveAllChildren();
+    //p->RemoveAllChildren();
+    {
+        const Vector<SharedPtr<UIElement> > & children = p->GetChildren();
+        const size_t qty = children.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            const SharedPtr<UIElement> & e = children[i];
+            if ( !e )
+                continue;
+            Button * b = e->Cast<Button>();
+            if ( !b )
+                continue;
+            b->Remove();;
+        }
+    }
 
     // Create categories.
     std::vector<CategoryDesc> & cats = techTree->getPanelContent();
@@ -215,7 +229,21 @@ void Workshop::createBlocksUi( int groupInd )
         return;
 
     // Remove all existing blocks.
-    p->RemoveAllChildren();
+    //p->RemoveAllChildren();
+    {
+        const Vector<SharedPtr<UIElement> > & children = p->GetChildren();
+        const size_t qty = children.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            const SharedPtr<UIElement> & e = children[i];
+            if ( !e )
+                continue;
+            Button * b = e->Cast<Button>();
+            if ( !b )
+                continue;
+            b->Remove();;
+        }
+    }
 
     const std::vector<PartDesc> & blockDescs = techTree->getPartDescs();
     const CategoryDesc & c = cats[groupInd];
@@ -751,7 +779,9 @@ void Workshop::rotate()
     Quaternion dq, q;
     if ( rotateAttached )
     {
-        const float angle = r1.Angle( r2 );
+        Graphics * g = GetSubsystem<Graphics>();
+        const int w = g->GetWidth();
+        const float angle = ((float)mouseX - (float)mouseX_0) / (float)w * 1.0 * 360.0;
         dq.FromAngleAxis( angle, rotAxis );
         q = qOrig * dq;
     }
@@ -774,6 +804,8 @@ void Workshop::rotateStart()
         return;
     }
 
+    mouseX_0 = mouseX;
+    mouseY_0 = mouseY;
     Block * parentBlock = selectedBlock->parentBlock();
     if ( parentBlock )
     {
@@ -891,8 +923,6 @@ void Workshop::HandleMouseUp( StringHash t, VariantMap & e )
 
 void Workshop::HandleMouseMove( StringHash t, VariantMap & e )
 {
-    mousePrevX = mouseX;
-    mousePrevY = mouseY;
     mouseX = e[MouseMove::P_X].GetInt();
     mouseY = e[MouseMove::P_Y].GetInt();
     if ( mode == Drag )

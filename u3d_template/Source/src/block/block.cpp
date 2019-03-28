@@ -161,6 +161,8 @@ void Block::placePivots()
         pm->setR( cd.r );
         pm->connectionDesc = cd;
     }
+    // By default hide pivots.
+    setPivotsVisible( false );
 }
 
 void Block::clearPivots()

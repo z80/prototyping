@@ -44,7 +44,7 @@ private:
     SharedPtr<Block> selectedBlock;
     Mode             mode;
     int mouseX,     mouseY,
-        mousePrevX, mousePrevY;
+        mouseX_0,   mouseY_0;
     // For rotations.
     Quaternion      qOrig;
     bool            rotateAttached;
