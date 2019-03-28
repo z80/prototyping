@@ -959,6 +959,13 @@ void Workshop::HandleKeyDown( StringHash t, VariantMap & e )
     {
         // Need to show game menu here.
     }
+    if ( key == KEY_F4 )
+    {
+        VariantMap & data = GetEventDataMap();
+        //data[ "Name" ] = "SettingsWindow";
+        data[ "Name" ] = "ScoreboardWindow";
+        SendEvent( MyEvents::E_OPEN_WINDOW, data );
+    }
 
 }
 

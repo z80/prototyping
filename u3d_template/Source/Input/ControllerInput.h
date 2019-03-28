@@ -13,9 +13,9 @@ enum ControllerType {
 	JOYSTICK
 };
 
-class ControllerInput : public Object
+class ControllerInput: public Object
 {
-    URHO3D_OBJECT(ControllerInput, Object);
+    URHO3D_OBJECT( ControllerInput, Object )
 
 public:
     /// Construct.
@@ -28,7 +28,7 @@ public:
 	 * If multiple controller support is disabled, only the
 	 * controls with index 0 will be returned
 	 */
-	Controls GetControls(int index = 0);
+    Controls GetControls( int index = 0 );
 
 	/**
 	 * Get a vector of all the controller indexes

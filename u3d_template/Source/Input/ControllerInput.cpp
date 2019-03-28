@@ -31,6 +31,17 @@ ControllerInput::ControllerInput(Context* context) :
 	_controlMapNames[CTRL_SPRINT] = "Sprint";
 	_controlMapNames[CTRL_UP] = "Move up";
 
+    _controlMapNames[CTRL_YAW_UP] = "Increase Yaw";
+    _controlMapNames[CTRL_YAW_DN] = "Decrease Yaw";
+    _controlMapNames[CTRL_PITCH_UP] = "Increase Pitch";
+    _controlMapNames[CTRL_PITCH_DN] = "Decrease Pitch";
+    _controlMapNames[CTRL_ROLL_UP] = "Increase Roll";
+    _controlMapNames[CTRL_ROLL_DN] = "Decrease Roll";
+    _controlMapNames[CTRL_TRANSLATION] = "Translational motion";
+    _controlMapNames[CTRL_TRIGGER] = "Trigger";
+    _controlMapNames[CTRL_THRUST_UP] = "Increase Thrust";
+    _controlMapNames[CTRL_THRUST_DN] = "Decrease Thrust";
+
 	_configurationFile = GetSubsystem<FileSystem>()->GetProgramDir() + "/Data/Config/controls.cfg";
 	Init();
 }

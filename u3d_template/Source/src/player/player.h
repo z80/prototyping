@@ -1,16 +1,17 @@
 
-#ifndef __DESIGN_H_
-#define __DESIGN_H_
+#ifndef __PLAYER_H_
+#define __PLAYER_H_
 
 #include <Urho3D/Urho3DAll.h>
+
+#include "assembly.h"
+#include "block.h"
 
 namespace Osp
 {
 
 using namespace Urho3D;
 
-class Assembly;
-class Block;
 
 
 class Player: public Urho3D::LogicComponent
@@ -30,6 +31,9 @@ public:
     void FixedPostUpdate(float timeStep);
 
     /// And mouse reaction.
+    void HandleMouseDown( StringHash t, VariantMap & e );
+    void HandleMouseUp( StringHash t, VariantMap & e );
+
 private:
     // Block configuration windows open.
     Vector< SharedPtr<UIElement> > windows;
@@ -38,5 +42,9 @@ private:
     // Currently selected block.
     SharedPtr<Block> block;
 };
+
+}
+
+#endif
 
 
