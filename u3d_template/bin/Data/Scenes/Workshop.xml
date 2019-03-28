@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="1" />
 	<attribute name="Next Replicated Component ID" value="3" />
-	<attribute name="Next Local Node ID" value="16777224" />
-	<attribute name="Next Local Component ID" value="16777245" />
+	<attribute name="Next Local Node ID" value="16777225" />
+	<attribute name="Next Local Component ID" value="16777257" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -65,6 +65,7 @@
 				<attribute name="Light Type" value="Spot" />
 				<attribute name="Color" value="1 1 0.55 1" />
 				<attribute name="Spot FOV" value="31.56" />
+				<attribute name="Cast Shadows" value="true" />
 			</component>
 		</node>
 		<node id="16777221">
