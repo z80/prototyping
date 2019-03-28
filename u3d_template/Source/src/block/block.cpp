@@ -417,6 +417,30 @@ void Block::fromWorld()
     UnsubscribeFromEvent( w, E_PHYSICSPOSTSTEP );
 }
 
+SharedPtr<UIElement> Block::configWindow()
+{
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    UI * ui = GetSubsystem<UI>();
+
+    // Construct new Text object, set string to display and font to use
+    Text * instructionText = ui->GetRoot()->CreateChild<Text>();
+    instructionText->SetText(
+        "Default window for a block.\n"
+        "Need to  be overwritten \n"
+        "by implementations."
+    );
+    instructionText->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 15);
+    // The text has multiple rows. Center them in relation to each other
+    instructionText->SetTextAlignment(HA_CENTER);
+
+    // Position the text relative to the screen center
+    instructionText->SetHorizontalAlignment(HA_CENTER);
+    instructionText->SetVerticalAlignment(VA_CENTER);
+    instructionText->SetPosition(0, ui->GetRoot()->GetHeight() / 4);
+
+    return SharedPtr<UIElement>( instructionText );
+}
+
 
 
 void Block::OnNodeSet( Node * node )

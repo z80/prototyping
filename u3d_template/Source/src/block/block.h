@@ -59,6 +59,9 @@ public:
     virtual void toWorld();
     virtual void fromWorld();
 
+    /// Need to be able to open configuration window.
+    virtual SharedPtr<UIElement> configWindow();
+
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
 protected:
