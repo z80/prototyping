@@ -174,4 +174,10 @@ namespace MyEvents
     {
     }
 
+    // Activate game mode
+    URHO3D_EVENT( E_SETMODE, SetMode )
+    {
+        URHO3D_PARAM( P_NAME, Name ); // string - mode name
+    }
+
 }
