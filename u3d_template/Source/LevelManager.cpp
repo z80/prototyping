@@ -7,6 +7,8 @@
 #include "Levels/Credits.h"
 #include "MyEvents.h"
 
+#include "mode_manager.h"
+
 #include "workshop.h"
 #include "one_planet.h"
 
@@ -50,6 +52,10 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Levels::ExitGame>();
     context_->RegisterFactory<Levels::Loading>();
     context_->RegisterFactory<Levels::Credits>();
+
+
+    // My mode manager.
+    Osp::ModeManager::RegisterObject( context_ );
 
     // Here should be my levels.
     context_->RegisterFactory<Osp::Workshop>();

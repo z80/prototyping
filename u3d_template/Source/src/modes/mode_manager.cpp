@@ -2,6 +2,8 @@
 #include "mode_manager.h"
 #include "MyEvents.h"
 
+#include "mode_workshop.h"
+
 namespace Osp
 {
 
@@ -19,7 +21,7 @@ ModeManager::~ModeManager()
 void ModeManager::RegisterObject( Urho3D::Context * ctx )
 {
     ctx->RegisterFactory<ModeManager>();
-
+    ctx->RegisterFactory<WorkshopMode>();
 }
 
 void ModeManager::activateMode( StringHash t, VariantMap & args )
