@@ -105,7 +105,7 @@ void WorkshopMode::CreateScene()
     Scene * s = GetScene();
     // Create dedicated node for a scene prefab.
     if ( !rootNode )
-        rootNode = s->CreateChild( "WorkshopRoot" );
+        rootNode = s->CreateChild( "WorkshopMode" );
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
     XMLFile * f = cache->GetResource<XMLFile>( "Scenes/Workshop.xml" );
