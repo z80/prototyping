@@ -1,5 +1,5 @@
 
-#include "one_planet.h"
+#include "mode_one_planet.h"
 #include "Urho3D/Core/CoreEvents.h"
 #include "Urho3D/Input/InputEvents.h"
 #include "Urho3D/UI/UIEvents.h"
@@ -49,36 +49,22 @@ URHO3D_EVENT( E_CREATE_BLOCK_CLICKED, CreateBlockClicked )
 }
 
 
-OnePlanet::OnePlanet(Context* context)
+OnePlanetMode::OnePlanetMode(Context* context)
     : BaseLevel(context),
       mouseX(0),
       mouseY(0),
       mousePrevX(0),
       mousePrevY(0)
 {
+    name_ = "OnePlanetMode";
 }
 
-OnePlanet::~OnePlanet()
+OnePlanetMode::~OnePlanetMode()
 {
 }
 
-void OnePlanet::Init()
+void OnePlanetMode::activate()
 {
-    if (!scene_)
-    {
-        // There is no scene, get back to the main menu
-        VariantMap& eventData = GetEventDataMap();
-        eventData["Name"] = "MainMenu";
-        SendEvent(MyEvents::E_SET_LEVEL, eventData);
-
-        return;
-    }
-
-    BaseLevel::Init();
-
-    // Disable achievement showing for this level
-    GetSubsystem<Achievements>()->SetShowAchievements(true);
-
     // Create the scene content
     CreateScene();
 
@@ -87,13 +73,14 @@ void OnePlanet::Init()
 
     // Subscribing to events.
     SubscribeToEvents();
-
-//    data["Title"] = "Hey!";
-//    data["Message"] = "Seems like everything is ok!";
-//    SendEvent("ShowAlertMessage", data);
 }
 
-void OnePlanet::CreateScene()
+void OnePlanetMode::deactivate()
+{
+
+}
+
+void OnePlanetMode::CreateScene()
 {
     Input * inp = GetSubsystem<Input>();
     inp->SetMouseVisible( true );
@@ -102,23 +89,25 @@ void OnePlanet::CreateScene()
     Vector<int> controlIndexes = controllerInput->GetControlIndexes();
     InitViewports(controlIndexes);
 
+    if ( !rootMode )
+        rootNode = scene_->CreateChild( "OnePlanetMode" );
+
     ResourceCache * cache = GetSubsystem<ResourceCache>();
     XMLFile * f = cache->GetResource<XMLFile>( "Scenes/OnePlanet.xml" );
     if ( !f )
         return;
-    const bool loadedOk = scene_->LoadXML( f->GetRoot() );
-    rootNode = scene_->GetChild( "Root", true );
+    const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
+    Node * root = scene_->GetChild( "Root", true );
 
     Node * camNode = _cameras[0];
-    camNode->SetParent( rootNode );
+    camNode->SetParent( root );
 
     CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
-    //camCtrl->updateCamera();
 
     createObjects();
 }
 
-void OnePlanet::CreateUI()
+void OnePlanetMode::CreateUI()
 {
     ResourceCache * cache = GetSubsystem<ResourceCache>();
     XMLFile * f = cache->GetResource<XMLFile>( "UI/ToWorkshopPanel.xml" );
@@ -139,29 +128,29 @@ void OnePlanet::CreateUI()
     UIElement * tryBtn = panel->GetChild( "ToWorkshop", true );
     if ( tryBtn )
         SubscribeToEvent( tryBtn, E_RELEASED,
-                          URHO3D_HANDLER( OnePlanet, HandleToWorkshop ) );
+                          URHO3D_HANDLER( OnePlanetMode, HandleToWorkshop ) );
 }
 
 
 
 
 
-void OnePlanet::SubscribeToEvents()
+void OnePlanetMode::SubscribeToEvents()
 {
-    SubscribeToEvent( E_UPDATE,           URHO3D_HANDLER( OnePlanet, HandleUpdate ) );
-    SubscribeToEvent( E_POSTRENDERUPDATE, URHO3D_HANDLER( OnePlanet, HandlePostRenderUpdate ) );
+    SubscribeToEvent( E_UPDATE,           URHO3D_HANDLER( OnePlanetMode, HandleUpdate ) );
+    SubscribeToEvent( E_POSTRENDERUPDATE, URHO3D_HANDLER( OnePlanetMode, HandlePostRenderUpdate ) );
 
-    SubscribeToEvent(E_PHYSICSPRESTEP,   URHO3D_HANDLER( OnePlanet, HandlePhysicsPreStep) );
-    SubscribeToEvent(E_POSTUPDATE,       URHO3D_HANDLER( OnePlanet, HandlePostUpdate) );
+    SubscribeToEvent(E_PHYSICSPRESTEP,   URHO3D_HANDLER( OnePlanetMode, HandlePhysicsPreStep) );
+    SubscribeToEvent(E_POSTUPDATE,       URHO3D_HANDLER( OnePlanetMode, HandlePostUpdate) );
 
-    SubscribeToEvent( E_MOUSEBUTTONDOWN, URHO3D_HANDLER( OnePlanet, HandleMouseDown ) );
-    SubscribeToEvent( E_MOUSEBUTTONUP,   URHO3D_HANDLER( OnePlanet, HandleMouseUp ) );
-    SubscribeToEvent( E_MOUSEMOVE,       URHO3D_HANDLER( OnePlanet, HandleMouseMove ) );
-    SubscribeToEvent( E_KEYDOWN,         URHO3D_HANDLER( OnePlanet, HandleKeyDown ) );
-    SubscribeToEvent( E_KEYUP,           URHO3D_HANDLER( OnePlanet, HandleKeyUp ) );
+    SubscribeToEvent( E_MOUSEBUTTONDOWN, URHO3D_HANDLER( OnePlanetMode, HandleMouseDown ) );
+    SubscribeToEvent( E_MOUSEBUTTONUP,   URHO3D_HANDLER( OnePlanetMode, HandleMouseUp ) );
+    SubscribeToEvent( E_MOUSEMOVE,       URHO3D_HANDLER( OnePlanetMode, HandleMouseMove ) );
+    SubscribeToEvent( E_KEYDOWN,         URHO3D_HANDLER( OnePlanetMode, HandleKeyDown ) );
+    SubscribeToEvent( E_KEYUP,           URHO3D_HANDLER( OnePlanetMode, HandleKeyUp ) );
 }
 
-void OnePlanet::createObjects()
+void OnePlanetMode::createObjects()
 {
     Node * root = scene_->GetChild( "Root", true );
     if ( !root )
@@ -186,7 +175,7 @@ void OnePlanet::createObjects()
     createDesign();
 }
 
-void OnePlanet::createDesign()
+void OnePlanetMode::createDesign()
 {
     Node * root = scene_->GetChild( "Root", true );
     if ( !root )
@@ -201,7 +190,7 @@ void OnePlanet::createDesign()
 }
 
 
-bool OnePlanet::select()
+bool OnePlanetMode::select()
 {
     UI * ui = GetSubsystem<UI>();
     IntVector2 pos = ui->GetCursorPosition();
@@ -258,7 +247,7 @@ bool OnePlanet::select()
 
 
 
-void OnePlanet::HandleUpdate( StringHash t, VariantMap & e )
+void OnePlanetMode::HandleUpdate( StringHash t, VariantMap & e )
 {
     if ( physicsWorld )
     {
@@ -268,23 +257,23 @@ void OnePlanet::HandleUpdate( StringHash t, VariantMap & e )
     }
 }
 
-void OnePlanet::HandlePostRenderUpdate( StringHash t, VariantMap & e )
+void OnePlanetMode::HandlePostRenderUpdate( StringHash t, VariantMap & e )
 {
     if ( physicsWorld )
         physicsWorld->DrawDebugGeometry( true );
 }
 
-void OnePlanet::HandlePhysicsPreStep( StringHash t, VariantMap & e )
+void OnePlanetMode::HandlePhysicsPreStep( StringHash t, VariantMap & e )
 {
     const Variant & v = e[Update::P_TIMESTEP];
     const float dt = v.GetFloat();
 }
 
-void OnePlanet::HandlePostUpdate( StringHash t, VariantMap & e )
+void OnePlanetMode::HandlePostUpdate( StringHash t, VariantMap & e )
 {
 }
 
-void OnePlanet::HandleMouseDown( StringHash t, VariantMap & e )
+void OnePlanetMode::HandleMouseDown( StringHash t, VariantMap & e )
 {
     // Here need to filter out events over UI.
     UI * ui = GetSubsystem<UI>();
@@ -306,7 +295,7 @@ void OnePlanet::HandleMouseDown( StringHash t, VariantMap & e )
     }
 }
 
-void OnePlanet::HandleMouseUp( StringHash t, VariantMap & e )
+void OnePlanetMode::HandleMouseUp( StringHash t, VariantMap & e )
 {
     // Here need to filter out events over UI.
     UI * ui = GetSubsystem<UI>();
@@ -329,7 +318,7 @@ void OnePlanet::HandleMouseUp( StringHash t, VariantMap & e )
     }
 }
 
-void OnePlanet::HandleMouseMove( StringHash t, VariantMap & e )
+void OnePlanetMode::HandleMouseMove( StringHash t, VariantMap & e )
 {
     mousePrevX = mouseX;
     mousePrevY = mouseY;
@@ -337,7 +326,7 @@ void OnePlanet::HandleMouseMove( StringHash t, VariantMap & e )
     mouseY = e[MouseMove::P_Y].GetInt();
 }
 
-void OnePlanet::HandleKeyDown( StringHash t, VariantMap & e )
+void OnePlanetMode::HandleKeyDown( StringHash t, VariantMap & e )
 {
     const int key = e[KeyDown::P_KEY].GetInt();
     if ( key == KEY_ESCAPE )
@@ -347,12 +336,12 @@ void OnePlanet::HandleKeyDown( StringHash t, VariantMap & e )
 
 }
 
-void OnePlanet::HandleKeyUp( StringHash t, VariantMap & e )
+void OnePlanetMode::HandleKeyUp( StringHash t, VariantMap & e )
 {
     // Do nothing.
 }
 
-void OnePlanet::HandleToWorkshop( StringHash t, VariantMap & e )
+void OnePlanetMode::HandleToWorkshop( StringHash t, VariantMap & e )
 {
     VariantMap& eData = GetEventDataMap();
     eData["Name"] = "Workshop";

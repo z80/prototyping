@@ -44,6 +44,7 @@ WorkshopMode::WorkshopMode(Context* context)
       mouseX_0(0),
       mouseY_0(0)
 {
+    name_ = "WorkshopMode";
 }
 
 WorkshopMode::~WorkshopMode()
