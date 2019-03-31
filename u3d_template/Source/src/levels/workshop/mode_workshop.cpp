@@ -73,6 +73,8 @@ void WorkshopMode::deactivate()
         rootNode->Remove();
 
     UI * ui = GetSubsystem<UI>();
+    if ( !ui )
+        return;
     UIElement * root = ui->GetRoot();
 
     UIElement * pnl = root->GetChild( "TechPanel", true );
@@ -112,7 +114,7 @@ void WorkshopMode::CreateScene()
     const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
     Node * prefabRoot = rootNode->GetChild( "Workshop", true );
 
-    Node * camNode = rootNode->GetChild( StringHash( "Camera" ), true );
+    Node * camNode = s->GetChild( "MainCamera", true );
     if ( !camNode )
         URHO3D_LOGERROR( "Camera not found" );
     camNode->SetParent( prefabRoot );
@@ -477,7 +479,7 @@ bool WorkshopMode::select()
     //    return false;
 
     Graphics * graphics = GetSubsystem<Graphics>();
-    Node   * camNode = rootNode->GetChild( "Camera", true );
+    Node   * camNode = rootNode->GetChild( "MainCamera", true );
     Camera * camera  = camNode->GetComponent<Camera>();
     Ray cameraRay = camera->GetScreenRay((float)pos.x_ / graphics->GetWidth(), (float)pos.y_ / graphics->GetHeight());
 
@@ -530,7 +532,7 @@ bool WorkshopMode::select()
 
 void WorkshopMode::cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n )
 {
-    Node * camNode = rootNode->GetChild( StringHash( "Camera" ), true );
+    Node * camNode = rootNode->GetChild( "MainCamera", true );
     Vector3 a( 0.0, 0.0, 1.0 );
     const Quaternion q = camNode->GetRotation();
     a = q * a;
@@ -564,7 +566,7 @@ void WorkshopMode::mouseIntersection( Vector3 & at, const Vector3 & origin )
 
     Graphics * graphics = GetSubsystem<Graphics>();
 
-    Node * camNode = rootNode->GetChild( StringHash( "Camera" ), true );
+    Node * camNode = rootNode->GetChild( "MainCamera", true );
     Camera * cam = camNode->GetComponent<Camera>();
     const int w = graphics->GetWidth();
     const int h = graphics->GetHeight();

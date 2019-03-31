@@ -84,7 +84,7 @@ void LevelMain::CreateScene()
 
     // Just in case set camera node name explicitly.
     Node * camNode = _cameras[0];
-    camNode->SetName( "Camera" );
+    camNode->SetName( "MainCamera" );
 }
 
 void LevelMain::CreateFirstMode()
