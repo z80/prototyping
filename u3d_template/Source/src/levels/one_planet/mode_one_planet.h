@@ -2,7 +2,7 @@
 #ifndef __ONE_PLANET_MODE_H_
 #define __ONE_PLANET_MODE_H_
 
-#include "BaseLevel.h"
+#include "mode_base.h"
 #include "tech_tree.h"
 #include "block.h"
 #include "design_manager.h"
@@ -15,9 +15,9 @@ namespace Urho3D
 namespace Osp
 {
 
-class OnePlanetMode: public BaseLevel
+class OnePlanetMode: public ModeBase
 {
-URHO3D_OBJECT( OnePlanet, BaseLevel )
+URHO3D_OBJECT( OnePlanetMode, ModeBase )
 
 public:
     /// Construct.
@@ -28,9 +28,6 @@ public:
     void activate()   override;
     void deactivate() override;
 
-
-protected:
-    void Init() override;
 
 private:
     void CreateScene();

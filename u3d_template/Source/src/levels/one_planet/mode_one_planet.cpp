@@ -50,7 +50,7 @@ URHO3D_EVENT( E_CREATE_BLOCK_CLICKED, CreateBlockClicked )
 
 
 OnePlanetMode::OnePlanetMode(Context* context)
-    : BaseLevel(context),
+    : ModeBase(context),
       mouseX(0),
       mouseY(0),
       mousePrevX(0),
@@ -82,25 +82,21 @@ void OnePlanetMode::deactivate()
 
 void OnePlanetMode::CreateScene()
 {
-    Input * inp = GetSubsystem<Input>();
-    inp->SetMouseVisible( true );
-
-    ControllerInput * controllerInput = GetSubsystem<ControllerInput>();
-    Vector<int> controlIndexes = controllerInput->GetControlIndexes();
-    InitViewports(controlIndexes);
-
-    if ( !rootMode )
-        rootNode = scene_->CreateChild( "OnePlanetMode" );
+    Scene * s = GetScene();
+    if ( !rootNode )
+        rootNode = s->CreateChild( "OnePlanetMode" );
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
     XMLFile * f = cache->GetResource<XMLFile>( "Scenes/OnePlanet.xml" );
     if ( !f )
         return;
     const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
-    Node * root = scene_->GetChild( "Root", true );
+    Node * prefabRoot = rootNode->GetChild( "Root", true );
 
-    Node * camNode = _cameras[0];
-    camNode->SetParent( root );
+    Node * camNode = s->GetChild( "MainCamera", true );
+    if ( !camNode )
+        URHO3D_LOGERROR( "Camera not found" );
+    camNode->SetParent( prefabRoot );
 
     CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
 
@@ -152,32 +148,33 @@ void OnePlanetMode::SubscribeToEvents()
 
 void OnePlanetMode::createObjects()
 {
-    Node * root = scene_->GetChild( "Root", true );
+    Scene * s = GetScene();
+    Node * root = rootNode->GetChild( "Root", true );
     if ( !root )
         return;
-    PhysicsWorld * w = scene_->GetComponent<PhysicsWorld>();
+    PhysicsWorld * w = s->GetComponent<PhysicsWorld>();
     if ( !w )
-        w = scene_->CreateComponent<PhysicsWorld>();
-    DebugRenderer * dr = scene_->GetComponent<DebugRenderer>();
+        w = s->CreateComponent<PhysicsWorld>();
+    DebugRenderer * dr = s->GetComponent<DebugRenderer>();
     if ( !dr )
-        dr = scene_->CreateComponent<DebugRenderer>();
+        dr = s->CreateComponent<DebugRenderer>();
 
     physicsWorld = SharedPtr<PhysicsWorld>( w );
 
     Node * surf = root->CreateChild( "Surface" );
     RigidBody * body = surf->CreateComponent<RigidBody>();
-    CollisionShape * s = surf->CreateComponent<CollisionShape>();
+    CollisionShape * cs = surf->CreateComponent<CollisionShape>();
 
     ResourceCache * c = GetSubsystem<ResourceCache>();
     Model * model = c->GetResource<Model>( "Models/Surface.mdl" );
-    s->SetTriangleMesh( model );
+    cs->SetTriangleMesh( model );
 
     createDesign();
 }
 
 void OnePlanetMode::createDesign()
 {
-    Node * root = scene_->GetChild( "Root", true );
+    Node * root = rootNode->GetChild( "Root", true );
     if ( !root )
         return;
 
@@ -199,7 +196,7 @@ bool OnePlanetMode::select()
     //    return false;
 
     Graphics * graphics = GetSubsystem<Graphics>();
-    Node   * camNode = _cameras[0];
+    Node   * camNode = rootNode->GetChild( "MainCamera", true );
     Camera * camera  = camNode->GetComponent<Camera>();
     Ray cameraRay = camera->GetScreenRay((float)pos.x_ / graphics->GetWidth(), (float)pos.y_ / graphics->GetHeight());
 
@@ -207,7 +204,8 @@ bool OnePlanetMode::select()
     PODVector<RayQueryResult> results;
     const float maxDistance = 300.0f;
     RayOctreeQuery query(results, cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY );
-    scene_->GetComponent<Octree>()->RaycastSingle( query );
+    Scene * s = GetScene();
+    s->GetComponent<Octree>()->RaycastSingle( query );
     const size_t qty = results.Size();
     if ( !qty )
     {

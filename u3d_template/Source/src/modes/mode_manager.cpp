@@ -3,6 +3,7 @@
 #include "MyEvents.h"
 
 #include "mode_workshop.h"
+#include "mode_one_planet.h"
 
 namespace Osp
 {
@@ -22,6 +23,7 @@ void ModeManager::RegisterObject( Urho3D::Context * ctx )
 {
     ctx->RegisterFactory<ModeManager>();
     ctx->RegisterFactory<WorkshopMode>();
+    ctx->RegisterFactory<OnePlanetMode>();
 }
 
 void ModeManager::activateMode( StringHash t, VariantMap & args )
