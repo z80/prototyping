@@ -26,7 +26,7 @@ void ModeManager::RegisterObject( Urho3D::Context * ctx )
 
 void ModeManager::activateMode( StringHash t, VariantMap & args )
 {
-    const Variant & v = args[ "name" ];
+    const Variant & v = args[ "Name" ];
     const String & name = v.GetString();
     // Check if it is already active.
     if ( activeMode )
@@ -89,6 +89,7 @@ void ModeManager::activateMode( StringHash t, VariantMap & args )
     // If reached this point mode isn't created yet.
     Scene * s = GetScene();
     Component * c = s->CreateComponent( StringHash(name) );
+    Scene * ss = c->GetScene();
     SharedPtr<ModeBase> m( c->Cast<ModeBase>() );
     if ( m )
     {

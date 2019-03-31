@@ -9,8 +9,11 @@
 
 #include "mode_manager.h"
 
+#include "level_main.h"
 #include "workshop.h"
 #include "one_planet.h"
+
+#include "mode_workshop.h"
 
 #include "assembly.h"
 #include "camera_orb_2.h"
@@ -58,6 +61,7 @@ void LevelManager::RegisterAllFactories()
     Osp::ModeManager::RegisterObject( context_ );
 
     // Here should be my levels.
+    context_->RegisterFactory<Osp::LevelMain>();
     context_->RegisterFactory<Osp::Workshop>();
     context_->RegisterFactory<Osp::OnePlanet>();
 

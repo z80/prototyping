@@ -10,14 +10,16 @@ using namespace Urho3D;
  * @brief The Entity class
  * This is the base class for all interacting objects.
  */
-class CameraOrb2: public Component
+class CameraOrb2: public LogicComponent
 {
-    URHO3D_OBJECT( CameraOrb2, Component )
+    URHO3D_OBJECT( CameraOrb2, LogicComponent )
 public:
     CameraOrb2( Context * c );
     ~CameraOrb2();
 
     void SubscribeToEvents();
+
+    void DelayedStart();
 
     void HandleMouseDown( StringHash t, VariantMap & e );
     void HandleMouseUp( StringHash t, VariantMap & e );

@@ -101,19 +101,21 @@ void WorkshopMode::CreateScene()
     inp->SetMouseVisible( true );
 
     Scene * s = GetScene();
+    // Create dedicated node for a scene prefab.
+    if ( !rootNode )
+        rootNode = s->CreateChild( "WorkshopRoot" );
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
     XMLFile * f = cache->GetResource<XMLFile>( "Scenes/Workshop.xml" );
     if ( !f )
         return;
-    const bool loadedOk = s->LoadXML( f->GetRoot() );
-    rootNode = s->GetChild( "Workshop", true );
-    //rootNode = scene_->GetChild( StringHash( "Workshop" ), true );
+    const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
+    Node * prefabRoot = rootNode->GetChild( "Workshop", true );
 
-    Node * camNode = s->GetChild( StringHash( "Camera" ), true );
+    Node * camNode = rootNode->GetChild( StringHash( "Camera" ), true );
     if ( !camNode )
         URHO3D_LOGERROR( "Camera not found" );
-    camNode->SetParent( rootNode );
+    camNode->SetParent( prefabRoot );
 
     CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
@@ -433,9 +435,6 @@ void WorkshopMode::clearDesign()
 
 void WorkshopMode::setDesign( const Design & d )
 {
-    Scene * s = GetScene();
-    rootNode = s->GetChild( "Workshop", true );
-
     const size_t blocksQty = d.blocks.size();
     Vector<Block *> blocks;
     blocks.Reserve( blocksQty );
@@ -478,8 +477,7 @@ bool WorkshopMode::select()
     //    return false;
 
     Graphics * graphics = GetSubsystem<Graphics>();
-    Scene * s = GetScene();
-    Node   * camNode = s->GetChild( StringHash("Camera"), true );
+    Node   * camNode = rootNode->GetChild( "Camera", true );
     Camera * camera  = camNode->GetComponent<Camera>();
     Ray cameraRay = camera->GetScreenRay((float)pos.x_ / graphics->GetWidth(), (float)pos.y_ / graphics->GetHeight());
 
@@ -487,6 +485,7 @@ bool WorkshopMode::select()
     PODVector<RayQueryResult> results;
     const float maxDistance = 300.0f;
     RayOctreeQuery query(results, cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY );
+    Scene * s = GetScene();
     s->GetComponent<Octree>()->RaycastSingle( query );
     const size_t qty = results.Size();
     if ( !qty )
@@ -531,9 +530,7 @@ bool WorkshopMode::select()
 
 void WorkshopMode::cameraPlane( Vector3 & x, Vector3 & y, Vector3 & n )
 {
-    Scene * s = GetScene();
-    Node * camNode = s->GetChild( StringHash( "Camera" ), true );
-    Camera * cam = camNode->GetComponent<Camera>();
+    Node * camNode = rootNode->GetChild( StringHash( "Camera" ), true );
     Vector3 a( 0.0, 0.0, 1.0 );
     const Quaternion q = camNode->GetRotation();
     a = q * a;
@@ -567,8 +564,7 @@ void WorkshopMode::mouseIntersection( Vector3 & at, const Vector3 & origin )
 
     Graphics * graphics = GetSubsystem<Graphics>();
 
-    Scene * s = GetScene();
-    Node * camNode = s->GetChild( StringHash( "Camera" ), true );
+    Node * camNode = rootNode->GetChild( StringHash( "Camera" ), true );
     Camera * cam = camNode->GetComponent<Camera>();
     const int w = graphics->GetWidth();
     const int h = graphics->GetHeight();
@@ -601,8 +597,6 @@ void WorkshopMode::mouseIntersection( Vector3 & at, const Vector3 & origin )
     Vector3    rel_r = Vector3::ZERO;
     Quaternion rel_q;
     {
-        Scene * s = GetScene();
-        Node * rootNode = s->GetChild( "Workshop" );
         ItemBase::relativePose( camNode, rootNode, rel_r, rel_q );
 
         a = rel_q*direction_;
@@ -706,10 +700,6 @@ void WorkshopMode::createAuxilaryPanel()
 
 void WorkshopMode::showPivots( bool en )
 {
-    Scene * s = GetScene();
-    Node * rootNode = s->GetChild( "Workshop" );
-    if ( !rootNode )
-        return;
     PODVector<Node*> allCh = rootNode->GetChildren( true );
     const size_t allChQty = allCh.Size();
     // Just walk over all the blocks and generate connections.
@@ -1020,8 +1010,6 @@ void WorkshopMode::HandlePanelBlockSelected( StringHash eventType, VariantMap & 
 {
     const Variant v = eventData[ "name" ];
     const String typeName = v.GetString();
-    Scene * s = GetScene();
-    rootNode = s->GetChild( "Workshop", true );
     // Create a part of this name.
     Node * n = rootNode->CreateChild( NameGenerator::Next( typeName ) );
     std::cout << "new block node name: " << n->GetName().CString() << std::endl;

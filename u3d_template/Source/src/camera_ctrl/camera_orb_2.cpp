@@ -7,7 +7,7 @@ namespace Osp
 {
 
 CameraOrb2::CameraOrb2( Context * c )
-    : Component( c ),
+    : LogicComponent( c ),
       origin( Vector3::ZERO )
 {
     SubscribeToEvents();
@@ -34,6 +34,11 @@ void CameraOrb2::SubscribeToEvents()
     SubscribeToEvent( E_MOUSEMOVE,       URHO3D_HANDLER( CameraOrb2, HandleMouseMove ) );
     SubscribeToEvent( E_MOUSEWHEEL,      URHO3D_HANDLER( CameraOrb2, HandleMouseWheel ) );
 
+}
+
+void CameraOrb2::DelayedStart()
+{
+    updateCamera();
 }
 
 void CameraOrb2::HandleMouseDown( StringHash t, VariantMap & e )

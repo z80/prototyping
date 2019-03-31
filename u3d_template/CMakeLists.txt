@@ -77,6 +77,7 @@ include_directories( ${URHO3D_INCLUDE_DIRS}
                      "./Source/src/levels/workshop"
                      "./Source/src/levels/workshop/ui"
                      "./Source/src/levels/one_planet"
+                     "./Source/src/levels/level_main"
                      "${CMAKE_CURRENT_BINARY_DIR}/3dparty/lemon-1.3.1" )
 message( "dir is: ${CURRENT_BINARY_DIR}" )
 
