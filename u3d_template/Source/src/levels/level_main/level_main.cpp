@@ -60,6 +60,19 @@ void LevelMain::Init()
 
         return;
     }
+    scene_->RemoveAllChildren();
+
+
+    {
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        XMLFile * f = cache->GetResource<XMLFile>( "Scenes/Workshop.xml" );
+        if ( !f )
+            return;
+        Node * n = scene_->CreateChild( "Workshop" );
+        const bool loadedOk = scene_->LoadXML( f->GetRoot() );
+        scene_->RemoveAllChildren();
+    }
+
 
     BaseLevel::Init();
 
@@ -95,7 +108,6 @@ void LevelMain::CreateFirstMode()
     VariantMap& eventData = GetEventDataMap();
     eventData["Name"] = "WorkshopMode";
     SendEvent( MyEvents::E_SETMODE, eventData );
-
 }
 
 

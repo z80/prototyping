@@ -70,8 +70,16 @@ void WorkshopMode::activate()
 
 void WorkshopMode::deactivate()
 {
-    if ( rootNode )
+    // Reparent camera to keep it alive.
+    Scene * s = GetScene();
+    if ( rootNode && s )
+    {
+        Node * camNode = s->GetChild( "MainCamera", true );
+        camNode->SetParent( s );
+
+        // Remove created node and all it's children.
         rootNode->Remove();
+    }
 
     UI * ui = GetSubsystem<UI>();
     if ( !ui )
@@ -109,16 +117,15 @@ void WorkshopMode::CreateScene()
         rootNode = s->CreateChild( "WorkshopMode" );
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * f = cache->GetResource<XMLFile>( "Scenes/Workshop.xml" );
+    XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/Workshop.xml" );
     if ( !f )
         return;
     const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
-    Node * prefabRoot = rootNode->GetChild( "Workshop", true );
 
     Node * camNode = s->GetChild( "MainCamera", true );
     if ( !camNode )
         URHO3D_LOGERROR( "Camera not found" );
-    camNode->SetParent( prefabRoot );
+    camNode->SetParent( rootNode );
 
     CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
@@ -1098,9 +1105,13 @@ void WorkshopMode::HandleTry( StringHash eventType, VariantMap & eventData )
     Design d = design();
     lm->design() = d;
 
-    VariantMap& eData = GetEventDataMap();
+    /*VariantMap& eData = GetEventDataMap();
     eData["Name"] = "OnePlanet";
-    SendEvent(MyEvents::E_SET_LEVEL, eData);
+    SendEvent(MyEvents::E_SET_LEVEL, eData);*/
+
+    VariantMap & vm = GetEventDataMap();
+    vm["Name"] = "OnePlanetMode";
+    SendEvent( MyEvents::E_SETMODE, vm );
 }
 
 
