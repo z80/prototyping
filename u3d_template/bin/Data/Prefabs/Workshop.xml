@@ -10,8 +10,8 @@
 	<component type="Zone" id="16777230">
 		<attribute name="Ambient Color" value="0.3 0.3 0.3 1" />
 		<attribute name="Fog Color" value="1 1 1 0" />
-		<attribute name="Fog Start" value="8000" />
-		<attribute name="Fog End" value="15000" />
+		<attribute name="Fog Start" value="800" />
+		<attribute name="Fog End" value="1500" />
 	</component>
 	<node id="16777217">
 		<attribute name="Is Enabled" value="true" />
@@ -37,7 +37,6 @@
 		<component type="StaticModel" id="16777229">
 			<attribute name="Model" value="Model;Models/Plane.mdl" />
 			<attribute name="Material" value="Material;Materials/StoneTiled.xml" />
-			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
 	<node id="16777220">

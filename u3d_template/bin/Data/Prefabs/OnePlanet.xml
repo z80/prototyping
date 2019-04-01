@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<node id="2">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="Root" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="0 0 0" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="3">
+		<attribute name="Model" value="Model;Models/Surface.mdl" />
+		<attribute name="Material" value="Material;Materials/Stone.xml" />
+	</component>
+	<component type="Zone" id="4">
+		<attribute name="Is Enabled" value="false" />
+		<attribute name="Bounding Box Min" value="-10000 -10000 -10000" />
+		<attribute name="Bounding Box Max" value="10000 10000 10000" />
+	</component>
+	<component type="Zone" id="5">
+		<attribute name="Bounding Box Min" value="-10000 -10000 -10000" />
+		<attribute name="Bounding Box Max" value="10000 10000 10000" />
+		<attribute name="Ambient Color" value="0.5 0.5 0.5 1" />
+	</component>
+	<node id="16777217">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-1.13129 1.08414 0" />
+		<attribute name="Rotation" value="0.911654 0.410958 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="Light" id="16777228">
+			<attribute name="Light Type" value="Directional" />
+			<attribute name="Specular Intensity" value="0.3" />
+			<attribute name="Brightness Multiplier" value="0.7" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+</node>

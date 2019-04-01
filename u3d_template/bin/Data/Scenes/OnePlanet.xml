@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="4" />
 	<attribute name="Next Replicated Component ID" value="7" />
-	<attribute name="Next Local Node ID" value="16777221" />
-	<attribute name="Next Local Component ID" value="16777265" />
+	<attribute name="Next Local Node ID" value="16777222" />
+	<attribute name="Next Local Component ID" value="16777277" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -50,19 +50,5 @@
 				<attribute name="Cast Shadows" value="true" />
 			</component>
 		</node>
-	</node>
-	<node id="3">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="RenderCamera" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="0 0 0" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="1 1 1" />
-		<attribute name="Variables" />
-		<component type="Camera" id="6">
-			<attribute name="Near Clip" value="0.01" />
-			<attribute name="FOV" value="90" />
-			<attribute name="Auto Aspect Ratio" value="false" />
-		</component>
 	</node>
 </scene>
