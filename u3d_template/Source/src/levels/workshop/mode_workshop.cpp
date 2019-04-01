@@ -53,6 +53,8 @@ WorkshopMode::~WorkshopMode()
 
 void WorkshopMode::activate()
 {
+    ModeBase::activate();
+
     techTree = GetSubsystem<TechTree>();
 
     // Disable achievement showing for this level
@@ -70,6 +72,8 @@ void WorkshopMode::activate()
 
 void WorkshopMode::deactivate()
 {
+    ModeBase::deactivate();
+
     // Reparent camera to keep it alive.
     Scene * s = GetScene();
     if ( rootNode && s )
@@ -482,6 +486,9 @@ bool WorkshopMode::select()
 {
     UI * ui = GetSubsystem<UI>();
     IntVector2 pos = ui->GetCursorPosition();
+    UIElement * e = ui->GetElementAt( pos );
+    if ( e )
+        return false;
     // Check the cursor is visible and there is no UI element in front of the cursor
     //if ( !ui->GetCursor()->IsVisible() || ui->GetElementAt(pos, true))
     //    return false;
@@ -879,11 +886,14 @@ void WorkshopMode::deleteSelectedBlock()
 
 void WorkshopMode::HandlePhysicsPreStep( StringHash t, VariantMap & e )
 {
-
+    if ( !isActive() )
+        return;
 }
 
 void WorkshopMode::HandlePostUpdate( StringHash t, VariantMap & e )
 {
+    if ( !isActive() )
+        return;
 
     if ( mode == Drag )
         drag();
@@ -893,6 +903,9 @@ void WorkshopMode::HandlePostUpdate( StringHash t, VariantMap & e )
 
 void WorkshopMode::HandleMouseDown( StringHash t, VariantMap & e )
 {
+    if ( !isActive() )
+        return;
+
     // Here need to filter out events over UI.
     UI * ui = GetSubsystem<UI>();
     const IntVector2 v = ui->GetCursorPosition();
@@ -915,6 +928,9 @@ void WorkshopMode::HandleMouseDown( StringHash t, VariantMap & e )
 
 void WorkshopMode::HandleMouseUp( StringHash t, VariantMap & e )
 {
+    if ( !isActive() )
+        return;
+
     // Here need to filter out events over UI.
     UI * ui = GetSubsystem<UI>();
     const IntVector2 v = ui->GetCursorPosition();
@@ -943,6 +959,9 @@ void WorkshopMode::HandleMouseUp( StringHash t, VariantMap & e )
 
 void WorkshopMode::HandleMouseMove( StringHash t, VariantMap & e )
 {
+    if ( !isActive() )
+        return;
+
     mouseX = e[MouseMove::P_X].GetInt();
     mouseY = e[MouseMove::P_Y].GetInt();
     if ( mode == Drag )
@@ -953,6 +972,9 @@ void WorkshopMode::HandleMouseMove( StringHash t, VariantMap & e )
 
 void WorkshopMode::HandleKeyDown( StringHash t, VariantMap & e )
 {
+    if ( !isActive() )
+        return;
+
     const int key = e[KeyDown::P_KEY].GetInt();
     if ( selectedBlock )
     {
@@ -991,6 +1013,9 @@ void WorkshopMode::HandleKeyDown( StringHash t, VariantMap & e )
 
 void WorkshopMode::HandleKeyUp( StringHash t, VariantMap & e )
 {
+    if ( !isActive() )
+        return;
+
     // Do nothing.
 }
 

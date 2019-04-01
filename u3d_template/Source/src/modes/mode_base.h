@@ -25,8 +25,10 @@ public:
     void DelayedStart() override;
     void Stop() override;
 
+    bool isActive() const;
 protected:
     String name_;
+    bool   active_;
 };
 
 

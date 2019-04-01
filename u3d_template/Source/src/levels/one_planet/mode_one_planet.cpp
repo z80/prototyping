@@ -65,6 +65,8 @@ OnePlanetMode::~OnePlanetMode()
 
 void OnePlanetMode::activate()
 {
+    ModeBase::activate();
+
     // Create the scene content
     CreateScene();
 
@@ -77,7 +79,14 @@ void OnePlanetMode::activate()
 
 void OnePlanetMode::deactivate()
 {
+    ModeBase::deactivate();
 
+    Scene * s = GetScene();
+    if ( s && rootNode )
+        rootNode->Remove();
+
+    if ( workshopPnl )
+        workshopPnl->Remove();
 }
 
 void OnePlanetMode::CreateScene()
@@ -87,7 +96,7 @@ void OnePlanetMode::CreateScene()
         rootNode = s->CreateChild( "OnePlanetMode" );
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * f = cache->GetResource<XMLFile>( "Scenes/OnePlanet.xml" );
+    XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/OnePlanet.xml" );
     if ( !f )
         return;
     const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
@@ -125,6 +134,7 @@ void OnePlanetMode::CreateUI()
     if ( tryBtn )
         SubscribeToEvent( tryBtn, E_RELEASED,
                           URHO3D_HANDLER( OnePlanetMode, HandleToWorkshop ) );
+    workshopPnl = panel;
 }
 
 
@@ -149,7 +159,7 @@ void OnePlanetMode::SubscribeToEvents()
 void OnePlanetMode::createObjects()
 {
     Scene * s = GetScene();
-    Node * root = rootNode->GetChild( "Root", true );
+    Node * root = rootNode;
     if ( !root )
         return;
     PhysicsWorld * w = s->GetComponent<PhysicsWorld>();
@@ -174,7 +184,7 @@ void OnePlanetMode::createObjects()
 
 void OnePlanetMode::createDesign()
 {
-    Node * root = rootNode->GetChild( "Root", true );
+    Node * root = rootNode;
     if ( !root )
         return;
 

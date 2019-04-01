@@ -35,7 +35,8 @@ private:
     void SubscribeToEvents();
 
 
-    SharedPtr<Node>  rootNode;
+    SharedPtr<Node>      rootNode;
+    SharedPtr<UIElement> workshopPnl;
     SharedPtr<PhysicsWorld> physicsWorld;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
