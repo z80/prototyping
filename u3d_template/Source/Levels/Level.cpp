@@ -58,13 +58,15 @@ void Level::Init()
     // Subscribe to global events for camera movement
     SubscribeToEvents();
 
-    /*Input* input = GetSubsystem<Input>();
+    auto input = GetSubsystem<Input>();
     if (input->IsMouseVisible()) {
         input->SetMouseVisible(false);
-    }*/
+    }
 
     Node* movableNode = scene_->GetChild("PathNode");
-    _path = movableNode->GetComponent<SplinePath>();
+    if (movableNode) {
+        _path = movableNode->GetComponent<SplinePath>();
+    }
 }
 
 void Level::StartAudio()
@@ -99,8 +101,7 @@ void Level::CreateScene()
 void Level::CreateUI()
 {
     auto* localization = GetSubsystem<Localization>();
-    UI* ui = GetSubsystem<UI>();
-    ResourceCache* cache = GetSubsystem<ResourceCache>();
+    auto ui = GetSubsystem<UI>();
 
     Text* text = ui->GetRoot()->CreateChild<Text>();
     text->SetHorizontalAlignment(HA_CENTER);
@@ -239,6 +240,8 @@ void Level::HandlePostUpdate(StringHash eventType, VariantMap& eventData)
     for (auto it = _players.Begin(); it != _players.End(); ++it) {
         if ((*it).second_->GetPosition().y_ < -10) {
             (*it).second_->SetPosition(Vector3(0, 1, 0));
+            (*it).second_->GetComponent<RigidBody>()->SetLinearVelocity(Vector3::ZERO);
+            (*it).second_->GetComponent<RigidBody>()->SetAngularVelocity(Vector3::ZERO);
             SendEvent("FallOffTheMap");
         }
 
@@ -344,6 +347,7 @@ Node* Level::CreateControllableObject()
     body->SetLinearDamping(0.8f);
     body->SetAngularDamping(0.8f);
     body->SetCollisionLayerAndMask(COLLISION_MASK_PLAYER, COLLISION_MASK_PLAYER | COLLISION_MASK_CHECKPOINT | COLLISION_MASK_OBSTACLES);
+    body->SetCollisionEventMode(CollisionEventMode::COLLISION_ALWAYS);
 
     auto* shape = ballNode->CreateComponent<CollisionShape>();
     shape->SetSphere(1.0f);

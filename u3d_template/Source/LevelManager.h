@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Urho3D/Urho3DAll.h>
-#include "design.h"
 
 class LevelManager : public Object
 {
@@ -10,9 +9,6 @@ public:
     LevelManager(Context* context);
 
     ~LevelManager();
-
-    VariantMap & levelData();
-    Osp::Design & design();
 
 private:
     /**
@@ -79,9 +75,4 @@ private:
      * Name of the previous level
      */
     String previousLevel_;
-
-
-    /// Data levels can exchange or store.
-    VariantMap crossLevelData;
-    Osp::Design _design;
 };

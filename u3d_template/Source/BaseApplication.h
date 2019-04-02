@@ -2,7 +2,6 @@
 
 #include <Urho3D/Urho3DAll.h>
 #include "LevelManager.h"
-#include "Messages/Message.h"
 #include "Messages/Achievements.h"
 #include "Messages/Notifications.h"
 #include "Mods/ModLoader.h"
@@ -49,6 +48,10 @@ private:
 	 */
     void LoadConfig(String filename, String prefix = "", bool isMain = false);
 
+    /**
+     * Load all translation files
+     */
+    void LoadTranslationFiles();
 
     /**
      * Handle event for config loading

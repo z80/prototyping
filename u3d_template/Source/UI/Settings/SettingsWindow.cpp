@@ -6,11 +6,15 @@
 #include "../../Global.h"
 #include "../../Messages/Achievements.h"
 
+/**
+ * Settings view has horizontal layout, and each element takes up this much horizontal space
+ */
+static const int COLUMN_WIDTH = 250;
+
 /// Construct.
 SettingsWindow::SettingsWindow(Context* context) :
         BaseWindow(context)
 {
-    Init();
 }
 
 SettingsWindow::~SettingsWindow()
@@ -29,7 +33,7 @@ void SettingsWindow::Create()
 {
     auto* localization = GetSubsystem<Localization>();
 
-    _baseWindow = GetSubsystem<UI>()->GetRoot()->CreateChild<Window>();
+    _baseWindow = CreateOverlay()->CreateChild<Window>();
     _baseWindow->SetStyleAuto();
     _baseWindow->SetAlignment(HA_CENTER, VA_CENTER);
     _baseWindow->SetSize(400, 500);
@@ -97,10 +101,6 @@ void SettingsWindow::Create()
     SubscribeToEvent(_tabs[GAME], E_RELEASED, [&](StringHash eventType, VariantMap& eventData) {
         ChangeTab(GAME);
     });
-	_tabs[MISC] = CreateTabButton(localization->Get("MISC"));
-	SubscribeToEvent(_tabs[MISC], E_RELEASED, [&](StringHash eventType, VariantMap& eventData) {
-		ChangeTab(MISC);
-	});
 
     ChangeTab(CONTROLS);
 }
@@ -132,9 +132,6 @@ void SettingsWindow::ChangeTab(SettingTabs tab)
             break;
         case GAME:
             CreateGameTab();
-            break;
-        case MISC:
-            CreateMiscTab();
             break;
     }
 }
@@ -304,6 +301,36 @@ void SettingsWindow::CreateControllersTab()
 
             GetSubsystem<ConfigManager>()->Save(true);
         });
+
+        // Multiple controller support
+        CreateSingleLine();
+        auto multipleControllers = CreateCheckbox(localization->Get("MULTIPLE_CONTROLLER_SUPPORT"));
+        multipleControllers->SetChecked(controllerInput->GetMultipleControllerSupport());
+        SubscribeToEvent(multipleControllers, E_TOGGLED, [&](StringHash eventType, VariantMap &eventData) {
+            using namespace Toggled;
+            bool enabled = eventData[P_STATE].GetBool();
+
+            auto controllerInput = GetSubsystem<ControllerInput>();
+            controllerInput->SetMultipleControllerSupport(enabled);
+            GetSubsystem<ConfigManager>()->Set("joystick", "MultipleControllers", enabled);
+
+            GetSubsystem<ConfigManager>()->Save(true);
+        });
+
+        // Joystick as first controller
+        CreateSingleLine();
+        auto joystickAsFirstController = CreateCheckbox(localization->Get("JOYSTICK_AS_FIRST_CONTROLLER"));
+        joystickAsFirstController->SetChecked(controllerInput->GetJoystickAsFirstController());
+        SubscribeToEvent(joystickAsFirstController, E_TOGGLED, [&](StringHash eventType, VariantMap &eventData) {
+            using namespace Toggled;
+            bool enabled = eventData[P_STATE].GetBool();
+
+            auto controllerInput = GetSubsystem<ControllerInput>();
+            controllerInput->SetJoystickAsFirstController(enabled);
+            GetSubsystem<ConfigManager>()->Set("joystick", "JoystickAsFirstController", enabled);
+
+            GetSubsystem<ConfigManager>()->Save(true);
+        });
     }
 }
 
@@ -348,6 +375,39 @@ void SettingsWindow::CreateVideoTab()
 {
     auto* localization = GetSubsystem<Localization>();
     InitGraphicsSettings();
+
+    // UI Scale
+    CreateSingleLine();
+    auto scaleSlider = CreateSlider(localization->Get("UI"));
+    scaleSlider->SetRange(0.5);
+    scaleSlider->SetValue(GetSubsystem<UI>()->GetScale() - 1.0f);
+    // Detect button press events
+    SubscribeToEvent(scaleSlider, E_SLIDERCHANGED, [&](StringHash eventType, VariantMap &eventData) {
+
+        using namespace SliderChanged;
+        float newValue = eventData[P_VALUE].GetFloat();
+        GetSubsystem<UI>()->SetScale(newValue + 1.0f);
+
+    });
+
+    // Gamma
+    CreateSingleLine();
+    auto gammaSlider = CreateSlider(localization->Get("GAMMA"));
+    gammaSlider->SetRange(GAMMA_MAX_VALUE);
+    gammaSlider->SetValue(GetSubsystem<ConfigManager>()->GetFloat("engine", "Gamma", 1.0f));
+    // Detect button press events
+    SubscribeToEvent(gammaSlider, E_SLIDERCHANGED, [&](StringHash eventType, VariantMap &eventData) {
+
+        using namespace SliderChanged;
+        float newValue = eventData[P_VALUE].GetFloat();
+        VariantMap data = GetEventDataMap();
+        StringVector command;
+        command.Push("gamma");
+        command.Push(String(newValue));
+        data["Parameters"] = command;
+        SendEvent("gamma", data);
+
+    });
 
     // FOV
     CreateSingleLine();
@@ -568,13 +628,46 @@ void SettingsWindow::CreateGameTab()
         GetSubsystem<ConfigManager>()->Set("engine", "Language", languages.At(selection));
         GetSubsystem<ConfigManager>()->Save(true);
 
-        //TODO - apply settings directly, reload view or just show the pop-up message?
+        VariantMap& data = GetEventDataMap();
+        data["Title"] = localization->Get("WARNING");
+        data["Message"] = localization->Get("RESTART_TO_APPLY");
+        data["Name"] = "PopupMessageWindow";
+        data["Type"] = "warning";
+        data["ClosePrevious"] = true;
+        SendEvent(MyEvents::E_OPEN_WINDOW, data);
     });
-}
 
-void SettingsWindow::CreateMiscTab()
-{
-    auto* localization = GetSubsystem<Localization>();
+    // Load mods
+    CreateSingleLine();
+    auto loadMods = CreateCheckbox(localization->Get("LOAD_MODS"));
+    loadMods->SetChecked(GetSubsystem<ConfigManager>()->GetBool("game", "LoadMods", true));
+    SubscribeToEvent(loadMods, E_TOGGLED, [&](StringHash eventType, VariantMap &eventData) {
+        using namespace Toggled;
+        bool enabled = eventData[P_STATE].GetBool();
+        GetSubsystem<ConfigManager>()->Set("game", "LoadMods", enabled);
+        GetSubsystem<ConfigManager>()->Save(true);
+
+        auto* localization = GetSubsystem<Localization>();
+
+        VariantMap& data = GetEventDataMap();
+        data["Title"] = localization->Get("WARNING");
+        data["Message"] = localization->Get("RESTART_TO_APPLY");
+        data["Name"] = "PopupMessageWindow";
+        data["Type"] = "warning";
+        data["ClosePrevious"] = true;
+        SendEvent(MyEvents::E_OPEN_WINDOW, data);
+    });
+
+    // Developer console
+    CreateSingleLine();
+    auto developerConsole = CreateCheckbox(localization->Get("DEVELOPER_CONSOLE"));
+    developerConsole->SetChecked(GetSubsystem<ConfigManager>()->GetBool("game", "DeveloperConsole", true));
+    SubscribeToEvent(developerConsole, E_TOGGLED, [&](StringHash eventType, VariantMap &eventData) {
+        using namespace Toggled;
+        bool enabled = eventData[P_STATE].GetBool();
+        GetSubsystem<ConfigManager>()->Set("game", "DeveloperConsole", enabled);
+        GetSubsystem<ConfigManager>()->Save(true);
+    });
 
     CreateSingleLine();
     auto clearAchievementsButton = CreateButton(localization->Get("CLEAR_ACHIEVEMENTS"));
@@ -711,7 +804,7 @@ Button* SettingsWindow::CreateButton(const String& text)
 
     auto* button = _activeLine->CreateChild<Button>();
     button->SetStyleAuto();
-    button->SetFixedWidth(200);
+    button->SetFixedWidth(COLUMN_WIDTH);
     button->SetFixedHeight(30);
 
     auto* buttonText = button->CreateChild<Text>("Label");
@@ -736,7 +829,7 @@ CheckBox* SettingsWindow::CreateCheckbox(const String& label)
     _activeLine->AddChild(text);
     text->SetText(label);
     text->SetStyleAuto();
-    text->SetFixedWidth(200);
+    text->SetFixedWidth(COLUMN_WIDTH);
     text->SetFont(font, 12);
 
     SharedPtr<CheckBox> box(new CheckBox(context_));
@@ -762,7 +855,7 @@ Text* SettingsWindow::CreateLabel(const String& text)
     label->SetFont(font, 12);
     label->SetPosition(10, 30 + _tabElementCount * 30);
     label->SetText(text);
-    label->SetFixedWidth(200);
+    label->SetFixedWidth(COLUMN_WIDTH);
 
     return label;
 }
@@ -783,13 +876,13 @@ Slider* SettingsWindow::CreateSlider(const String& text)
     sliderText->SetWidth(50);
     sliderText->SetFont(font, 12);
     sliderText->SetText(text);
-    sliderText->SetFixedWidth(200);
+    sliderText->SetFixedWidth(COLUMN_WIDTH);
 
     auto* slider = _activeLine->CreateChild<Slider>();
     slider->SetStyleAuto();
     slider->SetPosition(0, 0);
     slider->SetSize(300, 30);
-    slider->SetFixedWidth(200);
+    slider->SetFixedWidth(COLUMN_WIDTH);
     // Use 0-1 range for controlling sound/music master volume
     slider->SetRange(1.0f);
     slider->SetRepeatRate(0.2);
@@ -811,13 +904,13 @@ DropDownList* SettingsWindow::CreateMenu(const String& label, Vector<String>& it
     _activeLine->AddChild(text);
     text->SetText(label);
     text->SetStyleAuto();
-    text->SetFixedWidth(200);
+    text->SetFixedWidth(COLUMN_WIDTH);
     text->SetFont(font, 12);
 
     SharedPtr<DropDownList> list(new DropDownList(context_));
     _activeLine->AddChild(list);
     list->SetStyleAuto();
-    list->SetFixedWidth(200);
+    list->SetFixedWidth(COLUMN_WIDTH);
 
     for (auto it = items.Begin(); it != items.End(); ++it)
     {
@@ -825,7 +918,7 @@ DropDownList* SettingsWindow::CreateMenu(const String& label, Vector<String>& it
         list->AddItem(item);
         item->SetText((*it));
         item->SetStyleAuto();
-        item->SetFixedWidth(200);
+        item->SetFixedWidth(COLUMN_WIDTH);
         item->SetFont(font, 12);
     }
 

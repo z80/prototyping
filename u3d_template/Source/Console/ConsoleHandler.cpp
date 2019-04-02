@@ -1,6 +1,7 @@
 #include <Urho3D/Urho3DAll.h>
 #include "ConsoleHandler.h"
 #include "../MyEvents.h"
+#include "../Config/ConfigManager.h"
 
 /// Construct.
 ConsoleHandler::ConsoleHandler(Context* context) :
@@ -34,6 +35,7 @@ void ConsoleHandler::Create()
     _console->GetBackground()->SetOpacity(0.8f);
     _console->SetNumHistoryRows(1000);
     _console->SetNumBufferedRows(100);
+    _console->GetBackground()->SetPriority(9999);
 
     for (auto it = _registeredConsoleCommands.Begin(); it != _registeredConsoleCommands.End(); ++it) {
         _console->AddAutoComplete((*it).first_);
@@ -58,12 +60,18 @@ void ConsoleHandler::SubscribeToEvents()
 
 void ConsoleHandler::HandleKeyDown(StringHash eventType, VariantMap& eventData)
 {
-    using namespace KeyDown;
-    int key = eventData[P_KEY].GetInt();
-    if (key == KEY_F2) {
-        _console->Toggle();
+    if (GetSubsystem<ConfigManager>()->GetBool("game", "DeveloperConsole", true)) {
+        using namespace KeyDown;
+        int key = eventData[P_KEY].GetInt();
+        if (key == KEY_F2) {
+            _console->Toggle();
+        }
+    } else {
+        // If console is still visible when it was disabled via options, hide it
+        if (_console->IsVisible()) {
+            _console->Toggle();
+        }
     }
-
 }
 
 void ConsoleHandler::HandleConsoleCommandAdd(StringHash eventType, VariantMap& eventData)

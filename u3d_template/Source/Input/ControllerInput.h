@@ -13,9 +13,9 @@ enum ControllerType {
 	JOYSTICK
 };
 
-class ControllerInput: public Object
+class ControllerInput : public Object
 {
-    URHO3D_OBJECT( ControllerInput, Object )
+    URHO3D_OBJECT(ControllerInput, Object);
 
 public:
     /// Construct.
@@ -28,7 +28,7 @@ public:
 	 * If multiple controller support is disabled, only the
 	 * controls with index 0 will be returned
 	 */
-    Controls GetControls( int index = 0 );
+	Controls GetControls(int index = 0);
 
 	/**
 	 * Get a vector of all the controller indexes
@@ -91,6 +91,11 @@ public:
 	void SetMultipleControllerSupport(bool enabled);
 
 	/**
+	 * Get Multiple controller support
+	 */
+	bool GetMultipleControllerSupport() { return _multipleControllerSupport; }
+
+	/**
 	 * Detect if mapping is in progress
 	 */
 	bool IsMappingInProgress();
@@ -106,6 +111,11 @@ public:
      * Ignored if `SetMultipleControllerSupport` is set as `false`
      */
     void SetJoystickAsFirstController(bool enabled);
+
+	/**
+     * Is joystick set as first controller
+     */
+	bool GetJoystickAsFirstController();
 
     /**
      * Set inverted X axis for specific controller
@@ -195,11 +205,6 @@ private:
 	 * All input handlers
 	 */
 	HashMap<int, SharedPtr<BaseInput>> _inputHandlers;
-
-	/**
-	 * Filepath + filename to the configuration file
-	 */
-	String _configurationFile;
 
 	/**
 	 * Multiple controller support

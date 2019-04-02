@@ -7,20 +7,6 @@
 #include "Levels/Credits.h"
 #include "MyEvents.h"
 
-#include "mode_manager.h"
-
-#include "level_main.h"
-#include "workshop.h"
-#include "one_planet.h"
-
-#include "mode_workshop.h"
-
-#include "assembly.h"
-#include "camera_orb_2.h"
-#include "tech_tree.h"
-#include "design_manager.h"
-#include "box.h"
-#include "physics_world_2.h"
 
 LevelManager::LevelManager(Context* context) :
 Object(context)
@@ -30,21 +16,33 @@ Object(context)
 
     // Listen to set level event
     SubscribeToEvent(MyEvents::E_SET_LEVEL, URHO3D_HANDLER(LevelManager, HandleSetLevelQueue));
+
+    if (GetSubsystem<UI>()) {
+        GetSubsystem<UI>()->GetRoot()->RemoveAllChildren();
+    }
+
+    // How to use lambda (anonymous) functions
+    SendEvent(MyEvents::E_CONSOLE_COMMAND_ADD, MyEvents::ConsoleCommandAdd::P_NAME, "change_level", MyEvents::ConsoleCommandAdd::P_EVENT, "ChangeLevelConsole", MyEvents::ConsoleCommandAdd::P_DESCRIPTION, "Change level");
+    SubscribeToEvent("ChangeLevelConsole", [&](StringHash eventType, VariantMap& eventData) {
+        StringVector params = eventData["Parameters"].GetStringVector();
+
+        const Variant value = GetSubsystem<Engine>()->GetGlobalVar(params[0]);
+
+        // Only show variable
+        if (params.Size() != 2) {
+            URHO3D_LOGERROR("Invalid number of parameters!");
+        } else {
+            VariantMap data = GetEventDataMap();
+            data[MyEvents::SetLevel::P_NAME] = params[1];
+            SendEvent(MyEvents::E_SET_LEVEL, data);
+        }
+    });
 }
 
 LevelManager::~LevelManager()
 {
 }
 
-VariantMap & LevelManager::levelData()
-{
-    return crossLevelData;
-}
-
-Osp::Design & LevelManager::design()
-{
-    return _design;
-}
 
 void LevelManager::RegisterAllFactories()
 {
@@ -55,27 +53,6 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Levels::ExitGame>();
     context_->RegisterFactory<Levels::Loading>();
     context_->RegisterFactory<Levels::Credits>();
-
-
-    // My mode manager.
-    Osp::ModeManager::RegisterObject( context_ );
-
-    // Here should be my levels.
-    context_->RegisterFactory<Osp::LevelMain>();
-    context_->RegisterFactory<Osp::Workshop>();
-    context_->RegisterFactory<Osp::OnePlanet>();
-
-    // My modified dynamics wrapper.
-    RegisterPhysicsLibrary2( context_ );
-    // My helper objects.
-    context_->RegisterFactory<Osp::CameraOrb2>();
-    context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
-    context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
-    context_->RegisterFactory<Osp::PivotMarker>();
-    context_->RegisterFactory<Osp::Assembly>();
-
-    // Here should be all the blocks available after this line.
-    context_->RegisterFactory<Osp::Box>();
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)
@@ -122,6 +99,7 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
         fade_window_->SetOpacity(0.0f);
         fade_time_ = MAX_FADE_TIME;
         fade_status_++;
+
         return;
     }
 
@@ -132,6 +110,7 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
             fade_status_++;
             return;
         }
+        fade_window_->SetFocus(true);
         fade_window_->SetOpacity(1.0f - fade_time_ / MAX_FADE_TIME);
 
         // Increase fade status
@@ -143,11 +122,6 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     // Release old level
     if (fade_status_ == 2) {
-        // No old level
-        if (!level_) {
-            fade_status_++;
-            return;
-        }
         // We can not create new level here, or it may cause errors, we have to create it at the next update point.
         level_ = SharedPtr<Object>();
         fade_status_++;
@@ -161,17 +135,26 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (fade_status_ == 3) {
         // Create new level
         level_ = context_->CreateObject(StringHash(level_queue_.Front()));
-        level_->SendEvent("LevelStart", data_);
+        if (!level_) {
+            URHO3D_LOGERROR("Level '" + level_queue_.Front() + "' doesn't exist in the system! Moving to 'Splash' level");
+
+            auto* localization = GetSubsystem<Localization>();
+            VariantMap& eventData = GetEventDataMap();
+            eventData["Name"] = "MainMenu";
+            eventData["Message"] = localization->Get("LEVEL_NOT_EXIST") + " :" + level_queue_.Front();
+            SendEvent(MyEvents::E_SET_LEVEL, eventData);
+
+            level_queue_.PopFront();
+            return;
+        }
+        SendEvent(MyEvents::E_LEVEL_CHANGING_STARTED, data_);
 
         previousLevel_ = currentLevel_;
         currentLevel_ = level_queue_.Front();
+        SetGlobalVar("CurrentLevel", currentLevel_);
 
         GetSubsystem<DebugHud>()->SetAppStats("Current level", currentLevel_);
 
-        // Remove the old fade layer
-        if (fade_window_) {
-            fade_window_->Remove();
-        }
         // Add a new fade layer
         AddFadeLayer();
         fade_window_->SetOpacity(1.0f);
@@ -188,6 +171,7 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     // Fade in
     if (fade_status_ == 4) {
+        fade_window_->SetFocus(true);
         fade_window_->SetOpacity(fade_time_ / MAX_FADE_TIME);
 
         // Increase fade status
@@ -201,7 +185,7 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (fade_status_ == 5) {
         // Remove fade layer
         fade_window_->Remove();
-        fade_window_ = SharedPtr<Window>();
+        fade_window_.Reset();
         // Unsubscribe update event
         UnsubscribeFromEvent(E_UPDATE);
 
@@ -236,6 +220,9 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void LevelManager::AddFadeLayer()
 {
+    if (fade_window_) {
+        fade_window_.Reset();
+    }
     fade_window_ = new Window(context_);
     // Make the window a child of the root element, which fills the whole screen.
     GetSubsystem<UI>()->GetRoot()->AddChild(fade_window_);
@@ -251,4 +238,5 @@ void LevelManager::AddFadeLayer()
     fade_window_->SetColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
     // Make it topmost
     fade_window_->BringToFront();
+    fade_window_->SetPriority(1000);
 }

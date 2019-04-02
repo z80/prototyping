@@ -14,16 +14,18 @@ namespace Levels {
         Splash(Context* context);
 
         virtual ~Splash();
+
         void HandleUpdate(StringHash eventType, VariantMap& eventData);
 
     protected:
         void Init () override;
 
     private:
-		friend void CheckThreading(const WorkItem* item, unsigned threadIndex);
-
         void CreateScene();
 
+        /**
+         * Create the actual splash screen content
+         */
         void CreateUI();
 
         void SubscribeToEvents();
@@ -32,8 +34,6 @@ namespace Levels {
          * Show next screen
          */
         void HandleEndSplash();
-
-		void HandleWorkItemFinished(StringHash eventType, VariantMap& eventData);
 
 		/**
 		 * Timer to check splash screen lifetime

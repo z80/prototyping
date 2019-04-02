@@ -1,6 +1,7 @@
 #include <Urho3D/Urho3DAll.h>
 #include "ModLoader.h"
 #include "../MyEvents.h"
+#include "../Config/ConfigManager.h"
 
 /// Construct.
 ModLoader::ModLoader(Context* context) :
@@ -15,14 +16,16 @@ ModLoader::~ModLoader()
 
 void ModLoader::Init()
 {
-    auto asScript = new Script(context_);
-    context_->RegisterSubsystem(asScript);
-    asScript->SetExecuteConsoleCommands(false);
-    auto luaScript = new LuaScript(context_);
-    context_->RegisterSubsystem(luaScript);
-    luaScript->SetExecuteConsoleCommands(false);
-    Create();
-    SubscribeToEvents();
+    if (GetSubsystem<ConfigManager>()->GetBool("game", "LoadMods", true)) {
+        auto asScript = new Script(context_);
+        context_->RegisterSubsystem(asScript);
+        asScript->SetExecuteConsoleCommands(false);
+        auto luaScript = new LuaScript(context_);
+        context_->RegisterSubsystem(luaScript);
+        luaScript->SetExecuteConsoleCommands(false);
+        Create();
+        SubscribeToEvents();
+    }
 }
 
 void ModLoader::Create()
@@ -38,20 +41,26 @@ void ModLoader::Create()
 
 void ModLoader::LoadASMods()
 {
-    ResourceCache* cache = GetSubsystem<ResourceCache>();
     Vector<String> result;
 
     // Scan Data/Mods directory for all *.as files
     GetSubsystem<FileSystem>()->ScanDir(result, GetSubsystem<FileSystem>()->GetProgramDir() + String("/Data/Mods"), String("*.as"), SCAN_FILES, false);
     URHO3D_LOGINFO("Total AS mods found: " + String(result.Size()));
 
+#ifdef __ANDROID__
+    result.Push("Debugger.as");
+    result.Push("GameMode.as");
+    result.Push("LevelLoader.as");
+    result.Push("LoadingScreen.as");
+    result.Push("LoadStepImitator.as");
+    result.Push("LogoRotate.as");
+    result.Push("Skybox.as");
+#endif
+
     // Load each of the *.as files and launch their Start() method
     for (auto it = result.Begin(); it != result.End(); ++it) {
         URHO3D_LOGINFO("Loading mod: " + (*it));
-        SharedPtr<ScriptFile> scriptFile(GetSubsystem<ResourceCache>()->GetResource<ScriptFile>(GetSubsystem<FileSystem>()->GetProgramDir() + "/Data/Mods/" + (*it)));
-        /*if (scriptFile && scriptFile->Execute("void Start()")) {
-            URHO3D_LOGINFO("Mod " + (*it) + " succesfully loaded!");
-        }*/
+        SharedPtr<ScriptFile> scriptFile(GetSubsystem<ResourceCache>()->GetResource<ScriptFile>("Mods/" + (*it)));
         if (scriptFile) {
             _asMods.Push(scriptFile);
             _asScriptMap["Mods/" + (*it)] = scriptFile;
@@ -110,14 +119,16 @@ void ModLoader::Dispose()
 
 void ModLoader::Reload()
 {
-	//_mods.Clear();
-	for (auto it = _asMods.Begin(); it != _asMods.End(); ++it) {
-	    if ((*it)) {
-            (*it)->Execute("void Stop()");
-            (*it)->Execute("void Start()");
+    if (GetSubsystem<ConfigManager>()->GetBool("game", "LoadMods", true)) {
+        //_mods.Clear();
+        for (auto it = _asMods.Begin(); it != _asMods.End(); ++it) {
+            if ((*it)) {
+                (*it)->Execute("void Stop()");
+                (*it)->Execute("void Start()");
+            }
         }
-	}
-    CheckAllMods();
+        CheckAllMods();
+    }
 }
 
 void ModLoader::SubscribeConsoleCommands()
@@ -152,6 +163,10 @@ void ModLoader::CheckAllMods()
 
 void ModLoader::HandleReloadScript(StringHash eventType, VariantMap& eventData)
 {
+    if (!GetSubsystem<ConfigManager>()->GetBool("game", "LoadMods", true)) {
+        return;
+    }
+
     using namespace FileChanged;
     String filename = eventData[P_RESOURCENAME].GetString();
     if (!filename.Contains(".as") && !filename.Contains(".lua")) {

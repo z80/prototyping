@@ -5,6 +5,7 @@
 #include "Console/ConsoleHandler.h"
 #include "SceneManager.h"
 #include "MyEvents.h"
+#include "Global.h"
 
 URHO3D_DEFINE_APPLICATION_MAIN(BaseApplication);
 
@@ -16,7 +17,6 @@ BaseApplication::BaseApplication(Context* context) :
 
     context_->RegisterFactory<ControllerInput>();
     context_->RegisterFactory<LevelManager>();
-    context_->RegisterFactory<Message>();
     context_->RegisterFactory<Notifications>();
     context_->RegisterFactory<Achievements>();
     SingleAchievement::RegisterObject(context_);
@@ -26,15 +26,22 @@ BaseApplication::BaseApplication(Context* context) :
     context_->RegisterFactory<ConsoleHandler>();
     context_->RegisterFactory<SceneManager>();
 
-    _configurationFile = GetSubsystem<FileSystem>()->GetProgramDir() + "/Data/Config/config.cfg";
+#ifdef __ANDROID__
+    _configurationFile = GetSubsystem<FileSystem>()->GetUserDocumentsDir() + DOCUMENTS_DIR + "/config.cfg";
+#else
+    _configurationFile = GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Config/config.cfg";
+#endif
 
     ConfigManager* configManager = new ConfigManager(context_, _configurationFile);
     context_->RegisterSubsystem(configManager);
     context_->RegisterSubsystem(new SceneManager(context_));
 
-    auto* localization = GetSubsystem<Localization>();
-    localization->LoadJSONFile(GetSubsystem<FileSystem>()->GetProgramDir() + "/Data/Translations/EN.json");
-
+#ifdef __ANDROID__
+    String directory = GetSubsystem<FileSystem>()->GetUserDocumentsDir() + DOCUMENTS_DIR;
+    if (!GetSubsystem<FileSystem>()->DirExists(directory)) {
+        GetSubsystem<FileSystem>()->CreateDir(directory);
+    }
+#endif
 }
 
 void BaseApplication::Setup()
@@ -47,6 +54,11 @@ void BaseApplication::Setup()
 void BaseApplication::Start()
 {
     UI* ui = GetSubsystem<UI>();
+#ifdef __ANDROID__
+    ui->SetScale(GetSubsystem<ConfigManager>()->GetFloat("engine", "UIScale", 1.8));
+#else
+    ui->SetScale(GetSubsystem<ConfigManager>()->GetFloat("engine", "UIScale", 1.0));
+#endif
     GetSubsystem<ConsoleHandler>()->Create();
 
     DebugHud* debugHud = GetSubsystem<Engine>()->CreateDebugHud();
@@ -61,26 +73,22 @@ void BaseApplication::Start()
 
     GetSubsystem<FileSystem>()->SetExecuteConsoleCommands(false);
 
-    context_->RegisterSubsystem<LevelManager>();
-    context_->RegisterSubsystem<WindowManager>();
-    context_->RegisterSubsystem<Message>();
-    context_->RegisterSubsystem<Notifications>();
-    context_->RegisterSubsystem<Achievements>();
-	context_->RegisterSubsystem<ModLoader>();
+    context_->RegisterSubsystem(new LevelManager(context_));
+    context_->RegisterSubsystem(new WindowManager(context_));
+    context_->RegisterSubsystem(new Achievements(context_));
+	context_->RegisterSubsystem(new ModLoader(context_));
+    context_->RegisterSubsystem(new AudioManager(context_));
 
-    context_->RegisterSubsystem<AudioManager>();
     // Allow multiple music tracks to play at the same time
     context_->GetSubsystem<AudioManager>()->AllowMultipleMusicTracks(true);
     // Allow multiple ambient tracks to play at the same time
     context_->GetSubsystem<AudioManager>()->AllowMultipleAmbientTracks(true);
 
-	context_->RegisterSubsystem<ControllerInput>();
-    // Single player mode, all the input is handled by single Controls object
-    context_->GetSubsystem<ControllerInput>()->SetMultipleControllerSupport(true);
-    // Keyboard/mouse - 1st player, all the connected joysticks control new players
-    // This will have no effect if `SetMultipleControllerSupport` is set to `false`
-    context_->GetSubsystem<ControllerInput>()->SetJoystickAsFirstController(false);
-    context_->GetSubsystem<ControllerInput>()->LoadConfig();
+    auto controllerInput = new ControllerInput(context_);
+	context_->RegisterSubsystem(controllerInput);
+    controllerInput->LoadConfig();
+
+    context_->RegisterSubsystem(new Notifications(context_));
 
     SendEvent("GameStarted");
 
@@ -89,8 +97,13 @@ void BaseApplication::Start()
     ApplyGraphicsSettings();
 
     VariantMap& eventData = GetEventDataMap();
-    eventData["Name"] = "Loading";
+    eventData["Name"] = GetSubsystem<ConfigManager>()->GetString("game", "FirstLevel", "Splash");
     SendEvent(MyEvents::E_SET_LEVEL, eventData);
+
+    LoadTranslationFiles();
+
+    auto* localization = GetSubsystem<Localization>();
+    localization->SetLanguage(GetSubsystem<ConfigManager>()->GetString("engine", "Language", "EN"));
 }
 
 void BaseApplication::Stop()
@@ -155,8 +168,6 @@ void BaseApplication::RegisterConsoleCommands()
     SendEvent(MyEvents::E_CONSOLE_COMMAND_ADD, MyEvents::ConsoleCommandAdd::P_NAME, "debugger", MyEvents::ConsoleCommandAdd::P_EVENT, "#debugger", MyEvents::ConsoleCommandAdd::P_DESCRIPTION, "Show debug");
     SubscribeToEvent("#debugger", [&](StringHash eventType, VariantMap& eventData) {
         GetSubsystem<DebugHud>()->Toggle(DEBUGHUD_SHOW_STATS);
-//        String stat = "ABCV";
-//        GetSubsystem<DebugHud>()->SetAppStats("Hahaha", stat);
     });
 }
 
@@ -245,9 +256,6 @@ void BaseApplication::LoadINIConfig(String filename)
 	audio->SetMasterGain(SOUND_AMBIENT, engine_->GetGlobalVar("Ambient").GetFloat());
 	audio->SetMasterGain(SOUND_VOICE, engine_->GetGlobalVar("Voice").GetFloat());
 	audio->SetMasterGain(SOUND_MUSIC, engine_->GetGlobalVar("Music").GetFloat());
-
-    auto* localization = GetSubsystem<Localization>();
-    localization->SetLanguage(GetSubsystem<ConfigManager>()->GetString("engine", "Language", "EN"));
 }
 
 void BaseApplication::ApplyGraphicsSettings()
@@ -268,4 +276,36 @@ void BaseApplication::SetEngineParameter(String parameter, Variant value)
     data[P_EVENT] = "ConsoleGlobalVariableChange";
     data[P_DESCRIPTION] = "Show/Change global variable value";
     SendEvent(MyEvents::E_CONSOLE_COMMAND_ADD, data);
+}
+
+void BaseApplication::LoadTranslationFiles()
+{
+    Vector<String> result;
+    auto* localization = GetSubsystem<Localization>();
+
+    // Get all translation files in the Data/Translations folder
+    GetSubsystem<FileSystem>()->ScanDir(result, GetSubsystem<FileSystem>()->GetProgramDir() + String("Data/Translations"), String("*.json"), SCAN_FILES, true);
+
+#ifdef __ANDROID__
+    result.Push("EN.json");
+    result.Push("LV.json");
+#endif
+
+    for (auto it = result.Begin(); it != result.End(); ++it) {
+        String file = (*it);
+
+        String filepath = "Translations/" + file;
+        // Filename is handled as a language
+        file.Replace(".json", "", false);
+
+        auto jsonFile = GetSubsystem<ResourceCache>()->GetResource<JSONFile>(filepath);
+        if (jsonFile) {
+            // Load the actual file in the system
+            //localization->LoadSingleLanguageJSON(jsonFile->GetRoot(), file);
+            localization->LoadJSONFile( filepath );
+            URHO3D_LOGINFO("Loading translation file '" + filepath + "' to '" + file + "' language");
+        } else {
+            URHO3D_LOGERROR("Translation file '" + filepath + "' not found!");
+        }
+    }
 }

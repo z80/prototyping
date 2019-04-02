@@ -105,9 +105,9 @@ void LevelMain::CreateFirstMode()
     Scene * s = scene_;
     modeManager = s->CreateComponent<ModeManager>();
 
-    VariantMap& eventData = GetEventDataMap();
-    eventData["Name"] = "WorkshopMode";
-    SendEvent( MyEvents::E_SETMODE, eventData );
+    //VariantMap& eventData = GetEventDataMap();
+    //eventData["Name"] = "WorkshopMode";
+    //SendEvent( MyEvents::E_SETMODE, eventData );
 }
 
 

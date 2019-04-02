@@ -1,13 +1,23 @@
 #include "SceneManager.h"
+#include "MyEvents.h"
 
 using namespace Urho3D;
 
-static int loadingIndex = 0;
+/**
+ * Wait this many MS before marking loading step as completed if no ACK request was received
+ */
+const int LOADING_STEP_ACK_MAX_TIME = 2000; // Max wait time for ACK message for loading step
+const float PROGRESS_SPEED = 0.3f; // how fast should the progress bar increase each second, 1 - load 0 to 100% in 1 second
 
 SceneManager::SceneManager(Context* context) :
         Object(context),
-        progress(0)
+        progress(0),
+        targetProgress(0)
 {
+    SubscribeToEvent(MyEvents::E_REGISTER_LOADING_STEP, URHO3D_HANDLER(SceneManager, HandleRegisterLoadingStep));
+    SubscribeToEvent(MyEvents::E_ACK_LOADING_STEP, URHO3D_HANDLER(SceneManager, HandleLoadingStepAck));
+    SubscribeToEvent(MyEvents::E_LOADING_STEP_PROGRESS, URHO3D_HANDLER(SceneManager, HandleLoadingStepProgress));
+    SubscribeToEvent(MyEvents::E_LOADING_STEP_FINISHED, URHO3D_HANDLER(SceneManager, HandleLoadingStepFinished));
 }
 
 SceneManager::~SceneManager()
@@ -16,6 +26,8 @@ SceneManager::~SceneManager()
 
 void SceneManager::LoadScene(const String& filename)
 {
+    ResetProgress();
+
     _activeScene.Reset();
     _activeScene = new Scene(context_);
     _activeScene->SetAsyncLoadingMs(1);
@@ -49,54 +61,122 @@ void SceneManager::HandleAsyncSceneLoadingFinished(StringHash eventType, Variant
 
     _activeScene->SetUpdateEnabled(false);
 
-    GetSubsystem<Script>()->SetDefaultScene(_activeScene);
+    if (GetSubsystem<Script>()) {
+        GetSubsystem<Script>()->SetDefaultScene(_activeScene);
+    }
 
-    _loadingStatus = "Creating objects";
     UnsubscribeFromEvent(E_ASYNCLOADPROGRESS);
     UnsubscribeFromEvent(E_ASYNCLOADFINISHED);
 
-    auto* cache = GetSubsystem<ResourceCache>();
-    const unsigned NUM_OBJECTS = 10;
-    for (unsigned i = 0; i < NUM_OBJECTS; ++i)
-    {
-    }
-
-    _activeScene->SetUpdateEnabled(true);
     SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(SceneManager, HandleUpdate));
     URHO3D_LOGINFO("Scene loaded: " + _activeScene->GetFileName());
 }
 
 void SceneManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
-
-    // Imitate slower loading with multiple loading steps
-    if (_timer.GetMSec(false) > 300) {
-        static const char *Messages[] = {
-            "Smelling flowers",
-            "Improving CPU skills",
-            "Discussing religion",
-            "Retrieving sensitive user information",
-            "Gaining profit",
-            "Loosing trust in people",
-            "Meditating"
-        };
-        if (loadingIndex > 6) {
-            loadingIndex = 6;
-            progress = 1.0f;
-        }
-        _loadingStatus = Messages[loadingIndex++];
-        _timer.Reset();
+    using namespace Update;
+    progress += eventData[P_TIMESTEP].GetFloat() * PROGRESS_SPEED;
+    if (progress > targetProgress) {
+        progress = targetProgress;
     }
 
-    using namespace Update;
-    progress += eventData[P_TIMESTEP].GetFloat() / 2.f;
+    float completed = 1;
+    targetProgress = (float)completed / ( (float) _loadingSteps.Size() + 1.0f );
+    for (auto it = _loadingSteps.Begin(); it != _loadingSteps.End(); ++it) {
+        if ((*it).second_.finished) {
+            completed++;
+        }
+        if ((*it).second_.ackSent && !(*it).second_.ack && (*it).second_.ackTimer.GetMSec(false) > LOADING_STEP_ACK_MAX_TIME) {
+            (*it).second_.finished = true;
+            (*it).second_.ack = true;
+            URHO3D_LOGINFO("Loading step skipped, no ACK retrieved for " + (*it).second_.name);
+        }
+        targetProgress = (float)completed / ( (float) _loadingSteps.Size() + 1.0f );
+
+        // TODO - handle long running background tasks
+
+        if (!(*it).second_.finished) {
+            if (!(*it).second_.ackSent) {
+
+                // Send out event to start this loading step
+                _loadingStatus = (*it).second_.name;
+                SendEvent((*it).second_.event);
+
+                // We register that start event was sent out, loading step must send back ACK message
+                // to let us know that the loading step was started, otherwise it will be automatically
+                // marked as a finished job, to avoid app inifite loading
+                (*it).second_.ackSent = true;
+                (*it).second_.ackTimer.Reset();
+            }
+            completed += (*it).second_.progress;
+            targetProgress = (float)completed / ( (float) _loadingSteps.Size() + 1.0f );
+            return;
+        }
+
+    }
+
     if (progress >= 1.0f) {
         progress = 1.0f;
+        UnsubscribeFromEvent(E_UPDATE);
+
+        // Re-enable active scene
+        _activeScene->SetUpdateEnabled(true);
     }
 }
 
 void SceneManager::ResetProgress()
 {
     progress = 0.0f;
-    loadingIndex = 0;
+
+    for (auto it = _loadingSteps.Begin(); it != _loadingSteps.End(); ++it) {
+        (*it).second_.finished = false;
+        (*it).second_.ack = false;
+        (*it).second_.ackSent = false;
+        (*it).second_.progress = 0.0f;
+    }
+}
+
+void SceneManager::HandleRegisterLoadingStep(StringHash eventType, VariantMap& eventData)
+{
+    using namespace MyEvents::RegisterLoadingStep;
+    LoadingStep step;
+    step.name = eventData[P_NAME].GetString();
+    step.event = eventData[P_EVENT].GetString();
+    if (step.name.Empty() || step.event.Empty()) {
+        URHO3D_LOGERROR("Unable to register loading step " + step.name + ":" + step.event);
+        return;
+    }
+
+    URHO3D_LOGINFO("Registering new loading step: " + step.name + "; " + step.event);
+    _loadingSteps[step.event] = step;
+}
+
+void SceneManager::HandleLoadingStepAck(StringHash eventType, VariantMap& eventData)
+{
+    //
+    using namespace MyEvents::AckLoadingStep;
+    String name = eventData[P_EVENT].GetString();
+    _loadingSteps[name].ack = true;
+    _loadingSteps[name].loadTime.Reset();
+    URHO3D_LOGINFO("Loading step  '" + name + "' acknowlished");
+}
+
+void SceneManager::HandleLoadingStepProgress(StringHash eventType, VariantMap& eventData)
+{
+    using namespace MyEvents::LoadingStepProgress;
+    String event = eventData[P_EVENT].GetString();
+    float progress = eventData[P_PROGRESS].GetFloat();
+    progress = Clamp(progress, 0.0f, 1.0f);
+    _loadingSteps[event].progress = progress;
+
+    URHO3D_LOGINFO("Loading step progress update '" + event + "' : " + String(progress));
+}
+
+void SceneManager::HandleLoadingStepFinished(StringHash eventType, VariantMap& eventData)
+{
+    using namespace MyEvents::LoadingStepFinished;
+    String event = eventData[P_EVENT].GetString();
+    _loadingSteps[event].finished = true;
+
+    URHO3D_LOGINFO("Loading step " + event + " finished");
 }

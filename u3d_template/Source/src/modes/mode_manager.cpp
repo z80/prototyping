@@ -11,7 +11,7 @@ namespace Osp
 ModeManager::ModeManager( Context * ctx )
     : Component( ctx )
 {
-    SubscribeToEvent( MyEvents::E_SETMODE, URHO3D_HANDLER( ModeManager, activateMode ) );
+    //SubscribeToEvent( MyEvents::E_SETMODE, URHO3D_HANDLER( ModeManager, activateMode ) );
 }
 
 ModeManager::~ModeManager()

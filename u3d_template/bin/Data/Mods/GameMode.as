@@ -1,14 +1,19 @@
 uint count = 0;
-
+Node@ ground = null;
 
 void Start()
 {
-	SubscribeToEvent("LevelChangingInProgress", "HandleLevelChange");
+	SubscribeToEvent("LoadGamemode", "HandleLoadGameMode");
     SubscribeToEvent("BoxDestroyed", "HandleBoxDestroyed");
     SubscribeToEvent("BoxDropped", "HandleBoxDropped");
     SubscribeToEvent("CheckpointReached", "HandleCheckpointReached");
 
+    // Register our loading step
     VariantMap data;
+    data["Name"] = "Initializing GameMode";
+    data["Event"] = "LoadGamemode";
+    SendEvent("RegisterLoadingStep", data);
+
     data["Event"] = "BoxDestroyed";
     data["Message"] = "Destroy 1 box";
     data["Image"] = "Textures/Achievements/trophy-cup.png";
@@ -52,7 +57,7 @@ void Stop()
 void CreateCheckpoint()
 {
     XMLFile@ xml = cache.GetResource("XMLFile", "Mods/GameMode/Checkpoint.xml");
-    scene.InstantiateXML(xml.root, Vector3(Random(30.0f) - 15.0f, 5.0f, Random(30.0f) - 15.0f), Quaternion());
+    scene.InstantiateXML(xml.root, Vector3(Random(ground.scale.x) - ground.scale.x/2, 5.0f, Random(ground.scale.x) - ground.scale.x/2), Quaternion());
 }
 
 void CreateObject()
@@ -68,16 +73,23 @@ void CreateObject()
 /**
  * Output debug message when level changing is requested
  */
-void HandleLevelChange(StringHash eventType, VariantMap& eventData)
+void HandleLoadGameMode(StringHash eventType, VariantMap& eventData)
 {
-    String levelName = eventData["To"].GetString();
+    VariantMap data;
+    data["Event"] = "LoadGamemode";
 
-    if (levelName == "Level") {
-    	for (uint i = 0; i < 30; i++) {
-            CreateObject();
-	    }
-        CreateCheckpoint();
+    ground = scene.GetChild("Ground", true);
+    
+    // Sent event to let the system know that we will handle this loading step
+    SendEvent("AckLoadingStep", data);
+
+    for (uint i = 0; i < 30; i++) {
+        CreateObject();
     }
+    CreateCheckpoint();
+
+    // Let the loading system know that we finished our work
+    SendEvent("LoadingStepFinished", data);
 }
 
 void UpdatePlayerScore(int playerId, int points)
@@ -116,6 +128,12 @@ void HandleCheckpointReached(StringHash eventType, VariantMap& eventData)
 
     for( uint i = 0; i < 5; i++) {
         CreateObject();
+    }
+
+    if (ground !is null) {
+        if (ground.scale.x > 1) {
+            ground.scale = ground.scale * 0.9;
+        }
     }
 }
 

@@ -8,7 +8,6 @@
 NewGameSettingsWindow::NewGameSettingsWindow(Context* context) :
     BaseWindow(context)
 {
-    Init();
 }
 
 NewGameSettingsWindow::~NewGameSettingsWindow()
@@ -29,7 +28,7 @@ void NewGameSettingsWindow::Create()
 {
     auto* localization = GetSubsystem<Localization>();
 
-    _baseWindow = GetSubsystem<UI>()->GetRoot()->CreateChild<Window>();
+    _baseWindow = CreateOverlay()->CreateChild<Window>();
     _baseWindow->SetStyleAuto();
     _baseWindow->SetAlignment(HA_CENTER, VA_CENTER);
     _baseWindow->SetSize(220, 80);
@@ -41,6 +40,7 @@ void NewGameSettingsWindow::Create()
     SubscribeToEvent(_newGameButton, E_RELEASED, [&](StringHash eventType, VariantMap& eventData) {
         VariantMap& data = GetEventDataMap();
         data["Name"] = "Loading";
+        data["Map"] = GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Scenes/Scene.xml";
         SendEvent(MyEvents::E_SET_LEVEL, data);
     });
 

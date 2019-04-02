@@ -192,8 +192,8 @@ void OnePlanetMode::createDesign()
     if ( !lm )
         URHO3D_LOGERROR( "Can\'t get LevelManager" );
 
-    Design d = lm->design();
-    Assembly::create( root, d );
+    //Design d = lm->design();
+    //Assembly::create( root, d );
 }
 
 

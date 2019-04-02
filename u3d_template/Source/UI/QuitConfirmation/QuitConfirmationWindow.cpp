@@ -8,7 +8,6 @@
 QuitConfirmationWindow::QuitConfirmationWindow(Context* context) :
     BaseWindow(context)
 {
-    Init();
 }
 
 QuitConfirmationWindow::~QuitConfirmationWindow()
@@ -34,7 +33,7 @@ void QuitConfirmationWindow::Create()
 
     auto* localization = GetSubsystem<Localization>();
 
-    _baseWindow = GetSubsystem<UI>()->GetRoot()->CreateChild<Window>();
+    _baseWindow = CreateOverlay()->CreateChild<Window>();
     _baseWindow->SetStyleAuto();
     _baseWindow->SetAlignment(HA_CENTER, VA_CENTER);
     _baseWindow->SetSize(220, 80);

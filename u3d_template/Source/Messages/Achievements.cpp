@@ -2,6 +2,7 @@
 #include "Achievements.h"
 #include "../Audio/AudioManagerDefs.h"
 #include "../MyEvents.h"
+#include "../Global.h"
 
 void SaveProgressAsync(const WorkItem* item, unsigned threadIndex)
 {
@@ -146,11 +147,10 @@ void Achievements::LoadAchievementList()
 {
     LoadProgress();
 
-    JSONFile configFile(context_);
-    configFile.LoadFile(GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Config/Achievements.json");
-    JSONValue value = configFile.GetRoot();
+    auto configFile = GetSubsystem<ResourceCache>()->GetResource<JSONFile>("Config/Achievements.json");
+
+    JSONValue value = configFile->GetRoot();
     if (value.IsArray()) {
-        GetSubsystem<DebugHud>()->SetAppStats("Total achievements loaded", value.Size());
         URHO3D_LOGINFOF("Loading achievements config: %u", value.Size());
         for (int i = 0; i < value.Size(); i++) {
             JSONValue mapInfo = value[i];
@@ -192,6 +192,8 @@ void Achievements::LoadAchievementList()
                 URHO3D_LOGINFOF("Achievement array element doesnt contain all needed info! Index: %u", i);
             }
         }
+
+        GetSubsystem<DebugHud>()->SetAppStats("Total achievements loaded", CountAchievements());
     }
     else {
         URHO3D_LOGERROR("Data/Config/Achievements.json must be an array");
@@ -263,7 +265,12 @@ void Achievements::SaveProgress()
             file.GetRoot()[id.ToString()] = (*achievement).current;
         }
     }
+#ifdef __ANDROID__
+    String directory = GetSubsystem<FileSystem>()->GetUserDocumentsDir() + DOCUMENTS_DIR;
+    file.SaveFile(directory + "/Achievements.json");
+#else
     file.SaveFile(GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Saves/Achievements.json");
+#endif
 
     //URHO3D_LOGINFO("Achievement progress saving done!");
 }
@@ -271,7 +278,14 @@ void Achievements::SaveProgress()
 void Achievements::LoadProgress()
 {
     JSONFile configFile(context_);
+
+#ifdef __ANDROID__
+    String directory = GetSubsystem<FileSystem>()->GetUserDocumentsDir() + DOCUMENTS_DIR;
+    configFile.LoadFile(directory + "/Achievements.json");
+#else
     configFile.LoadFile(GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Saves/Achievements.json");
+#endif
+
     JSONValue value = configFile.GetRoot();
     if (value.IsObject()) {
         for (auto it = value.Begin(); it != value.End(); ++it) {
@@ -330,9 +344,11 @@ void Achievements::AddAchievement(String message,
 
     _registeredAchievements[eventName].Push(rule);
 
-    URHO3D_LOGINFOF("Registering achievement [%s]", rule.message.CString());
+//    URHO3D_LOGINFOF("Registering achievement [%s]", rule.message.CString());
 
     SubscribeToEvent(eventName, URHO3D_HANDLER(Achievements, HandleRegisteredEvent));
+
+    GetSubsystem<DebugHud>()->SetAppStats("Total achievements loaded", CountAchievements());
 }
 
 void Achievements::HandleAddAchievement(StringHash eventType, VariantMap& eventData)
@@ -352,4 +368,13 @@ void Achievements::HandleAddAchievement(StringHash eventType, VariantMap& eventD
     else {
         URHO3D_LOGERRORF("Unable to register achievement [%s], incomplete data provided!", eventData[P_MESSAGE].GetString().CString());
     }
+}
+
+int Achievements::CountAchievements()
+{
+    int count = 0;
+    for (auto it = _registeredAchievements.Begin(); it != _registeredAchievements.End(); ++it) {
+        count += (*it).second_.Size();
+    }
+    return count;
 }

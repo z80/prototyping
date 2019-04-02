@@ -1084,11 +1084,11 @@ void Workshop::HandleTry( StringHash eventType, VariantMap & eventData )
         URHO3D_LOGERROR( "Can\'t get LevelManager" );
 
     Design d = design();
-    lm->design() = d;
+    //lm->design() = d;
 
-    VariantMap& eData = GetEventDataMap();
-    eData["Name"] = "OnePlanet";
-    SendEvent(MyEvents::E_SET_LEVEL, eData);
+    //VariantMap& eData = GetEventDataMap();
+    //eData["Name"] = "OnePlanet";
+    //SendEvent(MyEvents::E_SET_LEVEL, eData);
 }
 
 
