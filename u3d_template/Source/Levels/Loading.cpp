@@ -130,10 +130,10 @@ void Loading::SubscribeToEvents()
 
 void Loading::HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
-    Input* input = GetSubsystem<Input>();
-    if (input->IsMouseVisible()) {
-        input->SetMouseVisible(false);
-    }
+    //Input* input = GetSubsystem<Input>();
+    //if (input->IsMouseVisible()) {
+    //    input->SetMouseVisible(false);
+    //}
 
     float progress = GetSubsystem<SceneManager>()->GetProgress();
     _status->SetText(String((int)(progress * 100)) + "% " + GetSubsystem<SceneManager>()->GetStatusMessage() + "...");

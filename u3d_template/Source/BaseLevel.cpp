@@ -212,8 +212,8 @@ void BaseLevel::InitViewports(Vector<int> playerIndexes)
 //        effectRenderPath->SetEnabled("FXAA3", GetGlobalVar("FXAA3").GetBool());
         effectRenderPath->SetEnabled("AutoExposure", false);
         effectRenderPath->SetEnabled("Bloom", false);
-        effectRenderPath->SetEnabled("FXAA3", true);
-        effectRenderPath->SetEnabled("GammaCorrection", true);
+        effectRenderPath->SetEnabled("FXAA3", false);
+        effectRenderPath->SetEnabled("GammaCorrection", false);
         effectRenderPath->SetEnabled("ColorCorrection", false);
         float gamma = Clamp(GAMMA_MAX_VALUE - GetSubsystem<ConfigManager>()->GetFloat("engine", "Gamma", 1.0f), 0.05f, GAMMA_MAX_VALUE);
         effectRenderPath->SetShaderParameter("Gamma", gamma);

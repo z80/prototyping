@@ -104,10 +104,10 @@ void Splash::SubscribeToEvents()
 
 void Splash::HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
-    Input* input = GetSubsystem<Input>();
-    if (input->IsMouseVisible()) {
-        input->SetMouseVisible(false);
-    }
+    //Input* input = GetSubsystem<Input>();
+    //if (input->IsMouseVisible()) {
+    //    input->SetMouseVisible(false);
+    //}
     if (_timer.GetMSec(false) > SPLASH_TIME) {
         HandleEndSplash();
     }

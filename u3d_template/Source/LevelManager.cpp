@@ -104,11 +104,11 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     // Prepare to fade out
     if (fade_status_ == 0) {
-        using namespace MyEvents::LevelChangingStarted;
-        VariantMap data = GetEventDataMap();
-        data[P_FROM] = currentLevel_;
-        data[P_TO] = level_queue_.Front();
-        SendEvent(MyEvents::E_LEVEL_CHANGING_STARTED, data);
+        //using namespace MyEvents::LevelChangingStarted;
+        //VariantMap data = GetEventDataMap();
+        //data[P_FROM] = currentLevel_;
+        //data[P_TO] = level_queue_.Front();
+        //SendEvent(MyEvents::E_LEVEL_CHANGING_STARTED, data);
 
         // No old level
         if (!level_) {

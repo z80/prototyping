@@ -100,9 +100,9 @@ namespace Levels {
     void Credits::HandleUpdate(StringHash eventType, VariantMap& eventData)
     {
         Input* input = GetSubsystem<Input>();
-        if (input->IsMouseVisible()) {
-            input->SetMouseVisible(false);
-        }
+        //if (input->IsMouseVisible()) {
+        //    input->SetMouseVisible(false);
+        //}
         if (input->GetKeyDown(KEY_ESCAPE)) {
             UnsubscribeFromEvent(E_UPDATE);
             HandleEndCredits();
