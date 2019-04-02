@@ -5,6 +5,15 @@
 #include "Levels/ExitGame.h"
 #include "Levels/Loading.h"
 #include "Levels/Credits.h"
+
+#include "workshop.h"
+#include "one_planet.h"
+#include "tech_tree.h"
+#include "design_manager.h"
+#include "camera_orb_2.h"
+#include "pivot_marker.h"
+#include "box.h"
+
 #include "MyEvents.h"
 
 
@@ -53,6 +62,16 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Levels::ExitGame>();
     context_->RegisterFactory<Levels::Loading>();
     context_->RegisterFactory<Levels::Credits>();
+
+    context_->RegisterFactory<Osp::Workshop>();
+    context_->RegisterFactory<Osp::OnePlanet>();
+
+    // Registering objects.
+    context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
+    context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
+    context_->RegisterFactory<Osp::Box>();
+    context_->RegisterFactory<Osp::PivotMarker>();
+    context_->RegisterFactory<Osp::CameraOrb2>();
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)
@@ -64,7 +83,9 @@ void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventDa
     }
 
     // Push to queue
-    level_queue_.Push(eventData["Name"].GetString());
+    const String & levelName = eventData["Name"].GetString();
+    URHO3D_LOGINFO( "Opening level: " + levelName );
+    level_queue_.Push( levelName );
     data_ = eventData;
 
     // Subscribe HandleUpdate() function for processing update events
@@ -134,7 +155,9 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
     // Create new level
     if (fade_status_ == 3) {
         // Create new level
-        level_ = context_->CreateObject(StringHash(level_queue_.Front()));
+        const String & levelName = level_queue_.Front();
+        URHO3D_LOGINFO( "Creating level: " + levelName );
+        level_ = context_->CreateObject( StringHash(levelName) );
         if (!level_) {
             URHO3D_LOGERROR("Level '" + level_queue_.Front() + "' doesn't exist in the system! Moving to 'Splash' level");
 

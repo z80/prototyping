@@ -60,6 +60,7 @@ OnePlanet::OnePlanet(Context* context)
 
 OnePlanet::~OnePlanet()
 {
+    scene_.Reset();
 }
 
 void OnePlanet::Init()

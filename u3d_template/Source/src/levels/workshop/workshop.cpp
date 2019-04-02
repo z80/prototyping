@@ -47,6 +47,7 @@ Workshop::Workshop(Context* context)
 
 Workshop::~Workshop()
 {
+    scene_.Reset();
 }
 
 void Workshop::Init()
@@ -235,13 +236,13 @@ void Workshop::createBlocksUi( int groupInd )
         const size_t qty = children.Size();
         for ( size_t i=0; i<qty; i++ )
         {
-            const SharedPtr<UIElement> & e = children[i];
+            const SharedPtr<UIElement> & e = children[0];
             if ( !e )
                 continue;
             Button * b = e->Cast<Button>();
             if ( !b )
                 continue;
-            b->Remove();;
+            b->Remove();
         }
     }
 
@@ -1086,9 +1087,9 @@ void Workshop::HandleTry( StringHash eventType, VariantMap & eventData )
     Design d = design();
     //lm->design() = d;
 
-    //VariantMap& eData = GetEventDataMap();
-    //eData["Name"] = "OnePlanet";
-    //SendEvent(MyEvents::E_SET_LEVEL, eData);
+    VariantMap& eData = GetEventDataMap();
+    eData["Name"] = "OnePlanet";
+    SendEvent(MyEvents::E_SET_LEVEL, eData);
 }
 
 
