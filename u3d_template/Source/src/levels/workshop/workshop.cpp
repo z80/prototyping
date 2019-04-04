@@ -103,12 +103,13 @@ void Workshop::CreateScene()
     InitViewports(controlIndexes);
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * f = cache->GetResource<XMLFile>( "Scenes/Workshop.xml" );
+    XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/Workshop.xml" );
     if ( !f )
         return;
-    const bool loadedOk = scene_->LoadXML( f->GetRoot() );
-    rootNode = scene_->GetChild( "Workshop", true );
-    //rootNode = scene_->GetChild( StringHash( "Workshop" ), true );
+    //const bool loadedOk = scene_->LoadXML( f->GetRoot() );
+    rootNode = scene_->CreateChild( "Workshop" );
+    const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
+    //rootNode = scene_->GetChild( "Workshop", true );
 
     Node * camNode = _cameras[0];
     camNode->SetParent( rootNode );
