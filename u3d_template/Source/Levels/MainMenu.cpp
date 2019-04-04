@@ -29,6 +29,13 @@ void MainMenu::Init()
     CreateUI();
 }
 
+void MainMenu::Finit()
+{
+    UI * ui = GetSubsystem<UI>();
+    if ( ui )
+        ui->GetRoot()->RemoveAllChildren();
+}
+
 void MainMenu::CreateScene()
 {
     

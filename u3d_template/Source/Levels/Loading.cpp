@@ -38,6 +38,13 @@ void Loading::Init()
     }
 }
 
+void Loading::Finit()
+{
+    UI * ui = GetSubsystem<UI>();
+    if ( ui )
+        ui->GetRoot()->RemoveAllChildren();
+}
+
 void Loading::CreateScene()
 {
     return;

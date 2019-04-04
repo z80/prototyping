@@ -18,6 +18,7 @@ namespace Levels {
 
     protected:
         void Init () override;
+        void Finit () override;
 
     private:
         void CreateScene();

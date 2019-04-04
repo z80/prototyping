@@ -77,7 +77,8 @@ void LevelManager::RegisterAllFactories()
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)
 {
     // Busy now
-    if (level_queue_.Size() == 0) {
+    if (level_queue_.Size() == 0)
+    {
         // Init fade status
         fade_status_ = 0;
     }
@@ -274,7 +275,9 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void LevelManager::AddFadeLayer()
 {
-    if (fade_window_) {
+    if (fade_window_)
+    {
+        fade_window_->Remove();
         fade_window_.Reset();
     }
     fade_window_ = new Window(context_);

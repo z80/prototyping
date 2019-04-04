@@ -49,7 +49,7 @@ void BaseLevel::HandleActivating(StringHash eventType, VariantMap& eventData)
 
 void BaseLevel::HandleDeactivated(StringHash eventType, VariantMap& eventData)
 {
-
+    Finit();
 }
 
 void BaseLevel::Run()
@@ -110,19 +110,20 @@ void BaseLevel::HandleFovChange(StringHash eventType, VariantMap& eventData)
 
 void BaseLevel::Dispose()
 {
-    /*
     // Pause the scene, remove all contents from the scene, then remove the scene itself.
-    if (scene_) {
+    /*if (scene_)
+    {
         scene_->SetUpdateEnabled(false);
         scene_->Clear();
         scene_->Remove();
-    }
+    }*/
     // if (cameraNode_) {
     //  cameraNode_->Remove();
     // }
 
     // Remove all UI elements from UI sub-system
-    if (GetSubsystem<UI>()) {
+    /*if (GetSubsystem<UI>())
+    {
         GetSubsystem<UI>()->GetRoot()->RemoveAllChildren();
     }*/
 }
