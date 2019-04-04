@@ -85,6 +85,8 @@ void Workshop::Init()
 
 void Workshop::Finit()
 {
+    if ( rootNode )
+        rootNode->Remove();
     if ( _panelTech )
         _panelTech->Remove();
     if ( _modeText )

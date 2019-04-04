@@ -60,21 +60,11 @@ OnePlanet::OnePlanet(Context* context)
 
 OnePlanet::~OnePlanet()
 {
-    scene_.Reset();
+
 }
 
 void OnePlanet::Init()
 {
-    if (!scene_)
-    {
-        // There is no scene, get back to the main menu
-        VariantMap& eventData = GetEventDataMap();
-        eventData["Name"] = "MainMenu";
-        SendEvent(MyEvents::E_SET_LEVEL, eventData);
-
-        return;
-    }
-
     BaseLevel::Init();
 
     // Disable achievement showing for this level
@@ -94,6 +84,14 @@ void OnePlanet::Init()
 //    SendEvent("ShowAlertMessage", data);
 }
 
+void OnePlanet::Finit()
+{
+    if ( rootNode )
+        rootNode->Remove();
+    if ( panel )
+        panel->Remove();
+}
+
 void OnePlanet::CreateScene()
 {
     Input * inp = GetSubsystem<Input>();
@@ -104,11 +102,13 @@ void OnePlanet::CreateScene()
     InitViewports(controlIndexes);
 
     ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * f = cache->GetResource<XMLFile>( "Scenes/OnePlanet.xml" );
+    XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/OnePlanet.xml" );
     if ( !f )
         return;
-    const bool loadedOk = scene_->LoadXML( f->GetRoot() );
-    rootNode = scene_->GetChild( "Root", true );
+    //const bool loadedOk = scene_->LoadXML( f->GetRoot() );
+    //rootNode = scene_->GetChild( "Root", true );
+    rootNode = scene_->CreateChild( "Root" );
+    const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
 
     Node * camNode = _cameras[0];
     camNode->SetParent( rootNode );
@@ -129,13 +129,11 @@ void OnePlanet::CreateUI()
     UI * ui = GetSubsystem<UI>();
     UIElement * uiRoot = ui->GetRoot();
 
-    SharedPtr<UIElement> panel = ui->LoadLayout( f );
+    panel = ui->LoadLayout( f );
     uiRoot->AddChild( panel );
 
     panel->SetPosition( 0, 0 );
     panel->SetAlignment( HA_RIGHT, VA_TOP );
-    //panel->SetMinSize( 96, 128 );
-    //panel->SetVisible( true );
 
     UIElement * tryBtn = panel->GetChild( "ToWorkshop", true );
     if ( tryBtn )
@@ -164,9 +162,8 @@ void OnePlanet::SubscribeToEvents()
 
 void OnePlanet::createObjects()
 {
-    Node * root = scene_->GetChild( "Root", true );
-    if ( !root )
-        return;
+    Node * root = rootNode.Get();
+
     PhysicsWorld * w = scene_->GetComponent<PhysicsWorld>();
     if ( !w )
         w = scene_->CreateComponent<PhysicsWorld>();

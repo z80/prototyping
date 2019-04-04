@@ -27,6 +27,7 @@ public:
 
 protected:
     void Init() override;
+    void Finit() override;
 
 private:
     void CreateScene();
@@ -35,6 +36,7 @@ private:
 
 
     SharedPtr<Node>  rootNode;
+    SharedPtr<UIElement> panel;
     SharedPtr<PhysicsWorld> physicsWorld;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
