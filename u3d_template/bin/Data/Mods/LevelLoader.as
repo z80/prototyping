@@ -3,6 +3,7 @@
  */
 void Start()
 {
+    return;
     log.Info("LevelLoader.as START");
     SubscribeToEvent("LevelChangingFinished", "HandleLevelLoaded");
 }

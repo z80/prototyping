@@ -2,6 +2,7 @@ Array<Sprite@> sprites;
 
 void Start()
 {
+    return;
     SubscribeToEvent("LevelChangingInProgress", "HandleLevelLoaded");
 }
 

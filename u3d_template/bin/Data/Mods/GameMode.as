@@ -3,7 +3,11 @@ Node@ ground = null;
 
 void Start()
 {
-	SubscribeToEvent("LoadGamemode", "HandleLoadGameMode");
+    // My modification to prevent it from creating a bunch of 
+    // objects I don't want.
+    return;
+
+    SubscribeToEvent("LoadGamemode", "HandleLoadGameMode");
     SubscribeToEvent("BoxDestroyed", "HandleBoxDestroyed");
     SubscribeToEvent("BoxDropped", "HandleBoxDropped");
     SubscribeToEvent("CheckpointReached", "HandleCheckpointReached");

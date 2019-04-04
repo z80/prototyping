@@ -3,6 +3,8 @@
  */
 void Start()
 {
+    return;
+
     SubscribeToEvent("LoadSkills", "HandleLoadSkills");
     SubscribeToEvent("LoadImages", "HandleLoadImages");
 
