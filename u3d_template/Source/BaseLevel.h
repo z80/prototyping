@@ -14,7 +14,8 @@ public:
 private:
     void SubscribeToBaseEvents();
 
-    void HandleStart(StringHash eventType, VariantMap& eventData);
+    void HandleActivating( StringHash eventType, VariantMap & eventData );
+    void HandleDeactivated( StringHash eventType, VariantMap & eventData );
 
 protected:
 
@@ -22,6 +23,7 @@ protected:
      * Initialize the level
      */
     virtual void Init() {};
+    virtual void Finit() {};
 
     /**
      * Start scene updates

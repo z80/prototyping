@@ -104,14 +104,18 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     // Prepare to fade out
     if (fade_status_ == 0) {
-        //using namespace MyEvents::LevelChangingStarted;
-        //VariantMap data = GetEventDataMap();
-        //data[P_FROM] = currentLevel_;
-        //data[P_TO] = level_queue_.Front();
-        //SendEvent(MyEvents::E_LEVEL_CHANGING_STARTED, data);
+        if ( level_ )
+        {
+            using namespace MyEvents::LevelDeactivating;
+            VariantMap data = GetEventDataMap();
+            data[P_FROM] = currentLevel_;
+            data[P_TO] = level_queue_.Front();
+            SendEvent(MyEvents::E_LEVEL_DEACTIVATING, data);
+        }
 
         // No old level
-        if (!level_) {
+        else
+        {
             fade_status_++;
             return;
         }
@@ -131,6 +135,14 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
             fade_status_++;
             return;
         }
+        else
+        {
+            using namespace MyEvents::LevelFadeOut;
+            VariantMap data = GetEventDataMap();
+            data[P_FROM] = currentLevel_;
+            data[P_TO] = level_queue_.Front();
+            SendEvent(MyEvents::E_LEVEL_FADE_OUT, data);
+        }
         fade_window_->SetFocus(true);
         fade_window_->SetOpacity(1.0f - fade_time_ / MAX_FADE_TIME);
 
@@ -142,18 +154,29 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
     }
 
     // Release old level
-    if (fade_status_ == 2) {
-        // We can not create new level here, or it may cause errors, we have to create it at the next update point.
-        level_ = SharedPtr<Object>();
+    if (fade_status_ == 2)
+    {
+        if ( level_ )
+        {
+            using namespace MyEvents::LevelDeactivated;
+            VariantMap data = GetEventDataMap();
+            data[P_FROM] = currentLevel_;
+            data[P_TO] = level_queue_.Front();
+            SendEvent( MyEvents::E_LEVEL_DEACTIVATED, data );
+
+            // We can not create new level here, or it may cause errors, we have to create it at the next update point.
+            level_ = SharedPtr<Object>();
+        }
         fade_status_++;
 
         // Send event to close all active UI windows
-        SendEvent(MyEvents::E_CLOSE_ALL_WINDOWS);
+        SendEvent( MyEvents::E_CLOSE_ALL_WINDOWS );
         return;
     }
 
     // Create new level
-    if (fade_status_ == 3) {
+    if (fade_status_ == 3)
+    {
         // Create new level
         const String & levelName = level_queue_.Front();
         URHO3D_LOGINFO( "Creating level: " + levelName );
@@ -170,7 +193,7 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
             level_queue_.PopFront();
             return;
         }
-        SendEvent(MyEvents::E_LEVEL_CHANGING_STARTED, data_);
+        SendEvent( MyEvents::E_LEVEL_ACTIVATING, data_ );
 
         previousLevel_ = currentLevel_;
         currentLevel_ = level_queue_.Front();
@@ -184,16 +207,12 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
         fade_time_ = MAX_FADE_TIME;
         fade_status_++;
 
-        using namespace MyEvents::LevelChangingInProgress;
-        VariantMap data = GetEventDataMap();
-        data[P_FROM] = previousLevel_;
-        data[P_TO] = currentLevel_;
-        SendEvent(MyEvents::E_LEVEL_CHANGING_IN_PROGRESS, data);
         return;
     }
 
     // Fade in
-    if (fade_status_ == 4) {
+    if (fade_status_ == 4)
+    {
         fade_window_->SetFocus(true);
         fade_window_->SetOpacity(fade_time_ / MAX_FADE_TIME);
 
@@ -201,23 +220,29 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (fade_time_ <= 0.0f) {
             fade_status_++;
         }
+
+        using namespace MyEvents::LevelFadeIn;
+        VariantMap data = GetEventDataMap();
+        data[P_FROM] = previousLevel_;
+        data[P_TO] = currentLevel_;
+        SendEvent(MyEvents::E_LEVEL_FADE_IN, data);
+
         return;
     }
 
     // Finished
-    if (fade_status_ == 5) {
+    if (fade_status_ == 5)
+    {
         // Remove fade layer
         fade_window_->Remove();
         fade_window_.Reset();
-        // Unsubscribe update event
-        UnsubscribeFromEvent(E_UPDATE);
 
         {
-            using namespace MyEvents::LevelChangingFinished;
+            using namespace MyEvents::LevelActivated;
             VariantMap data = GetEventDataMap();
             data[P_FROM] = previousLevel_;
             data[P_TO] = level_queue_.Front();
-            SendEvent(MyEvents::E_LEVEL_CHANGING_FINISHED, data);
+            SendEvent(MyEvents::E_LEVEL_ACTIVATED, data);
         }
 
         VariantMap data = GetEventDataMap();
@@ -230,12 +255,18 @@ void LevelManager::HandleUpdate(StringHash eventType, VariantMap& eventData)
         // Release all unused resources
         GetSubsystem<ResourceCache>()->ReleaseAllResources(false);
 
-        if (level_queue_.Size()) {
+        if ( level_queue_.Size() != 0 )
+        {
             // Subscribe HandleUpdate() function for processing update events
             SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(LevelManager, HandleUpdate));
 
             // // Init fade status
             fade_status_ = 0;
+        }
+        else
+        {
+            // Unsubscribe update event
+            UnsubscribeFromEvent(E_UPDATE);
         }
         return;
     }

@@ -18,7 +18,8 @@ BaseLevel::~BaseLevel()
 
 void BaseLevel::SubscribeToBaseEvents()
 {
-    SubscribeToEvent(MyEvents::E_LEVEL_CHANGING_STARTED, URHO3D_HANDLER(BaseLevel, HandleStart));
+    SubscribeToEvent( MyEvents::E_LEVEL_ACTIVATING,  URHO3D_HANDLER( BaseLevel, HandleActivating ) );
+    SubscribeToEvent( MyEvents::E_LEVEL_DEACTIVATED, URHO3D_HANDLER( BaseLevel, HandleDeactivated ) );
 
     // How to use lambda (anonymous) functions
     SendEvent(MyEvents::E_CONSOLE_COMMAND_ADD, MyEvents::ConsoleCommandAdd::P_NAME, "gamma", MyEvents::ConsoleCommandAdd::P_EVENT, "gamma", MyEvents::ConsoleCommandAdd::P_DESCRIPTION, "Change gamma");
@@ -39,11 +40,16 @@ void BaseLevel::SubscribeToBaseEvents()
     });
 }
 
-void BaseLevel::HandleStart(StringHash eventType, VariantMap& eventData)
+void BaseLevel::HandleActivating(StringHash eventType, VariantMap& eventData)
 {
     data_ = eventData;
     Init();
     SubscribeToEvents();
+}
+
+void BaseLevel::HandleDeactivated(StringHash eventType, VariantMap& eventData)
+{
+
 }
 
 void BaseLevel::Run()
@@ -104,6 +110,7 @@ void BaseLevel::HandleFovChange(StringHash eventType, VariantMap& eventData)
 
 void BaseLevel::Dispose()
 {
+    /*
     // Pause the scene, remove all contents from the scene, then remove the scene itself.
     if (scene_) {
         scene_->SetUpdateEnabled(false);
@@ -117,7 +124,7 @@ void BaseLevel::Dispose()
     // Remove all UI elements from UI sub-system
     if (GetSubsystem<UI>()) {
         GetSubsystem<UI>()->GetRoot()->RemoveAllChildren();
-    }
+    }*/
 }
 
 /**

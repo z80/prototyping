@@ -120,22 +120,40 @@ namespace MyEvents
 	{
 	}
 
+    URHO3D_EVENT(E_LEVEL_DEACTIVATING, LevelDeactivating)
+    {
+        URHO3D_PARAM(P_FROM, From); // string
+        URHO3D_PARAM(P_TO, To); // string
+    }
+
+    URHO3D_EVENT(E_LEVEL_FADE_OUT, LevelFadeOut)
+    {
+        URHO3D_PARAM(P_FROM, From); // string
+        URHO3D_PARAM(P_TO, To); // string
+    }
+
+    URHO3D_EVENT(E_LEVEL_DEACTIVATED, LevelDeactivated )
+    {
+        URHO3D_PARAM(P_FROM, From); // string
+        URHO3D_PARAM(P_TO, To); // string
+    }
+
     // Level changing started
-	URHO3D_EVENT(E_LEVEL_CHANGING_STARTED, LevelChangingStarted)
+    URHO3D_EVENT( E_LEVEL_ACTIVATING, LevelActivating )
 	{
         URHO3D_PARAM(P_FROM, From); // string
         URHO3D_PARAM(P_TO, To); // string
 	}
 
     // When the new level is actually created, before the fade effect goes away
-    URHO3D_EVENT(E_LEVEL_CHANGING_IN_PROGRESS, LevelChangingInProgress)
+    URHO3D_EVENT(E_LEVEL_FADE_IN, LevelFadeIn)
     {
         URHO3D_PARAM(P_FROM, From); // string
         URHO3D_PARAM(P_TO, To); // string
     }
 
     // Level changing finished
-	URHO3D_EVENT(E_LEVEL_CHANGING_FINISHED, LevelChangingFinished)
+    URHO3D_EVENT(E_LEVEL_ACTIVATED, LevelActivated)
 	{
         URHO3D_PARAM(P_FROM, From); // string - previous level
         URHO3D_PARAM(P_TO, To); // string - new level
