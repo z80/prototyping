@@ -5,7 +5,7 @@ namespace Osp
 {
 
 GameData::GameData( Context * ctx )
-    :Component( ctx )
+    :Object( ctx )
 {
 
 }

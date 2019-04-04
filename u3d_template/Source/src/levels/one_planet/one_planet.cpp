@@ -12,6 +12,7 @@
 #include "LevelManager.h"
 
 #include "name_generator.h"
+#include "game_data.h"
 #include "design_manager.h"
 #include "block.h"
 #include "assembly.h"
@@ -190,12 +191,12 @@ void OnePlanet::createDesign()
     if ( !root )
         return;
 
-    LevelManager * lm = GetSubsystem<LevelManager>();
-    if ( !lm )
-        URHO3D_LOGERROR( "Can\'t get LevelManager" );
+    GameData * gd = GetSubsystem<GameData>();
+    if ( !gd )
+        URHO3D_LOGERROR( "Can\'t get GameData" );
 
-    //Design d = lm->design();
-    //Assembly::create( root, d );
+    Design d = gd->design;
+    Assembly::create( root, d );
 }
 
 

@@ -12,6 +12,7 @@
 #include "LevelManager.h"
 
 #include "name_generator.h"
+#include "game_data.h"
 #include "design_manager.h"
 #include "block.h"
 #include "camera_orb_2.h"
@@ -1091,14 +1092,14 @@ void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventD
 
 void Workshop::HandleTry( StringHash eventType, VariantMap & eventData )
 {
-    LevelManager * lm = GetSubsystem<LevelManager>();
-    if ( !lm )
-        URHO3D_LOGERROR( "Can\'t get LevelManager" );
+    GameData * gd = GetSubsystem<GameData>();
+    if ( !gd )
+        URHO3D_LOGERROR( "Can\'t get GameData" );
 
     Design d = design();
-    //lm->design() = d;
+    gd->design = d;
 
-    VariantMap& eData = GetEventDataMap();
+    VariantMap & eData = GetEventDataMap();
     eData["Name"] = "OnePlanet";
     SendEvent(MyEvents::E_SET_LEVEL, eData);
 }

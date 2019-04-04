@@ -6,6 +6,7 @@
 #include "Levels/Loading.h"
 #include "Levels/Credits.h"
 
+#include "game_data.h"
 #include "workshop.h"
 #include "one_planet.h"
 #include "tech_tree.h"
@@ -67,8 +68,10 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::OnePlanet>();
 
     // Registering objects.
+    context_->RegisterSubsystem( new Osp::GameData( context_) );
     context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
     context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
+    context_->RegisterFactory<Osp::Assembly>();
     context_->RegisterFactory<Osp::Box>();
     context_->RegisterFactory<Osp::PivotMarker>();
     context_->RegisterFactory<Osp::CameraOrb2>();

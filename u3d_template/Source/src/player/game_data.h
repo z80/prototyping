@@ -14,14 +14,15 @@ using namespace Urho3D;
 
 
 
-class GameData: public Urho3D::Component
+class GameData: public Urho3D::Object
 {
-    URHO3D_OBJECT( GameData, Component )
+    URHO3D_OBJECT( GameData, Object )
 public:
     GameData( Context * ctx );
     ~GameData();
 
     SharedPtr<Node> node( const String & name );
+    Design design;
 private:
     HashMap<String, SharedPtr<Node> > nodes;
 };
