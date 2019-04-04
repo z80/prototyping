@@ -4,6 +4,7 @@
 #include "../MyEvents.h"
 #include "../Audio/AudioManagerDefs.h"
 #include "../Messages/Achievements.h"
+#include "SceneManager.h"
 
 using namespace Levels;
 
@@ -11,6 +12,9 @@ using namespace Levels;
 MainMenu::MainMenu(Context* context) :
     BaseLevel(context)
 {
+    SceneManager * mgr = GetSubsystem<SceneManager>();
+    mgr->CreateScene();
+    scene_ = mgr->GetActiveScene();
 }
 
 MainMenu::~MainMenu()

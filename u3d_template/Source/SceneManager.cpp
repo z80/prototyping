@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "MyEvents.h"
+#include "Urho3D/Graphics/Octree.h"
 
 using namespace Urho3D;
 
@@ -38,6 +39,13 @@ void SceneManager::LoadScene(const String& filename)
     SubscribeToEvent(_activeScene, E_ASYNCLOADPROGRESS, URHO3D_HANDLER(SceneManager, HandleAsyncSceneLoadingProgress));
     SubscribeToEvent(_activeScene, E_ASYNCEXECFINISHED, URHO3D_HANDLER(SceneManager, HandleAsyncSceneLoadingFinished));
     SubscribeToEvent(_activeScene, E_ASYNCLOADFINISHED, URHO3D_HANDLER(SceneManager, HandleAsyncSceneLoadingFinished));
+}
+
+void SceneManager::CreateScene()
+{
+    _activeScene.Reset();
+    _activeScene = new Scene(context_);
+    _activeScene->CreateComponent<Octree>();
 }
 
 void SceneManager::HandleAsyncSceneLoadingProgress(StringHash eventType, VariantMap& eventData)

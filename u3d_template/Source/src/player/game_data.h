@@ -21,7 +21,7 @@ public:
     GameData( Context * ctx );
     ~GameData();
 
-    SharedPtr<Node> & node( const String & name );
+    SharedPtr<Node> node( const String & name );
 private:
     HashMap<String, SharedPtr<Node> > nodes;
 };

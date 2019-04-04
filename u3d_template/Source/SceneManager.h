@@ -25,6 +25,7 @@ public:
      * Start loading scene from the file
      */
     void LoadScene(const String& filename);
+    void CreateScene();
 
     /**
      * Currently active scene

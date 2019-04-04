@@ -39,8 +39,9 @@ void NewGameSettingsWindow::Create()
 
     SubscribeToEvent(_newGameButton, E_RELEASED, [&](StringHash eventType, VariantMap& eventData) {
         VariantMap& data = GetEventDataMap();
-        data["Name"] = "Loading";
-        data["Map"] = GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Scenes/Scene.xml";
+        //data["Name"] = "Loading";
+        //data["Map"] = GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Scenes/Scene.xml";
+        data["Name"] = "Workshop";
         SendEvent(MyEvents::E_SET_LEVEL, data);
     });
 

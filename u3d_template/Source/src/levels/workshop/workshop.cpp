@@ -83,6 +83,16 @@ void Workshop::Init()
 //    SendEvent("ShowAlertMessage", data);
 }
 
+void Workshop::Finit()
+{
+    if ( _panelTech )
+        _panelTech->Remove();
+    if ( _modeText )
+        _modeText->Remove();
+    if ( _auxPanel )
+        _auxPanel->Remove();
+}
+
 void Workshop::CreateScene()
 {
     Input * inp = GetSubsystem<Input>();
@@ -663,24 +673,22 @@ void Workshop::createAuxilaryPanel()
     UI * ui = GetSubsystem<UI>();
     UIElement * uiRoot = ui->GetRoot();
 
-    SharedPtr<UIElement> panel = ui->LoadLayout( f );
-    uiRoot->AddChild( panel );
+    _auxPanel = ui->LoadLayout( f );
+    uiRoot->AddChild( _auxPanel );
 
-    panel->SetPosition( 0, 0 );
-    panel->SetAlignment( HA_RIGHT, VA_TOP );
-    //panel->SetMinSize( 96, 128 );
-    //panel->SetVisible( true );
+    _auxPanel->SetPosition( 0, 0 );
+    _auxPanel->SetAlignment( HA_RIGHT, VA_TOP );
 
-    UIElement * save = panel->GetChild( "SaveDesign", true );
+    UIElement * save = _auxPanel->GetChild( "SaveDesign", true );
     if ( save )
         SubscribeToEvent( save, E_RELEASED,
                            URHO3D_HANDLER( Workshop, HandleSaveDesignDialog ) );
-    UIElement * load = panel->GetChild( "LoadDesign", true );
+    UIElement * load = _auxPanel->GetChild( "LoadDesign", true );
     if ( load )
         SubscribeToEvent( load, E_RELEASED,
                            URHO3D_HANDLER( Workshop, HandleOpenDesignDialog ) );
 
-    UIElement * tryBtn = panel->GetChild( "Try", true );
+    UIElement * tryBtn = _auxPanel->GetChild( "Try", true );
     if ( tryBtn )
         SubscribeToEvent( tryBtn, E_RELEASED,
                           URHO3D_HANDLER( Workshop, HandleTry ) );

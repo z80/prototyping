@@ -24,6 +24,7 @@ public:
 
 protected:
     void Init() override;
+    void Finit() override;
 
 private:
     void CreateScene();
@@ -39,6 +40,7 @@ private:
 
     SharedPtr<Window>    _panelTech;
     SharedPtr<Text>      _modeText;
+    SharedPtr<UIElement> _auxPanel;
 
     SharedPtr<Node>  rootNode;
     SharedPtr<Block> selectedBlock;
