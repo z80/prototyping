@@ -9,7 +9,7 @@ namespace Osp
 {
 
 ItemBase::ItemBase( Context * context )
-    : Component( context )
+    : LogicComponent( context )
 {
     _type     = TUnspecified;
 }

@@ -13,9 +13,9 @@ using namespace Urho3D;
  * @brief The Entity class
  * This is the base class for all interacting objects.
  */
-class ItemBase: public Component
+class ItemBase: public LogicComponent
 {
-    URHO3D_OBJECT( ItemBase, Component )
+    URHO3D_OBJECT( ItemBase, LogicComponent )
 public:
     enum Type { TUnspecified=0, TBlock, TPlanet, TSite };
     ItemBase( Context * context );
