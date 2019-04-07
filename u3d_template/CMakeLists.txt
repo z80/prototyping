@@ -62,8 +62,10 @@ find_package (Urho3D REQUIRED)
 include_directories( ${URHO3D_INCLUDE_DIRS}
                      "./3dparty/tinyxml2"
                      "./3dparty/lemon-1.3.1"
+                     "./3dparty/eigen-3-3.7"
                      "./Source"
                      "./Source/UI"
+                     "./Source/src/data_types"
                      "./Source/src/dynamics"
                      "./Source/src/utils"
                      "./Source/src/block"
