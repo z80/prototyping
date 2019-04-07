@@ -6,16 +6,12 @@
 #include "item_base.h"
 #include "block.h"
 #include "assembly.h"
+#include "data_types.h"
 
 namespace Osp
 {
 
 using namespace Urho3D;
-
-struct OrbitElements
-{
-
-};
 
 class PlanetBase: public ItemBase
 {
@@ -46,9 +42,6 @@ protected:
     Vector<Block>    surfaceBlocks,
                      orbitingBlocks;
     Vector<Assembly> orbitingAssemblies;
-
-
-    OrbitElements orbit;
 
     typedef double Float;
     static const Float subinterval_;

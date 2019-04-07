@@ -8,23 +8,23 @@
 #include "assembly.h"
 #include "data_types.h"
 
+using namespace Urho3D;
+
 namespace Osp
 {
-
-using namespace Urho3D;
 
 class KeplerMover: public ItemBase
 {
     URHO3D_OBJECT( KeplerMover, ItemBase )
 public:
     KeplerMover( Context * ctx );
-    ~KeplerMover( Context * ctx );
+    ~KeplerMover();
 
 
     void Update( float dt );
 
     // Computes orbit elements based on position and velocity.
-    bool launch( const Vector3 & v, Node * parent );
+    bool launch(const Vector3 & v);
     // Stop using Kepler orbit.
     void stop();
     // Obtain current position and velocity.
@@ -47,3 +47,10 @@ private:
     // Current anomaly
     Float v;
 };
+
+}
+
+#endif
+
+
+

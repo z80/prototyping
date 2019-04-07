@@ -1,13 +1,16 @@
 
 #include "kepler_mover.h"
-#include "Eigen/Core"
-#include "Eigen/Dense"
+//#include "Eigen/Core"
+//#include "Eigen/Dense"
+//#include <cmath>
+//#include <string>
 
-using namespace Eigen;
+//using namespace Eigen;
 
 namespace Osp
 {
 
+/*
 static void rv2elems( const Vector3d & r, const Vector3d & v, 
                       Float & a,
                       Float & e,
@@ -17,16 +20,19 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
                       Float & Omega,
                       Float & P,
                       Float & tau,
-                      Float & A, 
-                      Float & B );
+                      Vector3d & A, 
+                      Vector3d & B );
+*/
 
 KeplerMover::KeplerMover( Context * ctx )
     : ItemBase( ctx )
 {
     active = false;
+    GM = 1.0;
+    active = false;
 }
 
-KeplerMover::~KeplerMover( Context * ctx )
+KeplerMover::~KeplerMover()
 {
 }
 
@@ -34,9 +40,16 @@ void KeplerMover::Update( float dt )
 {
     if ( !active )
       return;
+
+    // Compute current position and velocity.
+    // Apply position to it's node.
+    Node * n = GetNode();
+    if ( !n )
+        return;
+    // n->SetPosition();
 }
 
-bool KeplerMover::launch( const Vector3 & v, Node * parent )
+bool KeplerMover::launch( const Vector3 & v )
 {
 }
 
@@ -53,9 +66,9 @@ Vector3 KeplerMover::relV() const
 }
 
 
-}
 
 
+/*
 static void rv2elems( const Vector3d & r, const Vector3d & v, 
                       Float & a,
                       Float & e,
@@ -65,8 +78,8 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
                       Float & Omega,
                       Float & P,
                       Float & tau,
-                      Float & A, 
-                      Float & B )
+                      Vector3d & A, 
+                      Vector3d & B )
 {
     const Float v_2 = v.transposed() * v;
     const Float r_ = sqrt( r.transposed() * r );
@@ -120,8 +133,8 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
                                     std::cos(Omega)*std::cos(I)*std::cos(omega) );
     B(2) = a*std::sqrt(1.0 - e*e)*std::sin(I)*std::cos(omega);
 }
+*/
 
 
-
-
+}
 
