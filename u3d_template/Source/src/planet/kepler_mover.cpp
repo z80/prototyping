@@ -1,17 +1,17 @@
 
 #include "kepler_mover.h"
-//#include "Eigen/Core"
-//#include "Eigen/Dense"
+#include "Eigen/Core"
+#include "Eigen/Dense"
 //#include <cmath>
 //#include <string>
 
-//using namespace Eigen;
+using namespace Eigen;
 
 namespace Osp
 {
 
-/*
-static void rv2elems( const Vector3d & r, const Vector3d & v, 
+
+static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
                       Float & a,
                       Float & e,
                       Float & E,
@@ -20,9 +20,9 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
                       Float & Omega,
                       Float & P,
                       Float & tau,
-                      Vector3d & A, 
+                      Vector3d & A,
                       Vector3d & B );
-*/
+
 
 KeplerMover::KeplerMover( Context * ctx )
     : ItemBase( ctx )
@@ -68,8 +68,8 @@ Vector3 KeplerMover::relV() const
 
 
 
-/*
-static void rv2elems( const Vector3d & r, const Vector3d & v, 
+
+static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
                       Float & a,
                       Float & e,
                       Float & E,
@@ -81,14 +81,14 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
                       Vector3d & A, 
                       Vector3d & B )
 {
-    const Float v_2 = v.transposed() * v;
-    const Float r_ = sqrt( r.transposed() * r );
+    const Float v_2 = v.transpose() * v;
+    const Float r_ = std::sqrt( r.transpose() * r );
     const Float Ws = 0.5*v_2 - GM/r_;
     a = -0.5*GM/Ws; // Semimajor axis.
 
     // Angular momentum.
     const Vector3d L = r.cross( v );
-    const Float L_2 = L.transposed() * L;
+    const Float L_2 = L.transpose() * L;
     // Semi-latus rectum.
     const Float p = L_2 / GM;
     // Eccentricity.
@@ -96,7 +96,8 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
 
     // Eccentric anomaly
     const Float cosE = (1.0 - r_/a);
-    const Float sinE = (r.transposed() * v) / ( e * std::sqrt( GM * a ) );
+    Float sinE = (r.transpose() * v);
+    sinE = sinE / ( e * std::sqrt( GM * a ) );
     E = std::atan2( sinE, cosE );
 
     // Inclination
@@ -105,22 +106,28 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
     I = std::atan2( sinI, cosI );
 
     // Argument of pericenter
-    const Float sinw = ( ( v(0)*L(1) - v(1)*L(0) ) / GM - 
-                       r(2)/r ) / (e*sinI);
+    Float t1 = v(0)*L(1) - v(1)*L(0);
+    Float t2 = r(2);
+    const Float sinw = ( t1 / GM -
+                         t2 / r_ ) / (e*sinI);
 
-    const Float cosw = ( ( std::sqrt(L_2)*v(2) ) / GM - ( L(0)*r(1) - L(1)*r(0) ) / std::sqrt( L_2  * r ) ) / ( e*sinI );
+    t1 = v(2);
+    t2 = L(0)*r(1) - L(1)*r(0);
+    const Float cosw = ( ( std::sqrt(L_2)*t1 ) / GM - t2 / std::sqrt( L_2  * r_ ) ) / ( e*sinI );
     omega = std::atan2( sinw, cosw );
 
     // Longtitude of accending node
-    const Float cosO = -L(1) / ( std::sqrt( L_2 ) *sinI );
-    const Float sinO = L(0) / ( std::sqrt( L_2 ) * sinI );
+    t1 = std::sqrt( L_2 ) *sinI;
+    const Float cosO =-L(1) / t1;
+    const Float sinO = L(0) / t1;
     Omega = std::atan2( sinO, cosO );
 
     // Orbital period
-    P = 2*.31415926535*std::sqrt( a*a*a/GM );
+    t1 = std::sqrt( a*a*a/GM );
+    P = 2*.31415926535*t1;
 
     // Periapsis crossing time.
-    tau = -( E - e*std::sin(E) )/std::sqrt( GM/(a*a*a) );
+    tau = -( E - e*std::sin(E) ) * t1;
 
 
     A(0) = a*( std::cos(Omega)*std::cos(omega) - std::sin(Omega)*std::cos(I)*std::sin(omega) );
@@ -133,7 +140,7 @@ static void rv2elems( const Vector3d & r, const Vector3d & v,
                                     std::cos(Omega)*std::cos(I)*std::cos(omega) );
     B(2) = a*std::sqrt(1.0 - e*e)*std::sin(I)*std::cos(omega);
 }
-*/
+
 
 
 }
