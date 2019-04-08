@@ -31,7 +31,17 @@ public:
     Vector3 relR() const;
     Vector3 relV() const;
 
+public:
+    static const Float TIME_T;
+    // Small number for
+    static const Float eps;
+    static const int   iters;
+
 private:
+    // Counting time.
+    Float timeLow;
+    Float timeHigh;
+
     bool active;
     Float GM;
     // Eccentricity
@@ -39,13 +49,19 @@ private:
     // Semimajor axis
     Float a;
     // Inclination
-    Float i;
+    Float I;
+    // Eccentric anomaly
+    Float E;
     // Longtitude of accending node
     Float W;
     // Argument of periapsis
     Float w;
     // Current anomaly
-    Float v;
+    Float f;
+    // Period
+    Float P;
+    // Current time.
+    Float tau;
 };
 
 }
