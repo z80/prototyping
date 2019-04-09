@@ -76,6 +76,15 @@ void KeplerMover::Update( float dt )
     const Float Rx = a*(coE - e);
     const Float Ry = b*siE;
 
+    Vector3d ax( 1.0, 0.0, 0.0 );
+    Vector3d ay( 0.0, 1.0, 0.0 );
+    const Quaterniond qW( std::cos(W/2), 0.0, 0.0, std::sin(W/2) );
+    const Quaterniond qI( std::cos(I/2), 0.0, 0.0, std::sin(I/2) );
+    const Quaterniond qw( std::cos(w/2), 0.0, 0.0, std::sin(w/2) );
+    ax = qw * qI * qW * ax;
+    ay = qw * qI * qW * ay;
+    // Position at orbit.
+    const Vector3d r = (ax * Rx) + (ay * Ry);
 
 
     // n->SetPosition();
