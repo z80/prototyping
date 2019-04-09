@@ -22,8 +22,8 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
                       Float & tau,      // Periapsis crossing time
                       Vector3d & A,
                       Vector3d & B );
-static Float nextE( const Float e, const Float M, Float & E, Float & alpha );
-static Float solveE( const Float e, const Float M, const Float E );
+static Float ellipticNextE( const Float e, const Float M, Float & E, Float & alpha );
+static Float ellipticSolveE( const Float e, const Float M, const Float E );
 
 
 const Float KeplerMover::TIME_T = 60.0;
@@ -68,7 +68,7 @@ void KeplerMover::Update( float dt )
     }
     // Solve for eccentric anomaly "E".
     const Float M = std::sqrt( GM/(a*a*a) )*tau;
-    const Float En = solveE( e, M, E );
+    const Float En = ellipticSolveE( e, M, E );
     E = En;
     // Convert "E" to "f", "r" and "V".
     const Float coE = std::cos(E);
@@ -190,7 +190,7 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
     B(2) = a*std::sqrt(1.0 - e*e)*std::sin(I)*std::cos(omega);
 }
 
-static Float nextE( const Float e, const Float M, Float & E, Float & alpha )
+static Float ellipticNextE( const Float e, const Float M, Float & E, Float & alpha )
 {
     Float siE = std::sin(E);
     Float coE = std::cos(E);
@@ -216,15 +216,15 @@ static Float nextE( const Float e, const Float M, Float & E, Float & alpha )
     return ErrN_1;
 }
 
-static Float solveE( const Float e, const Float M, const Float E )
+static Float ellipticSolveE( const Float e, const Float M, const Float E )
 {
     Float En = E;
     Float alpha = 1.0;
-    Float err = nextE( e, M, En, alpha );
+    Float err = ellipticNextE( e, M, En, alpha );
     int n = 0;
     while ( err >= KeplerMover::eps )
     {
-        err = nextE( e, M, En, alpha );
+        err = ellipticNextE( e, M, En, alpha );
 
         n += 1;
         if ( n > KeplerMover::iters )
