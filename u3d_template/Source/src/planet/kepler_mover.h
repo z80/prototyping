@@ -49,6 +49,8 @@ public:
     Float e;
     // Semimajor axis
     Float a;
+    // Semi-latus rectum.
+    Float l;
     // Inclination
     Float I;
     // Eccentric anomaly
