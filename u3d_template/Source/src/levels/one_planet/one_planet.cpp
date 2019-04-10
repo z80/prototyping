@@ -17,6 +17,7 @@
 #include "block.h"
 #include "assembly.h"
 #include "camera_orb_2.h"
+#include "kepler_mover.h"
 
 /*
 #include "physics_world_2.h"
@@ -182,6 +183,7 @@ void OnePlanet::createObjects()
     Model * model = c->GetResource<Model>( "Models/Surface.mdl" );
     s->SetTriangleMesh( model );
 
+    createKepler();
     createDesign();
 }
 
@@ -197,6 +199,31 @@ void OnePlanet::createDesign()
 
     Design d = gd->design;
     Assembly::create( root, d );
+}
+
+void OnePlanet::createKepler()
+{
+    {
+        Node * rotCenter = rootNode->CreateChild( "RotationCenter" );
+        StaticModel * m = rotCenter->CreateComponent<StaticModel>();
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+        m->SetCastShadows( true );
+        rotCenter->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
+    }
+    {
+        Node * body = rootNode->CreateChild( "OrbitingBody" );
+        StaticModel * m = body->CreateComponent<StaticModel>();
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+        m->SetCastShadows( true );
+        body->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
+
+        KeplerMover * km = body->CreateComponent<KeplerMover>();
+    }
+
 }
 
 

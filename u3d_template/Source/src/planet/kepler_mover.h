@@ -23,8 +23,9 @@ public:
 
     void Update( float dt );
 
+    void initKepler( Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
     // Computes orbit elements based on position and velocity.
-    bool launch(const Vector3 & v);
+    bool launch( const Vector3 & v );
     // Stop using Kepler orbit.
     void stop();
     // Obtain current position and velocity.
@@ -37,7 +38,7 @@ public:
     static const Float eps;
     static const int   iters;
 
-private:
+public:
     // Counting time.
     Float timeLow;
     Float timeHigh;
@@ -53,9 +54,9 @@ private:
     // Eccentric anomaly
     Float E;
     // Longtitude of accending node
-    Float W;
+    Float Omega;
     // Argument of periapsis
-    Float w;
+    Float omega;
     // Current anomaly
     Float f;
     // Period

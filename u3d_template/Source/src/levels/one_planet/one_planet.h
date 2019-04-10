@@ -43,6 +43,8 @@ private:
 public:
     void createObjects();
     void createDesign();
+    // Test object to see how it moves.
+    void createKepler();
 
     bool select();
 
