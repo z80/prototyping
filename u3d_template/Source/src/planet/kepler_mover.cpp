@@ -36,6 +36,7 @@ static void parabolicInit( KeplerMover * km, Float GM, Float a, Float e, Float O
 const Float KeplerMover::TIME_T = 60.0;
 const Float KeplerMover::eps    = 1.0e-6;
 const int   KeplerMover::iters  = 64;
+static const Float _2PI = 2.0 * 3.1415926535;
 
 KeplerMover::KeplerMover( Context * ctx )
     : ItemBase( ctx )
@@ -100,6 +101,7 @@ void KeplerMover::initKepler( Float GM, Float a, Float e, Float Omega, Float I, 
     else
         // Parabolic
         ;
+    active = true;
 }
 
 bool KeplerMover::launch( const Vector3 & v )
@@ -185,7 +187,7 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
 
     // Orbital period
     t1 = std::sqrt( a*a*a/GM );
-    P = 2*3.1415926535*t1;
+    P = _2PI*t1;
 
     // Periapsis crossing time.
     tau = -( E - e*std::sin(E) ) * t1;
@@ -242,6 +244,10 @@ static Float ellipticSolveE( const Float e, const Float M, const Float E )
         if ( n > KeplerMover::iters )
             break;
     }
+    if ( En > _2PI )
+        En -= _2PI;
+    else if ( En < 0.0 )
+        En += _2PI;
     return En;
 }
 
@@ -261,7 +267,7 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
     km->omega  = omega;
     km->E  = E;
     const Float n = std::sqrt( GM/(a*a*a) );
-    km->P = 2.0*3.1415926535/n;
+    km->P = _2PI/n;
     // Current orbital time after periapsis.
     const Float M = E - e*std::sin(E);
     const Float t = M / n;
@@ -278,6 +284,7 @@ static void ellipticProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d &
     const Float n = std::sqrt( (a*a*a)/GM );
     const Float M = t/n;
     Float & E = km->E;
+
     const Float e = km->e;
     E = ellipticSolveE( e, M, E );
     // Convert "E" to "f", "r" and "V".

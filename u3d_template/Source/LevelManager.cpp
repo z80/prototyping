@@ -14,6 +14,7 @@
 #include "camera_orb_2.h"
 #include "pivot_marker.h"
 #include "box.h"
+#include "kepler_mover.h"
 
 #include "MyEvents.h"
 
@@ -75,6 +76,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::Box>();
     context_->RegisterFactory<Osp::PivotMarker>();
     context_->RegisterFactory<Osp::CameraOrb2>();
+    context_->RegisterFactory<Osp::KeplerMover>();
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)

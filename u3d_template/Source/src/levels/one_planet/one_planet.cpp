@@ -203,8 +203,8 @@ void OnePlanet::createDesign()
 
 void OnePlanet::createKepler()
 {
+    Node * rotCenter = rootNode->CreateChild( "RotationCenter" );
     {
-        Node * rotCenter = rootNode->CreateChild( "RotationCenter" );
         StaticModel * m = rotCenter->CreateComponent<StaticModel>();
         ResourceCache * cache = GetSubsystem<ResourceCache>();
         m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
@@ -213,7 +213,7 @@ void OnePlanet::createKepler()
         rotCenter->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
     }
     {
-        Node * body = rootNode->CreateChild( "OrbitingBody" );
+        Node * body = rotCenter->CreateChild( "OrbitingBody" );
         StaticModel * m = body->CreateComponent<StaticModel>();
         ResourceCache * cache = GetSubsystem<ResourceCache>();
         m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
@@ -222,8 +222,8 @@ void OnePlanet::createKepler()
         body->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
 
         KeplerMover * km = body->CreateComponent<KeplerMover>();
+        km->initKepler( 100.0, 5.0, 0.8, 0.0, 0.0, 0.0, 0.0 );
     }
-
 }
 
 
