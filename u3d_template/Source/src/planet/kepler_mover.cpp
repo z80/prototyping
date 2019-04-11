@@ -22,7 +22,8 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
                       Float & tau,      // Periapsis crossing time
                       Vector3d & A,
                       Vector3d & B );
-static Float speed( Float GM, Float a, Float r );
+static Float speed( Float GM, Float a, Float r, bool parabolic = false );
+static void velocity( Float GM, Float a, Float p, Float e, Float r, Float & vx, Float & vy, bool parabolic = false );
 
 // This is a special one assuming (e < 1.0).
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
@@ -43,6 +44,7 @@ static Float hyperbolicSolveE( const Float e, const Float M, const Float E );
 
 static void parabolicInit(KeplerMover * km, const Vector3d & r, const Vector3d & v );
 static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
+
 
 
 const Float KeplerMover::TIME_T = 60.0;
@@ -264,10 +266,24 @@ static Float ellipticSolveE( const Float e, const Float M, const Float E )
     return En;
 }
 
-static Float speed( Float GM, Float a, Float r )
+static Float speed( Float GM, Float a, Float r, bool parabolic )
 {
-    const Float v = std::sqrt( GM*( 2.0/r - 1.0/a ) );
+    if ( !parabolic )
+    {
+        const Float v = std::sqrt( GM*( 2.0/r - 1.0/a ) );
+        return v;
+    }
+    const Float v = std::sqrt( 2.0*GM/r );
     return v;
+}
+
+static void velocity( Float GM, Float a, Float p, Float e, Float r, Float & vx, Float & vy , bool parabolic)
+{
+    const Float v = speed( GM, a, r, parabolic );
+    const Float siF = std::sin(f);
+    const Float coF = std::cos(f);
+    const Float dxdf = -r*r*siF/p;
+    const Float dydf =
 }
 
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
@@ -615,7 +631,7 @@ static void parabolicInit(KeplerMover * km, const Vector3d & _r, const Vector3d 
     f = positive ? f : (-f);
     km->f = f;
 
-    // Mean anomaly and time.
+    // Solve for time.
     // t = sqrt( l^3/GM )*(D + D^3/3)
     // D = tan(f/2).
     const Float n = std::sqrt( (p*p*p)/GM );
