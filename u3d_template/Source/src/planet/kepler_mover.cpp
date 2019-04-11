@@ -41,7 +41,7 @@ static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d
 static Float hyperbolicNextE( const Float e, const Float M, Float & E, Float & alpha );
 static Float hyperbolicSolveE( const Float e, const Float M, const Float E );
 
-static void parabolicInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
+static void parabolicInit(KeplerMover * km, const Vector3d & r, const Vector3d & v );
 static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
 
 
@@ -579,14 +579,85 @@ static Float hyperbolicSolveE( const Float e, const Float M, const Float E )
     return En;
 }
 
-static void parabolicInit(KeplerMover * km, const Vector3d &r, const Vector3d &v)
+static void parabolicInit(KeplerMover * km, const Vector3d & _r, const Vector3d & _v )
 {
+    // https://en.wikipedia.org/wiki/Parabolic_trajectory
+    const Float GM = km->GM;
 
+    // First adjust vectors by 90 degrees to make it as if Oz was vertical.
+    const Float _2 = 1.0/std::sqrt(2.0);
+    const Quaterniond q( _2, _2, 0.0, 0.0 );
+    const Vector3d r = q * _r;
+    const Vector3d v = q * _v;
+
+    const Float v_2 = v.transpose() * v;
+    const Float r_ = std::sqrt( r.transpose() * r );
+    const Float Ws = 0.5*v_2 - GM/r_;
+    const Float a = -0.5*GM/Ws; // Semimajor axis.
+    km->a = a;
+
+    // Angular momentum.
+    const Vector3d L = r.cross( v );
+    const Float L_2 = L.transpose() * L;
+    // Semi-latus rectum.
+    const Float p = L_2 / GM;
+    km->l = p;
+    // Eccentricity.
+    const Float e = std::sqrt( 1.0 - p/a );
+    km->e = e;
+
+    // True anomaly.
+    // r = l/(1 + cos(f));
+    // Solve for "f" and define the sign using dot product of (r, v).
+    Float f = std::acos( (p/r_ - 1.0) );
+    const Float rv = r.transpose() * v;
+    const bool positive = (rv >= 0.0);
+    f = positive ? f : (-f);
+    km->f = f;
+
+    // Mean anomaly and time.
+    // t = sqrt( l^3/GM )*(D + D^3/3)
+    // D = tan(f/2).
+    const Float n = std::sqrt( (p*p*p)/GM );
+    const Float D = std::tan(0.5*f);
+    const Float t = 0.5*n*( D + D*D*D/3.0 );
+    km->timeHigh = t;
+    km->tau      = t;
+    km->timeLow  = 0.0;
 }
 
 static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v )
 {
+    const Float GM = km->GM;
+    const Float p = km->l;
+    const Float rp = 0.5*p;
+    const Float n = std::sqrt( GM/(2.0*rp*rp*rp) );
+    const Float A = 3.0/2.0*n*t;
+    const Float B = std::pow( A + std::sqrt(A*A + 1.0), 1.0/3.0 );
+    const Float f = 2.0 * std::atan( B - 1.0/B );
 
+    const Float coF = std::cos(f);
+    const Float siF = std::sin(f);
+    const Float r_ = p/(1.0 + std::cos(f));
+    const Float Rx = r_ * coF;
+    const Float Ry = r_ * siF;
+
+    // Computing real 3d coordinates.
+    Vector3d ax( 1.0, 0.0, 0.0 );
+    Vector3d ay( 0.0, 1.0, 0.0 );
+    const Float Omega = km->Omega;
+    const Float I     = km->I;
+    const Float omega = km->omega;
+    const Float _2 = 1.0/std::sqrt(2.0);
+    const Quaterniond q( _2, -_2, 0.0, 0.0 );
+    const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
+    const Quaterniond qI( std::cos(I/2), 0.0, 0.0, std::sin(I/2) );
+    const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
+    const Quaterniond Q = q * qW * qI * qw;
+    ax = Q * ax;
+    ay = Q * ay;
+    // Position at orbit.
+    r = (ax * Rx) + (ay * Ry);
 }
 
 
