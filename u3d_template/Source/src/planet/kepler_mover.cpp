@@ -24,15 +24,25 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
                       Vector3d & B );
 static Float speed( Float GM, Float a, Float r );
 
+// This is a special one assuming (e < 1.0).
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
+
+// A generic one which computes "e".
+static void genericInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
+
 static void ellipticInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
 static void ellipticProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
 static Float ellipticNextE( const Float e, const Float M, Float & E, Float & alpha );
 static Float ellipticSolveE( const Float e, const Float M, const Float E );
 
-static void hyperbolicInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
+//static void hyperbolicInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
 static void hyperbolicInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
-static void parabolicInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
+static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
+static Float hyperbolicNextE( const Float e, const Float M, Float & E, Float & alpha );
+static Float hyperbolicSolveE( const Float e, const Float M, const Float E );
+
+static void parabolicInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
+static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
 
 
 const Float KeplerMover::TIME_T = 60.0;
@@ -227,6 +237,7 @@ static Float ellipticNextE( const Float e, const Float M, Float & E, Float & alp
         n += 1;
         if ( n > KeplerMover::iters )
             break;
+        alpha *= 0.5;
     }
     E = En_1;
     return ErrN_1;
@@ -278,18 +289,21 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
     km->timeLow  = 0.0;
 }
 
-static void ellipticInit( KeplerMover * km, const Vector3d & r_, const Vector3d & v_ )
+static void genericInit( KeplerMover * km, const Vector3d & _r, const Vector3d & _v )
 {
+    const Float GM = km->GM;
+
     // First adjust vectors by 90 degrees to make it as if Oz was vertical.
     const Float _2 = 1.0/std::sqrt(2.0);
     const Quaterniond q( _2, _2, 0.0, 0.0 );
-    const Vector3d r = q * r_;
-    const Vector3d v = q * v_;
+    const Vector3d r = q * _r;
+    const Vector3d v = q * _v;
 
     const Float v_2 = v.transpose() * v;
     const Float r_ = std::sqrt( r.transpose() * r );
     const Float Ws = 0.5*v_2 - GM/r_;
-    km->a = -0.5*GM/Ws; // Semimajor axis.
+    const Float a = -0.5*GM/Ws; // Semimajor axis.
+    km->a = a;
 
     // Angular momentum.
     const Vector3d L = r.cross( v );
@@ -297,13 +311,48 @@ static void ellipticInit( KeplerMover * km, const Vector3d & r_, const Vector3d 
     // Semi-latus rectum.
     const Float p = L_2 / GM;
     // Eccentricity.
-    km->e = std::sqrt( 1.0 - p/a );
+    const Float e = std::sqrt( 1.0 - p/a );
+    km->e = e;
+
+    if ( e > (1.0 + KeplerMover::eps) )
+        hyperbolicInit( km, r, v );
+    else if ( e < (1.0 -KeplerMover::eps) )
+        ellipticInit( km, r, v );
+    else
+        parabolicInit( km, r, v );
+}
+
+static void ellipticInit( KeplerMover * km, const Vector3d & _r, const Vector3d & _v )
+{
+    const Float GM = km->GM;
+
+    // First adjust vectors by 90 degrees to make it as if Oz was vertical.
+    const Float _2 = 1.0/std::sqrt(2.0);
+    const Quaterniond q( _2, _2, 0.0, 0.0 );
+    const Vector3d r = q * _r;
+    const Vector3d v = q * _v;
+
+    const Float v_2 = v.transpose() * v;
+    const Float r_ = std::sqrt( r.transpose() * r );
+    const Float Ws = 0.5*v_2 - GM/r_;
+    const Float a = -0.5*GM/Ws; // Semimajor axis.
+    km->a = a;
+
+    // Angular momentum.
+    const Vector3d L = r.cross( v );
+    const Float L_2 = L.transpose() * L;
+    // Semi-latus rectum.
+    const Float p = L_2 / GM;
+    // Eccentricity.
+    const Float e = std::sqrt( 1.0 - p/a );
+    km->e = e;
 
     // Eccentric anomaly
     const Float cosE = (1.0 - r_/a);
     Float sinE = (r.transpose() * v);
     sinE = sinE / ( e * std::sqrt( GM * a ) );
-    km->E = std::atan2( sinE, cosE );
+    const Float E = std::atan2( sinE, cosE );
+    km->E = E;
 
     // Inclination
     const Float sinI = sqrt( L(0)*L(0) + L(2)*L(2) ) / std::sqrt( L_2 );
@@ -372,7 +421,7 @@ static void ellipticProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d &
     r = (ax * Rx) + (ay * Ry);
 }
 
-static void hyperbolicInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
+/*static void hyperbolicInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
 {
     km->GM = GM;
     km->a  = a;
@@ -388,14 +437,154 @@ static void hyperbolicInit( KeplerMover * km, Float GM, Float a, Float e, Float 
 
     km->timeHigh = t;
     km->timeLow  = 0.0;
-}
+}*/
 
-static void hyperbolicInit( KeplerMover * km, const Vector3d & r, const Vector3d & v )
+static void hyperbolicInit( KeplerMover * km, const Vector3d & _r, const Vector3d & _v )
 {
     // https://en.wikipedia.org/wiki/Hyperbolic_trajectory
+    const Float GM = km->GM;
+
+    // First adjust vectors by 90 degrees to make it as if Oz was vertical.
+    const Float _2 = 1.0/std::sqrt(2.0);
+    const Quaterniond q( _2, _2, 0.0, 0.0 );
+    const Vector3d r = q * _r;
+    const Vector3d v = q * _v;
+
+    const Float v_2 = v.transpose() * v;
+    const Float r_ = std::sqrt( r.transpose() * r );
+    const Float Ws = 0.5*v_2 - GM/r_;
+    const Float a = -0.5*GM/Ws; // Semimajor axis.
+    km->a = a;
+
+    // Angular momentum.
+    const Vector3d L = r.cross( v );
+    const Float L_2 = L.transpose() * L;
+    // Semi-latus rectum.
+    const Float p = L_2 / GM;
+    km->l = p;
+    // Eccentricity.
+    const Float e = std::sqrt( 1.0 - p/a );
+    km->e = e;
+
+    // True anomaly.
+    // r = l/(1 + e*cos(f));
+    // Solve for "f" and define the sign using dot product of (r, v).
+    Float f = std::acos( (p/r_ - 1.0)/e );
+    const Float rv = r.transpose() * v;
+    const bool positive = (rv >= 0.0);
+    f = positive ? f : (-f);
+    km->f = f;
+
+    // Eccentric anomaly.
+    // cosh(E) = ( cos(f) + e ) / ( 1 + e * cos(f) );
+    const Float coF = std::cos(f);
+    Float E = std::acosh( (coF + e)/(1.0 + e*coF) );
+    E = positive ? E : (-E);
+    km->E = E;
+
+    // Mean anomaly and time.
+    // M = sqrt( -GM/(a*a*a) )*t = e*sinhE - E;
+    const Float n = std::sqrt( -(a*a*a)/GM );
+    const Float t = (e*std::sinh(E) - E) * n;
+    km->timeHigh = t;
+    km->tau      = t;
+    km->timeLow  = 0.0;
 }
 
-static void parabolicInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
+static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v )
+{
+    // Solve for eccentric anomaly "E".
+    const Float a = km->a;
+    const Float GM = km->GM;
+    const Float n = std::sqrt( -(a*a*a)/GM );
+    const Float M = t/n;
+    Float & E = km->E;
+
+    const Float e = km->e;
+    E = hyperbolicSolveE( e, M, E );
+    // Convert "E" to "f", "r" and "V".
+    const Float coE = std::cosh(E);
+
+    // cosh(E) = (cos(f) + e)/(1 + e*cos(f))
+    Float f = std::acos( (e - coE)/(e*coE - 1.0) );
+    f = (E >= 0.0) ? f : (-f);
+    km->f = f;
+
+    // r = l/(1 + e*cos(f))
+    const Float siF = std::sin(f);
+    const Float coF = std::cos(f);
+    const Float r_ = km->l / ( 1.0 + e*coF );
+    const Float Rx = r_ * coF;
+    const Float Ry = r_ * siF;
+
+    // Computing real 3d coordinates.
+    Vector3d ax( 1.0, 0.0, 0.0 );
+    Vector3d ay( 0.0, 1.0, 0.0 );
+    const Float Omega = km->Omega;
+    const Float I     = km->I;
+    const Float omega = km->omega;
+    const Float _2 = 1.0/std::sqrt(2.0);
+    const Quaterniond q( _2, -_2, 0.0, 0.0 );
+    const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
+    const Quaterniond qI( std::cos(I/2), 0.0, 0.0, std::sin(I/2) );
+    const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
+    const Quaterniond Q = q * qW * qI * qw;
+    ax = Q * ax;
+    ay = Q * ay;
+    // Position at orbit.
+    r = (ax * Rx) + (ay * Ry);
+}
+
+static Float hyperbolicNextE( const Float e, const Float M, Float & E, Float & alpha )
+{
+    Float siE = std::sinh(E);
+    Float coE = std::cosh(E);
+    Float ErrN = std::abs( e*siE - E - M );
+    Float En_1 = E - (e*siE - E - M)/(e*coE - 1.0)*alpha;
+    siE = std::sin(En_1);
+    Float ErrN_1 = std::abs( e*siE - En_1 - M );
+    int n = 0;
+    while ( ErrN_1 >= ErrN )
+    {
+        ErrN = ErrN_1;
+
+        coE = std::cos(En_1);
+        En_1 = En_1 - (e*siE - En_1 - M)/(e*coE - 1.0)*alpha;
+        siE = std::sin(En_1);
+        ErrN_1 = std::abs( e*siE - En_1 - M );
+
+        n += 1;
+        if ( n > KeplerMover::iters )
+            break;
+        alpha *= 0.5;
+    }
+    E = En_1;
+    return ErrN_1;
+}
+
+static Float hyperbolicSolveE( const Float e, const Float M, const Float E )
+{
+    Float En = E;
+    Float alpha = 1.0;
+    Float err = hyperbolicNextE( e, M, En, alpha );
+    int n = 0;
+    while ( err >= KeplerMover::eps )
+    {
+        err = hyperbolicNextE( e, M, En, alpha );
+
+        n += 1;
+        if ( n > KeplerMover::iters )
+            break;
+    }
+    return En;
+}
+
+static void parabolicInit(KeplerMover * km, const Vector3d &r, const Vector3d &v)
+{
+
+}
+
+static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v )
 {
 
 }
