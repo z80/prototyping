@@ -224,6 +224,21 @@ void OnePlanet::createKepler()
         KeplerMover * km = body->CreateComponent<KeplerMover>();
         km->initKepler( 100.0, 5.0, 0.8, 0.0, 0.0, 0.0, 0.0 );
     }
+    {
+        Node * body = rotCenter->CreateChild( "OrbitingBodyInit" );
+        StaticModel * m = body->CreateComponent<StaticModel>();
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+        m->SetCastShadows( true );
+        body->SetPosition( Vector3( 0.0, 8.0, 0.0 ) );
+
+        KeplerMover * km = body->CreateComponent<KeplerMover>();
+        km->GM = 100.0;
+        // This is exactly parabolic.
+        //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
+        km->launch( Vector3( 3.0, 0.0, 0.0 ) );
+    }
 }
 
 

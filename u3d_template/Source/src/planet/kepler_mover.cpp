@@ -23,13 +23,14 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
                       Vector3d & A,
                       Vector3d & B );
 static Float speed( Float GM, Float a, Float r, bool parabolic = false );
-static void velocity( Float GM, Float a, Float p, Float e, Float r, Float & vx, Float & vy, bool parabolic = false );
+static void velocity( KeplerMover * km, Float & vx, Float & vy, bool parabolic = false );
 
 // This is a special one assuming (e < 1.0).
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
 
 // A generic one which computes "e".
 static void genericInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
+static void genericProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
 
 static void ellipticInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
 static void ellipticProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
@@ -75,7 +76,10 @@ void KeplerMover::Update( float dt )
     if ( !n )
         return;
 
+    // This time depending on time lapse might be mutlipled
+    // by something.
     const Float dt_ = (float)dt;
+
     timeLow += dt_;
     if ( timeLow > TIME_T )
     {
@@ -83,7 +87,7 @@ void KeplerMover::Update( float dt )
         timeHigh += TIME_T;
     }
     tau = timeLow + timeHigh;
-    if ( tau >= P )
+    if ( ( P > 0.0 ) && (tau >= P) )
     {
         tau -= P;
         timeHigh -= P;
@@ -91,15 +95,7 @@ void KeplerMover::Update( float dt )
 
 
     Vector3d r, v;
-    if ( e < (1.0 - eps) )
-        // Elliptic
-        ellipticProcess( this, tau, r, v );
-    else if ( e > (1.0 + eps) )
-        // Hyperbolic
-        ;
-    else
-        // Parabolic
-        ;
+    genericProcess( this, tau, r, v );
     const Vector3 rf( r(0), r(1), r(2) );
     n->SetPosition( rf );
 }
@@ -109,12 +105,6 @@ void KeplerMover::initKepler( Float GM, Float a, Float e, Float Omega, Float I, 
     if ( e < (1.0 - eps) )
         // Elliptic
         ellipticInit( this, GM, a, e, Omega, I, omega, E );
-    else if ( e > (1.0 + eps) )
-        // Hyperbolic
-        ;
-    else
-        // Parabolic
-        ;
     active = true;
 }
 
@@ -124,10 +114,12 @@ bool KeplerMover::launch( const Vector3 & v )
     const Vector3d ev( v.x_, v.y_, v.z_ );
     const Vector3d er( r.x_, r.y_, r.z_ );
     Vector3d A, B;
-    rv2elems( GM, er, ev,
-              a, e, E, I, omega, Omega, P, tau, A, B );
+    //rv2elems( GM, er, ev,
+    //          a, e, E, I, omega, Omega, P, tau, A, B );
+    genericInit( this, er, ev );
     timeLow  = 0.0;
     timeHigh = tau;
+    active = true;
 }
 
 void KeplerMover::stop()
@@ -136,10 +128,12 @@ void KeplerMover::stop()
 
 Vector3 KeplerMover::relR() const
 {
+    return ItemBase::relR();
 }
 
 Vector3 KeplerMover::relV() const
 {
+    return Vector3::ZERO;
 }
 
 
@@ -178,8 +172,8 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
     E = std::atan2( sinE, cosE );
 
     // Inclination
-    const Float sinI = sqrt( L(0)*L(0) + L(2)*L(2) ) / std::sqrt( L_2 );
-    const Float cosI = L(3) / std::sqrt( L_2 );
+    const Float sinI = sqrt( L(0)*L(0) + L(1)*L(1) ) / std::sqrt( L_2 );
+    const Float cosI = L(2) / std::sqrt( L_2 );
     I = std::atan2( sinI, cosI );
 
     // Argument of pericenter
@@ -277,13 +271,19 @@ static Float speed( Float GM, Float a, Float r, bool parabolic )
     return v;
 }
 
-static void velocity( Float GM, Float a, Float p, Float e, Float r, Float & vx, Float & vy , bool parabolic)
+static void velocity( KeplerMover * km, Float & vx, Float & vy, bool parabolic )
 {
+    /*
+    const Float GM = km->GM;
+    const Float a  = km->a;
+    //const Float r  = k
     const Float v = speed( GM, a, r, parabolic );
+    const Float f = km->f;
     const Float siF = std::sin(f);
     const Float coF = std::cos(f);
     const Float dxdf = -r*r*siF/p;
-    const Float dydf =
+    //const Float dydf =
+    */
 }
 
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
@@ -315,19 +315,27 @@ static void genericInit( KeplerMover * km, const Vector3d & _r, const Vector3d &
     const Vector3d r = q * _r;
     const Vector3d v = q * _v;
 
-    const Float v_2 = v.transpose() * v;
-    const Float r_ = std::sqrt( r.transpose() * r );
-    const Float Ws = 0.5*v_2 - GM/r_;
-    const Float a = -0.5*GM/Ws; // Semimajor axis.
-    km->a = a;
+    //const Float v_2 = v.transpose() * v;
+    //const Float r_ = std::sqrt( r.transpose() * r );
+    //const Float Ws = 0.5*v_2 - GM/r_;
+    //const Float a = -0.5*GM/Ws; // Semimajor axis.
+    //km->a = a;
 
     // Angular momentum.
-    const Vector3d L = r.cross( v );
-    const Float L_2 = L.transpose() * L;
+    //const Vector3d L = r.cross( v );
+    //const Float L_2 = L.transpose() * L;
     // Semi-latus rectum.
-    const Float p = L_2 / GM;
+    //const Float p = L_2 / GM;
     // Eccentricity.
-    const Float e = std::sqrt( 1.0 - p/a );
+    //const Float e = std::sqrt( 1.0 - p/a );
+    //km->e = e;
+
+    const Vector3d h = r.cross(v);
+    const Vector3d ea = v.cross( h ) / km->GM;
+    const Float r_abs = std::sqrt( r.transpose() * r );
+    const Vector3d eb = r / r_abs;
+    const Vector3d ev = ea - eb;
+    const Float e = std::sqrt( ev.transpose() * ev );
     km->e = e;
 
     if ( e > (1.0 + KeplerMover::eps) )
@@ -336,6 +344,17 @@ static void genericInit( KeplerMover * km, const Vector3d & _r, const Vector3d &
         ellipticInit( km, r, v );
     else
         parabolicInit( km, r, v );
+}
+
+static void genericProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v )
+{
+    const Float e = km->e;
+    if ( e > (1.0 + KeplerMover::eps) )
+        hyperbolicProcess( km, t, r, v );
+    else if ( e < (1.0 - KeplerMover::eps) )
+        ellipticProcess( km, t, r, v );
+    else
+        parabolicProcess( km, t, r, v );
 }
 
 static void ellipticInit( KeplerMover * km, const Vector3d & _r, const Vector3d & _v )
@@ -371,8 +390,8 @@ static void ellipticInit( KeplerMover * km, const Vector3d & _r, const Vector3d 
     km->E = E;
 
     // Inclination
-    const Float sinI = sqrt( L(0)*L(0) + L(2)*L(2) ) / std::sqrt( L_2 );
-    const Float cosI = L(3) / std::sqrt( L_2 );
+    const Float sinI = std::sqrt( L(0)*L(0) + L(1)*L(1) ) / std::sqrt( L_2 );
+    const Float cosI = L(2) / std::sqrt( L_2 );
     km->I = std::atan2( sinI, cosI );
 
     // Argument of pericenter
@@ -505,6 +524,8 @@ static void hyperbolicInit( KeplerMover * km, const Vector3d & _r, const Vector3
     km->timeHigh = t;
     km->tau      = t;
     km->timeLow  = 0.0;
+
+    km->P = -1.0;
 }
 
 static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v )
@@ -640,6 +661,8 @@ static void parabolicInit(KeplerMover * km, const Vector3d & _r, const Vector3d 
     km->timeHigh = t;
     km->tau      = t;
     km->timeLow  = 0.0;
+
+    km->P = -1.0;
 }
 
 static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v )
