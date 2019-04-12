@@ -578,21 +578,14 @@ static void parabolicInit(KeplerMover * km, const Vector3d & r, const Vector3d &
     // https://en.wikipedia.org/wiki/Parabolic_trajectory
     const Float GM = km->GM;
 
-    const Float v_2 = v.transpose() * v;
-    const Float r_ = std::sqrt( r.transpose() * r );
-    const Float Ws = 0.5*v_2 - GM/r_;
-    const Float a = -0.5*GM/Ws; // Semimajor axis.
-    km->a = a;
-
     // Angular momentum.
     const Vector3d L = r.cross( v );
     const Float L_2 = L.transpose() * L;
     // Semi-latus rectum.
     const Float p = L_2 / GM;
     km->l = p;
-    // Eccentricity.
-    const Float e = std::sqrt( 1.0 - p/a );
-    km->e = e;
+
+    const Float r_ = std::sqrt( r.transpose() * r );
 
     // True anomaly.
     // r = l/(1 + cos(f));

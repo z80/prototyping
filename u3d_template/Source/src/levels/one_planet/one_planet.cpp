@@ -212,7 +212,7 @@ void OnePlanet::createKepler()
         m->SetCastShadows( true );
         rotCenter->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
     }
-    {
+    /*{
         Node * body = rotCenter->CreateChild( "OrbitingBody" );
         StaticModel * m = body->CreateComponent<StaticModel>();
         ResourceCache * cache = GetSubsystem<ResourceCache>();
@@ -223,7 +223,7 @@ void OnePlanet::createKepler()
 
         KeplerMover * km = body->CreateComponent<KeplerMover>();
         km->initKepler( 100.0, 5.0, 0.8, 0.0, 0.0, 0.0, 0.0 );
-    }
+    }*/
     {
         Node * body = rotCenter->CreateChild( "OrbitingBodyInit" );
         StaticModel * m = body->CreateComponent<StaticModel>();
@@ -236,8 +236,8 @@ void OnePlanet::createKepler()
         KeplerMover * km = body->CreateComponent<KeplerMover>();
         km->GM = 100.0;
         // This is exactly parabolic.
-        //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
-        km->launch( Vector3( 3.0, 0.0, 0.0 ) );
+        km->launch( Vector3( 5.0, 0.0, 0.0 ) );
+        //km->launch( Vector3( 3.0, 0.0, 0.0 ) );
     }
 
     {
