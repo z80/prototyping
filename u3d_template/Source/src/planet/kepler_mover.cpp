@@ -464,13 +464,11 @@ static void hyperbolicInit( KeplerMover * km, const Vector3d & r, const Vector3d
     // Semi-latus rectum.
     const Float p = L_2 / GM;
     km->l = p;
-    // Eccentricity.
-    const Float e = std::sqrt( 1.0 - p/a );
-    km->e = e;
 
     // True anomaly.
     // r = l/(1 + e*cos(f));
     // Solve for "f" and define the sign using dot product of (r, v).
+    const Float e = km->e;
     Float f = std::acos( (p/r_ - 1.0)/e );
     const Float rv = r.transpose() * v;
     const bool positive = (rv >= 0.0);

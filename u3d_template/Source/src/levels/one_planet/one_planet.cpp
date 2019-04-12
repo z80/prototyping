@@ -235,8 +235,11 @@ void OnePlanet::createKepler()
 
         KeplerMover * km = body->CreateComponent<KeplerMover>();
         km->GM = 100.0;
+        // Hyperbolic.
+        km->launch( Vector3( 6.0, 0.0, 0.0 ) );
         // This is exactly parabolic.
-        km->launch( Vector3( 5.0, 0.0, 0.0 ) );
+        //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
+        // Elliptic
         //km->launch( Vector3( 3.0, 0.0, 0.0 ) );
     }
 
