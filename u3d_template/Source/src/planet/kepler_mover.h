@@ -51,20 +51,17 @@ public:
     Float a;
     // Semi-latus rectum.
     Float l;
-    // Inclination
-    Float I;
     // Eccentric anomaly
     Float E;
-    // Longtitude of accending node
-    Float Omega;
-    // Argument of periapsis
-    Float omega;
     // Current anomaly
     Float f;
     // Period
     Float P;
     // Current time.
     Float tau;
+
+    // Orbit unit vectors.
+    Float ex[3], ey[3];
 };
 
 }

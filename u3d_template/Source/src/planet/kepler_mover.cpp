@@ -291,9 +291,6 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
     km->GM = GM;
     km->a  = a;
     km->e  = e;
-    km->Omega  = Omega;
-    km->I  = I;
-    km->omega  = omega;
     km->E  = E;
     const Float n = std::sqrt( GM/(a*a*a) );
     km->P = _2PI/n;
@@ -303,6 +300,26 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
 
     km->timeHigh = t;
     km->timeLow  = 0.0;
+
+
+    // Determine orbit unit vectors given Omega, I, omega.
+    Vector3d ex( 1.0, 0.0, 0.0 );
+    Vector3d ey( 0.0, 1.0, 0.0 );
+    const Float _2 = 1.0/std::sqrt(2.0);
+    const Quaterniond q( _2, 0.0, -_2, 0.0 );
+    const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
+    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
+    const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
+    const Quaterniond Q = q * qW * qI * qw;
+    ex = Q * ex;
+    ey = Q * ey;
+
+    km->ex[0] = ex(0);
+    km->ex[1] = ex(1);
+    km->ex[2] = ex(2);
+    km->ey[0] = ey(0);
+    km->ey[1] = ey(1);
+    km->ey[2] = ey(2);
 }
 
 static void genericInit( KeplerMover * km, const Vector3d & r, const Vector3d & v )
@@ -326,6 +343,12 @@ static void genericInit( KeplerMover * km, const Vector3d & r, const Vector3d & 
     const Vector3d ex = ev / std::sqrt( ev.transpose() * ev );
     const Vector3d ee = h.cross( ex );
     const Vector3d ey = ee / std::sqrt( ee.transpose() * ee );
+    km->ex[0] = ex(0);
+    km->ex[1] = ex(1);
+    km->ex[2] = ex(2);
+    km->ey[0] = ey(0);
+    km->ey[1] = ey(1);
+    km->ey[2] = ey(2);
 
     if ( e > (1.0 + KeplerMover::eps) )
         hyperbolicInit( km, r, v );
@@ -372,37 +395,12 @@ static void ellipticInit( KeplerMover * km, const Vector3d & r, const Vector3d &
     const Float E = std::atan2( sinE, cosE );
     km->E = E;
 
-    // Inclination
-    const Float sinI = std::sqrt( L(0)*L(0) + L(1)*L(1) ) / std::sqrt( L_2 );
-    const Float cosI = L(2) / std::sqrt( L_2 );
-    const Float I = std::atan2( sinI, cosI );
-    km->I = I;
-
-    // Argument of pericenter
-    Float t1 = v(0)*L(1) - v(1)*L(0);
-    Float t2 = r(2);
-    const Float sinw = ( t1 / GM -
-                         t2 / r_ ) / (e*sinI);
-
-    t1 = v(2);
-    t2 = L(0)*r(1) - L(1)*r(0);
-    const Float cosw = ( ( std::sqrt(L_2)*t1 ) / GM - t2 / std::sqrt( L_2  * r_ ) ) / ( e*sinI );
-    const Float omega = std::atan2( sinw, cosw );
-    km->omega = omega;
-
-    // Longtitude of accending node
-    t1 = std::sqrt( L_2 ) *sinI;
-    const Float cosO =-L(1) / t1;
-    const Float sinO = L(0) / t1;
-    const Float Omega = std::atan2( sinO, cosO );
-    km->Omega = Omega;
-
     // Orbital period
-    t1 = std::sqrt( a*a*a/GM );
-    km->P = _2PI*t1;
+    const Float n = std::sqrt( a*a*a/GM );
+    km->P = _2PI*n;
 
     // Periapsis crossing time.
-    km->tau = -( E - e*std::sin(E) ) * t1;
+    km->tau = -( E - e*std::sin(E) ) * n;
     km->timeHigh = km->tau;
     km->timeLow  = 0.0;
 }
@@ -425,24 +423,8 @@ static void ellipticProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d &
     const Float b = a * std::sqrt( 1 - e*e );
     const Float Ry = b*siE;
 
-    Vector3d ax( 1.0, 0.0, 0.0 );
-    Vector3d ay( 0.0, 1.0, 0.0 );
-    const Float Omega = km->Omega;
-    const Float I     = km->I;
-    const Float omega = km->omega;
-    const Float _2 = 1.0/std::sqrt(2.0);
-    //const Quaterniond q( _2, 0.0, -_2, 0.0 );
-    const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
-    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
-    const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
-    const Quaterniond Q = /*q **/ qW * qI * qw;
-    ax = qw * ax;
-    ax = qI * ax;
-    ax = qW * ax;
-
-
-    //ax = Q * ax;
-    ay = Q * ay;
+    Vector3d ax( km->ex[0], km->ex[1], km->ex[2] );
+    Vector3d ay( km->ey[0], km->ey[1], km->ey[2] );
     // Position at orbit.
     r = (ax * Rx) + (ay * Ry);
 }
@@ -540,19 +522,9 @@ static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d
     const Float Ry = r_ * siF;
 
     // Computing real 3d coordinates.
-    Vector3d ax( 1.0, 0.0, 0.0 );
-    Vector3d ay( 0.0, 1.0, 0.0 );
-    const Float Omega = km->Omega;
-    const Float I     = km->I;
-    const Float omega = km->omega;
-    const Float _2 = 1.0/std::sqrt(2.0);
-    const Quaterniond q( _2, -_2, 0.0, 0.0 );
-    const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
-    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
-    const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
-    const Quaterniond Q = q * qW * qI * qw;
-    ax = Q * ax;
-    ay = Q * ay;
+    Vector3d ax( km->ex[0], km->ex[1], km->ex[2] );
+    Vector3d ay( km->ey[0], km->ey[1], km->ey[2] );
+
     // Position at orbit.
     r = (ax * Rx) + (ay * Ry);
 }
@@ -661,19 +633,8 @@ static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d 
     const Float Ry = r_ * siF;
 
     // Computing real 3d coordinates.
-    Vector3d ax( 1.0, 0.0, 0.0 );
-    Vector3d ay( 0.0, 1.0, 0.0 );
-    const Float Omega = km->Omega;
-    const Float I     = km->I;
-    const Float omega = km->omega;
-    const Float _2 = 1.0/std::sqrt(2.0);
-    const Quaterniond q( _2, -_2, 0.0, 0.0 );
-    const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
-    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
-    const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
-    const Quaterniond Q = q * qW * qI * qw;
-    ax = Q * ax;
-    ay = Q * ay;
+    Vector3d ax( km->ex[0], km->ex[1], km->ex[2] );
+    Vector3d ay( km->ey[0], km->ey[1], km->ey[2] );
     // Position at orbit.
     r = (ax * Rx) + (ay * Ry);
 }
