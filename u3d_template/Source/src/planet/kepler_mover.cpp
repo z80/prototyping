@@ -188,7 +188,7 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
     omega = std::atan2( sinw, cosw );
 
     // Longtitude of accending node
-    t1 = std::sqrt( L_2 ) *sinI;
+    t1 = std::sqrt( L_2 ) * sinI;
     const Float cosO =-L(1) / t1;
     const Float sinO = L(0) / t1;
     Omega = std::atan2( sinO, cosO );
@@ -305,15 +305,15 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
     km->timeLow  = 0.0;
 }
 
-static void genericInit( KeplerMover * km, const Vector3d & _r, const Vector3d & _v )
+static void genericInit( KeplerMover * km, const Vector3d & r, const Vector3d & v )
 {
     const Float GM = km->GM;
 
     // First adjust vectors by 90 degrees to make it as if Oz was vertical.
-    const Float _2 = 1.0/std::sqrt(2.0);
+    /*const Float _2 = 1.0/std::sqrt(2.0);
     const Quaterniond q( _2, _2, 0.0, 0.0 );
     const Vector3d r = q * _r;
-    const Vector3d v = q * _v;
+    const Vector3d v = q * _v;*/
 
     const Vector3d h = r.cross(v);
     const Vector3d ea = v.cross( h ) / km->GM;
@@ -322,6 +322,10 @@ static void genericInit( KeplerMover * km, const Vector3d & _r, const Vector3d &
     const Vector3d ev = ea - eb;
     const Float e = std::sqrt( ev.transpose() * ev );
     km->e = e;
+
+    const Vector3d ex = ev / std::sqrt( ev.transpose() * ev );
+    const Vector3d ee = h.cross( ex );
+    const Vector3d ey = ee / std::sqrt( ee.transpose() * ee );
 
     if ( e > (1.0 + KeplerMover::eps) )
         hyperbolicInit( km, r, v );
@@ -427,12 +431,17 @@ static void ellipticProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d &
     const Float I     = km->I;
     const Float omega = km->omega;
     const Float _2 = 1.0/std::sqrt(2.0);
-    const Quaterniond q( _2, -_2, 0.0, 0.0 );
+    //const Quaterniond q( _2, 0.0, -_2, 0.0 );
     const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
-    const Quaterniond qI( std::cos(I/2), 0.0, 0.0, std::sin(I/2) );
+    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
     const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
-    const Quaterniond Q = q * qW * qI * qw;
-    ax = Q * ax;
+    const Quaterniond Q = /*q **/ qW * qI * qw;
+    ax = qw * ax;
+    ax = qI * ax;
+    ax = qW * ax;
+
+
+    //ax = Q * ax;
     ay = Q * ay;
     // Position at orbit.
     r = (ax * Rx) + (ay * Ry);
@@ -539,7 +548,7 @@ static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d
     const Float _2 = 1.0/std::sqrt(2.0);
     const Quaterniond q( _2, -_2, 0.0, 0.0 );
     const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
-    const Quaterniond qI( std::cos(I/2), 0.0, 0.0, std::sin(I/2) );
+    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
     const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
     const Quaterniond Q = q * qW * qI * qw;
     ax = Q * ax;
@@ -660,7 +669,7 @@ static void parabolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d 
     const Float _2 = 1.0/std::sqrt(2.0);
     const Quaterniond q( _2, -_2, 0.0, 0.0 );
     const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
-    const Quaterniond qI( std::cos(I/2), 0.0, 0.0, std::sin(I/2) );
+    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
     const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
     const Quaterniond Q = q * qW * qI * qw;
     ax = Q * ax;
