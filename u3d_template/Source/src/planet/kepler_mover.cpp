@@ -34,13 +34,13 @@ static void genericProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & 
 
 static void ellipticInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
 static void ellipticProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
-static Float ellipticNextE( const Float e, const Float M, Float & E, Float & alpha );
+static Float ellipticNextE( const Float e, const Float M, Float & E );
 static Float ellipticSolveE( const Float e, const Float M, const Float E );
 
 //static void hyperbolicInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
 static void hyperbolicInit( KeplerMover * km, const Vector3d & r, const Vector3d & v );
 static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d & v );
-static Float hyperbolicNextE( const Float e, const Float M, Float & E, Float & alpha );
+static Float hyperbolicNextE( const Float e, const Float M, Float & expE );
 static Float hyperbolicSolveE( const Float e, const Float M, const Float E );
 
 static void parabolicInit(KeplerMover * km, const Vector3d & r, const Vector3d & v );
@@ -212,42 +212,24 @@ static void rv2elems( const Float GM, const Vector3d & r, const Vector3d & v,
     B(2) = a*std::sqrt(1.0 - e*e)*std::sin(I)*std::cos(omega);
 }
 
-static Float ellipticNextE( const Float e, const Float M, Float & E, Float & alpha )
+static Float ellipticNextE( const Float e, const Float M, Float & E )
 {
     Float siE = std::sin(E);
-    Float coE = std::cos(E);
-    Float ErrN = std::abs( E - e*siE - M );
-    Float En_1 = E - (E - e*siE - M)/(1.0 - e*coE)*alpha;
-    siE = std::sin(En_1);
-    Float ErrN_1 = std::abs( En_1 - e*siE - M );
-    int n = 0;
-    while ( ErrN_1 >= ErrN )
-    {
-        ErrN = ErrN_1;
-
-        coE = std::cos(En_1);
-        En_1 = En_1 - (En_1 - e*siE - M)/(1.0 - e*coE)*alpha;
-        siE = std::sin(En_1);
-        ErrN_1 = std::abs( En_1 - e*siE - M );
-
-        n += 1;
-        if ( n > KeplerMover::iters )
-            break;
-        alpha *= 0.5;
-    }
-    E = En_1;
-    return ErrN_1;
+    const Float coE = std::cos(E);
+    E = E - (E - e*siE - M)/(1.0 - e*coE);
+    siE = std::sin(E);
+    const Float err = std::abs( E - e*siE - M );
+    return err;
 }
 
 static Float ellipticSolveE( const Float e, const Float M, const Float E )
 {
     Float En = E;
-    Float alpha = 1.0;
-    Float err = ellipticNextE( e, M, En, alpha );
+    Float err = ellipticNextE( e, M, En );
     int n = 0;
     while ( err >= KeplerMover::eps )
     {
-        err = ellipticNextE( e, M, En, alpha );
+        err = ellipticNextE( e, M, En );
 
         n += 1;
         if ( n > KeplerMover::iters )
@@ -527,47 +509,36 @@ static void hyperbolicProcess( KeplerMover * km, Float t, Vector3d & r, Vector3d
     r = (ax * Rx) + (ay * Ry);
 }
 
-static Float hyperbolicNextE( const Float e, const Float M, Float & E, Float & alpha )
+static Float hyperbolicNextE( const Float e, const Float M, Float & expE )
 {
-    Float siE = std::sinh(E);
-    Float coE = std::cosh(E);
-    Float ErrN = std::abs( e*siE - E - M );
-    Float En_1 = E - (e*siE - E - M)/(e*coE - 1.0)*alpha;
-    siE = std::sin(En_1);
-    Float ErrN_1 = std::abs( e*siE - En_1 - M );
-    int n = 0;
-    while ( ErrN_1 >= ErrN )
-    {
-        ErrN = ErrN_1;
+    // f(x) = e*sinh(x) - x - M
+    // Substitute y = exp(x)
+    // f(y) = e/2*(y - 1/y) - log(y) - M
+    // df(y) = e/2*( 1 + 1/y^2 ) - 1/y
 
-        coE = std::cos(En_1);
-        En_1 = En_1 - (e*siE - En_1 - M)/(e*coE - 1.0)*alpha;
-        siE = std::sin(En_1);
-        ErrN_1 = std::abs( e*siE - En_1 - M );
+    //expE = expE - (0.5*e*( expE - 1.0/expE ) - std::log(expE) - M)/
+    //              (0.5*e*(1.0 + 1.0/(expE*expE)) - 1.0/expE );
 
-        n += 1;
-        if ( n > KeplerMover::iters )
-            break;
-        alpha *= 0.5;
-    }
-    E = En_1;
-    return ErrN_1;
+    expE = (2.0*expE*(e-expE+expE*std::log(expE)+expE*M)) /
+           (e*expE*expE-2.0*expE+e);
+    const Float err = std::abs( 0.5*e*( expE - 1.0/expE ) - std::log(expE) - M );
+    return err;
 }
 
 static Float hyperbolicSolveE( const Float e, const Float M, const Float E )
 {
-    Float En = E;
-    Float alpha = 1.0;
-    Float err = hyperbolicNextE( e, M, En, alpha );
+    Float expE = std::exp(E);
+    Float err = hyperbolicNextE( e, M, expE );
     int n = 0;
     while ( err >= KeplerMover::eps )
     {
-        err = hyperbolicNextE( e, M, En, alpha );
+        err = hyperbolicNextE( e, M, expE );
 
         n += 1;
         if ( n > KeplerMover::iters )
             break;
     }
+    const Float En = std::log(expE);
     return En;
 }
 
