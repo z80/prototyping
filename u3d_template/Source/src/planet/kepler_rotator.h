@@ -24,6 +24,7 @@ private:
     SharedPtr<PlanetBase> planet;
     Float yaw, pitch, roll;
     Timestamp period;
+    Quaterniond qBase;
 };
 
 }

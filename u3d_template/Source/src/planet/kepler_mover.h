@@ -18,10 +18,10 @@ class KeplerMover: public ItemBase
     URHO3D_OBJECT( KeplerMover, ItemBase )
 public:
     KeplerMover( Context * ctx );
-    ~KeplerMover();
+    virtual ~KeplerMover();
 
 
-    void Update( float dt );
+    virtual void Update( float dt );
 
     void initKepler( Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
     // Computes orbit elements based on position and velocity.

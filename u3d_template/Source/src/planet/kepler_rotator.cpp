@@ -41,11 +41,8 @@ void KeplerRotator::Start()
     if ( !p )
         URHO3D_LOGERROR( "Failed to retrieve PlanetBase instance" );
 
-    if ( p )
+    // Base quaternion.
     {
-        planet = SharedPtr<PlanetBase>( p );
-
-        // Set planet angular velocity.
         const Float co2Yaw = std::cos( yaw * 0.5 );
         const Float si2Yaw = std::sin( yaw * 0.5 );
         const Eigen::Quaterniond qYaw( co2Yaw, si2Yaw, 0.0, 0.0 );
@@ -55,13 +52,20 @@ void KeplerRotator::Start()
         const Eigen::Quaterniond qPitch( co2Pitch, 0.0, 0.0, si2Pitch );
 
         const Eigen::Quaterniond Q = qYaw * qPitch;
+        qBase = Quaterniond( Q.w(), Q.x(), Q.y(), Q.z() );
+    }
 
+    if ( p )
+    {
+        planet = SharedPtr<PlanetBase>( p );
+
+        // Set planet angular velocity.
         const Float w = PI2 / static_cast<Float>( period );
-        Eigen::Vector3d vw( 0.0, w, 0.0 );
+        Vector3d vw( 0.0, w, 0.0 );
 
-        vw = Q * vw;
+        vw = qBase * vw;
 
-        p->setW( Vector3d( vw(0), vw(1), vw(3) ) );
+        p->setW( vw );
     }
 }
 
@@ -71,14 +75,6 @@ void KeplerRotator::Update( float dt )
         return;
     const Timestamp t = gameData->time;
 
-    const Float co2Yaw = std::cos( yaw * 0.5 );
-    const Float si2Yaw = std::sin( yaw * 0.5 );
-    const Eigen::Quaterniond qYaw( co2Yaw, si2Yaw, 0.0, 0.0 );
-
-    const Float co2Pitch = std::cos( pitch * 0.5 );
-    const Float si2Pitch = std::sin( pitch * 0.5 );
-    const Eigen::Quaterniond qPitch( co2Pitch, 0.0, 0.0, si2Pitch );
-
     // Compute current period remainder.
     const Timestamp tauI = t % period;
     const Float a = static_cast<Float>( tauI ) / static_cast<Float>( period ) * PI2;
@@ -86,12 +82,11 @@ void KeplerRotator::Update( float dt )
 
     const Float co2Roll = std::cos( r * 0.5 );
     const Float si2Roll = std::sin( r * 0.5 );
-    const Eigen::Quaterniond qRoll( co2Roll, 0.0, si2Roll, 0.0 );
+    const Quaterniond qRoll( co2Roll, 0.0, si2Roll, 0.0 );
+    const Quaterniond qe = qBase * qRoll;
 
-    const Eigen::Quaterniond qe = qYaw * qPitch * qRoll;
     if ( !planet )
         return;
-    const Quaterniond q( qe.w(), qe.x(), qe.y(), qe.z() );
     planet->setQ( q );
 }
 
