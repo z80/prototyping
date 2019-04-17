@@ -3,6 +3,7 @@
 #define __ITEM_BASE_H_
 
 #include <Urho3D/Urho3DAll.h>
+#include "vector3d.h"
 
 namespace Osp
 {
@@ -29,6 +30,12 @@ public:
     virtual Vector3 relR() const;
     virtual void setQ( const Quaternion & q );
     virtual Quaternion relQ() const;
+
+    virtual void setV( const Vector3 & v );
+    virtual Vector3 relV() const;
+
+    virtual void setW( const Vector3 & w );
+    virtual Vector3 relW() const;
 
     virtual void setParent( ItemBase * parent, bool inheritRotation = true );
     virtual void setParent( Node * parent, bool inheritRotation = true );

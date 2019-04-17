@@ -47,6 +47,25 @@ Quaternion ItemBase::relQ() const
     return n->GetRotation();
 }
 
+void ItemBase::setV( const Vector3 & v )
+{
+}
+
+Vector3 ItemBase::relV() const
+{
+    return Vector3::ZERO;
+}
+
+void ItemBase::setW( const Vector3 & w )
+{
+}
+
+Vector3 ItemBase::relW() const
+{
+    return Vector3::ZERO;
+}
+
+
 void ItemBase::setParent( ItemBase * parent, bool inheritRotation )
 {
     Vector3    rel_r;
