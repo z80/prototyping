@@ -10,9 +10,9 @@
 namespace Osp
 {
 
-class KeplerRotator: public LogicComponent
+class KeplerRotator: public ItemBase
 {
-    URHO3D_OBJECT( KeplerRotator, LogicComponent )
+    URHO3D_OBJECT( KeplerRotator, ItemBase )
 public:
     KeplerRotator( Context * ctx );
     ~KeplerRotator();

@@ -7,7 +7,7 @@ namespace Osp
 {
 
 KeplerRotator::KeplerRotator( Context * ctx )
-    : LogicComponent( ctx )
+    : ItemBase( ctx )
 {
     yaw   = 0.0;
     pitch = 0.0;
@@ -42,7 +42,27 @@ void KeplerRotator::Start()
         URHO3D_LOGERROR( "Failed to retrieve PlanetBase instance" );
 
     if ( p )
+    {
         planet = SharedPtr<PlanetBase>( p );
+
+        // Set planet angular velocity.
+        const Float co2Yaw = std::cos( yaw * 0.5 );
+        const Float si2Yaw = std::sin( yaw * 0.5 );
+        const Eigen::Quaterniond qYaw( co2Yaw, si2Yaw, 0.0, 0.0 );
+
+        const Float co2Pitch = std::cos( pitch * 0.5 );
+        const Float si2Pitch = std::sin( pitch * 0.5 );
+        const Eigen::Quaterniond qPitch( co2Pitch, 0.0, 0.0, si2Pitch );
+
+        const Eigen::Quaterniond Q = qYaw * qPitch;
+
+        const Float w = PI2 / static_cast<Float>( period );
+        Eigen::Vector3d vw( 0.0, w, 0.0 );
+
+        vw = Q * vw;
+
+        p->setW( Vector3d( vw(0), vw(1), vw(3) ) );
+    }
 }
 
 void KeplerRotator::Update( float dt )
@@ -50,6 +70,7 @@ void KeplerRotator::Update( float dt )
     if ( !gameData )
         return;
     const Timestamp t = gameData->time;
+
     const Float co2Yaw = std::cos( yaw * 0.5 );
     const Float si2Yaw = std::sin( yaw * 0.5 );
     const Eigen::Quaterniond qYaw( co2Yaw, si2Yaw, 0.0, 0.0 );
