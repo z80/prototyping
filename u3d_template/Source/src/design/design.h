@@ -3,6 +3,8 @@
 #define __DESIGN_H_
 
 #include <Urho3D/Urho3DAll.h>
+#include "vector3d.h"
+#include "quaterniond.h"
 
 namespace Osp
 {
@@ -29,8 +31,8 @@ public:
         String typeName;
         // Position and orientation with respect to
         // the Site design was made in.
-        Vector3    r;
-        Quaternion q;
+        Vector3d    r;
+        Quaterniond q;
     };
 
     Design();

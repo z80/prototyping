@@ -734,11 +734,11 @@ void Workshop::drag()
         return;
     }
 
-    const Vector3 origin = selectedBlock->relR();
+    const Vector3 origin = selectedBlock->relRf();
     Vector3 at;
     mouseIntersection( at, origin );
 
-    selectedBlock->setR( at );
+    selectedBlock->setR( Vector3d(at) );
 }
 
 void Workshop::dragStart()
@@ -781,10 +781,13 @@ void Workshop::rotate()
         return;
     }
 
-    Vector3    r0;
-    Quaternion rel_q;
+    Vector3d    r0d;
+    Quaterniond rel_qd;
     Vector3    at;
-    const bool relPoseOk = selectedBlock->relativePose( rootNode, r0, rel_q );
+    const bool relPoseOk = selectedBlock->relativePose( rootNode, r0d, rel_qd );
+    Vector3    r0( r0d.x_, r0d.y_, r0d.z_ );
+    Quaternion rel_q( rel_qd.w_, rel_qd.x_, rel_qd.y_, rel_qd.z_ );
+
     mouseIntersection( at, r0 );
 
     const Vector3 r1 = (mouseIntersectionOrig - r0).Normalized();
@@ -822,23 +825,29 @@ void Workshop::rotateStart()
     Block * parentBlock = selectedBlock->parentBlock();
     if ( parentBlock )
     {
-        rotAxis = selectedBlock->axisToParent();
+        const Vector3d a = selectedBlock->axisToParent();
+        rotAxis = Vector3( a.x_, a.y_, a.z_ );
         rotateAttached = true;
     }
     else
     {
         Vector3 x, y;
         cameraPlane( x, y, rotAxis );
-        Vector3    at;
-        Quaternion rel_q;
-        const bool res = selectedBlock->relativePose( rootNode, at, qOrig );
+        Vector3d    r;
+        Quaterniond q;
+        const bool res = selectedBlock->relativePose( rootNode, r, q );
+        Vector3    at( r.x_, r.y_, r.z_ );
+        Quaternion rel_q( q.w_, q.x_, q.y_, q.z_ );
         rotAxis = rel_q.Inverse() * rotAxis;
         rotateAttached = false;
     }
 
     selectedBlock->detach();
-    Vector3    at;
-    const bool res = selectedBlock->relativePose( rootNode, at, qOrig );
+    Vector3d    r;
+    Quaterniond q;
+    const bool res = selectedBlock->relativePose( rootNode, r, q );
+    const Vector3 at = Vector3( r.x_, r.y_, r.z_ );
+    qOrig = Quaternion( q.w_, q.x_, q.y_, q.z_ );
     mouseIntersection( mouseIntersectionOrig, at );
 
     hintRotated();

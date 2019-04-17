@@ -39,7 +39,7 @@ public:
 
     Block * parentBlock();
 
-    const Vector3 axisToParent();
+    const Vector3d axisToParent();
 
 public:
     /// Each object implementation
@@ -48,7 +48,7 @@ public:
     void clearPivots();
     void createPivots( size_t qty );
     /// Align orientation after attaching the object to it's parent.
-    void alignOrientation( const Vector3 & ownA, const Vector3 & parentA );
+    void alignOrientation( const Vector3d & ownA, const Vector3d & parentA );
     /// Attaching functionality.
     Block * tryAttachToConnectionPoint();
     Block * tryAttachToSurface();

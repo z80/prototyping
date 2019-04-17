@@ -108,9 +108,9 @@ void KeplerMover::initKepler( Float GM, Float a, Float e, Float Omega, Float I, 
     active = true;
 }
 
-bool KeplerMover::launch( const Vector3 & v )
+bool KeplerMover::launch( const Vector3d & v )
 {
-    const Vector3 r = relR();
+    const Vector3d r = relR();
     const Eigen::Vector3d ev( v.x_, v.y_, v.z_ );
     const Eigen::Vector3d er( r.x_, r.y_, r.z_ );
     Eigen::Vector3d A, B;
@@ -126,14 +126,14 @@ void KeplerMover::stop()
 {
 }
 
-Vector3 KeplerMover::relR() const
+Vector3d KeplerMover::relR() const
 {
     return ItemBase::relR();
 }
 
-Vector3 KeplerMover::relV() const
+Vector3d KeplerMover::relV() const
 {
-    return Vector3::ZERO;
+    return Vector3d::ZERO;
 }
 
 
@@ -288,11 +288,11 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
     Eigen::Vector3d ex( 1.0, 0.0, 0.0 );
     Eigen::Vector3d ey( 0.0, 1.0, 0.0 );
     const Float _2 = 1.0/std::sqrt(2.0);
-    const Quaterniond q( _2, 0.0, -_2, 0.0 );
-    const Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
-    const Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
-    const Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
-    const Quaterniond Q = q * qW * qI * qw;
+    const Eigen::Quaterniond q( _2, 0.0, -_2, 0.0 );
+    const Eigen::Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
+    const Eigen::Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
+    const Eigen::Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
+    const Eigen::Quaterniond Q = q * qW * qI * qw;
     ex = Q * ex;
     ey = Q * ey;
 

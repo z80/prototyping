@@ -236,7 +236,7 @@ void OnePlanet::createKepler()
         KeplerMover * km = body->CreateComponent<KeplerMover>();
         km->GM = 100.0;
         // Hyperbolic.
-        km->launch( Vector3( 6.0, 0.0, 0.0 ) );
+        km->launch( Vector3d( 6.0, 0.0, 0.0 ) );
         // This is exactly parabolic.
         //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
         // Elliptic
@@ -258,7 +258,7 @@ void OnePlanet::createKepler()
         km->GM = 100.0;
         // This is exactly parabolic.
         //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
-        km->launch( Vector3( 0.0, 0.0, -1.0 ) );
+        km->launch( Vector3d( 0.0, 0.0, -1.0 ) );
 
         // Reference body
         body = rotCenter->CreateChild( "Reference" );

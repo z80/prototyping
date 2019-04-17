@@ -748,7 +748,7 @@ void WorkshopMode::drag()
         return;
     }
 
-    const Vector3 origin = selectedBlock->relR();
+    const Vector3 origin = selectedBlock->relRf();
     Vector3 at;
     mouseIntersection( at, origin );
 
@@ -836,7 +836,8 @@ void WorkshopMode::rotateStart()
     Block * parentBlock = selectedBlock->parentBlock();
     if ( parentBlock )
     {
-        rotAxis = selectedBlock->axisToParent();
+        Vector3d a = selectedBlock->axisToParent();;
+        rotAxis = Vector3( a.x_, a.y_, a.z_ );
         rotateAttached = true;
     }
     else

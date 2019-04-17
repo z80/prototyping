@@ -85,13 +85,13 @@ bool Assembly::toWorld()
             SharedPtr<Block> blockB = this->blocks[indB];
 
             // For now place joint point in the middle.
-            const Vector3 r = blockB->relR();
+            const Vector3d r = blockB->relR();
             Node * node = blockB->GetNode();
             Constraint * c = node->CreateComponent<Constraint>();
             c->SetConstraintType( CONSTRAINT_HINGE );
             c->SetDisableCollision( true );
             c->SetOtherBody( blockA->rigidBody() );
-            c->SetWorldPosition( r );
+            c->SetWorldPosition( Vector3( r.x_, r.y_, r.z_ ) );
 
             const Vector3 axis( 0.0, 0.0, 1.0 );
             const Vector2 lim( 0.0, 0.0 );
@@ -175,7 +175,7 @@ void Assembly::destroy()
 bool Assembly::updatePoseInWorld()
 {
     // Retrieve all the blocks.
-    Vector3 r( Vector3::ZERO );
+    Vector3d r( Vector3d::ZERO );
     const size_t qty = blocks.Size();
     for ( size_t i=0; i<qty; i++ )
     {
@@ -185,13 +185,13 @@ bool Assembly::updatePoseInWorld()
             URHO3D_LOGERROR( "Assembly::updatePoseInWorld() one of blocks doesn\'t exist!" );
             continue;
         }
-        const Vector3 ri = sb->relR();
+        const Vector3d ri = sb->relR();
         r += ri;
     }
     const float _1_qty = 1.0/static_cast<float>( qty );
     r = r * _1_qty;
     Node * n = GetNode();
-    n->SetPosition( r );
+    n->SetPosition( Vector3( r.x_, r.y_, r.z_ ) );
 
     return true;
 }

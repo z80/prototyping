@@ -25,12 +25,12 @@ public:
 
     void initKepler( Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
     // Computes orbit elements based on position and velocity.
-    bool launch( const Vector3 & v );
+    bool launch( const Vector3d &v );
     // Stop using Kepler orbit.
     void stop();
     // Obtain current position and velocity.
-    Vector3 relR() const;
-    Vector3 relV() const;
+    Vector3d relR() const;
+    Vector3d relV() const;
 
 public:
     static const Float TIME_T;

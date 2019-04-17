@@ -24,6 +24,12 @@ public:
 
     /// Copy-construct from another vector.
     Vector3d(const Vector3d& vector) noexcept = default;
+    Vector3d(const Vector3& vector)
+        : x_( vector.x_ ),
+          y_( vector.y_ ),
+          z_( vector.z_ )
+    {
+    }
 
     /// Construct from a two-dimensional vector and the Z coordinate.
     Vector3d(const Vector2& vector, Float z) noexcept :
@@ -75,6 +81,14 @@ public:
 
     /// Assign from another vector.
     Vector3d& operator =(const Vector3d& rhs) noexcept = default;
+
+    Vector3d & operator =( const Vector3 & rhs )
+    {
+        x_ = rhs.x_;
+        y_ = rhs.y_;
+        z_ = rhs.z_;
+        return *this;
+    }
 
     /// Test for equality with another vector without epsilon.
     bool operator ==(const Vector3d& rhs) const { return x_ == rhs.x_ && y_ == rhs.y_ && z_ == rhs.z_; }

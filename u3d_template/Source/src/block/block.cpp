@@ -129,11 +129,11 @@ Block * Block::parentBlock()
     return nullptr;
 }
 
-const Vector3 Block::axisToParent()
+const Vector3d Block::axisToParent()
 {
     Block * p = parentBlock();
     if ( !p )
-        return Vector3::ZERO;
+        return Vector3d::ZERO;
 
     const size_t qty = pivots.size();
     for ( size_t i=0; i<qty; i++ )
@@ -147,7 +147,7 @@ const Vector3 Block::axisToParent()
         }
     }
 
-    return Vector3::ZERO;
+    return Vector3d::ZERO;
 }
 
 void Block::placePivots()
@@ -194,12 +194,12 @@ void Block::createPivots( size_t qty )
     }
 }
 
-void Block::alignOrientation( const Vector3 & ownA, const Vector3 & parentA )
+void Block::alignOrientation( const Vector3d & ownA, const Vector3d & parentA )
 {
-    const Quaternion q = relQ();
-    Vector3 a = q*ownA;
+    const Quaterniond q = relQ();
+    Vector3d a = q*ownA;
     a = -a;
-    Quaternion adjQ;
+    Quaterniond adjQ;
     adjQ.FromRotationTo( a, parentA );
     adjQ = adjQ * q;
     adjQ.Normalize();
@@ -251,13 +251,13 @@ Block * Block::tryAttachToConnectionPoint()
             for ( size_t markerInd=0; markerInd<markersQty; markerInd++ )
             {
                 PivotMarker * marker = block->pivots[markerInd];
-                Vector3    r;
-                Quaternion q;
+                Vector3d    r;
+                Quaterniond q;
                 const bool relPoseOk = localMarker->relativePose( marker, r, q );
                 if ( !relPoseOk )
                     continue;
 
-                const float d = r.Length();
+                const Float d = r.Length();
                 if ( ( minDist < 0.0 ) || (d < minDist) )
                 {
                     bestLocalMarkerInd  = localInd;
@@ -268,7 +268,7 @@ Block * Block::tryAttachToConnectionPoint()
             }
         }
     }
-    if ( minDist < 0.0f )
+    if ( minDist < 0.0 )
         return nullptr;
 
     if ( minDist > R )
@@ -280,8 +280,8 @@ Block * Block::tryAttachToConnectionPoint()
     Block       * parentBlock  = blocks[bestBlockInd];
     PivotMarker * localMarker  = this->pivots[bestLocalMarkerInd];
     PivotMarker * parentMarker = parentBlock->pivots[bestRemoteMarkerInd];
-    Vector3    r;
-    Quaternion q;
+    Vector3d    r;
+    Quaterniond q;
     const bool relPoseOk = localMarker->relativePose( parentMarker, r, q );
     // It can't be this way. But just in case.
     if ( !relPoseOk )
@@ -291,8 +291,8 @@ Block * Block::tryAttachToConnectionPoint()
     // After aligning orientation update quaternion.
     q = relQ();
     // Compute position.
-    const Vector3 parentR = parentMarker->relR();
-    Vector3       localR  = localMarker->relR();
+    const Vector3d parentR = parentMarker->relR();
+    Vector3d       localR  = localMarker->relR();
     localR = q * localR;
     localR = parentR - localR;
     this->setR( localR );
@@ -318,8 +318,8 @@ Block * Block::tryAttachToSurface()
     Scene * s = GetScene();
 
     Block * block = 0;
-    Vector3 position, normal;
-    Vector3 axis;
+    Vector3d position, normal;
+    Vector3d axis;
     PivotMarker * localMarker = 0;
     for ( size_t pivotInd=0; pivotInd<localMakersQty; pivotInd++ )
     {
@@ -328,12 +328,13 @@ Block * Block::tryAttachToSurface()
             continue;
 
         axis = localMarker->connectionDesc.a;
-        Vector3    rel_r;
-        Quaternion rel_q;
+        Vector3d    rel_r;
+        Quaterniond rel_q;
         const bool res = localMarker->relativePose( s, rel_r, rel_q );
-        const Vector3 origin    = rel_r;
-        const Vector3 direction = rel_q * axis;
-        const Ray ray( origin, direction );
+        const Vector3d origin    = rel_r;
+        const Vector3d direction = rel_q * axis;
+        const Ray ray( Vector3( origin.x_, origin.y_, origin.z_ ),
+                       Vector3( direction.x_, direction.y_, direction.z_ ) );
 
         PODVector<RayQueryResult> results;
         const float maxDistance = R;
@@ -371,8 +372,8 @@ Block * Block::tryAttachToSurface()
         return nullptr;
 
 
-    Vector3    rel_r;
-    Quaternion rel_q;
+    Vector3d    rel_r;
+    Quaterniond rel_q;
     const bool res = block->relativePose( s, rel_r, rel_q );
     position = rel_q.Inverse() * (position - rel_r);
     normal   = rel_q.Inverse() * normal;
@@ -380,7 +381,7 @@ Block * Block::tryAttachToSurface()
     setParent( block );
     alignOrientation( axis, normal );
 
-    Vector3       localR  = localMarker->relR();
+    Vector3d localR  = localMarker->relR();
     rel_q = relQ();
     localR = rel_q * localR;
     localR = position - localR;

@@ -4,6 +4,7 @@
 
 #include <Urho3D/Urho3DAll.h>
 #include "vector3d.h"
+#include "quaterniond.h"
 
 namespace Osp
 {
@@ -26,27 +27,34 @@ public:
 
     //static template<typename T> T * cast<T>( Entity * e );
 
-    virtual void setR( const Vector3 & at );
-    virtual Vector3 relR() const;
-    virtual void setQ( const Quaternion & q );
-    virtual Quaternion relQ() const;
+    virtual void setR( const Vector3d & new_r );
+    virtual Vector3d relR() const;
+    virtual void setQ( const Quaterniond & new_q );
+    virtual Quaterniond relQ() const;
+    virtual void setV( const Vector3d & new_v );
+    virtual Vector3d relV() const;
+    virtual void setW(const Vector3d & new_w );
+    virtual Vector3d relW() const;
 
-    virtual void setV( const Vector3 & v );
-    virtual Vector3 relV() const;
-
-    virtual void setW( const Vector3 & w );
-    virtual Vector3 relW() const;
+    Vector3 relRf() const;
+    Quaternion relQf() const;
+    Vector3 relVf() const;
+    Vector3 relWf() const;
 
     virtual void setParent( ItemBase * parent, bool inheritRotation = true );
     virtual void setParent( Node * parent, bool inheritRotation = true );
     bool isParentOf( ItemBase * item ) const;
     ItemBase * parentItem() const;
 
+    bool relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q );
     bool relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q );
-    bool relativePose( Node * other, Vector3 & rel_r, Quaternion & rel_q );
+    bool relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q );
+    bool relativePose( Node * other, Vector3  & rel_r, Quaternion  & rel_q );
     static bool relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & rel_q );
 public:
     Type            _type;
+    Vector3d    r, v, w;
+    Quaterniond q;
 };
 
 

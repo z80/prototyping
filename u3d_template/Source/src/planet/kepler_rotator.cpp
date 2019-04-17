@@ -70,7 +70,7 @@ void KeplerRotator::Update( float dt )
     const Eigen::Quaterniond qe = qYaw * qPitch * qRoll;
     if ( !planet )
         return;
-    const Quaternion q( qe.w(), qe.x(), qe.y(), qe.z() );
+    const Quaterniond q( qe.w(), qe.x(), qe.y(), qe.z() );
     planet->setQ( q );
 }
 

@@ -23,48 +23,81 @@ ItemBase::Type ItemBase::type()
     return _type;
 }
 
-void ItemBase::setR( const Vector3 & at )
+void ItemBase::setR( const Vector3d & new_r )
 {
+    r = new_r;
+
     Node * n = GetNode();
-    n->SetPosition( at );
+    const Vector3 rf( r.x_, r.y_, r.z_ );
+    n->SetPosition( rf );
 }
 
-Vector3 ItemBase::relR() const
+Vector3d ItemBase::relR() const
 {
+    return r;
+}
+
+void ItemBase::setQ( const Quaterniond & new_q )
+{
+    q = new_q;
+
     Node * n = GetNode();
-    return n->GetPosition();
+    const Quaternion qf( q.w_, q.x_, q.y_, q.z_ );
+    n->SetRotation( qf );
 }
 
-void ItemBase::setQ( const Quaternion & q )
+Quaterniond ItemBase::relQ() const
 {
-    Node * n = GetNode();
-    n->SetRotation( q );
+    return q;
 }
 
-Quaternion ItemBase::relQ() const
+void ItemBase::setV( const Vector3d & new_v )
 {
-    Node * n = GetNode();
-    return n->GetRotation();
+    v = new_v;
 }
 
-void ItemBase::setV( const Vector3 & v )
+Vector3d ItemBase::relV() const
 {
+    return v;
 }
 
-Vector3 ItemBase::relV() const
+void ItemBase::setW( const Vector3d & new_w )
 {
-    return Vector3::ZERO;
+    w = new_w;
 }
 
-void ItemBase::setW( const Vector3 & w )
+Vector3d ItemBase::relW() const
 {
+    return w;
 }
 
-Vector3 ItemBase::relW() const
+Vector3 ItemBase::relRf() const
 {
-    return Vector3::ZERO;
+    const Vector3d r = relR();
+    const Vector3 rf( v.x_, v.y_, v.z_ );
+    return rf;
 }
 
+Quaternion ItemBase::relQf() const
+{
+    const Quaterniond q = relQ();
+    const Quaternion  qf( q.w_, q.x_, q.y_, q.z_ );
+    return qf;
+}
+
+Vector3 ItemBase::relVf() const
+{
+    const Vector3d v = relV();
+    const Vector3 vf( v.x_, v.y_, v.z_ );
+    return vf;
+}
+
+Vector3 ItemBase::relWf() const
+{
+    const Vector3d w = relW();
+    const Vector3 wf( w.x_, w.y_, w.z_ );
+    return wf;
+}
 
 void ItemBase::setParent( ItemBase * parent, bool inheritRotation )
 {
@@ -132,13 +165,13 @@ ItemBase * ItemBase::parentItem() const
     return nullptr;
 }
 
-bool ItemBase::relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q )
+bool ItemBase::relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q )
 {
     // root->a->b->c->d->e->this
     // root->a->b->other->f->g
     // The idea is to accumulate relative position and orientation.
-    Vector3    r = Vector3::ZERO;
-    Quaternion q = Quaternion::IDENTITY;
+    Vector3d    r = Vector3::ZERO;
+    Quaterniond q = Quaternion::IDENTITY;
 
     const Node * root = GetScene();
 
@@ -182,26 +215,26 @@ bool ItemBase::relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel
 
     // Here there is a closest common ancestor.
     // First find pose of nodeA in it's ref. frame.
-    Vector3    ra = Vector3::ZERO;
-    Quaternion qa = Quaternion::IDENTITY;
+    Vector3d    ra = Vector3d::ZERO;
+    Quaterniond qa = Quaterniond::IDENTITY;
     for ( size_t i=0; i<indA; i++ )
     {
         nodeA = allAncestorsA[i];
-        const Quaternion q = nodeA->GetRotation();
-        const Vector3    r = nodeA->GetPosition();
+        const Quaterniond q = nodeA->GetRotation();
+        const Vector3d    r = nodeA->GetPosition();
         ra = q*ra;
         ra = r + ra;
         qa = q * qa;
     }
 
-    Vector3    rb = Vector3::ZERO;
-    Quaternion qb = Quaternion::IDENTITY;
+    Vector3d    rb = Vector3d::ZERO;
+    Quaterniond qb = Quaterniond::IDENTITY;
     const size_t indB = ancestorsB.size()-1;
     for ( size_t i=0; i<indB; i++ )
     {
         Node * nodeB = ancestorsB[i];
-        const Quaternion q = nodeB->GetRotation();
-        const Vector3    r = nodeB->GetPosition();
+        const Quaterniond q = nodeB->GetRotation();
+        const Vector3d    r = nodeB->GetPosition();
         rb = q*rb;
         rb = r + rb;
         qb = q * qb;
@@ -214,7 +247,17 @@ bool ItemBase::relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel
     return true;
 }
 
-bool ItemBase::relativePose( Node * other, Vector3 & rel_r, Quaternion & rel_q )
+bool ItemBase::relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q )
+{
+    Vector3d    r;
+    Quaterniond q;
+    const bool res = relativePose( other, r, q );
+    rel_r = Vector3( r.x_, r.y_, r.z_ );
+    rel_q = Quaternion( q.w_, q.x_, q.y_, q.z_ );
+    return res;
+}
+
+bool ItemBase::relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q )
 {
     // root->a->b->c->d->e->this
     // root->a->b->other->f->g
@@ -294,6 +337,16 @@ bool ItemBase::relativePose( Node * other, Vector3 & rel_r, Quaternion & rel_q )
     // I probably don't need quaternion at all.
     rel_q = qb.Inverse() * qa;
     return true;
+}
+
+bool ItemBase::relativePose( Node * other, Vector3  & rel_r, Quaternion  & rel_q )
+{
+    Vector3d    r;
+    Quaterniond q;
+    const bool res = relativePose( other, r, q );
+    rel_r = Vector3( r.x_, r.y_, r.z_ );
+    rel_q = Quaternion( q.w_, q.x_, q.y_, q.z_ );
+    return res;
 }
 
 bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & rel_q )

@@ -3,6 +3,7 @@
 #define __TECH_TREE_H_
 
 #include <Urho3D/Urho3DAll.h>
+#include "vector3d.h"
 
 using namespace Urho3D;
 
@@ -12,9 +13,9 @@ namespace Osp
 struct ConnectionDesc
 {
     /// Where on a part connection point is.
-    Vector3    r;
+    Vector3d   r;
     /// Alignment vector.
-    Vector3    a;
+    Vector3d   a;
     /// Allow connections anywhere or only to another connection
     /// point.
     bool       attachAnywhere;
