@@ -3,6 +3,7 @@
 #define __KEPLER_ROTATOR_H_
 
 #include <Urho3D/Urho3DAll.h>
+#include "planet_base.h"
 #include "game_data.h"
 #include "data_types.h"
 
@@ -14,7 +15,7 @@ class KeplerRotator: public LogicComponent
     URHO3D_OBJECT( KeplerRotator, LogicComponent )
 public:
     KeplerRotator( Context * ctx );
-    ~KepletRotator();
+    ~KeplerRotator();
 
     void Start() override;
     void Update( float dt ) override;
