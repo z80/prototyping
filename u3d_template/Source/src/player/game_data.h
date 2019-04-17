@@ -6,6 +6,7 @@
 
 #include "assembly.h"
 #include "block.h"
+#include "data_types.h"
 
 namespace Osp
 {
@@ -22,7 +23,10 @@ public:
     ~GameData();
 
     SharedPtr<Node> node( const String & name );
-    Design design;
+    Design    design;
+    Timestamp time;
+    static const Timestamp ONE_SECOND;
+    static const Float    _ONE_SECOND;
 private:
     HashMap<String, SharedPtr<Node> > nodes;
 };

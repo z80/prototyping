@@ -38,7 +38,7 @@ protected:
     // Need only a pointer to the 2-d one here as 1-st one can be obtained by "GetNode()".
     SharedPtr<Node>  dynamicsNode;
     // Yes, can obtain all these through "getComponents" recursive call but will spend
-    // come time on casting types in this case.
+    // some time on casting types in this case.
     Vector<Block>    surfaceBlocks,
                      orbitingBlocks;
     Vector<Assembly> orbitingAssemblies;
