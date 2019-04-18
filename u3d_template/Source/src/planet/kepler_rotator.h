@@ -3,7 +3,6 @@
 #define __KEPLER_ROTATOR_H_
 
 #include <Urho3D/Urho3DAll.h>
-#include "planet_base.h"
 #include "game_data.h"
 #include "data_types.h"
 
@@ -20,8 +19,8 @@ public:
     void Start() override;
     void Update( float dt ) override;
 private:
+    void computeBaseRotation();
     SharedPtr<GameData>   gameData;
-    SharedPtr<PlanetBase> planet;
     Float yaw, pitch, roll;
     Timestamp period;
     Quaterniond qBase;

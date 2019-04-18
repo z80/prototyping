@@ -70,12 +70,6 @@ void KeplerMover::Update( float dt )
     if ( !active )
       return;
 
-    // Compute current position and velocity.
-    // Apply position to it's node.
-    Node * n = GetNode();
-    if ( !n )
-        return;
-
     // This time depending on time lapse might be mutlipled
     // by something.
     const Float dt_ = (float)dt;
@@ -96,16 +90,24 @@ void KeplerMover::Update( float dt )
 
     Eigen::Vector3d r, v;
     genericProcess( this, tau, r, v );
+
+    // Compute current position and velocity.
+    // Apply position to it's node.
+    Node * n = GetNode();
+    if ( !n )
+        return;
     const Vector3 rf( r(0), r(1), r(2) );
     n->SetPosition( rf );
 }
 
-void KeplerMover::initKepler( Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
+void KeplerMover::launch( Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
 {
     if ( e < (1.0 - eps) )
+    {
         // Elliptic
         ellipticInit( this, GM, a, e, Omega, I, omega, E );
-    active = true;
+        active = true;
+    }
 }
 
 bool KeplerMover::launch( const Vector3d & v )

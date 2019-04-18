@@ -25,22 +25,37 @@ void KeplerRotator::Start()
     if ( !gameData )
         URHO3D_LOGERROR( "Failed to get GameData instance" );
 
-    Node * n = GetNode();
-    static Vector< SharedPtr<Component> > comps;
-    comps = n->GetComponents();
-    const size_t qty = comps.Size();
-    PlanetBase * p = nullptr;
-    for ( size_t i=0; i<qty; i++ )
+
+}
+
+void KeplerRotator::Update( float dt )
+{
+    if ( !gameData )
+        return;
+    const Timestamp t = gameData->time;
+
+    // Compute current period remainder.
+    Float r;
+    if ( period > 0 )
     {
-        Component * c = comps[i];
-        PlanetBase * p = c->Cast<PlanetBase>();
-        if ( !p )
-            continue;
-    };
+        const Timestamp tauI = t % period;
+        const Float a = static_cast<Float>( tauI ) / static_cast<Float>( period ) * PI2;
+        r = roll + a;
+    }
+    else
+        r = roll;
 
-    if ( !p )
-        URHO3D_LOGERROR( "Failed to retrieve PlanetBase instance" );
 
+    const Float co2Roll = std::cos( r * 0.5 );
+    const Float si2Roll = std::sin( r * 0.5 );
+    const Quaterniond qRoll( co2Roll, 0.0, si2Roll, 0.0 );
+    const Quaterniond qe = qBase * qRoll;
+
+    setQ( qe );
+}
+
+void KeplerRotator::computeBaseRotation()
+{
     // Base quaternion.
     {
         const Float co2Yaw = std::cos( yaw * 0.5 );
@@ -55,39 +70,20 @@ void KeplerRotator::Start()
         qBase = Quaterniond( Q.w(), Q.x(), Q.y(), Q.z() );
     }
 
-    if ( p )
-    {
-        planet = SharedPtr<PlanetBase>( p );
 
-        // Set planet angular velocity.
+    // Set angular velocity.
+    // It is assumed to be constant for this simplified model.
+    if ( period > 0 )
+    {
         const Float w = PI2 / static_cast<Float>( period );
         Vector3d vw( 0.0, w, 0.0 );
 
         vw = qBase * vw;
 
-        p->setW( vw );
+        setW( vw );
     }
-}
-
-void KeplerRotator::Update( float dt )
-{
-    if ( !gameData )
-        return;
-    const Timestamp t = gameData->time;
-
-    // Compute current period remainder.
-    const Timestamp tauI = t % period;
-    const Float a = static_cast<Float>( tauI ) / static_cast<Float>( period ) * PI2;
-    const Float r = roll + a;
-
-    const Float co2Roll = std::cos( r * 0.5 );
-    const Float si2Roll = std::sin( r * 0.5 );
-    const Quaterniond qRoll( co2Roll, 0.0, si2Roll, 0.0 );
-    const Quaterniond qe = qBase * qRoll;
-
-    if ( !planet )
-        return;
-    planet->setQ( q );
+    else
+        setW( Vector3d::ZERO );
 }
 
 }

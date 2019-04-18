@@ -10,6 +10,11 @@ class PlanetTest: public PlanetBase
 public:
     PlanetTest( Context * ctx );
     ~PlanetTest();
+
+    void Start() override;
+public:
+    SharedPtr<LaunchSite> site;
+
 };
 
 

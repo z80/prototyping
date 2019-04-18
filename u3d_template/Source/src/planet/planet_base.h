@@ -7,6 +7,8 @@
 #include "block.h"
 #include "assembly.h"
 #include "data_types.h"
+#include "kepler_mover.h"
+#include "kepler_rotator.h"
 
 namespace Osp
 {
@@ -20,7 +22,7 @@ public:
     PlanetBase( Context * ctx );
     virtual ~PlanetBase();
 
-    virtual void Update( float timeStep );
+    virtual void Start() override;
 
 protected:
     bool tryAddSurfaceItem( Node * n );
@@ -43,8 +45,11 @@ protected:
                      orbitingBlocks;
     Vector<Assembly> orbitingAssemblies;
 
-    typedef double Float;
-    static const Float subinterval_;
+    // Planet mover and rotator.
+    // Mover updates the very root node.
+    SharedPtr<KeplerMover>   mover;
+    // Rotator updates only "dynamicsNode".
+    SharedPtr<KeplerRotator> rotator;
 };
 
 }

@@ -4,8 +4,6 @@
 namespace Osp
 {
 
-const Float PlanetBase::subinterval_ = 10.0;
-
 PlanetBase::PlanetBase( Context * ctx )
     : ItemBase( ctx )
 {
@@ -17,9 +15,12 @@ PlanetBase::~PlanetBase()
 
 }
 
-void PlanetBase::Update( float timeStep )
+void PlanetBase::Start()
 {
-
+    Node * n = GetNode();
+    dynamicsNode = n->CreateChild( "DynamicsNode" );
+    mover = n->CreateComponent<KeplerMover>();
+    rotator = dynamicsNode->CreateComponent<KeplerRotator>();
 }
 
 bool PlanetBase::tryAddSurfaceItem( Node * n )
