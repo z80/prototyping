@@ -9,7 +9,7 @@ const Timestamp GameData::ONE_SECOND  = 1000000;
 const Float     GameData::_ONE_SECOND = 1.0e-6;
 
 GameData::GameData( Context * ctx )
-    :Object( ctx )
+    :LogicComponent( ctx )
 {
     time = 0;
 }
@@ -17,6 +17,15 @@ GameData::GameData( Context * ctx )
 GameData::~GameData()
 {
 
+}
+
+void GameData::Update( float dt )
+{
+    Timestamp d = static_cast<Timestamp>(
+                    static_cast<Float>(dt) *
+                    static_cast<Float>(ONE_SECOND)
+                  );
+    time += d;
 }
 
 SharedPtr<Node> GameData::node( const String & name )

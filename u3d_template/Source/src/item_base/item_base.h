@@ -25,6 +25,8 @@ public:
 
     Type type();
 
+    virtual void Start() override;
+
     //static template<typename T> T * cast<T>( Entity * e );
 
     virtual void setR( const Vector3d & new_r );

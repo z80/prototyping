@@ -15,12 +15,14 @@ using namespace Urho3D;
 
 
 
-class GameData: public Urho3D::Object
+class GameData: public Urho3D::LogicComponent
 {
-    URHO3D_OBJECT( GameData, Object )
+    URHO3D_OBJECT( GameData, LogicComponent )
 public:
     GameData( Context * ctx );
     ~GameData();
+
+    void Update( float dt ) override;
 
     SharedPtr<Node> node( const String & name );
     Design    design;

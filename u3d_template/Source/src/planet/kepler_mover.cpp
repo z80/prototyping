@@ -93,11 +93,10 @@ void KeplerMover::Update( float dt )
 
     // Compute current position and velocity.
     // Apply position to it's node.
-    Node * n = GetNode();
-    if ( !n )
-        return;
     const Vector3 rf( r(0), r(1), r(2) );
-    n->SetPosition( rf );
+    setR( rf );
+    const Vector3 vf( v(0), v(1), v(2) );
+    setV( vf );
 }
 
 void KeplerMover::launch( Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )

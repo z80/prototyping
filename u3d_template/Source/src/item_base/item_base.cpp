@@ -23,6 +23,13 @@ ItemBase::Type ItemBase::type()
     return _type;
 }
 
+void ItemBase::Start()
+{
+    Node * n = GetNode();
+    const Vector3 & r = n->GetPosition();
+    this->r = Vector3d( r.x_, r.y_, r.z_ );
+}
+
 void ItemBase::setR( const Vector3d & new_r )
 {
     r = new_r;
