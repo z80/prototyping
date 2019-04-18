@@ -79,6 +79,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::PivotMarker>();
     context_->RegisterFactory<Osp::CameraOrb2>();
     context_->RegisterFactory<Osp::KeplerMover>();
+    context_->RegisterFactory<Osp::KeplerRotator>();
     context_->RegisterFactory<Osp::LaunchSite>();
     context_->RegisterFactory<Osp::PlanetTest>();
 }

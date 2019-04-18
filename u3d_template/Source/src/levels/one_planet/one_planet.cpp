@@ -18,6 +18,7 @@
 #include "assembly.h"
 #include "camera_orb_2.h"
 #include "kepler_mover.h"
+#include "planet_test.h"
 
 /*
 #include "physics_world_2.h"
@@ -269,8 +270,10 @@ void OnePlanet::createKepler()
         body->SetPosition( start );
 
     }
-    {
 
+    // Create "PlanetTest" instance.
+    {
+        PlanetTest * pt = rootNode->CreateComponent<PlanetTest>();
     }
 }
 
