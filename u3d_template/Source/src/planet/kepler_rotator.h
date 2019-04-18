@@ -16,6 +16,8 @@ public:
     KeplerRotator( Context * ctx );
     ~KeplerRotator();
 
+    void launch( Timestamp periodSec, Float yaw=0.0, Float pitch=0.0, Float roll=0.0 );
+
     void Start() override;
     void Update( float dt ) override;
 private:

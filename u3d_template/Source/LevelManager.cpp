@@ -16,6 +16,7 @@
 #include "box.h"
 #include "kepler_mover.h"
 #include "launch_site.h"
+#include "planet_test.h"
 
 #include "MyEvents.h"
 
@@ -79,6 +80,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::CameraOrb2>();
     context_->RegisterFactory<Osp::KeplerMover>();
     context_->RegisterFactory<Osp::LaunchSite>();
+    context_->RegisterFactory<Osp::PlanetTest>();
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)

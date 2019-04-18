@@ -19,6 +19,15 @@ KeplerRotator::~KeplerRotator()
 {
 }
 
+void KeplerRotator::launch( Timestamp periodSec, Float yaw, Float pitch, Float roll )
+{
+    period = GameData::ONE_SECOND * periodSec;
+    this->yaw = yaw;
+    this->pitch = pitch;
+    this->roll  = roll;
+    computeBaseRotation();
+}
+
 void KeplerRotator::Start()
 {
     gameData = GetSubsystem<GameData>();
