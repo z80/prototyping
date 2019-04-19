@@ -20,8 +20,8 @@ void PlanetTest::Start()
     PlanetBase::Start();
 
     // GM, a, e, Omega, I, omega, E
-    mover->launch( 1.0, 50.0, 0.2, 0.0, 0.3 );
-    rotator->launch( 10, 0.3 );
+    mover->launch( 1.0, 5.0, 0.5, 0.0, 0.0 );
+    rotator->launch( 3, 0.0 );
 
     // Create graphical objects.
     {

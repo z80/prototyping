@@ -19,7 +19,8 @@ void PlanetBase::Start()
 {
     Node * n = GetNode();
     dynamicsNode = n->CreateChild( "DynamicsNode" );
-    mover = n->CreateComponent<KeplerMover>();
+    //mover = n->CreateComponent<KeplerMover>();
+    mover = dynamicsNode->CreateComponent<KeplerMover>();
     rotator = dynamicsNode->CreateComponent<KeplerRotator>();
 }
 

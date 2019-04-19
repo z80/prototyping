@@ -288,21 +288,21 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
     // Determine orbit unit vectors given Omega, I, omega.
     Eigen::Vector3d ex( 1.0, 0.0, 0.0 );
     Eigen::Vector3d ey( 0.0, 1.0, 0.0 );
-    const Float _2 = 1.0/std::sqrt(2.0);
-    const Eigen::Quaterniond q( _2, 0.0, -_2, 0.0 );
     const Eigen::Quaterniond qW( std::cos(Omega/2), 0.0, 0.0, std::sin(Omega/2) );
     const Eigen::Quaterniond qI( std::cos(I/2), 0.0, std::sin(I/2), 0.0 );
     const Eigen::Quaterniond qw( std::cos(omega/2), 0.0, 0.0, std::sin(omega/2) );
-    const Eigen::Quaterniond Q = q * qW * qI * qw;
+    const Eigen::Quaterniond Q = qW * qI * qw;
     ex = Q * ex;
     ey = Q * ey;
 
+    // Also swapping Y and Z. It seems in Urho3D it is also left
+    // ref .frame.
     km->ex[0] = ex(0);
-    km->ex[1] = ex(1);
-    km->ex[2] = ex(2);
+    km->ex[1] = ex(2);
+    km->ex[2] = ex(1);
     km->ey[0] = ey(0);
-    km->ey[1] = ey(1);
-    km->ey[2] = ey(2);
+    km->ey[1] = ey(2);
+    km->ey[2] = ey(1);
 }
 
 static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eigen::Vector3d & v )

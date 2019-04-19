@@ -104,14 +104,15 @@ void OnePlanet::CreateScene()
     Vector<int> controlIndexes = controllerInput->GetControlIndexes();
     InitViewports(controlIndexes);
 
-    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    /*ResourceCache * cache = GetSubsystem<ResourceCache>();
     XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/OnePlanet.xml" );
     if ( !f )
-        return;
+        return;*/
+
     //const bool loadedOk = scene_->LoadXML( f->GetRoot() );
     //rootNode = scene_->GetChild( "Root", true );
     rootNode = scene_->CreateChild( "Root" );
-    const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
+    //const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
 
     Node * camNode = _cameras[0];
     camNode->SetParent( rootNode );
@@ -167,7 +168,7 @@ void OnePlanet::createObjects()
 {
     Node * root = rootNode.Get();
 
-    PhysicsWorld * w = scene_->GetComponent<PhysicsWorld>();
+    /*PhysicsWorld * w = scene_->GetComponent<PhysicsWorld>();
     if ( !w )
         w = scene_->CreateComponent<PhysicsWorld>();
     DebugRenderer * dr = scene_->GetComponent<DebugRenderer>();
@@ -182,7 +183,7 @@ void OnePlanet::createObjects()
 
     ResourceCache * c = GetSubsystem<ResourceCache>();
     Model * model = c->GetResource<Model>( "Models/Surface.mdl" );
-    s->SetTriangleMesh( model );
+    s->SetTriangleMesh( model );*/
 
     createKepler();
     createDesign();
@@ -225,7 +226,7 @@ void OnePlanet::createKepler()
         KeplerMover * km = body->CreateComponent<KeplerMover>();
         km->initKepler( 100.0, 5.0, 0.8, 0.0, 0.0, 0.0, 0.0 );
     }*/
-    {
+    /*{
         Node * body = rotCenter->CreateChild( "OrbitingBodyInit" );
         StaticModel * m = body->CreateComponent<StaticModel>();
         ResourceCache * cache = GetSubsystem<ResourceCache>();
@@ -242,7 +243,7 @@ void OnePlanet::createKepler()
         //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
         // Elliptic
         km->launch( Vector3( 3.0, 0.0, 0.0 ) );
-    }
+    }*/
 
     /*{
         const Vector3 start( 10.0, 10.0, 0.0 );
@@ -272,9 +273,13 @@ void OnePlanet::createKepler()
     }*/
 
     // Create "PlanetTest" instance.
-    /*{
-        PlanetTest * pt = rootNode->CreateComponent<PlanetTest>();
-    }*/
+    {
+        Zone * z = rootNode->CreateComponent<Zone>();
+        z->SetAmbientColor( Color( 0.8, 0.8, 0.8, 1.0 ) );
+
+        Node * planetNode = rootNode->CreateChild( "PlanetNode" );
+        PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
+    }
 }
 
 

@@ -21,6 +21,17 @@ KeplerRotator::~KeplerRotator()
 
 void KeplerRotator::launch( Timestamp periodSec, Float yaw, Float pitch, Float roll )
 {
+    {
+        const float a = 0.0 + 6.28f;
+        const float co = std::cos(a);
+        const float si = std::sin(a);
+        Quaternion q( co, 0.0, si, 0.0 );
+        Vector3 v( 1.0, 0.0, 0.0 );
+        v = q * v;
+        URHO3D_LOGINFOF( "v: %f, %f, %f", v.x_, v.y_, v.z_ );
+    }
+
+
     period = GameData::ONE_SECOND * periodSec;
     this->yaw = yaw;
     this->pitch = pitch;
@@ -39,6 +50,9 @@ void KeplerRotator::Start()
 
 void KeplerRotator::Update( float dt )
 {
+    Timestamp d = static_cast<Timestamp>( dt * static_cast<Float>( GameData::ONE_SECOND ) );
+    gameData->time += d;
+
     if ( !gameData )
         return;
     const Timestamp t = gameData->time;
@@ -57,10 +71,13 @@ void KeplerRotator::Update( float dt )
 
     const Float co2Roll = std::cos( r * 0.5 );
     const Float si2Roll = std::sin( r * 0.5 );
-    const Quaterniond qRoll( co2Roll, 0.0, si2Roll, 0.0 );
+    const Quaterniond qRoll( co2Roll, 0.0, 0.0, si2Roll );
     const Quaterniond qe = qBase * qRoll;
 
-    setQ( qe );
+    // Swap axes to convert from normal XYZ to Urho3D XYZ.
+    // Swap Y and Z and change axis direction to the opposite.
+    const Quaternion q( qe.w_, -qe.x_, -qe.z_, -qe.y_ );
+    setQ( q );
 }
 
 void KeplerRotator::computeBaseRotation()
@@ -69,11 +86,11 @@ void KeplerRotator::computeBaseRotation()
     {
         const Float co2Yaw = std::cos( yaw * 0.5 );
         const Float si2Yaw = std::sin( yaw * 0.5 );
-        const Eigen::Quaterniond qYaw( co2Yaw, si2Yaw, 0.0, 0.0 );
+        const Eigen::Quaterniond qYaw( co2Yaw, 0.0, 0.0, si2Yaw );
 
         const Float co2Pitch = std::cos( pitch * 0.5 );
         const Float si2Pitch = std::sin( pitch * 0.5 );
-        const Eigen::Quaterniond qPitch( co2Pitch, 0.0, 0.0, si2Pitch );
+        const Eigen::Quaterniond qPitch( co2Pitch, si2Pitch, 0.0, 0.0 );
 
         const Eigen::Quaterniond Q = qYaw * qPitch;
         qBase = Quaterniond( Q.w(), Q.x(), Q.y(), Q.z() );
@@ -85,7 +102,7 @@ void KeplerRotator::computeBaseRotation()
     if ( period > 0 )
     {
         const Float w = PI2 / static_cast<Float>( period );
-        Vector3d vw( 0.0, w, 0.0 );
+        Vector3d vw( 0.0, -w, 0.0 );
 
         vw = qBase * vw;
 
