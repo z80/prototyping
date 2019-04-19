@@ -76,7 +76,7 @@ void KeplerRotator::Update( float dt )
 
     // Swap axes to convert from normal XYZ to Urho3D XYZ.
     // Swap Y and Z and change axis direction to the opposite.
-    const Quaternion q( qe.w_, -qe.x_, -qe.z_, -qe.y_ );
+    const Quaterniond q( qe.w_, -qe.x_, -qe.z_, -qe.y_ );
     setQ( q );
 }
 
