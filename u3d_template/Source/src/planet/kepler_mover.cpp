@@ -65,14 +65,25 @@ KeplerMover::~KeplerMover()
 {
 }
 
+void KeplerMover::Start()
+{
+    Scene * s = GetScene();
+    gameData = SharedPtr<GameData>( s->GetOrCreateComponent<GameData>() );
+    if ( !gameData )
+        URHO3D_LOGERROR( "Failed to get GameData instance" );
+}
+
 void KeplerMover::Update( float dt )
 {
     if ( !active )
       return;
 
+    if ( !gameData )
+        return;
+
     // This time depending on time lapse might be mutlipled
     // by something.
-    const Float dt_ = (float)dt;
+    const Float dt_ = (Float)(gameData->dt) * GameData::_ONE_SECOND;
 
     timeLow += dt_;
     if ( timeLow > TIME_T )

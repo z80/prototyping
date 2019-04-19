@@ -19,13 +19,13 @@ GameData::~GameData()
 
 }
 
-void GameData::Update( float dt )
+void GameData::Update( float dtf )
 {
-    Timestamp d = static_cast<Timestamp>(
-                    static_cast<Float>(dt) *
-                    static_cast<Float>(ONE_SECOND)
-                  );
-    time += d;
+    dt = static_cast<Timestamp>(
+             static_cast<Float>(dtf) *
+             static_cast<Float>(ONE_SECOND)
+         );
+    time += dt;
 }
 
 SharedPtr<Node> GameData::node( const String & name )

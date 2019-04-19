@@ -26,6 +26,7 @@ public:
 
     SharedPtr<Node> node( const String & name );
     Design    design;
+    Timestamp dt;
     Timestamp time;
     static const Timestamp ONE_SECOND;
     static const Float    _ONE_SECOND;

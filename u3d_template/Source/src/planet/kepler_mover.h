@@ -7,6 +7,7 @@
 #include "block.h"
 #include "assembly.h"
 #include "data_types.h"
+#include "game_data.h"
 
 using namespace Urho3D;
 
@@ -20,7 +21,7 @@ public:
     KeplerMover( Context * ctx );
     virtual ~KeplerMover();
 
-
+    virtual void Start() override;
     virtual void Update( float dt );
 
     void launch( Float GM, Float a, Float e, Float Omega=0.0, Float I=0.0, Float omega=0.0, Float E=0.0 );
@@ -38,6 +39,7 @@ public:
     static const Float eps;
     static const int   iters;
 
+    SharedPtr<GameData> gameData;
 public:
     // Counting time.
     Float timeLow;

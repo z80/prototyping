@@ -41,16 +41,18 @@ void KeplerRotator::launch( Timestamp periodSec, Float yaw, Float pitch, Float r
 
 void KeplerRotator::Start()
 {
-    gameData = GetSubsystem<GameData>();
+    Scene * s = GetScene();
+    gameData = SharedPtr<GameData>( s->GetOrCreateComponent<GameData>() );
     if ( !gameData )
         URHO3D_LOGERROR( "Failed to get GameData instance" );
-
-
 }
 
 void KeplerRotator::Update( float dt )
 {
-    Timestamp d = static_cast<Timestamp>( dt * static_cast<Float>( GameData::ONE_SECOND ) );
+    if ( !gameData )
+        return;
+
+    Timestamp d = gameData->dt;
     gameData->time += d;
 
     if ( !gameData )

@@ -1101,7 +1101,7 @@ void Workshop::HandleSaveDesignCancel( StringHash eventType, VariantMap & eventD
 
 void Workshop::HandleTry( StringHash eventType, VariantMap & eventData )
 {
-    GameData * gd = GetSubsystem<GameData>();
+    GameData * gd = scene_->GetOrCreateComponent<GameData>();
     if ( !gd )
         URHO3D_LOGERROR( "Can\'t get GameData" );
 

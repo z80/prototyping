@@ -195,7 +195,7 @@ void OnePlanet::createDesign()
     if ( !root )
         return;
 
-    GameData * gd = GetSubsystem<GameData>();
+    GameData * gd = scene_->GetOrCreateComponent<GameData>();
     if ( !gd )
         URHO3D_LOGERROR( "Can\'t get GameData" );
 

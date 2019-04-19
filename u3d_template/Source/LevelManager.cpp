@@ -71,7 +71,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::OnePlanet>();
 
     // Registering objects.
-    context_->RegisterSubsystem( new Osp::GameData( context_) );
+    context_->RegisterFactory<Osp::GameData>();
     context_->RegisterSubsystem( new Osp::TechTree( context_ ) );
     context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
     context_->RegisterFactory<Osp::Assembly>();
