@@ -94,6 +94,8 @@ void Workshop::Finit()
         _modeText->Remove();
     if ( _auxPanel )
         _auxPanel->Remove();
+    if ( _techPanel )
+        _techPanel->Remove();
 }
 
 void Workshop::CreateScene()
@@ -146,6 +148,7 @@ void Workshop::createTechPanel()
     root->AddChild( panel );*/
 
     Window * panel = root->CreateChild<Window>( "TechPanel" );
+    _techPanel = SharedPtr<Window>( panel );
     panel->SetStyleAuto();
     panel->SetAlignment( HA_LEFT, VA_TOP );
     panel->SetSize( 128, 512 );

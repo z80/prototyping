@@ -38,6 +38,7 @@ private:
 
     Button * CreateButton( const String & text, int width, IntVector2 position );
 
+    SharedPtr<Window>    _techPanel;
     SharedPtr<Window>    _panelTech;
     SharedPtr<Text>      _modeText;
     SharedPtr<UIElement> _auxPanel;

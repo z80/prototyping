@@ -30,7 +30,7 @@ void PlanetTest::Start()
         StaticModel * m = s->CreateComponent<StaticModel>();
 
         ResourceCache * cache = GetSubsystem<ResourceCache>();
-        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+        m->SetModel( cache->GetResource<Model>( "Models/PlanetTest.mdl" ) );
         m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
         m->SetCastShadows( true );
         s->SetScale( ( 1.0, 1.0, 1.0 ) );
