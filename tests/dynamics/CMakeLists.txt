@@ -9,8 +9,8 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY bin )
 
 include_directories( "./src" ${URHO3D_INCLUDE_DIRS} )
 
-file( GLOB SRCS "./src/*.cpp" )
-file( GLOB HDRS "./src/*.h" )
+file( GLOB_RECURSE SRCS "./src/*.cpp" )
+file( GLOB_RECURSE HDRS "./src/*.h" )
 #aux_source_directory( "./src" )
 
 # Setup target with resource copying
@@ -20,7 +20,7 @@ set( TARGET_NAME ${proj_name} )
 define_source_files( GLOB_CPP_PATTERNS ./src/*.c* GLOB_H_PATTERNS ./src/*.h* RECURSE GROUP )
 
 #set(INCLUDE_DIRS include rapidjson/include)
-set( INCLUDE_DIRS ./src )
+set( INCLUDE_DIRS ./src ./src/dynamics )
 
 # Setup target with resource copying
 setup_main_executable ()
