@@ -271,7 +271,7 @@ void Constraint2::SetWorldPosition(const Vector3& position)
         if (otherBody_)
         {
             otherPosition_ += otherBody_->GetCenterOfMass();
-            otherPosition_ /= otherBody_->GetNode()->GetWorldScale();
+            otherPosition_ /= otherBody_->GetNode()->GetScale();
         }
         ApplyFrames();
         MarkNetworkUpdate();
@@ -366,11 +366,11 @@ void Constraint2::ApplyFrames()
     if (!constraint_ || !node_ || (otherBody_ && !otherBody_->GetNode()))
         return;
 
-    cachedWorldScale_ = node_->GetWorldScale();
+    cachedWorldScale_ = node_->GetScale();
 
     Vector3 ownBodyScaledPosition = position_ * cachedWorldScale_ - ownBody_->GetCenterOfMass();
     Vector3 otherBodyScaledPosition =
-        otherBody_ ? otherPosition_ * otherBody_->GetNode()->GetWorldScale() - otherBody_->GetCenterOfMass() : otherPosition_;
+        otherBody_ ? otherPosition_ * otherBody_->GetNode()->GetScale() - otherBody_->GetCenterOfMass() : otherPosition_;
 
     switch (constraint_->getConstraintType())
     {
@@ -419,7 +419,7 @@ void Constraint2::OnNodeSet(Node* node)
     if (node)
     {
         node->AddListener(this);
-        cachedWorldScale_ = node->GetWorldScale();
+        cachedWorldScale_ = node->GetScale();
 
         // Add parent change listeners and add to world.
         subscribeToParentChanges();
@@ -457,7 +457,7 @@ void Constraint2::OnSceneSet(Scene* scene)
 void Constraint2::OnMarkedDirty(Node* node)
 {
     /// \todo This does not catch the connected body node's scale changing
-    if (HasWorldScaleChanged(cachedWorldScale_, node->GetWorldScale()))
+    if (HasWorldScaleChanged(cachedWorldScale_, node->GetScale()))
         ApplyFrames();
 }
 
@@ -465,7 +465,7 @@ void Constraint2::CreateConstraint()
 {
     URHO3D_PROFILE(CreateConstraint);
 
-    cachedWorldScale_ = node_->GetWorldScale();
+    cachedWorldScale_ = node_->GetScale();
 
     ReleaseConstraint();
 

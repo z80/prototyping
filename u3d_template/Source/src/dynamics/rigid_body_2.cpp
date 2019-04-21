@@ -150,8 +150,8 @@ void RigidBody2::getWorldTransform(btTransform& worldTrans) const
     // so check to be sure
     if (node_)
     {
-        lastPosition_ = node_->GetWorldPosition();
-        lastRotation_ = node_->GetWorldRotation();
+        lastPosition_ = node_->GetPosition();
+        lastRotation_ = node_->GetRotation();
         worldTrans.setOrigin(ToBtVector3(lastPosition_ + lastRotation_ * centerOfMass_));
         worldTrans.setRotation(ToBtQuaternion(lastRotation_));
     }
@@ -717,17 +717,17 @@ void RigidBody2::ApplyWorldTransform(const Vector3& newWorldPosition, const Quat
     // Apply transform to the SmoothedTransform component instead of node transform if available
     if (smoothedTransform_)
     {
-        smoothedTransform_->SetTargetWorldPosition(newWorldPosition);
-        smoothedTransform_->SetTargetWorldRotation(newWorldRotation);
+        smoothedTransform_->SetTargetPosition(newWorldPosition);
+        smoothedTransform_->SetTargetRotation(newWorldRotation);
         lastPosition_ = newWorldPosition;
         lastRotation_ = newWorldRotation;
     }
     else
     {
-        node_->SetWorldPosition(newWorldPosition);
-        node_->SetWorldRotation(newWorldRotation);
-        lastPosition_ = node_->GetWorldPosition();
-        lastRotation_ = node_->GetWorldRotation();
+        node_->SetPosition(newWorldPosition);
+        node_->SetRotation(newWorldRotation);
+        lastPosition_ = node_->GetPosition();
+        lastRotation_ = node_->GetRotation();
     }
 
     physicsWorld_->SetApplyingTransforms(false);
@@ -903,8 +903,8 @@ void RigidBody2::OnMarkedDirty(Node* node)
         }
 
         // Check if transform has changed from the last one set in ApplyWorldTransform()
-        Vector3 newPosition = node_->GetWorldPosition();
-        Quaternion newRotation = node_->GetWorldRotation();
+        Vector3 newPosition = node_->GetPosition();
+        Quaternion newRotation = node_->GetRotation();
 
         if (!newRotation.Equals(lastRotation_))
         {
@@ -1043,14 +1043,14 @@ void RigidBody2::HandleTargetPosition(StringHash eventType, VariantMap& eventDat
 {
     // Copy the smoothing target position to the rigid body
     if (!physicsWorld_ || !physicsWorld_->IsApplyingTransforms())
-        SetPosition(static_cast<SmoothedTransform*>(GetEventSender())->GetTargetWorldPosition());
+        SetPosition(static_cast<SmoothedTransform*>(GetEventSender())->GetTargetPosition());
 }
 
 void RigidBody2::HandleTargetRotation(StringHash eventType, VariantMap& eventData)
 {
     // Copy the smoothing target rotation to the rigid body
     if (!physicsWorld_ || !physicsWorld_->IsApplyingTransforms())
-        SetRotation(static_cast<SmoothedTransform*>(GetEventSender())->GetTargetWorldRotation());
+        SetRotation(static_cast<SmoothedTransform*>(GetEventSender())->GetTargetRotation());
 }
 
 void RigidBody2::subscribeToParentChanges()

@@ -516,11 +516,11 @@ void CollisionShape2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
         bool bodyActive = false;
         if (body)
         {
-            worldTransform = Matrix3x4(body->GetPosition(), body->GetRotation(), node_->GetWorldScale());
+            worldTransform = Matrix3x4(body->GetPosition(), body->GetRotation(), node_->GetScale());
             bodyActive = body->IsActive();
         }
         else
-            worldTransform = node_->GetWorldTransform();
+            worldTransform = node_->GetTransform();
 
         // Special case code for convex hull: bypass Bullet's own rendering to draw triangles correctly, not just edges
         if (shapeType_ == SHAPE_CONVEXHULL_2)
@@ -828,8 +828,8 @@ BoundingBox CollisionShape2::GetWorldBoundingBox() const
     {
         // Use the rigid body's world transform if possible, as it may be different from the rendering transform
         auto* body = GetComponent<RigidBody2>();
-        Matrix3x4 worldTransform = body ? Matrix3x4(body->GetPosition(), body->GetRotation(), node_->GetWorldScale()) :
-            node_->GetWorldTransform();
+        Matrix3x4 worldTransform = body ? Matrix3x4(body->GetPosition(), body->GetRotation(), node_->GetScale()) :
+            node_->GetTransform();
 
         Vector3 worldPosition(worldTransform * position_);
         Quaternion worldRotation(worldTransform.Rotation() * rotation_);
@@ -863,7 +863,7 @@ void CollisionShape2::NotifyRigidBody(bool updateMass)
             }
 
             btTransform offset;
-            offset.setOrigin(ToBtVector3(node_->GetWorldScale() * position));
+            offset.setOrigin(ToBtVector3(node_->GetScale() * position));
             offset.setRotation(ToBtQuaternion(rotation_));
             compound->addChildShape(offset, shape_.Get());
         }
@@ -909,7 +909,7 @@ void CollisionShape2::OnNodeSet(Node* node)
     if (node)
     {
         node->AddListener(this);
-        cachedWorldScale_ = node->GetWorldScale();
+        cachedWorldScale_ = node->GetScale();
 
         // Terrain collision shape depends on the terrain component's geometry updates. Subscribe to them
         SubscribeToEvent(node, E_TERRAINCREATED, URHO3D_HANDLER(CollisionShape2, HandleTerrainCreated));
@@ -952,7 +952,7 @@ void CollisionShape2::OnSceneSet(Scene* scene)
 
 void CollisionShape2::OnMarkedDirty(Node* node)
 {
-    Vector3 newWorldScale = node_->GetWorldScale();
+    Vector3 newWorldScale = node_->GetScale();
     if (HasWorldScaleChanged(cachedWorldScale_, newWorldScale) && shape_)
     {
         // Physics operations are not safe from worker threads
@@ -1019,7 +1019,7 @@ void CollisionShape2::UpdateShape()
 
     if (node_)
     {
-        cachedWorldScale_ = node_->GetWorldScale();
+        cachedWorldScale_ = node_->GetScale();
 
         switch (shapeType_)
         {
