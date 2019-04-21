@@ -214,16 +214,26 @@ void PhysicsWorld2::RegisterObject(Context* context)
 
 bool PhysicsWorld2::isVisible(const btVector3& aabbMin, const btVector3& aabbMax)
 {
-    if (debugRenderer_)
+    /*if (debugRenderer_)
         return debugRenderer_->IsInside(BoundingBox(ToVector3(aabbMin), ToVector3(aabbMax)));
     else
-        return false;
+        return false;*/
+    return true;
 }
 
 void PhysicsWorld2::drawLine(const btVector3& from, const btVector3& to, const btVector3& color)
 {
     if (debugRenderer_)
-        debugRenderer_->AddLine(ToVector3(from), ToVector3(to), Color(color.x(), color.y(), color.z()), debugDepthTest_);
+    {
+        Node * n = GetNode();
+        const Matrix3x4 m = n->GetTransform();
+        Vector3 f = ToVector3( from );
+        f = m * f;
+        Vector3 t = ToVector3( to );
+        t = m * t;
+        //debugRenderer_->AddLine(ToVector3(from), ToVector3(to), Color(color.x(), color.y(), color.z()), debugDepthTest_);
+        debugRenderer_->AddLine( f, t, Color(color.x(), color.y(), color.z()), debugDepthTest_);
+    }
 }
 
 void PhysicsWorld2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
@@ -754,7 +764,8 @@ void PhysicsWorld2::AddDelayedWorldTransform(const DelayedWorldTransform2& trans
 
 void PhysicsWorld2::DrawDebugGeometry(bool depthTest)
 {
-    auto* debug = GetComponent<DebugRenderer>();
+    Scene * s = GetScene();
+    auto* debug = s->GetComponent<DebugRenderer>();
     DrawDebugGeometry(debug, depthTest);
 }
 

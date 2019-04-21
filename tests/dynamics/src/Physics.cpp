@@ -81,7 +81,13 @@ void Physics::Start()
     SubscribeToEvents();
 
     // Set the mouse mode to use in the sample
-    Sample::InitMouseMode(MM_RELATIVE);
+    //Sample::InitMouseMode(MM_RELATIVE);
+
+    {
+        Sample::InitMouseMode(MM_ABSOLUTE);
+        Input * inp = GetSubsystem<Input>();
+        inp->SetMouseVisible( true );
+    }
 }
 
 void Physics::CreateScene()
@@ -99,8 +105,13 @@ void Physics::CreateScene()
     // exist before creating drawable components, the PhysicsWorld must exist before creating physics components.
     // Finally, create a DebugRenderer component so that we can draw physics debug geometry
     scene_->CreateComponent<Octree>();
-    scene_->CreateComponent<PhysicsWorld2>();
+    //scene_->CreateComponent<PhysicsWorld2>();
     scene_->CreateComponent<DebugRenderer>();
+
+    Node * root = scene_->CreateChild( "Root" );
+    root->SetRotation( Quaternion( 25.0, Vector3( 0.0, 0.0, 1.0 ) ) );
+    root->CreateComponent<PhysicsWorld2>();
+    //root->CreateComponent<DebugRenderer>();
 
     // Create a Zone component for ambient lighting & fog control
     Node* zoneNode = scene_->CreateChild("Zone");
@@ -132,12 +143,13 @@ void Physics::CreateScene()
 
     {
         // Create a floor object, 1000 x 1000 world units. Adjust position so that the ground is at zero Y
-        Node* floorNode = scene_->CreateChild("Floor");
+        Node* floorNode = root->CreateChild("Floor");
         floorNode->SetPosition(Vector3(0.0f, -0.5f, 0.0f));
-        floorNode->SetScale(Vector3(1000.0f, 1.0f, 1000.0f));
+        floorNode->SetScale(Vector3(15.0f, 1.0f, 15.0f));
         auto* floorObject = floorNode->CreateComponent<StaticModel>();
         floorObject->SetModel(cache->GetResource<Model>("Models/Box.mdl"));
         floorObject->SetMaterial(cache->GetResource<Material>("Materials/StoneTiled.xml"));
+        //floorNode->SetRotation( Quaternion( 5.0, Vector3( 0.0, 0.0, 1.0 ) ) );
 
         // Make the floor physical by adding RigidBody and CollisionShape components. The RigidBody's default
         // parameters make the object static (zero mass.) Note that a CollisionShape by itself will not participate
@@ -149,13 +161,13 @@ void Physics::CreateScene()
         shape->SetBox(Vector3::ONE);
     }
 
-    {
+    /*{
         // Create a pyramid of movable physics objects
         for (int y = 0; y < 8; ++y)
         {
             for (int x = -y; x <= y; ++x)
             {
-                Node* boxNode = scene_->CreateChild("Box");
+                Node* boxNode = root->CreateChild("Box");
                 boxNode->SetPosition(Vector3((float)x, -(float)y + 8.0f, 0.0f));
                 auto* boxObject = boxNode->CreateComponent<StaticModel>();
                 boxObject->SetModel(cache->GetResource<Model>("Models/Box.mdl"));
@@ -172,7 +184,7 @@ void Physics::CreateScene()
                 shape->SetBox(Vector3::ONE);
             }
         }
-    }
+    }*/
 
     // Create the camera. Set far clip to match the fog. Note: now we actually create the camera node outside the scene, because
     // we want it to be unaffected by scene load / save
@@ -282,10 +294,13 @@ void Physics::MoveCamera(float timeStep)
 
 void Physics::SpawnObject()
 {
+    Node * root = scene_->GetChild( "Root", true );
+
     auto* cache = GetSubsystem<ResourceCache>();
 
     // Create a smaller box at camera position
-    Node* boxNode = scene_->CreateChild("SmallBox");
+    //Node* boxNode = scene_->CreateChild("SmallBox");
+    Node * boxNode = root->CreateChild("SmallBox");
     boxNode->SetPosition(cameraNode_->GetPosition());
     boxNode->SetRotation(cameraNode_->GetRotation());
     boxNode->SetScale(0.25f);
@@ -323,5 +338,9 @@ void Physics::HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData
 {
     // If draw debug mode is enabled, draw physics debug geometry. Use depth test to make the result easier to interpret
     if (drawDebug_)
-        scene_->GetComponent<PhysicsWorld2>()->DrawDebugGeometry(true);
+    {
+        Node * root = scene_->GetChild( "Root", true );
+        root->GetComponent<PhysicsWorld2>()->DrawDebugGeometry(true);
+        //scene_->GetComponent<PhysicsWorld2>()->DrawDebugGeometry(true);
+    }
 }

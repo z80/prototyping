@@ -717,17 +717,17 @@ void RigidBody2::ApplyWorldTransform(const Vector3& newWorldPosition, const Quat
     // Apply transform to the SmoothedTransform component instead of node transform if available
     if (smoothedTransform_)
     {
-        smoothedTransform_->SetTargetWorldPosition(newWorldPosition);
-        smoothedTransform_->SetTargetWorldRotation(newWorldRotation);
+        smoothedTransform_->SetTargetPosition(newWorldPosition);
+        smoothedTransform_->SetTargetRotation(newWorldRotation);
         lastPosition_ = newWorldPosition;
         lastRotation_ = newWorldRotation;
     }
     else
     {
-        node_->SetWorldPosition(newWorldPosition);
-        node_->SetWorldRotation(newWorldRotation);
-        lastPosition_ = node_->GetWorldPosition();
-        lastRotation_ = node_->GetWorldRotation();
+        node_->SetPosition(newWorldPosition);
+        node_->SetRotation(newWorldRotation);
+        lastPosition_ = node_->GetPosition();
+        lastRotation_ = node_->GetRotation();
     }
 
     physicsWorld_->SetApplyingTransforms(false);
