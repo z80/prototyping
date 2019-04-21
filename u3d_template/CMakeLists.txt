@@ -2,7 +2,7 @@
 set( proj_name "osp" )
 
 # Set project name
-project( ${proj_name} )
+#project( ${proj_name} )
 
 add_subdirectory( "./3dparty" )
 
@@ -34,7 +34,7 @@ macro( header_directories root_path return_list )
 endmacro()
 
 # Set CMake modules search path
-set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake/Modules)
+set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules)
 
 # Include Urho3D Cmake common module
 include (UrhoCommon)
