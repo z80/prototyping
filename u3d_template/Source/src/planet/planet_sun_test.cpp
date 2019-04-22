@@ -20,20 +20,22 @@ void PlanetSunTest::Start()
     PlanetBase::Start();
 
     // GM, a, e, Omega, I, omega, E
-    mover->launch( 1.0, 5.0, 0.5, 0.0, 0.0 );
-    rotator->launch( 3, 0.0 );
+    if ( mover )
+        mover->Remove();
+    if ( rotator )
+        rotator->Remove();
 
     // Create graphical objects.
     {
-        sphereNode = SharedPtr<Node>( dynamicsNode->CreateChild( "SphereNode" ) );
-        Node * s = sphereNode;
-        StaticModel * m = s->CreateComponent<StaticModel>();
-
+        billboardNode = SharedPtr<Node>( dynamicsNode->CreateChild( "BillboardNode" ) );
+        Node * s = billboardNode;
+        BillboardSet * bb = s->CreateComponent<BillboardSet>();
+        bb->SetNumBillboards( 1 );
         ResourceCache * cache = GetSubsystem<ResourceCache>();
-        m->SetModel( cache->GetResource<Model>( "Models/PlanetTest.mdl" ) );
-        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
-        m->SetCastShadows( true );
-        s->SetScale( ( 1.0, 1.0, 1.0 ) );
+        Material * m = cache->GetResource<Material>( "Materials/SunTest.xml" );
+        bb->SetMaterial( m );
+
+        bb->Commit();
     }
 }
 

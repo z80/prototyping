@@ -20,7 +20,7 @@ public:
     void Start() override;
 public:
     // Graphical objects
-    SharedPtr<Node> sphereNode;
+    SharedPtr<Node> billboardNode;
 };
 
 }

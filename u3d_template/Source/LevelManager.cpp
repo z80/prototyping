@@ -17,6 +17,8 @@
 #include "kepler_mover.h"
 #include "launch_site.h"
 #include "planet_test.h"
+#include "planet_sun_test.h"
+#include "planet_moon_test.h"
 
 #include "MyEvents.h"
 
@@ -82,6 +84,8 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::KeplerRotator>();
     context_->RegisterFactory<Osp::LaunchSite>();
     context_->RegisterFactory<Osp::PlanetTest>();
+    context_->RegisterFactory<Osp::PlanetSunTest>();
+    context_->RegisterFactory<Osp::PlanetMoonTest>();
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)
