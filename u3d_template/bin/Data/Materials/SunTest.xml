@@ -1,0 +1,4 @@
+<material>
+    <parameter name="MatDiffColor" value="0.5 0.5 0.5 0.5" />
+    <texture unit="diffuse" name="Textures/sun.png" />
+</material>
