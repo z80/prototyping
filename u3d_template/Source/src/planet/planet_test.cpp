@@ -25,6 +25,7 @@ void PlanetTest::Start()
 
     // Create graphical objects.
     {
+        // Sphere.
         sphereNode = SharedPtr<Node>( dynamicsNode->CreateChild( "SphereNode" ) );
         Node * s = sphereNode;
         StaticModel * m = s->CreateComponent<StaticModel>();
@@ -34,6 +35,14 @@ void PlanetTest::Start()
         m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
         m->SetCastShadows( true );
         s->SetScale( ( 1.0, 1.0, 1.0 ) );
+    }
+
+    {
+        // Launch site
+        Node * n = SharedPtr<Node>( dynamicsNode->CreateChild( "LaunchSite" ) );
+        n->SetPosition( Vector3( 20.0, 0.0, 0.0 ) );
+        n->SetRotation( Quaternion( 90.0, Vector3( 0.0, 0.0, 1.0 ) ) );
+        site = n->CreateComponent<LaunchSite>();
     }
 }
 
