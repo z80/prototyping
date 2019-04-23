@@ -118,6 +118,12 @@ void OnePlanet::CreateScene()
     Node * camNode = _cameras[0];
     camNode->SetParent( rootNode );
 
+    {
+        Camera * c = camNode->GetComponent<Camera>();
+        if ( c )
+            c->SetFarClip( 1.0e3 );
+    }
+
     CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
 
@@ -277,6 +283,8 @@ void OnePlanet::createKepler()
     {
         Zone * z = rootNode->CreateComponent<Zone>();
         z->SetAmbientColor( Color( 0.8, 0.8, 0.8, 1.0 ) );
+        const float D = 1e6;
+        z->SetBoundingBox( BoundingBox( Vector3( -D, -D, -D ), Vector3( D, D, D ) ) );
 
         Node * planetNode = rootNode->CreateChild( "PlanetNode" );
         PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
