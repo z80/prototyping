@@ -9,8 +9,8 @@ using namespace Urho3D;
 
 namespace Urho3D
 {
-    class Constraint;
-    class PhysicsWorld;
+    class Constraint2;
+    class PhysicsWorld2;
 }
 
 namespace Osp
@@ -41,11 +41,11 @@ public:
 
 
     Vector< SharedPtr<Block> >      blocks;
-    Vector< SharedPtr<Constraint> > joints;
+    Vector< SharedPtr<Constraint2> > joints;
     Design design;
 
 public:
-    static PhysicsWorld * getWorld( Node * node );
+    static PhysicsWorld2 * getWorld( Node * node );
 };
 
 }

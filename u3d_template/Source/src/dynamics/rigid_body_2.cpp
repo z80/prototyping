@@ -607,14 +607,35 @@ Vector3 RigidBody2::GetPosition() const
         return Vector3::ZERO;
 }
 
+Vector3d RigidBody2::GetPositiond() const
+{
+    if ( body_ )
+    {
+        const btTransform & transform = body_->getWorldTransform();
+        return ToVector3d(transform.getOrigin()) - ToQuaternion(transform.getRotation()) * centerOfMass_;
+    }
+    else
+        return Vector3d::ZERO;
+}
+
 Quaternion RigidBody2::GetRotation() const
 {
     return body_ ? ToQuaternion(body_->getWorldTransform().getRotation()) : Quaternion::IDENTITY;
 }
 
+Quaterniond RigidBody2::GetRotationd() const
+{
+    return body_ ? ToQuaterniond(body_->getWorldTransform().getRotation()) : Quaterniond::IDENTITY;
+}
+
 Vector3 RigidBody2::GetLinearVelocity() const
 {
     return body_ ? ToVector3(body_->getLinearVelocity()) : Vector3::ZERO;
+}
+
+Vector3d RigidBody2::GetLinearVelocityd() const
+{
+    return body_ ? ToVector3d(body_->getLinearVelocity()) : Vector3::ZERO;
 }
 
 Vector3 RigidBody2::GetLinearFactor() const
@@ -640,6 +661,11 @@ float RigidBody2::GetLinearDamping() const
 Vector3 RigidBody2::GetAngularVelocity() const
 {
     return body_ ? ToVector3(body_->getAngularVelocity()) : Vector3::ZERO;
+}
+
+Vector3d RigidBody2::GetAngularVelocityd() const
+{
+    return body_ ? ToVector3d(body_->getAngularVelocity()) : Vector3d::ZERO;
 }
 
 Vector3 RigidBody2::GetAngularFactor() const

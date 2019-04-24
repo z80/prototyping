@@ -4,8 +4,13 @@
 #include "tech_tree.h"
 #include "assembly.h"
 
-#include "Urho3D/Physics/RigidBody.h"
-#include "Urho3D/Physics/CollisionShape.h"
+//#include "Urho3D/Physics/RigidBody.h"
+//#include "Urho3D/Physics/CollisionShape.h"
+
+#include "rigid_body_2.h"
+#include "collision_shape_2.h"
+#include "physics_world_2.h"
+#include "physics_events_2.h"
 
 #include <stack>
 
@@ -34,17 +39,17 @@ void Block::createContent( Node * n )
     placePivots();
 }
 
-RigidBody * Block::rigidBody()
+RigidBody2 * Block::rigidBody()
 {
     Node * n = GetNode();
-    RigidBody * rb = n->GetComponent<RigidBody>();
+    RigidBody2 * rb = n->GetComponent<RigidBody2>();
     return rb;
 }
 
-CollisionShape * Block::collisionShape()
+CollisionShape2 * Block::collisionShape()
 {
     Node * n = GetNode();
-    CollisionShape * cs = n->GetComponent<CollisionShape>();
+    CollisionShape2 * cs = n->GetComponent<CollisionShape2>();
     return cs;
 }
 
@@ -395,27 +400,27 @@ void Block::toWorld()
 {
     // Subscribing to world updates to track body state.
     Node * n = GetNode();
-    PhysicsWorld * w = Assembly::getWorld( n );
+    PhysicsWorld2 * w = Assembly::getWorld( n );
     if ( !w )
         return;
-    SubscribeToEvent(w, E_PHYSICSPOSTSTEP, URHO3D_HANDLER( Block, OnPhysicsPostStep ) );
+    SubscribeToEvent(w, E_PHYSICSPOSTSTEP_2, URHO3D_HANDLER( Block, OnPhysicsPostStep ) );
 }
 
 void Block::fromWorld()
 {
-    RigidBody * rb = rigidBody();
+    RigidBody2 * rb = rigidBody();
     if ( rb )
         rb->Remove();
 
-    CollisionShape * cs = collisionShape();
+    CollisionShape2 * cs = collisionShape();
     if ( cs )
         cs->Remove();
 
     Node * n = GetNode();
-    PhysicsWorld * w = Assembly::getWorld( n );
+    PhysicsWorld2 * w = Assembly::getWorld( n );
     if ( !w )
         return;
-    UnsubscribeFromEvent( w, E_PHYSICSPOSTSTEP );
+    UnsubscribeFromEvent( w, E_PHYSICSPOSTSTEP_2 );
 }
 
 SharedPtr<UIElement> Block::configWindow()
@@ -453,14 +458,14 @@ void Block::OnNodeSet( Node * node )
 
 void Block::OnPhysicsPostStep( StringHash t, VariantMap & e )
 {
-    RigidBody * rb = rigidBody();
+    RigidBody2 * rb = rigidBody();
     if ( !rb )
         return;
     // Need to update dynamical properties (probably...).
-    //rb->GetPosition();
-    //rb->GetRotation();
-    //rb->GetVelocityAtPoint();
-    //rb->GetAngularVelocity();
+    setR( rb->GetPositiond() );
+    setQ( rb->GetRotationd() );
+    setV( rb->GetLinearVelocityd() );
+    setW( rb->GetAngularVelocityd() );
 }
 
 

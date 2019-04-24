@@ -28,6 +28,11 @@
 #include <Bullet/LinearMath/btVector3.h>
 #include <Bullet/LinearMath/btQuaternion.h>
 
+#include "vector3d.h"
+#include "quaterniond.h"
+
+using namespace Osp;
+
 namespace Urho3D
 {
 
@@ -46,9 +51,19 @@ inline Vector3 ToVector3(const btVector3& vector)
     return Vector3(vector.x(), vector.y(), vector.z());
 }
 
+inline Vector3d ToVector3d(const btVector3& vector)
+{
+    return Vector3d(vector.x(), vector.y(), vector.z());
+}
+
 inline Quaternion ToQuaternion(const btQuaternion& quaternion)
 {
     return Quaternion(quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z());
+}
+
+inline Quaterniond ToQuaterniond(const btQuaternion& quaternion)
+{
+    return Quaterniond(quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z());
 }
 
 inline bool HasWorldScaleChanged(const Vector3& oldWorldScale, const Vector3& newWorldScale)

@@ -27,8 +27,13 @@
 
 #include <Bullet/LinearMath/btMotionState.h>
 
+#include "vector3d.h"
+#include "quaterniond.h"
+
 class btCompoundShape;
 class btRigidBody;
+
+using namespace Osp;
 
 namespace Urho3D
 {
@@ -161,10 +166,13 @@ public:
 
     /// Return rigid body position in world space.
     Vector3 GetPosition() const;
+    Vector3d GetPositiond() const;
     /// Return rigid body rotation in world space.
     Quaternion GetRotation() const;
+    Quaterniond GetRotationd() const;
     /// Return linear velocity.
     Vector3 GetLinearVelocity() const;
+    Vector3d GetLinearVelocityd() const;
     /// Return linear degrees of freedom.
     Vector3 GetLinearFactor() const;
     /// Return linear velocity at local point.
@@ -175,6 +183,7 @@ public:
     float GetLinearDamping() const;
     /// Return angular velocity.
     Vector3 GetAngularVelocity() const;
+    Vector3d GetAngularVelocityd() const;
     /// Return angular degrees of freedom.
     Vector3 GetAngularFactor() const;
     /// Return angular velocity deactivation threshold.

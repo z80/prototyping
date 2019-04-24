@@ -1,9 +1,12 @@
 
 #include "assembly.h"
 #include "name_generator.h"
-#include "Urho3D/Physics/RigidBody.h"
-#include "Urho3D/Physics/Constraint.h"
-#include "Urho3D/Physics/PhysicsWorld.h"
+//#include "Urho3D/Physics/RigidBody.h"
+//#include "Urho3D/Physics/Constraint.h"
+//#include "Urho3D/Physics/PhysicsWorld.h"
+#include "rigid_body_2.h"
+#include "constraint_2.h"
+#include "physics_world_2.h"
 
 namespace Osp
 {
@@ -54,7 +57,7 @@ bool Assembly::toWorld()
     // Check if dynamics world exists there.
     // And if it does parent all blocks to it.
     Node * node = GetNode();
-    PhysicsWorld * w = Assembly::getWorld( node );
+    PhysicsWorld2 * w = Assembly::getWorld( node );
     if ( !w )
         return false;
 
@@ -87,8 +90,8 @@ bool Assembly::toWorld()
             // For now place joint point in the middle.
             const Vector3d r = blockB->relR();
             Node * node = blockB->GetNode();
-            Constraint * c = node->CreateComponent<Constraint>();
-            c->SetConstraintType( CONSTRAINT_HINGE );
+            Constraint2 * c = node->CreateComponent<Constraint2>();
+            c->SetConstraintType( CONSTRAINT_HINGE_2 );
             c->SetDisableCollision( true );
             c->SetOtherBody( blockA->rigidBody() );
             c->SetWorldPosition( Vector3( r.x_, r.y_, r.z_ ) );
@@ -100,7 +103,7 @@ bool Assembly::toWorld()
             c->SetHighLimit( lim );
             c->SetLowLimit( lim );
 
-            this->joints.Push( SharedPtr<Constraint>( c ) );
+            this->joints.Push( SharedPtr<Constraint2>( c ) );
         }
     }
 
@@ -129,7 +132,7 @@ void Assembly::fromWorld()
         const size_t qty = joints.Size();
         for ( size_t i=0; i<qty; i++ )
         {
-            Constraint * c = joints[i];
+            Constraint2 * c = joints[i];
             if ( !c )
                 continue;
             c->Remove();
@@ -165,7 +168,7 @@ void Assembly::destroy()
         const size_t qty = joints.Size();
         for ( size_t i=0; i<qty; i++ )
         {
-            Constraint * c = joints[i];
+            Constraint2 * c = joints[i];
             if ( c )
                 c->Remove();
         }
@@ -196,12 +199,12 @@ bool Assembly::updatePoseInWorld()
     return true;
 }
 
-PhysicsWorld * Assembly::getWorld( Node * node )
+PhysicsWorld2 * Assembly::getWorld( Node * node )
 {
-    Scene * s = node->GetScene();
-    if ( !s )
+    Node * pn = node->GetParent();
+    if ( !pn )
         return nullptr;
-    PhysicsWorld * w = s->GetComponent<PhysicsWorld>();
+    PhysicsWorld2 * w = pn->GetComponent<PhysicsWorld2>();
     return w;
 }
 

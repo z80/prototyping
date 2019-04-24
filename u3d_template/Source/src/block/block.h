@@ -9,8 +9,8 @@ using namespace Urho3D;
 
 namespace Urho3D
 {
-    class RigidBody;
-    class CollisionShape;
+    class RigidBody2;
+    class CollisionShape2;
 }
 
 namespace Osp
@@ -25,8 +25,8 @@ public:
 
     virtual void createContent( Node * n );
 
-    RigidBody * rigidBody();
-    CollisionShape * collisionShape();
+    RigidBody2 * rigidBody();
+    CollisionShape2 * collisionShape();
     void setPivotsVisible( bool en );
     void setPivotSize( float sz );
     /// Blocks are in a tree with "root" as

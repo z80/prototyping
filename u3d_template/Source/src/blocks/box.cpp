@@ -1,8 +1,10 @@
 
 #include "box.h"
 #include "tech_tree.h"
-#include "Urho3D/Physics/RigidBody.h"
-#include "Urho3D/Physics/CollisionShape.h"
+//#include "Urho3D/Physics/RigidBody.h"
+//#include "Urho3D/Physics/CollisionShape.h"
+#include "rigid_body_2.h"
+#include "collision_shape_2.h"
 
 namespace Osp
 {
@@ -34,10 +36,10 @@ void Box::toWorld()
 {
     Node * node = GetNode();
 
-    RigidBody * rb = node->CreateComponent<RigidBody>();
+    RigidBody2 * rb = node->CreateComponent<RigidBody2>();
     rb->SetMass( 1.0 );
 
-    CollisionShape * cs = node->CreateComponent<CollisionShape>();
+    CollisionShape2 * cs = node->CreateComponent<CollisionShape2>();
     cs->SetBox( Vector3( 1.0, 1.0, 1.0 ) );
 }
 
