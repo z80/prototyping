@@ -24,7 +24,7 @@ public:
 
     virtual void Start() override;
 
-protected:
+public:
     bool tryAddSurfaceItem( Node * n );
     bool tryAddOrbitingItem( Node * n );
     void subscribeToParentChanges();
@@ -41,9 +41,9 @@ protected:
     SharedPtr<Node>  dynamicsNode;
     // Yes, can obtain all these through "getComponents" recursive call but will spend
     // some time on casting types in this case.
-    Vector<Block>    surfaceBlocks,
-                     orbitingBlocks;
-    Vector<Assembly> orbitingAssemblies;
+    Vector<SharedPtr<Block> >    surfaceBlocks,
+                                 orbitingBlocks;
+    Vector<SharedPtr<Assembly> > orbitingAssemblies;
 
     // Planet mover and rotator.
     // Mover updates the very root node.
