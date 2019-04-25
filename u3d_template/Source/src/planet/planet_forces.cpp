@@ -87,17 +87,36 @@ void PlanetForces::applyFriction( Block * b )
 
 Float PlanetForces::density( const Vector3d & at )
 {
-    return 1.0;
+    const Float h = at.Length() - R_;
+    if ( h <= 0.0 )
+        return density_;
+
+    const Float x = h / atmHeight_;
+    const Float d = (1.0 - x*x)*density_;
+    return d;
 }
 
 Float PlanetForces::viscosity( const Vector3d & at )
 {
-    return 1.0;
+    const Float h = at.Length() - R_;
+    if ( h <= 0.0 )
+        return viscosity_;
+
+    const Float x = h / atmHeight_;
+    const Float v = (1.0 - x*x)*viscosity_;
+    return v;
 }
 
 Float PlanetForces::temperature( const Vector3d & at )
 {
-    return 20.0;
+    const Float h = at.Length() - R_;
+    if ( h <= 0.0 )
+        return viscosity_;
+
+    const Float x = h / atmHeight_;
+    const Float x2 = x*x;
+    const Float t = groundT_*(1.0 - x2) + highAltitudeT_ * x2;
+    return t;
 }
 
 
