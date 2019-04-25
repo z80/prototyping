@@ -39,6 +39,12 @@ public:
     void HandleMouseUp( StringHash t, VariantMap & e );
 
 private:
+    // Get the closest parent planet in node hierarchy.
+    // When created need to pick a planet and place physicsWorld and
+    // itself to be children of the planet.
+    static PlanetBase * parentPlanet( Node * n );
+
+
     // Block configuration windows open.
     Vector< SharedPtr<UIElement> > windows;
     // Currently selected assembly.

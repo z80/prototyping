@@ -61,6 +61,35 @@ void Player::HandleMouseUp( StringHash t, VariantMap & e )
 
 }
 
+PlanetBase * Player::parentPlanet( Node * n )
+{
+    {
+        const Vector<SharedPtr<Component> > & comps = n->GetComponents();
+        unsigned qty = comps.Size();
+        for ( unsigned i=0; i<qty; i++ )
+        {
+            Component * c = comps[i];
+            PlanetBase * p = c->Cast<PlanetBase>();
+            if ( p )
+                return p;
+        }
+    }
+
+    {
+        const Vector<SharedPtr<Node> > & children = n->GetChildren();
+        unsigned qty = children.Size();
+        for ( unsigned i=0; i<qty; i++ )
+        {
+            Node * n = children[i];
+            PlanetBase * p = parentPlanet( n );
+            if ( p )
+                return p;
+        }
+    }
+
+    return nullptr;
+}
+
 
 }
 
