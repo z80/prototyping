@@ -4,8 +4,11 @@
 
 #include <Urho3D/Urho3DAll.h>
 
+
 namespace Osp
 {
+
+class Player;
 
 using namespace Urho3D;
 
@@ -19,6 +22,7 @@ public:
     void Start() override;
 
 private:
+    void createPlayer();
 };
 
 }

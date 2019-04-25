@@ -1,5 +1,7 @@
 
 #include "launch_site.h"
+#include "game_data.h"
+#include "player.h"
 
 namespace Osp
 {
@@ -36,6 +38,13 @@ void LaunchSite::Start()
     m->SetCastShadows( true );
 
 
+}
+
+void LaunchSite::createPlayer()
+{
+    Node * n = GetNode();
+    Node * playerNode = n->CreateChild( "PlayerNode" );
+    Player * pl = playerNode->CreateComponent<Player>();
 }
 
 

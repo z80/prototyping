@@ -5,7 +5,7 @@
 #include <Urho3D/Urho3DAll.h>
 
 #include "assembly.h"
-#include "block.h"
+//#include "block.h"
 #include "data_types.h"
 
 namespace Osp
