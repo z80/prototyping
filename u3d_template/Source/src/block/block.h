@@ -4,6 +4,7 @@
 
 #include "item_base.h"
 #include "pivot_marker.h"
+#include "air_mesh.h"
 
 using namespace Urho3D;
 
@@ -24,6 +25,8 @@ public:
     virtual ~Block();
 
     virtual void createContent( Node * n );
+
+    void drawDebugGeometry( DebugRenderer * debug );
 
     RigidBody2 * rigidBody();
     CollisionShape2 * collisionShape();
@@ -64,6 +67,7 @@ public:
 
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
+    AirMesh airMesh;
 protected:
     void OnNodeSet( Node * node );
 

@@ -36,7 +36,7 @@ static void getTriangles( unsigned trianglesQty,
     }
 }
 
-AirMesh::AirMesh( Context * ctx )
+AirMesh::AirMesh()
 {
 
 }
@@ -46,22 +46,17 @@ AirMesh::~AirMesh()
 
 }
 
-bool AirMesh::init( Model * m )
+bool AirMesh::init( StaticModel * m )
 {
-    Geometry * g = m->GetGeometry( 0, 0 );
-
     unsigned geometriesQty = m->GetNumGeometries();
     if ( geometriesQty < 1 )
     {
         URHO3D_LOGERROR( "No geometries in a model" );
         return false;
     }
-    unsigned lodLevelsQty  = m->GetNumGeometryLodLevels( 0 );
-    if ( lodLevelsQty < 1 )
-    {
-        URHO3D_LOGERROR( "No LOD levels in a model" );
-        return false;
-    }
+
+    Geometry * g = m->GetLodGeometry( 0, 0 );
+
 
     SharedArrayPtr<unsigned char> vertexData;
     SharedArrayPtr<unsigned char> indexData;
@@ -92,6 +87,23 @@ bool AirMesh::init( Model * m )
         getTriangles<unsigned long>( numTriangles, triangleIndexBase, vertexBase, vertexStride, triangles );
 
     return true;
+}
+
+void AirMesh::drawDebugGeometry( Node * n, DebugRenderer * debug )
+{
+    const Matrix3x4 m = n->GetWorldTransform();
+    const size_t qty = triangles.Size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        const Triangle & tri = triangles[i];
+        Vector3 a = m*tri.v[0];
+        Vector3 b = m*tri.v[1];
+        Vector3 c = m*tri.v[2];
+        Vector3 n = m*tri.n;
+
+        debug->AddTriangle( a, b, c, Color::RED );
+        debug->AddLine( a, a+n,      Color::BLUE );
+    }
 }
 
 }

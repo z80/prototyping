@@ -18,10 +18,11 @@ struct Triangle
 class AirMesh
 {
 public:
-    AirMesh( Context * ctx );
+    AirMesh();
     ~AirMesh();
 
-    bool init( Model * m );
+    bool init( StaticModel * m );
+    void drawDebugGeometry( Node * n, DebugRenderer * debug );
 
 public:
     Vector<Triangle> triangles;

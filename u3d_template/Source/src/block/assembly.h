@@ -27,6 +27,8 @@ public:
     bool toWorld();
     void fromWorld();
 
+    void drawDebugGeometry( DebugRenderer * debug );
+
 protected:
     void Update(float timeStep) override;
     void PostUpdate(float timeStep) override;

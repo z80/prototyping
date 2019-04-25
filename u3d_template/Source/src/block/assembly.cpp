@@ -141,6 +141,16 @@ void Assembly::fromWorld()
     }
 }
 
+void Assembly::drawDebugGeometry( DebugRenderer * debug )
+{
+    unsigned qty = blocks.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        SharedPtr<Block> b = blocks[i];
+        b->drawDebugGeometry( debug );
+    }
+}
+
 void Assembly::Update( float timeStep )
 {
 

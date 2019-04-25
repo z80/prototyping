@@ -39,6 +39,12 @@ void Block::createContent( Node * n )
     placePivots();
 }
 
+void Block::drawDebugGeometry( DebugRenderer * debug )
+{
+    Node * n = GetNode();
+    airMesh.drawDebugGeometry( n, debug );
+}
+
 RigidBody2 * Block::rigidBody()
 {
     Node * n = GetNode();

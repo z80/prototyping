@@ -24,6 +24,18 @@ void PlanetBase::Start()
     rotator = dynamicsNode->CreateComponent<KeplerRotator>();
 }
 
+void PlanetBase::drawDebugGeometry( DebugRenderer * debug )
+{
+    {
+        const unsigned qty = surfaceBlocks.Size();
+        for ( unsigned i=0; i<qty; i++ )
+        {
+            SharedPtr<Block> b = surfaceBlocks[i];
+            b->drawDebugGeometry( debug );
+        }
+    }
+}
+
 bool PlanetBase::tryAddSurfaceItem( Node * n )
 {
 

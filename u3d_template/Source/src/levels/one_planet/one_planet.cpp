@@ -295,6 +295,10 @@ void OnePlanet::createKepler()
 
         Node * moonNode = planetNode->CreateChild( "PlanetNode" );
         PlanetMoonTest * mn = moonNode->CreateComponent<PlanetMoonTest>();
+
+        sun_    = SharedPtr<PlanetBase>( sun );
+        planet_ = SharedPtr<PlanetBase>( pt );
+        moon_   = SharedPtr<PlanetBase>( mn );
     }
 }
 
@@ -380,6 +384,11 @@ void OnePlanet::HandlePhysicsPreStep( StringHash t, VariantMap & e )
 
 void OnePlanet::HandlePostUpdate( StringHash t, VariantMap & e )
 {
+    Scene * s = scene_;
+    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
+    sun_->drawDebugGeometry( debug );
+    planet_->drawDebugGeometry( debug );
+    moon_->drawDebugGeometry( debug );
 }
 
 void OnePlanet::HandleMouseDown( StringHash t, VariantMap & e )

@@ -6,6 +6,7 @@
 #include "tech_tree.h"
 #include "block.h"
 #include "design_manager.h"
+#include "planet_base.h"
 
 namespace Urho3D
 {
@@ -40,6 +41,8 @@ private:
     SharedPtr<PhysicsWorld> physicsWorld;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
+
+    SharedPtr<PlanetBase> sun_, planet_, moon_;
 public:
     void createObjects();
     void createDesign();

@@ -23,6 +23,7 @@ public:
     virtual ~PlanetBase();
 
     virtual void Start() override;
+    virtual void drawDebugGeometry( DebugRenderer * debug );
 
 public:
     bool tryAddSurfaceItem( Node * n );

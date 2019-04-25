@@ -30,6 +30,8 @@ void Box::createContent( Node * node )
     obj->SetModel( cache->GetResource<Model>( "Models/Box.mdl" ) );
     obj->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
     obj->SetCastShadows( true );
+
+    airMesh.init( obj );
 }
 
 void Box::toWorld()

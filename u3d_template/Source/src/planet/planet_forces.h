@@ -29,10 +29,7 @@ public:
     virtual void applyGravity( Block * b );
     virtual void applyFriction( Block * b );
 
-    Float density( const Vector3d & at );
-    Float viscosity( const Vector3d & at );
-    Float temperature( const Vector3d & at );
-
+    bool  atmosphereParams( const Vector3 & at, Float & density, Float & viscosity, Float & temperature );
 
     SharedPtr<PlanetBase> planet;
 
