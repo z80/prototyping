@@ -7,7 +7,7 @@ namespace Osp
 {
 
 Player::Player( Context * ctx )
-    : Urho3D::LogicComponent( ctx )
+    : ItemBase( ctx )
 {
     nearSurface = true;
 }
@@ -22,20 +22,18 @@ void Player::startWithAssembly( LaunchSite * site )
     if ( planet )
         planet->finitCollisions( physicsWorld );
 
-    {
-        Node * siteNode = site->GetNode();
-        Node * playerNode = GetNode();
-        playerNode->SetParent( siteNode );
-    }
+    Node * siteNode = site->GetNode();
+    Node * playerNode = GetNode();
+    playerNode->SetParent( siteNode );
 
-    PlanetBase * p = parentPlanet( n );
+    PlanetBase * p = parentPlanet( playerNode );
     if ( p )
     {
         Node * node = planet->dynamicsNode;
         Node * physicsNode = physicsWorld->GetNode();
         physicsNode->SetParent( node );
 
-        planet = SharedPtr<Planet>( p );
+        planet = SharedPtr<PlanetBase>( p );
 
         Vector3d    rel_r;
         Quaterniond rel_q;
