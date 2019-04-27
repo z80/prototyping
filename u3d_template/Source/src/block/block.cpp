@@ -33,6 +33,14 @@ Block::~Block()
 
 }
 
+void Block::Start()
+{
+    Node * node = GetNode();
+    createContent( node );
+    // React on parenting to/from node containing physics world.
+    subscribeToParentChanges();
+}
+
 void Block::createContent( Node * n )
 {
     // Create pivots.
@@ -43,20 +51,6 @@ void Block::drawDebugGeometry( DebugRenderer * debug )
 {
     Node * n = GetNode();
     airMesh.drawDebugGeometry( n, debug );
-}
-
-RigidBody2 * Block::rigidBody()
-{
-    Node * n = GetNode();
-    RigidBody2 * rb = n->GetComponent<RigidBody2>();
-    return rb;
-}
-
-CollisionShape2 * Block::collisionShape()
-{
-    Node * n = GetNode();
-    CollisionShape2 * cs = n->GetComponent<CollisionShape2>();
-    return cs;
 }
 
 void Block::setPivotsVisible( bool en )
@@ -402,33 +396,6 @@ Block * Block::tryAttachToSurface()
     return nullptr;
 }
 
-void Block::toWorld()
-{
-    // Subscribing to world updates to track body state.
-    Node * n = GetNode();
-    PhysicsWorld2 * w = Assembly::getWorld( n );
-    if ( !w )
-        return;
-    SubscribeToEvent(w, E_PHYSICSPOSTSTEP_2, URHO3D_HANDLER( Block, OnPhysicsPostStep ) );
-}
-
-void Block::fromWorld()
-{
-    RigidBody2 * rb = rigidBody();
-    if ( rb )
-        rb->Remove();
-
-    CollisionShape2 * cs = collisionShape();
-    if ( cs )
-        cs->Remove();
-
-    Node * n = GetNode();
-    PhysicsWorld2 * w = Assembly::getWorld( n );
-    if ( !w )
-        return;
-    UnsubscribeFromEvent( w, E_PHYSICSPOSTSTEP_2 );
-}
-
 SharedPtr<UIElement> Block::configWindow()
 {
     ResourceCache * cache = GetSubsystem<ResourceCache>();
@@ -451,27 +418,6 @@ SharedPtr<UIElement> Block::configWindow()
     instructionText->SetPosition(0, ui->GetRoot()->GetHeight() / 4);
 
     return SharedPtr<UIElement>( instructionText );
-}
-
-
-
-void Block::OnNodeSet( Node * node )
-{
-    Component::OnNodeSet( node );
-    if ( node )
-        createContent( node );
-}
-
-void Block::OnPhysicsPostStep( StringHash t, VariantMap & e )
-{
-    RigidBody2 * rb = rigidBody();
-    if ( !rb )
-        return;
-    // Need to update dynamical properties (probably...).
-    setR( rb->GetPositiond() );
-    setQ( rb->GetRotationd() );
-    setV( rb->GetLinearVelocityd() );
-    setW( rb->GetAngularVelocityd() );
 }
 
 

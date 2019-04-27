@@ -25,6 +25,15 @@ public:
     virtual void Start() override;
     virtual void drawDebugGeometry( DebugRenderer * debug );
 
+    /// When player is on the surface the dynamics is
+    /// simulated for objects close to the center and close enough
+    /// Objects in atmosphere but far away are not simulated.
+    virtual void updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist );
+    /// Initialize collision objects when player enteres this area.
+    virtual void initCollisions( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist );
+    /// Finalize collisions as player leaves the area.
+    virtual void finitCollisions( PhysicsWorld2 * w2 );
+
 public:
     bool tryAddSurfaceItem( Node * n );
     bool tryAddOrbitingItem( Node * n );

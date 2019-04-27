@@ -23,8 +23,15 @@ void Player::Start()
     gameData = SharedPtr<GameData>( s->GetOrCreateComponent<GameData>() );
 
     Node * n = GetNode();
-    Node * physicsNode = n->CreateChild( "PhysicsWorldNode" );
-    physicsWorld = SharedPtr<PhysicsWorld2>( physicsNode->CreateComponent<PhysicsWorld2>() );
+
+    PlanetBase * planet = parentPlanet( n );
+    if ( planet )
+    {
+        Node * node = planet->dynamicsNode;
+        Node * physicsNode = node->CreateChild( "PhysicsWorldNode" );
+        PhysicsWorld2 * pw2 = physicsNode->CreateComponent<PhysicsWorld2>();
+        physicsWorld = SharedPtr<PhysicsWorld2>( pw2 );
+    }
 }
 
 void Player::DelayedStart()
@@ -48,7 +55,8 @@ void Player::Update( float timeStep )
 
 void Player::FixedPostUpdate( float timeStep )
 {
-
+    if ( physicsWorld )
+        physicsWorld->DrawDebugGeometry( true );
 }
 
 void Player::HandleMouseDown( StringHash t, VariantMap & e )
@@ -75,19 +83,11 @@ PlanetBase * Player::parentPlanet( Node * n )
         }
     }
 
-    {
-        const Vector<SharedPtr<Node> > & children = n->GetChildren();
-        unsigned qty = children.Size();
-        for ( unsigned i=0; i<qty; i++ )
-        {
-            Node * n = children[i];
-            PlanetBase * p = parentPlanet( n );
-            if ( p )
-                return p;
-        }
-    }
-
-    return nullptr;
+    Node * pn = n->GetParent();
+    if ( !pn )
+        return nullptr;
+    PlanetBase * p = parentPlanet( pn );
+    return p;
 }
 
 

@@ -7,6 +7,7 @@
 #include "block.h"
 #include "design_manager.h"
 #include "planet_base.h"
+#include "player.h"
 
 namespace Urho3D
 {
@@ -36,9 +37,9 @@ private:
     void SubscribeToEvents();
 
 
-    SharedPtr<Node>  rootNode;
+    SharedPtr<Node>      rootNode;
     SharedPtr<UIElement> panel;
-    SharedPtr<PhysicsWorld> physicsWorld;
+    SharedPtr<Player>    player;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
 

@@ -1,5 +1,6 @@
 
 #include "planet_test.h"
+#include "player.h"
 
 namespace Osp
 {
@@ -55,7 +56,32 @@ void PlanetTest::Start()
             cn->SetParent( n );
         }
     }
+
+    // Create a player.
+    {
+        Node * n = site->GetNode();
+        Node * playerNode = n->CreateChild( "PlayerNode" );
+        playerNode->CreateComponent<Player>();
+    }
 }
+
+void PlanetTest::updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist )
+{
+
+}
+
+void PlanetTest::initCollisions( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist )
+{
+    {
+        Node * n = site->GetNode();
+    }
+}
+
+void PlanetTest::finitCollisions( PhysicsWorld2 * w2 )
+{
+
+}
+
 
 
 }

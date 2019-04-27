@@ -24,12 +24,12 @@ public:
     Block( Context * c, const String & name );
     virtual ~Block();
 
+    void Start() override;
+
     virtual void createContent( Node * n );
 
     void drawDebugGeometry( DebugRenderer * debug );
 
-    RigidBody2 * rigidBody();
-    CollisionShape2 * collisionShape();
     void setPivotsVisible( bool en );
     void setPivotSize( float sz );
     /// Blocks are in a tree with "root" as
@@ -57,22 +57,12 @@ public:
     Block * tryAttachToSurface();
 
 
-    /// Called by Assembly when assembly parent is changed.
-    /// Need to create/destroy rigid body and collision shape here.
-    virtual void toWorld();
-    virtual void fromWorld();
-
     /// Need to be able to open configuration window.
     virtual SharedPtr<UIElement> configWindow();
 
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
     AirMesh airMesh;
-protected:
-    void OnNodeSet( Node * node );
-
-    // Events reaction.
-    void OnPhysicsPostStep( StringHash t, VariantMap & e );
 };
 
 }

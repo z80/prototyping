@@ -300,6 +300,12 @@ void OnePlanet::createKepler()
         planet_ = SharedPtr<PlanetBase>( pt );
         moon_   = SharedPtr<PlanetBase>( mn );
     }
+
+    {
+        Component * c = scene_->GetComponent( StringHash( "Player" ), true );
+        if ( c )
+            player = SharedPtr<Player>( c->Cast<Player>() );
+    }
 }
 
 
@@ -362,18 +368,10 @@ bool OnePlanet::select()
 
 void OnePlanet::HandleUpdate( StringHash t, VariantMap & e )
 {
-    if ( physicsWorld )
-    {
-        const Variant & v = e[Update::P_TIMESTEP];
-        const float dt = v.GetFloat();
-        physicsWorld->Update( dt );
-    }
 }
 
 void OnePlanet::HandlePostRenderUpdate( StringHash t, VariantMap & e )
 {
-    if ( physicsWorld )
-        physicsWorld->DrawDebugGeometry( true );
 }
 
 void OnePlanet::HandlePhysicsPreStep( StringHash t, VariantMap & e )

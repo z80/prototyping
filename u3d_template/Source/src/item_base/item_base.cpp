@@ -1,7 +1,15 @@
 
 #include "item_base.h"
 #include "name_generator.h"
+#include "physics_world_2.h"
+
+#include "rigid_body_2.h"
+#include "collision_shape_2.h"
+#include "physics_world_2.h"
+#include "physics_events_2.h"
+
 #include "SceneManager.h"
+
 
 using namespace Urho3D;
 
@@ -29,6 +37,60 @@ void ItemBase::Start()
     const Vector3 & r = n->GetPosition();
     this->r = Vector3d( r.x_, r.y_, r.z_ );
 }
+
+void ItemBase::subscribeToParentChanges()
+{
+    SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( ItemBase, OnNodeRemoved ) );
+    SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( ItemBase, OnNodeAdded ) );
+
+    toWorld();
+}
+
+void ItemBase::fromWorld()
+{
+    RigidBody2 * rb = rigidBody();
+    if ( rb )
+        rb->Remove();
+
+    CollisionShape2 * cs = collisionShape();
+    if ( cs )
+        cs->Remove();
+
+    Node * n = GetNode();
+    PhysicsWorld2 * w = ItemBase::getWorld( n );
+    if ( !w )
+        return;
+
+    // Stop updating velocity and position.
+    UnsubscribeFromEvent( w, E_PHYSICSPOSTSTEP_2 );
+}
+
+void ItemBase::toWorld()
+{
+    // Subscribing to world updates to track body state.
+    Node * n = GetNode();
+    PhysicsWorld2 * w = ItemBase::getWorld( n );
+    if ( !w )
+        return;
+
+    // This is to update position and velocity values.
+    SubscribeToEvent(w, E_PHYSICSPOSTSTEP_2, URHO3D_HANDLER( ItemBase, OnPhysicsPostStep ) );
+}
+
+RigidBody2 * ItemBase::rigidBody()
+{
+    Node * n = GetNode();
+    RigidBody2 * rb = n->GetComponent<RigidBody2>();
+    return rb;
+}
+
+CollisionShape2 * ItemBase::collisionShape()
+{
+    Node * n = GetNode();
+    CollisionShape2 * cs = n->GetComponent<CollisionShape2>();
+    return cs;
+}
+
 
 void ItemBase::setR( const Vector3d & new_r )
 {
@@ -437,6 +499,58 @@ bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & r
     rel_q = qb.Inverse() * qa;
     return true;
 }
+
+void ItemBase::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeRemoved::P_NODE];
+    Node * self = static_cast<Node *>( n.GetPtr() );
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeRemoved::P_PARENT] ;
+    Node * msgParent = static_cast<Node *>( v.GetPtr() );
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    fromWorld();
+}
+
+void ItemBase::OnNodeAdded( StringHash eventType, VariantMap & eventData )
+{
+    Variant & n = eventData[NodeAdded::P_NODE];
+    Node * self = static_cast<Node *>( n.GetPtr() );
+    Node * node = GetNode();
+    if ( self != node )
+        return;
+    Variant & v = eventData[NodeAdded::P_PARENT] ;
+    Node * msgParent = static_cast<Node *>( v.GetPtr() );
+    Node * parent = GetNode()->GetParent();
+    if ( parent != msgParent )
+        return;
+    toWorld();
+}
+
+void ItemBase::OnPhysicsPostStep( StringHash t, VariantMap & e )
+{
+    RigidBody2 * rb = rigidBody();
+    if ( !rb )
+        return;
+    // Need to update dynamical properties (probably...).
+    setR( rb->GetPositiond() );
+    setQ( rb->GetRotationd() );
+    setV( rb->GetLinearVelocityd() );
+    setW( rb->GetAngularVelocityd() );
+}
+
+PhysicsWorld2 * ItemBase::getWorld( Node * node )
+{
+    Node * pn = node->GetParent();
+    if ( !pn )
+        return nullptr;
+    PhysicsWorld2 * w = pn->GetComponent<PhysicsWorld2>();
+    return w;
+}
+
 
 
 

@@ -18,6 +18,11 @@ public:
     ~PlanetTest();
 
     void Start() override;
+
+    void updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist ) override;
+    void initCollisions( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist ) override;
+    void finitCollisions( PhysicsWorld2 * w2 ) override;
+
 public:
     SharedPtr<LaunchSite> site;
     // Graphical objects

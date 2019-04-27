@@ -6,10 +6,18 @@
 #include "vector3d.h"
 #include "quaterniond.h"
 
+namespace Urho3D
+{
+    class PhysicsWorld2;
+    class RigidBody2;
+    class CollisionShape2;
+}
+
 namespace Osp
 {
 
 using namespace Urho3D;
+
 
 /**
  * @brief The Entity class
@@ -26,6 +34,14 @@ public:
     Type type();
 
     virtual void Start() override;
+
+    // Can listen to parent changes and enter/leave physics world.
+    void subscribeToParentChanges();
+    virtual void fromWorld();
+    virtual void toWorld();
+    RigidBody2 * rigidBody();
+    CollisionShape2 * collisionShape();
+
 
     //static template<typename T> T * cast<T>( Entity * e );
 
@@ -53,10 +69,18 @@ public:
     bool relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q );
     bool relativePose( Node * other, Vector3  & rel_r, Quaternion  & rel_q );
     static bool relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & rel_q );
+
+private:
+    void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
+    void OnNodeAdded( StringHash eventType, VariantMap & eventData );
+    void OnPhysicsPostStep( StringHash t, VariantMap & e );
+
 public:
-    Type            _type;
+    Type        _type;
     Vector3d    r, v, w;
     Quaterniond q;
+
+    static PhysicsWorld2 * getWorld( Node * node );
 };
 
 

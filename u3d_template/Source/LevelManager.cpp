@@ -19,6 +19,9 @@
 #include "planet_test.h"
 #include "planet_sun_test.h"
 #include "planet_moon_test.h"
+#include "player.h"
+
+#include "physics_world_2.h"
 
 #include "MyEvents.h"
 
@@ -86,6 +89,10 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::PlanetTest>();
     context_->RegisterFactory<Osp::PlanetSunTest>();
     context_->RegisterFactory<Osp::PlanetMoonTest>();
+
+    context_->RegisterFactory<Osp::Player>();
+
+    RegisterPhysicsLibrary2( context_ );
 }
 
 void LevelManager::HandleSetLevelQueue(StringHash eventType, VariantMap& eventData)
