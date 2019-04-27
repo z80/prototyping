@@ -41,7 +41,7 @@ void PlanetBase::updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & ce
 
 }
 
-void PlanetBase::initCollisions( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist )
+void PlanetBase::initCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist )
 {
 
 }

@@ -70,7 +70,7 @@ void PlanetTest::updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & ce
 
 }
 
-void PlanetTest::initCollisions( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist )
+void PlanetTest::initCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist )
 {
     {
         Node * n = site->GetNode();

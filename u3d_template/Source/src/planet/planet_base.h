@@ -30,7 +30,7 @@ public:
     /// Objects in atmosphere but far away are not simulated.
     virtual void updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist );
     /// Initialize collision objects when player enteres this area.
-    virtual void initCollisions( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist );
+    virtual void initCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist );
     /// Finalize collisions as player leaves the area.
     virtual void finitCollisions( PhysicsWorld2 * w2 );
 

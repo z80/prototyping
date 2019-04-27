@@ -9,6 +9,7 @@
 #include "planet_base.h"
 #include "physics_world_2.h"
 #include "game_data.h"
+#include "launch_site.h"
 
 namespace Osp
 {
@@ -17,12 +18,20 @@ using namespace Urho3D;
 
 
 
-class Player: public Urho3D::LogicComponent
+class Player: public ItemBase
 {
-    URHO3D_OBJECT( Player, LogicComponent )
+    URHO3D_OBJECT( Player, ItemBase )
 public:
     Player( Context * ctx );
     ~Player();
+
+    // Actions to do.
+
+    /// Move to launch site and create a new assembly.
+    void startWithAssembly( LaunchSite * site );
+
+
+
 
     void Start() override;
     /// Called before the first update. At this point all other components of the node should exist. Will also be called if update events are not wanted; in that case the event is immediately unsubscribed afterward.

@@ -17,6 +17,39 @@ Player::~Player()
 
 }
 
+void Player::startWithAssembly( LaunchSite * site )
+{
+    if ( planet )
+        planet->finitCollisions( physicsWorld );
+
+    {
+        Node * siteNode = site->GetNode();
+        Node * playerNode = GetNode();
+        playerNode->SetParent( siteNode );
+    }
+
+    PlanetBase * p = parentPlanet( n );
+    if ( p )
+    {
+        Node * node = planet->dynamicsNode;
+        Node * physicsNode = physicsWorld->GetNode();
+        physicsNode->SetParent( node );
+
+        planet = SharedPtr<Planet>( p );
+
+        Vector3d    rel_r;
+        Quaterniond rel_q;
+        this->relativePose( p, rel_r, rel_q );
+        p->initCollisions( physicsWorld, rel_r, 10000.0 );
+    }
+
+
+    if ( !gameData )
+        return;
+
+
+}
+
 void Player::Start()
 {
     Scene * s = GetScene();
