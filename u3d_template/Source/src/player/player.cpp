@@ -50,7 +50,7 @@ void Player::startWithAssembly()
         return;
 
     Assembly * a = Assembly::create( siteNode, gameData->design );
-    a->toWorld( physicsWorld );
+    //a->toWorld( physicsWorld );
     assembly = SharedPtr<Assembly>( a );
 
     // Focus camera on assembly.

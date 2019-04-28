@@ -44,8 +44,9 @@ public:
     bool updatePoseInWorld();
 
 
-    Vector< SharedPtr<Block> >      blocks;
+    Vector< SharedPtr<Block> >       blocks;
     Vector< SharedPtr<Constraint2> > joints;
+    SharedPtr<PlanetBase>            planet;
     Design design;
 
     bool inAtmosphere;
