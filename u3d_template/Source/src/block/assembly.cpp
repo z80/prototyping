@@ -51,6 +51,8 @@ Assembly * Assembly::create( Node * root, const Design & d )
             a->blocks.Push( sb );
         }
     }
+
+    return a;
 }
 
 bool Assembly::toWorld( PhysicsWorld2 * world )
@@ -58,7 +60,7 @@ bool Assembly::toWorld( PhysicsWorld2 * world )
     PhysicsWorld2 * w = world;
     if ( !w )
         return false;
-    Node * node = w->GetNode();
+    Node * worldNode = w->GetNode();
 
     // Traverse all blocks and joints and add those to world.
     {
@@ -70,7 +72,9 @@ bool Assembly::toWorld( PhysicsWorld2 * world )
                 continue;
             // Add block to world. It should create and initialize
             // rigid body and collision shape.
-            b->toWorld();
+            //b->toWorld();
+            Node * blockNode = b->GetNode();
+            blockNode->SetParent( worldNode );
         }
     }
     {

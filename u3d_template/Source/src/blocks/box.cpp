@@ -36,6 +36,8 @@ void Box::createContent( Node * node )
 
 void Box::toWorld()
 {
+    Block::toWorld();
+
     Node * node = GetNode();
 
     RigidBody2 * rb = node->CreateComponent<RigidBody2>();

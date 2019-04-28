@@ -34,11 +34,10 @@ void Player::startWithAssembly()
     PlanetBase * p = parentPlanet( playerNode );
     if ( p )
     {
+        planet = SharedPtr<PlanetBase>( p );
         Node * node = planet->dynamicsNode;
         Node * physicsNode = physicsWorld->GetNode();
         physicsNode->SetParent( node );
-
-        planet = SharedPtr<PlanetBase>( p );
 
         Vector3d    rel_r;
         Quaterniond rel_q;
@@ -53,6 +52,10 @@ void Player::startWithAssembly()
     Assembly * a = Assembly::create( siteNode, gameData->design );
     a->toWorld( physicsWorld );
     assembly = SharedPtr<Assembly>( a );
+
+    // Focus camera on assembly.
+    Node * cameraNode = cameraOrb->GetNode();
+    cameraNode->SetParent( assembly->GetNode() );
 }
 
 void Player::Start()

@@ -176,25 +176,9 @@ void OnePlanet::createObjects()
 {
     Node * root = rootNode.Get();
 
-    /*PhysicsWorld * w = scene_->GetComponent<PhysicsWorld>();
-    if ( !w )
-        w = scene_->CreateComponent<PhysicsWorld>();
-    DebugRenderer * dr = scene_->GetComponent<DebugRenderer>();
-    if ( !dr )
-        dr = scene_->CreateComponent<DebugRenderer>();
-
-    physicsWorld = SharedPtr<PhysicsWorld>( w );
-
-    Node * surf = root->CreateChild( "Surface" );
-    RigidBody * body = surf->CreateComponent<RigidBody>();
-    CollisionShape * s = surf->CreateComponent<CollisionShape>();
-
-    ResourceCache * c = GetSubsystem<ResourceCache>();
-    Model * model = c->GetResource<Model>( "Models/Surface.mdl" );
-    s->SetTriangleMesh( model );*/
-
     createKepler();
-    createDesign();
+    //createDesign();
+    player->startWithAssembly();
 }
 
 void OnePlanet::createDesign()
