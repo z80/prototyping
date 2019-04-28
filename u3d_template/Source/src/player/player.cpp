@@ -26,6 +26,11 @@ void Player::startWithAssembly()
     Node * playerNode = GetNode();
     playerNode->SetParent( siteNode );
 
+    {
+        Node * n = cameraOrb->GetNode();
+        n->SetParent( siteNode );
+    }
+
     PlanetBase * p = parentPlanet( playerNode );
     if ( p )
     {
@@ -45,7 +50,7 @@ void Player::startWithAssembly()
     if ( !gameData )
         return;
 
-    Assembly * a = Assembly::create( site->GetNode(), gameData->design );
+    Assembly * a = Assembly::create( siteNode, gameData->design );
     a->toWorld( physicsWorld );
     assembly = SharedPtr<Assembly>( a );
 }
@@ -65,9 +70,17 @@ void Player::Start()
         PhysicsWorld2 * pw2 = physicsNode->CreateComponent<PhysicsWorld2>();
         physicsWorld = SharedPtr<PhysicsWorld2>( pw2 );
 
-        Component * c = node->GetComponent( StringHash( "LaunchSite" ), true );
+        Component * c = s->GetComponent( StringHash( "LaunchSite" ), true );
         LaunchSite * l = c->Cast<LaunchSite>();
         site = SharedPtr<LaunchSite>( l );
+    }
+
+    {
+        Component * c = s->GetComponent( StringHash("CameraOrb2"), true );
+        CameraOrb2 * o = c->Cast<CameraOrb2>();
+        cameraOrb = SharedPtr<CameraOrb2>( o );
+        Node * cn = cameraOrb->GetNode();
+        cn->SetParent( n );
     }
 }
 

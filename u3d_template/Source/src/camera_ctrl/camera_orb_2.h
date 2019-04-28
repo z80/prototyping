@@ -1,4 +1,8 @@
 
+#ifndef __CAMERA_ORB_2_H_
+#define __CAMERA_ORB_2_H_
+
+
 #include <Urho3D/Urho3DAll.h>
 
 namespace Osp
@@ -37,5 +41,9 @@ private:
 };
 
 }
+
+
+#endif
+
 
 

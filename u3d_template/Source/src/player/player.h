@@ -4,6 +4,7 @@
 
 #include <Urho3D/Urho3DAll.h>
 
+#include "camera_orb_2.h"
 #include "assembly.h"
 #include "block.h"
 #include "planet_base.h"
@@ -68,6 +69,8 @@ private:
     bool nearSurface;
     // Dyamics world for computing objects dynamics.
     SharedPtr<PhysicsWorld2> physicsWorld;
+    // Camera controller.
+    SharedPtr<CameraOrb2>    cameraOrb;
     // Game data object to exchange global values.
     SharedPtr<GameData>      gameData;
 };
