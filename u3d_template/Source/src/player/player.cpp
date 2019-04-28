@@ -17,7 +17,7 @@ Player::~Player()
 
 }
 
-void Player::startWithAssembly( LaunchSite * site )
+void Player::startWithAssembly()
 {
     if ( planet )
         planet->finitCollisions( physicsWorld );
@@ -45,7 +45,9 @@ void Player::startWithAssembly( LaunchSite * site )
     if ( !gameData )
         return;
 
-
+    Assembly * a = Assembly::create( site->GetNode(), gameData->design );
+    a->toWorld( physicsWorld );
+    assembly = SharedPtr<Assembly>( a );
 }
 
 void Player::Start()
@@ -62,6 +64,10 @@ void Player::Start()
         Node * physicsNode = node->CreateChild( "PhysicsWorldNode" );
         PhysicsWorld2 * pw2 = physicsNode->CreateComponent<PhysicsWorld2>();
         physicsWorld = SharedPtr<PhysicsWorld2>( pw2 );
+
+        Component * c = node->GetComponent( StringHash( "LaunchSite" ), true );
+        LaunchSite * l = c->Cast<LaunchSite>();
+        site = SharedPtr<LaunchSite>( l );
     }
 }
 

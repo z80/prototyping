@@ -28,7 +28,7 @@ public:
     // Actions to do.
 
     /// Move to launch site and create a new assembly.
-    void startWithAssembly( LaunchSite * site );
+    void startWithAssembly();
 
 
 
@@ -62,6 +62,8 @@ private:
     SharedPtr<Block> block;
     // Current planet.
     SharedPtr<PlanetBase> planet;
+    // Launch site.
+    SharedPtr<LaunchSite> site;
     // Near surface ?
     bool nearSurface;
     // Dyamics world for computing objects dynamics.

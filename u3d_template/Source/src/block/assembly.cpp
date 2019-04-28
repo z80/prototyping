@@ -7,6 +7,7 @@
 #include "rigid_body_2.h"
 #include "constraint_2.h"
 #include "physics_world_2.h"
+#include "planet_base.h"
 
 namespace Osp
 {
@@ -14,6 +15,8 @@ namespace Osp
 Assembly::Assembly( Context * c )
     : LogicComponent( c )
 {
+    inAtmosphere = true;
+    onSurface    = true;
 }
 
 Assembly::~Assembly()
@@ -48,18 +51,14 @@ Assembly * Assembly::create( Node * root, const Design & d )
             a->blocks.Push( sb );
         }
     }
-
-    a->toWorld();
 }
 
-bool Assembly::toWorld()
+bool Assembly::toWorld( PhysicsWorld2 * world )
 {
-    // Check if dynamics world exists there.
-    // And if it does parent all blocks to it.
-    Node * node = GetNode();
-    PhysicsWorld2 * w = Assembly::getWorld( node );
+    PhysicsWorld2 * w = world;
     if ( !w )
         return false;
+    Node * node = w->GetNode();
 
     // Traverse all blocks and joints and add those to world.
     {
@@ -110,7 +109,7 @@ bool Assembly::toWorld()
     return true;
 }
 
-void Assembly::fromWorld()
+void Assembly::fromWorld( PlanetBase * planet )
 {
     Node * root = GetNode();
     // Traverse all blocks and joints and add those to world.

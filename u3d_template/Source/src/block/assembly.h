@@ -16,6 +16,8 @@ namespace Urho3D
 namespace Osp
 {
 
+class PlanetBase;
+
 class Assembly: public LogicComponent
 {
     URHO3D_OBJECT( Assembly, Component )
@@ -24,8 +26,8 @@ public:
     ~Assembly();
 
     static Assembly * create( Node * root, const Design & d );
-    bool toWorld();
-    void fromWorld();
+    bool toWorld( PhysicsWorld2 * world );
+    void fromWorld( PlanetBase * planet );
 
     void drawDebugGeometry( DebugRenderer * debug );
 
@@ -45,6 +47,9 @@ public:
     Vector< SharedPtr<Block> >      blocks;
     Vector< SharedPtr<Constraint2> > joints;
     Design design;
+
+    bool inAtmosphere;
+    bool onSurface;
 
 public:
     static PhysicsWorld2 * getWorld( Node * node );
