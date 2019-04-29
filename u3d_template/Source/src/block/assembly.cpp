@@ -55,7 +55,7 @@ Assembly * Assembly::create( Node * root, const Design & d )
     return a;
 }
 
-bool Assembly::toWorld( PhysicsWorld2 * world )
+bool Assembly::toWorld( PlanetBase * planet, PhysicsWorld2 * world )
 {
     PhysicsWorld2 * w = world;
     if ( !w )
@@ -81,6 +81,7 @@ bool Assembly::toWorld( PhysicsWorld2 * world )
             //b->relativePose( worldNode, rel_r, rel_q );
 
             blockNode->SetParent( worldNode );
+            planet->addSurfaceBlock( b );
         }
     }
     {

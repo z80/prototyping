@@ -50,18 +50,7 @@ void Player::startWithAssembly()
         return;
 
     Assembly * a = Assembly::create( siteNode, gameData->design );
-    Node * assemblyNode = a->GetNode();
-    {
-        a->updatePoseInWorld();
-        const Vector3 at = assemblyNode->GetPosition();
-        URHO3D_LOGDEBUGF( "assembly pos: %f, %f, %f", at.x_, at.y_, at.z_ );
-    }
-    a->toWorld( physicsWorld );
-    {
-        a->updatePoseInWorld();
-        const Vector3 at = assemblyNode->GetPosition();
-        URHO3D_LOGDEBUGF( "assembly pos: %f, %f, %f", at.x_, at.y_, at.z_ );
-    }
+    a->toWorld( planet, physicsWorld );
     assembly = SharedPtr<Assembly>( a );
 
     // Focus camera on assembly.

@@ -35,6 +35,14 @@ public:
     virtual void finitCollisions( PhysicsWorld2 * w2 );
 
 public:
+    void addSurfaceBlock( Block * b );
+    void removeSurfaceBlock( Block * b );
+
+    void addOrbitingAssembly( Assembly * a );
+    void removeOrbitingAssembly( Assembly * a );
+
+
+
     bool tryAddSurfaceItem( Node * n );
     bool tryAddOrbitingItem( Node * n );
     void subscribeToParentChanges();

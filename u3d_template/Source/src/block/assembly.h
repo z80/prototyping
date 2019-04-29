@@ -26,7 +26,7 @@ public:
     ~Assembly();
 
     static Assembly * create( Node * root, const Design & d );
-    bool toWorld( PhysicsWorld2 * world );
+    bool toWorld( PlanetBase * planet, PhysicsWorld2 * world );
     void fromWorld( PlanetBase * planet );
 
     void drawDebugGeometry( DebugRenderer * debug );

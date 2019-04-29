@@ -51,6 +51,64 @@ void PlanetBase::finitCollisions( PhysicsWorld2 * w2 )
 
 }
 
+void PlanetBase::addSurfaceBlock( Block * b )
+{
+    const unsigned qty = surfaceBlocks.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        SharedPtr<Block> bb = surfaceBlocks[i];
+        if ( bb == b )
+            return;
+    }
+    surfaceBlocks.Push( SharedPtr<Block>(b) );
+}
+
+void PlanetBase::removeSurfaceBlock( Block * b )
+{
+    const unsigned qty = surfaceBlocks.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        SharedPtr<Block> bb = surfaceBlocks[i];
+        if ( bb == b )
+        {
+            unsigned lastInd = qty-1;
+            if ( i != lastInd )
+                surfaceBlocks[i] = surfaceBlocks[lastInd];
+            surfaceBlocks.Resize( lastInd );
+            return;
+        }
+    }
+}
+
+void PlanetBase::addOrbitingAssembly( Assembly * a )
+{
+    const unsigned qty = orbitingAssemblies.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        SharedPtr<Assembly> aa = orbitingAssemblies[i];
+        if ( aa == a )
+            return;
+    }
+    orbitingAssemblies.Push( SharedPtr<Assembly>(a) );
+}
+
+void PlanetBase::removeOrbitingAssembly( Assembly * a )
+{
+    const unsigned qty = orbitingAssemblies.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        SharedPtr<Assembly> aa = orbitingAssemblies[i];
+        if ( aa == a )
+        {
+            unsigned lastInd = qty-1;
+            if ( i != lastInd )
+                orbitingAssemblies[i] = orbitingAssemblies[lastInd];
+            orbitingAssemblies.Resize( lastInd );
+            return;
+        }
+    }
+}
+
 
 bool PlanetBase::tryAddSurfaceItem( Node * n )
 {
