@@ -74,6 +74,12 @@ bool Assembly::toWorld( PhysicsWorld2 * world )
             // rigid body and collision shape.
             //b->toWorld();
             Node * blockNode = b->GetNode();
+
+            // Just to check that relative pose is correct.
+            //Vector3d rel_r;
+            //Quaterniond rel_q;
+            //b->relativePose( worldNode, rel_r, rel_q );
+
             blockNode->SetParent( worldNode );
         }
     }
@@ -109,6 +115,9 @@ bool Assembly::toWorld( PhysicsWorld2 * world )
             this->joints.Push( SharedPtr<Constraint2>( c ) );
         }
     }
+
+    Node * assemblyNode = GetNode();
+    assemblyNode->SetParent( worldNode );
 
     return true;
 }
