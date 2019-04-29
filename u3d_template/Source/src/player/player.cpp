@@ -50,7 +50,7 @@ void Player::startWithAssembly()
         return;
 
     Assembly * a = Assembly::create( siteNode, gameData->design );
-    //a->toWorld( physicsWorld );
+    a->toWorld( physicsWorld );
     assembly = SharedPtr<Assembly>( a );
 
     // Focus camera on assembly.
@@ -71,6 +71,7 @@ void Player::Start()
         Node * node = planet->dynamicsNode;
         Node * physicsNode = node->CreateChild( "PhysicsWorldNode" );
         PhysicsWorld2 * pw2 = physicsNode->CreateComponent<PhysicsWorld2>();
+        pw2->SetGravity( Vector3::ZERO );
         physicsWorld = SharedPtr<PhysicsWorld2>( pw2 );
 
         Component * c = s->GetComponent( StringHash( "LaunchSite" ), true );
