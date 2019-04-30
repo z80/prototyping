@@ -1,5 +1,6 @@
 
 #include "planet_base.h"
+#include "game_data.h"
 
 namespace Osp
 {
@@ -15,6 +16,11 @@ PlanetBase::~PlanetBase()
 
 }
 
+Float PlanetBase::GM() const
+{
+    return 100.0;
+}
+
 void PlanetBase::Start()
 {
     Node * n = GetNode();
@@ -22,18 +28,26 @@ void PlanetBase::Start()
     mover = n->CreateComponent<KeplerMover>();
     //mover = dynamicsNode->CreateComponent<KeplerMover>();
     rotator = dynamicsNode->CreateComponent<KeplerRotator>();
+
+    Scene * s = GetScene();
+    Component * c = s->GetComponent( StringHash( "GameData" ), true );
+    if ( c )
+    {
+        GameData * gd = c->Cast<GameData>();
+        gd->planets.Push( SharedPtr<PlanetBase>( this ) );
+    }
 }
 
 void PlanetBase::drawDebugGeometry( DebugRenderer * debug )
 {
-    {
+    /*{
         const unsigned qty = surfaceBlocks.Size();
         for ( unsigned i=0; i<qty; i++ )
         {
             SharedPtr<Block> b = surfaceBlocks[i];
             b->drawDebugGeometry( debug );
         }
-    }
+    }*/
 }
 
 void PlanetBase::updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist )

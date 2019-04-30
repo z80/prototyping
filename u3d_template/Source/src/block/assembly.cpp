@@ -8,12 +8,14 @@
 #include "constraint_2.h"
 #include "physics_world_2.h"
 #include "planet_base.h"
+#include "game_data.h"
+
 
 namespace Osp
 {
 
 Assembly::Assembly( Context * c )
-    : LogicComponent( c )
+    : ItemBase( c )
 {
     inAtmosphere = true;
     onSurface    = true;
@@ -173,6 +175,12 @@ void Assembly::PostUpdate( float timeStep )
 {
     // Here recompute position and orientation.
     updatePoseInWorld();
+
+    // Draw debug geometry.
+    Scene * s = GetScene();
+    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
+    if ( debug )
+        drawDebugGeometry( debug );
 }
 
 void Assembly::destroy()

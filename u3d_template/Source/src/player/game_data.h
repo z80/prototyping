@@ -13,7 +13,7 @@ namespace Osp
 
 using namespace Urho3D;
 
-
+class PlanetBase;
 
 class GameData: public Urho3D::LogicComponent
 {
@@ -30,6 +30,10 @@ public:
     Timestamp time;
     static const Timestamp ONE_SECOND;
     static const Float    _ONE_SECOND;
+
+    // All the planets.
+    Vector< PlanetBase * > planets;
+
 private:
     HashMap<String, SharedPtr<Node> > nodes;
 };

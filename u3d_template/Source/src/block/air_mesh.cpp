@@ -99,13 +99,14 @@ void AirMesh::drawDebugGeometry( Node * n, DebugRenderer * debug )
         Vector3 a = m*tri.v[0];
         Vector3 b = m*tri.v[1];
         Vector3 c = m*tri.v[2];
+        Vector3 o = (a + b + c) * 0.3333333;
         Vector3 n = m*tri.n - m*Vector3::ZERO;
 
         //debug->AddTriangle( a, b, c, Color::RED );
-        debug->AddLine( a, b, Color::RED );
-        debug->AddLine( b, c, Color::RED );
-        debug->AddLine( c, a, Color::RED );
-        debug->AddLine( a, a+n,      Color::BLUE );
+        debug->AddLine( a, b,   Color::RED );
+        debug->AddLine( b, c,   Color::RED );
+        debug->AddLine( c, a,   Color::RED );
+        debug->AddLine( o, o+n, Color::BLUE );
     }
 }
 

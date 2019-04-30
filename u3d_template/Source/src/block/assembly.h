@@ -17,10 +17,11 @@ namespace Osp
 {
 
 class PlanetBase;
+class GameData;
 
-class Assembly: public LogicComponent
+class Assembly: public ItemBase
 {
-    URHO3D_OBJECT( Assembly, Component )
+    URHO3D_OBJECT( Assembly, ItemBase )
 public:
     Assembly( Context * c );
     ~Assembly();
@@ -47,10 +48,12 @@ public:
     Vector< SharedPtr<Block> >       blocks;
     Vector< SharedPtr<Constraint2> > joints;
     SharedPtr<PlanetBase>            planet;
+    SharedPtr<GameData>              gameData;
     Design design;
 
     bool inAtmosphere;
     bool onSurface;
+    bool inWorld;
 
 public:
     static PhysicsWorld2 * getWorld( Node * node );

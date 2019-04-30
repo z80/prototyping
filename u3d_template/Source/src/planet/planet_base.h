@@ -22,6 +22,8 @@ public:
     PlanetBase( Context * ctx );
     virtual ~PlanetBase();
 
+    virtual Float GM() const;
+
     virtual void Start() override;
     virtual void drawDebugGeometry( DebugRenderer * debug );
 
