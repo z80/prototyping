@@ -166,6 +166,14 @@ void Assembly::drawDebugGeometry( DebugRenderer * debug )
     }
 }
 
+void Assembly::Start()
+{
+    Node * n = GetNode();
+    KeplerMover * m = n->CreateComponent<KeplerMover>();
+    mover = SharedPtr<KeplerMover>( m );
+    mover->active = false;
+}
+
 void Assembly::Update( float timeStep )
 {
 
@@ -175,6 +183,7 @@ void Assembly::PostUpdate( float timeStep )
 {
     // Here recompute position and orientation.
     updatePoseInWorld();
+    // Check if need to change planet orbiting around.
 
     // Draw debug geometry.
     Scene * s = GetScene();
@@ -208,8 +217,12 @@ void Assembly::destroy()
 
 bool Assembly::updatePoseInWorld()
 {
+    if ( !inAtmosphere )
+        return false;
+
     // Retrieve all the blocks.
     Vector3d r( Vector3d::ZERO );
+    Vector3d v( Vector3d::ZERO );
     const size_t qty = blocks.Size();
     for ( size_t i=0; i<qty; i++ )
     {
@@ -220,14 +233,66 @@ bool Assembly::updatePoseInWorld()
             continue;
         }
         const Vector3d ri = sb->relR();
+        const Vector3d vi = sb->relV();
         r += ri;
+        v += vi;
     }
     const float _1_qty = 1.0/static_cast<float>( qty );
     r = r * _1_qty;
-    Node * n = GetNode();
-    n->SetPosition( Vector3( r.x_, r.y_, r.z_ ) );
+    v = v * _1_qty;
+    //Node * n = GetNode();
+    //n->SetPosition( Vector3( r.x_, r.y_, r.z_ ) );
+
+    setR( r );
+    setV( v );
 
     return true;
+}
+
+bool Assembly::updatePoseInOrbit()
+{
+
+}
+
+void Assembly::checkInfluence()
+{
+    if ( inAtmosphere || onSurface )
+        return;
+
+    const PlanetBase * closestP = planetOfInfluence();
+    if ( planet == closestP )
+        return;
+
+    // Compute relative pose and velocity.
+}
+
+PlanetBase * Assembly::planetOfInfluence()
+{
+    if ( !gameData )
+        return nullptr;
+
+    const unsigned qty = gameData->planets.Size();
+    Float maxF = -1.0;
+    PlanetBase * closestP = nullptr;
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        Vector3d rel_r;
+        Quaterniond rel_q;
+        PlanetBase * p = gameData->planets[i];
+        const bool relOk = relativePose( p, rel_r, rel_q );
+        if ( !relOk )
+            continue;
+        const Float r = rel_r.Length();
+        const Float GM = p->GM();
+        const Float F = GM/(r*r);
+        if ( (!closestP) || (F > maxF) )
+        {
+            maxF = F;
+            closestP = p;
+        }
+    }
+
+    return closestP;
 }
 
 PhysicsWorld2 * Assembly::getWorld( Node * node )

@@ -18,6 +18,7 @@ namespace Osp
 
 class PlanetBase;
 class GameData;
+class KeplerMover;
 
 class Assembly: public ItemBase
 {
@@ -33,6 +34,7 @@ public:
     void drawDebugGeometry( DebugRenderer * debug );
 
 protected:
+    void Start() override;
     void Update(float timeStep) override;
     void PostUpdate(float timeStep) override;
 
@@ -43,11 +45,20 @@ public:
     /// According to all node positions update node position
     /// and orientation.
     bool updatePoseInWorld();
+    bool updatePoseInOrbit();
+
+    /// Check influence.
+    void checkInfluence();
+    PlanetBase * planetOfInfluence();
 
 
     Vector< SharedPtr<Block> >       blocks;
     Vector< SharedPtr<Constraint2> > joints;
+    SharedPtr< KeplerMover >         mover;
+
     SharedPtr<PlanetBase>            planet;
+
+
     SharedPtr<GameData>              gameData;
     Design design;
 
