@@ -4,6 +4,7 @@
 
 #include "block.h"
 #include "design.h"
+#include "world_mover.h"
 
 using namespace Urho3D;
 
@@ -51,20 +52,31 @@ public:
     void checkInfluence();
     PlanetBase * planetOfInfluence();
 
+    /// Check if necessary to enter dynamics world or
+    /// leave it.
+    bool needLeaveWorld();
+    bool needEnterWorld();
+
 
     Vector< SharedPtr<Block> >       blocks;
     Vector< SharedPtr<Constraint2> > joints;
+
     SharedPtr< KeplerMover >         mover;
 
+    SharedPtr<WorldMover>            worldMover;
     SharedPtr<PlanetBase>            planet;
-
-
     SharedPtr<GameData>              gameData;
+
     Design design;
 
     bool inAtmosphere;
     bool onSurface;
     bool inWorld;
+
+    void OnWorldRepositioned( StringHash eventType, VariantMap & eventData );
+
+    static const Float DIST_LEAVE_WORLD;
+    static const Float DIST_ENTER_WORLD;
 
 public:
     static PhysicsWorld2 * getWorld( Node * node );

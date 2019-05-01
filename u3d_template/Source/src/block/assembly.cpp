@@ -172,6 +172,11 @@ void Assembly::Start()
     KeplerMover * m = n->CreateComponent<KeplerMover>();
     mover = SharedPtr<KeplerMover>( m );
     mover->active = false;
+
+    Scene * s = GetScene();
+    Component * c = s->GetComponent( StringHash( "WorldMover" ), true );
+    if ( c )
+        worldMover = SharedPtr<WorldMover>( c->Cast<WorldMover>() );
 }
 
 void Assembly::Update( float timeStep )
@@ -182,8 +187,34 @@ void Assembly::Update( float timeStep )
 void Assembly::PostUpdate( float timeStep )
 {
     // Here recompute position and orientation.
-    updatePoseInWorld();
+    if ( inWorld )
+        updatePoseInWorld();
+    else
+        updatePoseInOrbit();
+
+    // Check if time to leave/enter world.
+    if ( inWorld )
+    {
+        const bool leave = needLeaveWorld();
+        if ( leave )
+            fromWorld( planet );
+    }
+    else
+    {
+        const bool enter = needEnterWorld();
+        if ( enter )
+            ; //toWorld();
+    }
+
     // Check if need to change planet orbiting around.
+    if ( !inWorld )
+    {
+        PlanetBase * p = planetOfInfluence();
+        if ( p != planet )
+        {
+
+        }
+    }
 
     // Draw debug geometry.
     Scene * s = GetScene();
@@ -251,7 +282,13 @@ bool Assembly::updatePoseInWorld()
 
 bool Assembly::updatePoseInOrbit()
 {
+    if ( !mover )
+        return;
+    const Vector3d r = mover->relR();
+    const Vector3d v = mover->relV();
 
+    setR( r );
+    setV( v );
 }
 
 void Assembly::checkInfluence()
@@ -294,6 +331,18 @@ PlanetBase * Assembly::planetOfInfluence()
 
     return closestP;
 }
+
+bool Assembly::needLeaveWorld()
+{
+    return false;
+}
+
+bool Assembly::needEnterWorld()
+{
+    return false;
+}
+
+
 
 PhysicsWorld2 * Assembly::getWorld( Node * node )
 {
