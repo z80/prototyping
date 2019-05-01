@@ -246,10 +246,10 @@ void Assembly::destroy()
     }
 }
 
-bool Assembly::updatePoseInWorld()
+void Assembly::updatePoseInWorld()
 {
-    if ( !inAtmosphere )
-        return false;
+    if ( !inWorld )
+        return;
 
     // Retrieve all the blocks.
     Vector3d r( Vector3d::ZERO );
@@ -276,11 +276,9 @@ bool Assembly::updatePoseInWorld()
 
     setR( r );
     setV( v );
-
-    return true;
 }
 
-bool Assembly::updatePoseInOrbit()
+void Assembly::updatePoseInOrbit()
 {
     if ( !mover )
         return;

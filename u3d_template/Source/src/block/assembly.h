@@ -45,8 +45,8 @@ public:
     /// If in world nodes are integrated by dynamics world.
     /// According to all node positions update node position
     /// and orientation.
-    bool updatePoseInWorld();
-    bool updatePoseInOrbit();
+    void updatePoseInWorld();
+    void updatePoseInOrbit();
 
     /// Check influence.
     void checkInfluence();
@@ -69,9 +69,12 @@ public:
 
     Design design;
 
-    bool inAtmosphere;
-    bool onSurface;
+    // In dynamics world.
     bool inWorld;
+    // Need to apply friction and gravity
+    bool inAtmosphere;
+    // If let world in atmosphere only can be on the surface.
+    bool onSurface;
 
     void OnWorldRepositioned( StringHash eventType, VariantMap & eventData );
 
