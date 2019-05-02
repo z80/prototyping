@@ -42,10 +42,6 @@ public:
     // This is for the WorldMover to decide when to displace towards
     // currently selected assembly.
     static const Float distToMove;
-    // And these are for assemblies to decide when to enter and
-    // leave physics world.
-    static const Float worldSizeEnter;
-    static const Float worldSizeLeave;
 };
 
 }

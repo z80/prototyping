@@ -6,8 +6,6 @@ namespace Osp
 {
 
 const Float WorldMover::distToMove      = 100.0;
-const Float WorldMover::worldSizeEnter  = 1000.0;
-const Float WorldMover::worldSizeLeave  = 1500.0;
 
 WorldMover::WorldMover( Context * ctx )
     : KeplerMover( ctx )

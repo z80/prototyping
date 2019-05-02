@@ -11,9 +11,14 @@
 #include "game_data.h"
 #include "world_mover.h"
 
+#include "MyEvents.h"
 
 namespace Osp
 {
+
+const Float Assembly::DIST_LEAVE_WORLD = 1500.0;
+const Float Assembly::DIST_ENTER_WORLD = 1000.0;
+
 
 Assembly::Assembly( Context * c )
     : ItemBase( c )
@@ -176,9 +181,11 @@ void Assembly::Start()
 
     Scene * s = GetScene();
     Component * c = s->GetComponent( StringHash( "WorldMover" ), true );
-    //if ( c )
-        //WorldMover * w = c->Cast<WorldMover>();
-        //worldMover =
+    if ( c )
+    {
+        ItemBase * w = c->Cast<ItemBase>();
+        worldMover = SharedPtr<ItemBase>( w );
+    }
 }
 
 void Assembly::Update( float timeStep )
@@ -334,13 +341,69 @@ PlanetBase * Assembly::planetOfInfluence()
 
 bool Assembly::needLeaveWorld()
 {
-    return false;
+    if ( !inWorld )
+        return false;
+
+    Vector3d rel_r;
+    Quaterniond rel_q;
+    relativePose( worldMover, rel_r, rel_q );
+    const Float d = rel_r.Length();
+    return ( d > DIST_LEAVE_WORLD );
 }
 
 bool Assembly::needEnterWorld()
 {
-    return false;
+    if ( inWorld )
+        return false;
+
+    Vector3d rel_r;
+    Quaterniond rel_q;
+    relativePose( worldMover, rel_r, rel_q );
+    const Float d = rel_r.Length();
+    return ( d < DIST_ENTER_WORLD );
 }
+
+void Assembly::subscribeToEvents()
+{
+    SubscribeToEvent( MyEvents::E_WORLD_SWITCHED, URHO3D_HANDLER( Assembly, OnWorldSwitched ) );
+    SubscribeToEvent( MyEvents::E_WORLD_MOVED,    URHO3D_HANDLER( Assembly, OnWorldMoved ) );
+}
+
+void Assembly::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
+{
+    // Check first if need to leave the world.
+    const bool needLeave = needLeaveWorld();
+
+    using namespace MyEvents::WorldSwitched;
+    const Variant & pl = eventdata[ P_PLANET_OLD ];
+    const PlanetBase * p = (PlanetBase *)pl.GetVoidPtr();
+    // Also need old world position and velocity to properly initialize movement.
+    fromWorld( p );
+}
+
+void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )
+{
+    if ( !inWorld )
+        return;
+
+    using namespace MyEvents::WorldMoved;
+    const Variant & varR = eventData[ P_POS_ADJ ];
+    const Vector3d dr = *(Vector3d *)(varR.GetVoidPtr());
+    const Variant & varV = eventData[ P_VEL_ADJ ];
+    const Vector3d dv = *(Vector3d *)(varV.GetVoidPtr());
+    adjustMovementInWorld( dr, dv );
+}
+
+void Assembly::adjustMovementInWorld( const Vector3 & dr, const Vector3 & dv )
+{
+    const Vector3d r0 = relR();
+    const Vector3d v0 = relV();
+    const Vector3d r1 = r0 + dr;
+    const Vector3d v1 = v0 + dv;
+    setR( r1 );
+    setV( v1 );
+}
+
 
 
 

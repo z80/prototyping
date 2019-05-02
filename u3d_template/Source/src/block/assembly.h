@@ -67,7 +67,7 @@ public:
     SharedPtr<PlanetBase>            planet;
     SharedPtr<GameData>              gameData;
 
-    //WorldMover                       * worldMover;
+    SharedPtr<ItemBase>              worldMover;
 
     Design design;
 
@@ -78,7 +78,10 @@ public:
     // If let world in atmosphere only can be on the surface.
     bool onSurface;
 
-    void OnWorldRepositioned( StringHash eventType, VariantMap & eventData );
+    void subscribeToEvents();
+    void OnWorldSwitched( StringHash eventType, VariantMap & eventData );
+    void OnWorldMoved( StringHash eventType, VariantMap & eventData );
+    void adjustMovementInWorld( const Vector3 & dr, const Vector3 & dv );
 
     static const Float DIST_LEAVE_WORLD;
     static const Float DIST_ENTER_WORLD;

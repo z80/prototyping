@@ -50,12 +50,15 @@ void Player::startWithAssembly()
         return;
 
     Assembly * a = Assembly::create( siteNode, gameData->design );
-    a->toWorld( planet, physicsWorld );
+    //a->toWorld( planet, physicsWorld );
     assembly = SharedPtr<Assembly>( a );
 
     // Focus camera on assembly.
     Node * cameraNode = cameraOrb->GetNode();
     cameraNode->SetParent( assembly->GetNode() );
+
+    // Notify physics world mover about the new assembly.
+    sendEventAssemblySelected();
 }
 
 void Player::Start()
