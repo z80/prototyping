@@ -144,6 +144,11 @@ PlanetBase * Player::parentPlanet( Node * n )
     return p;
 }
 
+void Player::sendEventAssemblySelected()
+{
+
+}
+
 
 }
 

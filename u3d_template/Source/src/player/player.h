@@ -54,6 +54,10 @@ private:
     // itself to be children of the planet.
     static PlanetBase * parentPlanet( Node * n );
 
+    // Notify assembly selected.
+    // World mover is supposed to react on this.
+    void sendEventAssemblySelected();
+
 
     // Block configuration windows open.
     Vector< SharedPtr<UIElement> > windows;

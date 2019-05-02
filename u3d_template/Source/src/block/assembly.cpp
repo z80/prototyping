@@ -9,6 +9,7 @@
 #include "physics_world_2.h"
 #include "planet_base.h"
 #include "game_data.h"
+#include "world_mover.h"
 
 
 namespace Osp
@@ -175,8 +176,9 @@ void Assembly::Start()
 
     Scene * s = GetScene();
     Component * c = s->GetComponent( StringHash( "WorldMover" ), true );
-    if ( c )
-        worldMover = SharedPtr<WorldMover>( c->Cast<WorldMover>() );
+    //if ( c )
+        //WorldMover * w = c->Cast<WorldMover>();
+        //worldMover =
 }
 
 void Assembly::Update( float timeStep )

@@ -4,7 +4,7 @@
 
 #include "block.h"
 #include "design.h"
-#include "world_mover.h"
+//#include "world_mover.h"
 
 using namespace Urho3D;
 
@@ -20,6 +20,7 @@ namespace Osp
 class PlanetBase;
 class GameData;
 class KeplerMover;
+//class WorldMover;
 
 class Assembly: public ItemBase
 {
@@ -63,9 +64,10 @@ public:
 
     SharedPtr< KeplerMover >         mover;
 
-    SharedPtr<WorldMover>            worldMover;
     SharedPtr<PlanetBase>            planet;
     SharedPtr<GameData>              gameData;
+
+    //WorldMover                       * worldMover;
 
     Design design;
 

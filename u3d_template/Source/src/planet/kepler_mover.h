@@ -7,12 +7,14 @@
 #include "block.h"
 #include "assembly.h"
 #include "data_types.h"
-#include "game_data.h"
+//#include "game_data.h"
 
 using namespace Urho3D;
 
 namespace Osp
 {
+
+class GameData;
 
 class KeplerMover: public ItemBase
 {

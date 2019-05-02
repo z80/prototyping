@@ -226,4 +226,44 @@ namespace MyEvents
 		URHO3D_PARAM(P_MESSAGE, Message); // string - message content
 		URHO3D_PARAM(P_TYPE, Type); // string - info / warning
 	}
+
+
+
+
+    // My events for game control.
+
+    // When player selectes an assembly world mover need to position physics world
+    // close to this assembly.
+    URHO3D_EVENT( E_ASSEMBLY_SELECTED, AssemblySelected )
+    {
+        URHO3D_PARAM( P_ASSEMBLY, Assembly );
+    }
+
+    // When a new assembly is selected Physics world needs to completely change
+    // parent and velocity (if things are in orbit).
+    URHO3D_EVENT( E_WORLD_SWITCHED, WorldSwitched )
+    {
+        URHO3D_PARAM( P_POS_NEW,    PositionNew );
+        URHO3D_PARAM( P_POS_OLD,    PositionOld );
+        URHO3D_PARAM( P_VEL_NEW,    VelocityNew );
+        URHO3D_PARAM( P_VEL_OLD,    VelocityOld );
+        URHO3D_PARAM( P_PLANET_NEW, PlanetNew );
+        URHO3D_PARAM( P_PLANET_OLD, PlanetOld );
+        URHO3D_PARAM( P_ATM_NEW,    InAtmosphereNew );
+        URHO3D_PARAM( P_ATM_OLD,    InAtmosphereOld );
+    }
+
+    // When world is displaced all assemblies need to adjust their
+    // positions and velocities if they are in physics world.
+    // All objects in the world need to add "dr" to their positions
+    // and "dv" to their velocities.
+    URHO3D_EVENT( E_WORLD_MOVED, WorldMoved )
+    {
+        URHO3D_PARAM( P_POS_ADJ,    PositionAdj );
+        URHO3D_PARAM( P_VEL_ADJ,    VelocityAdj );
+    }
+
+
+
+
 }
