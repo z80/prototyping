@@ -28,7 +28,8 @@ public:
 
     void launch( Float GM, Float a, Float e, Float Omega=0.0, Float I=0.0, Float omega=0.0, Float E=0.0 );
     // Computes orbit elements based on position and velocity.
-    bool launch( const Vector3d &v );
+    bool launch( const Vector3d & v );
+    bool launch( const Vector3d & v, Float GM );
     // Stop using Kepler orbit.
     void stop();
     // Obtain current position and velocity.

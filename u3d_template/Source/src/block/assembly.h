@@ -30,9 +30,6 @@ public:
     ~Assembly();
 
     static Assembly * create( Node * root, const Design & d );
-    bool toWorld( PlanetBase * planet, PhysicsWorld2 * world );
-    void fromWorld( PlanetBase * planet );
-
     void drawDebugGeometry( DebugRenderer * debug );
 
 protected:
@@ -57,16 +54,19 @@ public:
     /// leave it.
     bool needLeaveWorld();
     bool needEnterWorld();
+    void toWorld();
+    void fromWorld();
 
 
     Vector< SharedPtr<Block> >       blocks;
     Vector< SharedPtr<Constraint2> > joints;
 
+    // Mover and planet moving around.
     SharedPtr< KeplerMover >         mover;
-
     SharedPtr<PlanetBase>            planet;
-    SharedPtr<GameData>              gameData;
 
+    // These never change and hold permanent objects.
+    SharedPtr<GameData>              gameData;
     SharedPtr<ItemBase>              worldMover;
 
     Design design;

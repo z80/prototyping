@@ -135,8 +135,15 @@ bool KeplerMover::launch( const Vector3d & v )
     active = true;
 }
 
+bool KeplerMover::launch( const Vector3d & v, Float GM )
+{
+    this->GM = GM;
+    launch( v );
+}
+
 void KeplerMover::stop()
 {
+    active = false;
 }
 
 Vector3d KeplerMover::relR() const

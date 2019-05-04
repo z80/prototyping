@@ -24,6 +24,12 @@ public:
 
     virtual Float GM() const;
 
+    virtual Vector3d relR() const override;
+    virtual Quaterniond relQ() const override;
+    virtual Vector3d relV() const override;
+    virtual Vector3d relW() const override;
+
+
     virtual void Start() override;
     virtual void drawDebugGeometry( DebugRenderer * debug );
 

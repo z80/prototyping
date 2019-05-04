@@ -21,6 +21,26 @@ Float PlanetBase::GM() const
     return 100.0;
 }
 
+Vector3d PlanetBase::relR() const
+{
+    return mover->relR();
+}
+
+Quaterniond PlanetBase::relQ() const
+{
+    return rotator->relQ();
+}
+
+Vector3d PlanetBase::relV() const
+{
+    return mover->relV();
+}
+
+Vector3d PlanetBase::relW() const
+{
+    return rotator->relW();
+}
+
 void PlanetBase::Start()
 {
     Node * n = GetNode();

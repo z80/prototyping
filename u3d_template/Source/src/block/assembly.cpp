@@ -63,104 +63,7 @@ Assembly * Assembly::create( Node * root, const Design & d )
     return a;
 }
 
-bool Assembly::toWorld( PlanetBase * planet, PhysicsWorld2 * world )
-{
-    PhysicsWorld2 * w = world;
-    if ( !w )
-        return false;
-    Node * worldNode = w->GetNode();
 
-    // Traverse all blocks and joints and add those to world.
-    {
-        const size_t qty = blocks.Size();
-        for ( size_t i=0; i<qty; i++ )
-        {
-            Block * b = blocks[i];
-            if ( !b )
-                continue;
-            // Add block to world. It should create and initialize
-            // rigid body and collision shape.
-            //b->toWorld();
-            Node * blockNode = b->GetNode();
-
-            // Just to check that relative pose is correct.
-            //Vector3d rel_r;
-            //Quaterniond rel_q;
-            //b->relativePose( worldNode, rel_r, rel_q );
-
-            blockNode->SetParent( worldNode );
-            planet->addSurfaceBlock( b );
-        }
-    }
-    {
-        // Create joints.
-        Design & d = design;
-        const size_t connsQty = d.joints.size();
-        for ( size_t i=0; i<connsQty; i++ )
-        {
-            const Design::Joint & dj = d.joints[i];
-            const int indA = dj.blockA;
-            const int indB = dj.blockB;
-
-            SharedPtr<Block> blockA = this->blocks[indA];
-            SharedPtr<Block> blockB = this->blocks[indB];
-
-            // For now place joint point in the middle.
-            const Vector3d r = blockB->relR();
-            Node * node = blockB->GetNode();
-            Constraint2 * c = node->CreateComponent<Constraint2>();
-            c->SetConstraintType( CONSTRAINT_HINGE_2 );
-            c->SetDisableCollision( true );
-            c->SetOtherBody( blockA->rigidBody() );
-            c->SetWorldPosition( Vector3( r.x_, r.y_, r.z_ ) );
-
-            const Vector3 axis( 0.0, 0.0, 1.0 );
-            const Vector2 lim( 0.0, 0.0 );
-            c->SetAxis( axis );
-            c->SetOtherAxis( axis );
-            c->SetHighLimit( lim );
-            c->SetLowLimit( lim );
-
-            this->joints.Push( SharedPtr<Constraint2>( c ) );
-        }
-    }
-
-    Node * assemblyNode = GetNode();
-    assemblyNode->SetParent( worldNode );
-
-    return true;
-}
-
-void Assembly::fromWorld( PlanetBase * planet )
-{
-    Node * root = GetNode();
-    // Traverse all blocks and joints and add those to world.
-    {
-        const size_t qty = blocks.Size();
-        for ( size_t i=0; i<qty; i++ )
-        {
-            Block * b = blocks[i];
-            if ( !b )
-                continue;
-            // Remove block from world. It should destroy
-            // all dynamics related objects (rigid body and collision shape).
-            b->fromWorld();
-            Node * bn = b->GetNode();
-            bn->SetParent( root );
-        }
-    }
-    {
-        const size_t qty = joints.Size();
-        for ( size_t i=0; i<qty; i++ )
-        {
-            Constraint2 * c = joints[i];
-            if ( !c )
-                continue;
-            c->Remove();
-        }
-        joints.Clear();
-    }
-}
 
 void Assembly::drawDebugGeometry( DebugRenderer * debug )
 {
@@ -186,6 +89,8 @@ void Assembly::Start()
         ItemBase * w = c->Cast<ItemBase>();
         worldMover = SharedPtr<ItemBase>( w );
     }
+
+    subscribeToEvents();
 }
 
 void Assembly::Update( float timeStep )
@@ -206,23 +111,19 @@ void Assembly::PostUpdate( float timeStep )
     {
         const bool leave = needLeaveWorld();
         if ( leave )
-            fromWorld( planet );
+            fromWorld();
     }
     else
     {
         const bool enter = needEnterWorld();
         if ( enter )
-            ; //toWorld();
+            toWorld();
     }
 
     // Check if need to change planet orbiting around.
     if ( !inWorld )
     {
-        PlanetBase * p = planetOfInfluence();
-        if ( p != planet )
-        {
-
-        }
+        checkInfluence();
     }
 
     // Draw debug geometry.
@@ -307,7 +208,10 @@ void Assembly::checkInfluence()
     if ( planet == closestP )
         return;
 
+    // Need to switch parent planet.
     // Compute relative pose and velocity.
+    const Vector3d ownV = mover->relV();
+    const Vector3d ownPlanetV = planet->relV();
 }
 
 PlanetBase * Assembly::planetOfInfluence()
@@ -361,6 +265,123 @@ bool Assembly::needEnterWorld()
     relativePose( worldMover, rel_r, rel_q );
     const Float d = rel_r.Length();
     return ( d < DIST_ENTER_WORLD );
+}
+
+void Assembly::toWorld()
+{
+    // Need some relative velocity.
+    // For now just zero.
+    const Vector3d v = Vector3d::ZERO;
+
+    // Traverse all blocks and joints and add those to world.
+    {
+        const size_t qty = blocks.Size();
+        for ( size_t i=0; i<qty; i++ )
+        {
+            Block * b = blocks[i];
+            if ( !b )
+                continue;
+            b->setParent( worldMover );
+            // Assign one and the same velocity to all the blocks.
+            b->setV( v );
+        }
+    }
+    {
+        // Create joints.
+        Design & d = design;
+        const size_t connsQty = d.joints.size();
+        for ( size_t i=0; i<connsQty; i++ )
+        {
+            const Design::Joint & dj = d.joints[i];
+            const int indA = dj.blockA;
+            const int indB = dj.blockB;
+
+            SharedPtr<Block> blockA = this->blocks[indA];
+            SharedPtr<Block> blockB = this->blocks[indB];
+
+            // For now place joint point in the middle.
+            const Vector3d r = blockB->relR();
+            Node * node = blockB->GetNode();
+            Constraint2 * c = node->CreateComponent<Constraint2>();
+            c->SetConstraintType( CONSTRAINT_HINGE_2 );
+            c->SetDisableCollision( true );
+            c->SetOtherBody( blockA->rigidBody() );
+            c->SetWorldPosition( Vector3( r.x_, r.y_, r.z_ ) );
+
+            const Vector3 axis( 0.0, 0.0, 1.0 );
+            const Vector2 lim( 0.0, 0.0 );
+            c->SetAxis( axis );
+            c->SetOtherAxis( axis );
+            c->SetHighLimit( lim );
+            c->SetLowLimit( lim );
+
+            this->joints.Push( SharedPtr<Constraint2>( c ) );
+        }
+    }
+
+    // Assign it's parent to be dynamics world.
+    setParent( worldMover );
+
+    inWorld = true;
+}
+
+void Assembly::fromWorld()
+{
+    // Computing average velocity.
+    Vector3d mv = Vector3d::ZERO;
+    // Traverse all blocks and joints and remove from world.
+    const size_t bqty = blocks.Size();
+    {
+        for ( size_t i=0; i<bqty; i++ )
+        {
+            Block * b = blocks[i];
+            if ( !b )
+                continue;
+            // Remove block from world. It should destroy
+            // all dynamics related objects (rigid body and collision shape).
+            v += b->relV();
+            b->fromWorld();
+            b->setParent( this );
+        }
+    }
+    mv = mv * ( 1.0 / (Float)qty );
+    {
+        const size_t jqty = joints.Size();
+        for ( size_t i=0; i<jqty; i++ )
+        {
+            Constraint2 * c = joints[i];
+            if ( !c )
+                continue;
+            c->Remove();
+        }
+        joints.Clear();
+    }
+
+    inWorld = false;
+
+    // Assign planet.
+    WorldMover * wm = worldMover->Cast<WorldMover>();
+    PlanetBase * planet = wm->planet;
+    planet = SharedPtr<PlanetBase>( planet );
+
+    // If in atmosphere just change parent to planet's "dynamicsNode".
+    const bool inAtmosphere = wm->inAtmosphere;
+    if ( inAtmosphere )
+    {
+        Node * n = planet->dynamicsNode;
+        setParent( n );
+        inAtmosphere = true;
+        onSurface    = true;
+        return;
+    }
+
+    inAtmosphere = false;
+    onSurface    = false;
+
+    // Flying in orbit.
+    const Vector3d v = wm->relV() + vm;
+    setParent( planet );
+    mover->launch( v, planet->GM );
 }
 
 void Assembly::subscribeToEvents()

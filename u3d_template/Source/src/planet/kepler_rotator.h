@@ -21,7 +21,6 @@ public:
     void Start() override;
     void Update( float dt ) override;
 
-
 private:
     void computeBaseRotation();
     SharedPtr<GameData>   gameData;
