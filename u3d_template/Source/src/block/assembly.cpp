@@ -344,7 +344,7 @@ void Assembly::fromWorld()
             b->setParent( this );
         }
     }
-    mv = mv * ( 1.0 / (Float)qty );
+    mv = mv * ( 1.0 / (Float)bqty );
     {
         const size_t jqty = joints.Size();
         for ( size_t i=0; i<jqty; i++ )
@@ -365,8 +365,8 @@ void Assembly::fromWorld()
     planet = SharedPtr<PlanetBase>( planet );
 
     // If in atmosphere just change parent to planet's "dynamicsNode".
-    const bool inAtmosphere = wm->inAtmosphere;
-    if ( inAtmosphere )
+    const bool moverInAtmosphere = wm->inAtmosphere;
+    if ( moverInAtmosphere )
     {
         Node * n = planet->dynamicsNode;
         setParent( n );
@@ -379,9 +379,9 @@ void Assembly::fromWorld()
     onSurface    = false;
 
     // Flying in orbit.
-    const Vector3d v = wm->relV() + vm;
+    const Vector3d v = wm->relV() + mv;
     setParent( planet );
-    mover->launch( v, planet->GM );
+    wm->launch( v, planet->GM() );
 }
 
 void Assembly::subscribeToEvents()
@@ -396,10 +396,10 @@ void Assembly::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
     const bool needLeave = needLeaveWorld();
 
     using namespace MyEvents::WorldSwitched;
-    const Variant & pl = eventdata[ P_PLANET_OLD ];
+    const Variant & pl = eventData[ P_PLANET_OLD ];
     const PlanetBase * p = (PlanetBase *)pl.GetVoidPtr();
     // Also need old world position and velocity to properly initialize movement.
-    fromWorld( p );
+    fromWorld();
 }
 
 void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )
@@ -415,7 +415,7 @@ void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )
     adjustMovementInWorld( dr, dv );
 }
 
-void Assembly::adjustMovementInWorld( const Vector3 & dr, const Vector3 & dv )
+void Assembly::adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv )
 {
     const Vector3d r0 = relR();
     const Vector3d v0 = relV();

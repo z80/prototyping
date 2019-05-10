@@ -81,7 +81,7 @@ public:
     void subscribeToEvents();
     void OnWorldSwitched( StringHash eventType, VariantMap & eventData );
     void OnWorldMoved( StringHash eventType, VariantMap & eventData );
-    void adjustMovementInWorld( const Vector3 & dr, const Vector3 & dv );
+    void adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv );
 
     static const Float DIST_LEAVE_WORLD;
     static const Float DIST_ENTER_WORLD;
