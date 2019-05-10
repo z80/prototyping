@@ -64,23 +64,29 @@ void PlanetForces::Update( float dt )
     }
 }
 
-void PlanetForces::applyClose( Block * b )
+void PlanetForces::applyClose( WorldMover * wm, Block * b )
 {
-    applyGravity( b );
-    applyFriction( b );
+    applyGravity( wm, b );
+    applyFriction( wm, b );
 }
 
-void PlanetForces::applyFar( Block * b )
+void PlanetForces::applyFar( WorldMover * wm, Block * b )
 {
-    applyGravity( b );
+    applyFriction( wm, b );
 }
 
-void PlanetForces::applyGravity( Block * b )
+void PlanetForces::applyGravity( WorldMover * wm, Block * b )
 {
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    planet->relativePose( b, rel_r, rel_q );
+    const Float d = rel_r.Length();
+    const Vector3d Fplanet = planet->GM() * rel_r / ( d * d * d );
+    // Need to convert this force to WorldMover's ref. frame.
 
 }
 
-void PlanetForces::applyFriction( Block * b )
+void PlanetForces::applyFriction( WorldMover * wm, Block * b )
 {
 
 }

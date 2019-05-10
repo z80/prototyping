@@ -12,6 +12,8 @@
 namespace Osp
 {
 
+class WorldMover;
+
 class PlanetForces: public LogicComponent
 {
     URHO3D_OBJECT( PlanetForces, LogicComponent )
@@ -22,12 +24,12 @@ public:
     virtual void Start() override;
     virtual void Update( float dt ) override;
 
-    void applyClose( Block * b );
-    void applyFar( Block * b );
+    void applyClose( WorldMover * wm, Block * b );
+    void applyFar( WorldMover * wm, Block * b );
 
 public:
-    virtual void applyGravity( Block * b );
-    virtual void applyFriction( Block * b );
+    virtual void applyGravity( WorldMover * wm, Block * b );
+    virtual void applyFriction( WorldMover * wm, Block * b );
 
     bool  atmosphereParams( const Vector3 & at, Float & density, Float & viscosity, Float & temperature );
 
