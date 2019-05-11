@@ -9,6 +9,7 @@
 #include "data_types.h"
 #include "kepler_mover.h"
 #include "kepler_rotator.h"
+#include "planet_forces.h"
 
 namespace Osp
 {
@@ -71,6 +72,8 @@ public:
                                  orbitingBlocks;
     Vector<SharedPtr<Assembly> > orbitingAssemblies;
 
+    // Thing which defines forces.
+    SharedPtr<PlanetForces>  forces;
     // Planet mover and rotator.
     // Mover updates the very root node.
     SharedPtr<KeplerMover>   mover;

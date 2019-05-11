@@ -17,6 +17,12 @@ namespace Urho3D
 namespace Osp
 {
 
+struct ForceApplied
+{
+    Vector3d at;
+    Vector3d F;
+};
+
 class Block: public ItemBase
 {
     URHO3D_OBJECT( Block, ItemBase )
@@ -55,6 +61,8 @@ public:
     /// Attaching functionality.
     Block * tryAttachToConnectionPoint();
     Block * tryAttachToSurface();
+    /// Draw forces applied.
+    void drawDebugForces( DebugRenderer * debug );
 
 
     /// Need to be able to open configuration window.
@@ -63,6 +71,11 @@ public:
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
     AirMesh airMesh;
+
+    // Explicit forces to be able to draw those.
+    // Forces applied.
+    ForceApplied         gravity;
+    Vector<ForceApplied> friction;
 };
 
 }

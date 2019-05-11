@@ -51,6 +51,7 @@ void Block::drawDebugGeometry( DebugRenderer * debug )
 {
     Node * n = GetNode();
     airMesh.drawDebugGeometry( n, debug );
+    drawDebugForces( debug );
 }
 
 void Block::setPivotsVisible( bool en )
@@ -394,6 +395,24 @@ Block * Block::tryAttachToSurface()
 
 
     return nullptr;
+}
+
+void Block::drawDebugForces( DebugRenderer * debug )
+{
+    {
+        const Vector3 at( gravity.at.x_, gravity.at.y_, gravity.at.z_ );
+        const Vector3 f( gravity.F.x_, gravity.F.y_, gravity.F.z_ );
+        debug->AddLine( at, at + f, Color::RED, false );
+    }
+
+    const unsigned qty = friction.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        const ForceApplied & fa = friction[i];
+        const Vector3 at( fa.at.x_, fa.at.y_, fa.at.z_ );
+        const Vector3 f( fa.F.x_, fa.F.y_, fa.F.z_ );
+        debug->AddLine( at, at + f, Color::GREEN, false );
+    }
 }
 
 SharedPtr<UIElement> Block::configWindow()

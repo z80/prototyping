@@ -4,15 +4,12 @@
 
 #include <Urho3D/Urho3DAll.h>
 #include "item_base.h"
-#include "block.h"
-#include "planet_base.h"
-#include "assembly.h"
 #include "data_types.h"
 
 namespace Osp
 {
 
-class WorldMover;
+class Block;
 
 class PlanetForces: public LogicComponent
 {
@@ -24,16 +21,17 @@ public:
     virtual void Start() override;
     virtual void Update( float dt ) override;
 
-    void applyClose( WorldMover * wm, Block * b );
-    void applyFar( WorldMover * wm, Block * b );
+    void applyClose( Block * b );
+    void applyFar( Block * b );
 
 public:
-    virtual void applyGravity( WorldMover * wm, Block * b );
-    virtual void applyFriction( WorldMover * wm, Block * b );
+    virtual void applyGravity( Block * b );
+    void clearGravity(Block * b );
+    virtual void applyFriction( Block * b );
 
-    bool  atmosphereParams( const Vector3 & at, Float & density, Float & viscosity, Float & temperature );
+    bool  atmosphereParams( const Vector3d &at, Float & density, Float & viscosity, Float & temperature );
 
-    SharedPtr<PlanetBase> planet;
+    SharedPtr<ItemBase> planet;
 
     // Gravity parameter.
     Float GM_;

@@ -18,7 +18,7 @@ PlanetBase::~PlanetBase()
 
 Float PlanetBase::GM() const
 {
-    return 100.0;
+    return forces->GM_;
 }
 
 Vector3d PlanetBase::relR() const
@@ -56,6 +56,8 @@ void PlanetBase::Start()
         GameData * gd = c->Cast<GameData>();
         gd->planets.Push( SharedPtr<PlanetBase>( this ) );
     }
+
+    forces = n->CreateComponent<PlanetForces>();
 }
 
 void PlanetBase::drawDebugGeometry( DebugRenderer * debug )

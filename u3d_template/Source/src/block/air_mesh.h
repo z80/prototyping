@@ -11,8 +11,9 @@ namespace Osp
 
 struct Triangle
 {
-    Vector3 v[13];
-    Vector3 n;
+    Vector3d v[13];
+    Vector3d n;
+    Float   a;
 };
 
 class AirMesh

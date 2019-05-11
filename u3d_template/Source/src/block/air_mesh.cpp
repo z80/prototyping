@@ -24,14 +24,15 @@ static void getTriangles( unsigned trianglesQty,
         {
             Int vertInd = ind[j];
             float * v = reinterpret_cast<float *>( &verts[vertStride * vertInd] );
-            const Vector3 p( v[0], v[1], v[2] );
+            const Vector3d p( v[0], v[1], v[2] );
             t.v[j] = p;
         }
         // Compute normal
-        const Vector3 a = t.v[1] - t.v[0];
-        const Vector3 b = t.v[2] - t.v[0];
+        const Vector3d a = t.v[1] - t.v[0];
+        const Vector3d b = t.v[2] - t.v[0];
         t.n = a.CrossProduct( b );
-        t.n.Normalize();
+        t.a = t.n.Length();
+        t.n = t.n / a;
         tris.Push( t );
     }
 }
@@ -96,11 +97,11 @@ void AirMesh::drawDebugGeometry( Node * n, DebugRenderer * debug )
     for ( size_t i=0; i<qty; i++ )
     {
         const Triangle & tri = triangles[i];
-        Vector3 a = m*tri.v[0];
-        Vector3 b = m*tri.v[1];
-        Vector3 c = m*tri.v[2];
+        Vector3 a = m*Vector3( tri.v[0].x_, tri.v[0].y_, tri.v[0].z_ );
+        Vector3 b = m*Vector3( tri.v[1].x_, tri.v[1].y_, tri.v[1].z_ );
+        Vector3 c = m*Vector3( tri.v[2].x_, tri.v[2].y_, tri.v[2].z_ );
         Vector3 o = (a + b + c) * 0.3333333;
-        Vector3 n = m*tri.n - m*Vector3::ZERO;
+        Vector3 n = m*Vector3( tri.n.x_, tri.n.y_, tri.n.z_ ) - m*Vector3::ZERO;
 
         //debug->AddTriangle( a, b, c, Color::RED );
         debug->AddLine( a, b,   Color::RED );
