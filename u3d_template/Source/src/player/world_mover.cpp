@@ -50,6 +50,37 @@ void WorldMover::Update( float dt )
     tryMoveTo();
 }
 
+void WorldMover::drawDebuggeometry( DebugRenderer * debug )
+{
+    Node * n = GetNode();
+    // Draw a cube showing world center position.
+    const Matrix3x4 m = n->GetWorldtransform();
+    static const float d = 1.0f;
+    const Vector3 a1( -d, -d,  d );
+    const Vector3 b1(  d, -d,  d );
+    const Vector3 c1(  d, -d, -d );
+    const Vector3 d1( -d, -d, -d );
+    const Vector3 a2( -d,  d,  d );
+    const Vector3 v2(  d,  d,  d );
+    const Vector3 c2(  d,  d, -d );
+    const Vector3 d2( -d,  d, -d );
+
+    debug->AddLine( m*a1, m*b1, Color::RED, false );
+    debug->AddLine( m*b1, m*c1, Color::RED, false );
+    debug->AddLine( m*c1, m*d1, Color::RED, false );
+    debug->AddLine( m*d1, m*a1, Color::RED, false );
+
+    debug->AddLine( m*a2, m*b2, Color::RED, false );
+    debug->AddLine( m*b2, m*c2, Color::RED, false );
+    debug->AddLine( m*c2, m*d2, Color::RED, false );
+    debug->AddLine( m*d2, m*a2, Color::RED, false );
+
+    debug->AddLine( m*a1, m*a2, Color::RED, false );
+    debug->AddLine( m*b1, m*b2, Color::RED, false );
+    debug->AddLine( m*c1, m*c2, Color::RED, false );
+    debug->AddLine( m*d1, m*d2, Color::RED, false );
+}
+
 void WorldMover::subscribeToEvents()
 {
     //MyEvents::AssemblySelected

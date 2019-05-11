@@ -22,6 +22,8 @@ public:
     void Start() override;
     void Update( float dt ) override;
 
+    void drawDebuggeometry( DebugRenderer * debug );
+
 protected:
     void subscribeToEvents();
     // Whenever it is moved a message is sent to everyone.
