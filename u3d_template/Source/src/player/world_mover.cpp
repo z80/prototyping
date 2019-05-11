@@ -28,6 +28,21 @@ void WorldMover::Start()
 void WorldMover::Update( float dt )
 {
     KeplerMover::Update( dt );
+
+    {
+        Scene * s = GetScene();
+        GameData * gameData = s->GetComponent<GameData>();
+
+        Node * n = GetNode();
+        PhysicsWorld2 * physicsWorld = n->GetComponent<PhysicsWorld2>();
+        if ( physicsWorld && gameData )
+        {
+            const Float dt = static_cast<Float>( gameData->dt ) * GameData::_ONE_SECOND;
+            physicsWorld->Update( dt );
+        }
+    }
+
+
     if ( !assembly )
         return;
 
@@ -145,13 +160,14 @@ void WorldMover::tryMoveTo()
     else
         dv = Vector3d::ZERO;
 
-    moveToEvent( dr, dv );
+    moveToEvent( r1, dr, dv );
 }
 
-void WorldMover::moveToEvent( const Vector3d & dr, const Vector3d & dv )
+void WorldMover::moveToEvent( const Vector3d & r, const Vector3d & dr, const Vector3d & dv )
 {
     VariantMap & d = GetEventDataMap();
     using namespace MyEvents::WorldMoved;
+    d[P_POS_NEW] = (void *)&r;
     d[P_POS_ADJ] = (void *)&dr;
     d[P_VEL_ADJ] = (void *)&dv;
     SendEvent( MyEvents::E_WORLD_MOVED, d );

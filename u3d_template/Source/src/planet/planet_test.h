@@ -19,7 +19,7 @@ public:
 
     void Start() override;
 
-    void updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist ) override;
+    void updateCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist ) override;
     void initCollisions( PhysicsWorld2 * w2, const Vector3d & center,Float dist ) override;
     void finitCollisions( PhysicsWorld2 * w2 ) override;
 

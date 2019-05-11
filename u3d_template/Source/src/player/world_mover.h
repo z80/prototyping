@@ -14,7 +14,7 @@ class PlanetBase;
 
 class WorldMover: public KeplerMover
 {
-    URHO3D_OBJECT( WorldMover, ItemBase )
+    URHO3D_OBJECT( WorldMover, KeplerMover )
 public:
     WorldMover( Context * ctx );
     ~WorldMover();
@@ -32,7 +32,7 @@ protected:
     void switchToEvent( Assembly * assembly );
     void switchTo( Assembly * assembly );
     void tryMoveTo();
-    void moveToEvent( const Vector3d & dr, const Vector3d & dv );
+    void moveToEvent( const Vector3d & r, const Vector3d & dr, const Vector3d & dv );
 
 public:
     SharedPtr<PlanetBase> planet;

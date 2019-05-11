@@ -259,6 +259,7 @@ namespace MyEvents
     // and "dv" to their velocities.
     URHO3D_EVENT( E_WORLD_MOVED, WorldMoved )
     {
+        URHO3D_PARAM( P_POS_NEW,    PositionNew );
         URHO3D_PARAM( P_POS_ADJ,    PositionAdj );
         URHO3D_PARAM( P_VEL_ADJ,    VelocityAdj );
     }

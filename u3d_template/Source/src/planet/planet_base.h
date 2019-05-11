@@ -37,26 +37,13 @@ public:
     /// When player is on the surface the dynamics is
     /// simulated for objects close to the center and close enough
     /// Objects in atmosphere but far away are not simulated.
-    virtual void updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist );
+    virtual void updateCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist );
     /// Initialize collision objects when player enteres this area.
     virtual void initCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist );
     /// Finalize collisions as player leaves the area.
     virtual void finitCollisions( PhysicsWorld2 * w2 );
 
 public:
-    void addSurfaceBlock( Block * b );
-    void removeSurfaceBlock( Block * b );
-
-    void addOrbitingAssembly( Assembly * a );
-    void removeOrbitingAssembly( Assembly * a );
-
-
-
-    bool tryAddSurfaceItem( Node * n );
-    bool tryAddOrbitingItem( Node * n );
-    void subscribeToParentChanges();
-    void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
-    void OnNodeAdded( StringHash eventType, VariantMap & eventData );
     // Need to implement these and call collision objects updates here.
     void subscribeToWorldEvents();
     void OnWorldSwitched( StringHash eventType, VariantMap & eventData );
@@ -70,11 +57,6 @@ public:
     // 3-d, 4-th, etc. for graphics.
     // Need only a pointer to the 2-d one here as 1-st one can be obtained by "GetNode()".
     SharedPtr<Node>  dynamicsNode;
-    // Yes, can obtain all these through "getComponents" recursive call but will spend
-    // some time on casting types in this case.
-    Vector<SharedPtr<Block> >    surfaceBlocks,
-                                 orbitingBlocks;
-    Vector<SharedPtr<Assembly> > orbitingAssemblies;
 
     // Thing which defines forces.
     SharedPtr<PlanetForces>  forces;
@@ -83,6 +65,11 @@ public:
     SharedPtr<KeplerMover>   mover;
     // Rotator updates only "dynamicsNode".
     SharedPtr<KeplerRotator> rotator;
+
+    // Pointers to dynamics world.
+    // Just to sabe time on recursively traversing nodes tree.
+    SharedPtr<Component> physicsWorld;
+    SharedPtr<Component> worldMover;
 };
 
 }

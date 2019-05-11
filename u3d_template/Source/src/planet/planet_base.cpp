@@ -1,6 +1,9 @@
 
 #include "planet_base.h"
+#include "world_mover.h"
+#include "physics_world_2.h"
 #include "game_data.h"
+#include "MyEvents.h"
 
 namespace Osp
 {
@@ -58,6 +61,8 @@ void PlanetBase::Start()
     }
 
     forces = n->CreateComponent<PlanetForces>();
+
+    subscribeToWorldEvents();
 }
 
 void PlanetBase::drawDebugGeometry( DebugRenderer * debug )
@@ -72,7 +77,7 @@ void PlanetBase::drawDebugGeometry( DebugRenderer * debug )
     }*/
 }
 
-void PlanetBase::updateCollisionObjects( PhysicsWorld2 * w2, const Vector3d & center, const Vector3 & dist )
+void PlanetBase::updateCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist )
 {
 
 }
@@ -87,117 +92,77 @@ void PlanetBase::finitCollisions( PhysicsWorld2 * w2 )
 
 }
 
-void PlanetBase::addSurfaceBlock( Block * b )
+
+
+
+
+void PlanetBase::subscribeToWorldEvents()
 {
-    const unsigned qty = surfaceBlocks.Size();
-    for ( unsigned i=0; i<qty; i++ )
+    SubscribeToEvent( MyEvents::E_WORLD_SWITCHED, URHO3D_HANDLER( PlanetBase, OnWorldSwitched ) );
+    SubscribeToEvent( MyEvents::E_WORLD_MOVED,    URHO3D_HANDLER( PlanetBase, OnWorldMoved ) );
+}
+
+void PlanetBase::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
+{
+    using namespace MyEvents::WorldSwitched;
+    const Variant & po = eventData[ P_PLANET_OLD ];
+    const PlanetBase * p_old = (PlanetBase *)po.GetVoidPtr();
+    // Also need old world position and velocity to properly initialize movement.
+    const Variant & pn = eventData[ P_PLANET_NEW ];
+    const PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
+
+    const Variant & pos = eventData[ P_POS_NEW ];
+    const Vector3d pos_new = *(Vector3d *)pos.GetVoidPtr();
+
+    // Get dynamics world.
+    if ( !physicsWorld )
     {
-        SharedPtr<Block> bb = surfaceBlocks[i];
-        if ( bb == b )
+        Scene * s = GetScene();
+        Component * c = s->GetComponent( StringHash("PhysicsWorld2"), true );
+        if ( !c )
             return;
+        physicsWorld = SharedPtr<Component>( c );
     }
-    surfaceBlocks.Push( SharedPtr<Block>(b) );
+
+    PhysicsWorld2 * pw2 = physicsWorld->Cast<PhysicsWorld2>();
+    if ( p_old == this )
+    {
+      finitCollisions( pw2 );
+    }
+    else if ( p_new == this )
+    {
+      initCollisions( pw2, pos_new, GameData::DIST_PLANET_COLLISIONS );
+    }
 }
 
-void PlanetBase::removeSurfaceBlock( Block * b )
+void PlanetBase::OnWorldMoved( StringHash eventType, VariantMap & eventData )
 {
-    const unsigned qty = surfaceBlocks.Size();
-    for ( unsigned i=0; i<qty; i++ )
+    if ( !worldMover )
     {
-        SharedPtr<Block> bb = surfaceBlocks[i];
-        if ( bb == b )
-        {
-            unsigned lastInd = qty-1;
-            if ( i != lastInd )
-                surfaceBlocks[i] = surfaceBlocks[lastInd];
-            surfaceBlocks.Resize( lastInd );
+        Scene * s = GetScene();
+        Component * c = s->GetComponent( StringHash("WorldMover"), true );
+        if ( !c )
             return;
-        }
-    }
-}
-
-void PlanetBase::addOrbitingAssembly( Assembly * a )
-{
-    const unsigned qty = orbitingAssemblies.Size();
-    for ( unsigned i=0; i<qty; i++ )
-    {
-        SharedPtr<Assembly> aa = orbitingAssemblies[i];
-        if ( aa == a )
-            return;
-    }
-    orbitingAssemblies.Push( SharedPtr<Assembly>(a) );
-}
-
-void PlanetBase::removeOrbitingAssembly( Assembly * a )
-{
-    const unsigned qty = orbitingAssemblies.Size();
-    for ( unsigned i=0; i<qty; i++ )
-    {
-        SharedPtr<Assembly> aa = orbitingAssemblies[i];
-        if ( aa == a )
-        {
-            unsigned lastInd = qty-1;
-            if ( i != lastInd )
-                orbitingAssemblies[i] = orbitingAssemblies[lastInd];
-            orbitingAssemblies.Resize( lastInd );
-            return;
-        }
-    }
-}
-
-
-bool PlanetBase::tryAddSurfaceItem( Node * n )
-{
-
-    return false;
-}
-
-bool PlanetBase::tryAddOrbitingItem( Node * n )
-{
-
-    return false;
-}
-
-void PlanetBase::subscribeToParentChanges()
-{
-    SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( PlanetBase, OnNodeRemoved ) );
-    SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( PlanetBase, OnNodeAdded ) );
-}
-
-void PlanetBase::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
-{
-    Variant & v = eventData[NodeRemoved::P_PARENT];
-    Node * msgParent = static_cast<Node *>( v.GetPtr() );
-    Node * parent = GetNode();
-    if ( msgParent == parent )
-    {
-        // Remove from orbiting blocks/assemblies.
-    }
-    else if ( msgParent == dynamicsNode )
-    {
-        // Remove from surface blocks.
+        worldMover = SharedPtr<Component>( c );
     }
 
-    //Variant & n = eventData[NodeRemoved::P_NODE];
-    //Node * self = static_cast<Node *>( n.GetPtr() );
-    //Node * node = GetNode();
+    if ( !physicsWorld )
+      return;
 
+    PhysicsWorld2 * pw2 = physicsWorld->Cast<PhysicsWorld2>();
+    
+    WorldMover * wm = worldMover->Cast<WorldMover>();
+    if ( wm->planet != this )
+      return;
+
+    const Variant & pos = eventData[ MyEvents::WorldMoved::P_POS_NEW ];
+    const Vector3d pos_new = *(Vector3d *)pos.GetVoidPtr();
+
+    updateCollisions( pw2, pos_new, GameData::DIST_PLANET_COLLISIONS );
 }
 
-void PlanetBase::OnNodeAdded( StringHash eventType, VariantMap & eventData )
-{
-    Variant & v = eventData[NodeAdded::P_PARENT];
-    Node * msgParent = static_cast<Node *>( v.GetPtr() );
-    Node * parent = GetNode();
-    if ( msgParent == parent )
-    {
-        // Adding to orbiting blocks/assemblies.
-    }
-    else if ( msgParent == dynamicsNode )
-    {
-        // Adding to surface blocks.
-    }
-}
+
+
 
 }
 

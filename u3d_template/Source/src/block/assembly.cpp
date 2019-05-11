@@ -396,10 +396,18 @@ void Assembly::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
     const bool needLeave = needLeaveWorld();
 
     using namespace MyEvents::WorldSwitched;
-    const Variant & pl = eventData[ P_PLANET_OLD ];
-    const PlanetBase * p = (PlanetBase *)pl.GetVoidPtr();
+    const Variant & po = eventData[ P_PLANET_OLD ];
+    const PlanetBase * p_old = (PlanetBase *)po.GetVoidPtr();
     // Also need old world position and velocity to properly initialize movement.
-    fromWorld();
+    const Variant & pn = eventData[ P_PLANET_NEW ];
+    const PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
+    if ( inWorld )
+    { 
+      if (p_new != planet)
+        fromWorld();
+    }
+    // Join the world or not decision is made in Update( dt ) method.
+    // Ne need to do anything else here.
 }
 
 void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )

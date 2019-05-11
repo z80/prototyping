@@ -20,9 +20,6 @@ Player::~Player()
 
 void Player::startWithAssembly()
 {
-    if ( planet )
-        planet->finitCollisions( physicsWorld );
-
     Node * siteNode = site->GetNode();
     Node * playerNode = GetNode();
     playerNode->SetParent( siteNode );
@@ -30,20 +27,6 @@ void Player::startWithAssembly()
     {
         Node * n = cameraOrb->GetNode();
         n->SetParent( siteNode );
-    }
-
-    PlanetBase * p = parentPlanet( playerNode );
-    if ( p )
-    {
-        planet = SharedPtr<PlanetBase>( p );
-        Node * node = planet->dynamicsNode;
-        Node * physicsNode = physicsWorld->GetNode();
-        physicsNode->SetParent( node );
-
-        Vector3d    rel_r;
-        Quaterniond rel_q;
-        this->relativePose( p, rel_r, rel_q );
-        p->initCollisions( physicsWorld, rel_r, 10000.0 );
     }
 
 
@@ -107,18 +90,11 @@ void Player::Stop()
 
 void Player::Update( float timeStep )
 {
-    if ( physicsWorld && gameData )
-    {
-        const Float dt = static_cast<Float>( gameData->dt ) * GameData::_ONE_SECOND;
-        physicsWorld->Update( dt );
-    }
     // Check keyboard state and generate appropriate commands.
 }
 
 void Player::FixedPostUpdate( float timeStep )
 {
-    if ( physicsWorld )
-        physicsWorld->DrawDebugGeometry( true );
 }
 
 void Player::HandleMouseDown( StringHash t, VariantMap & e )

@@ -34,6 +34,14 @@ public:
     // All the planets.
     Vector< PlanetBase * > planets;
 
+
+    /// Distance for collision objects to exist.
+    static const Float DIST_PLANET_COLLISIONS;
+    /// Distance for assembly to leave dynamics world.
+    static const Float DIST_WORLD_ENTER;
+    /// Distance for assembly to enter dynamics world.
+    static const Float DIST_WORLD_LEAVE;
+
 private:
     HashMap<String, SharedPtr<Node> > nodes;
 };
