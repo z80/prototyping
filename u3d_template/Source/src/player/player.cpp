@@ -1,5 +1,7 @@
 
 #include "player.h"
+#include "physics_world_2.h"
+#include "world_mover.h"
 
 using namespace Urho3D;
 
@@ -9,7 +11,6 @@ namespace Osp
 Player::Player( Context * ctx )
     : ItemBase( ctx )
 {
-    nearSurface = true;
 }
 
 Player::~Player()
@@ -71,12 +72,16 @@ void Player::Start()
     PlanetBase * planet = parentPlanet( n );
     if ( planet )
     {
+        // Create dynamics world and dynamics world mover.
         Node * node = planet->dynamicsNode;
         Node * physicsNode = node->CreateChild( "PhysicsWorldNode" );
+
         PhysicsWorld2 * pw2 = physicsNode->CreateComponent<PhysicsWorld2>();
         pw2->SetGravity( Vector3::ZERO );
-        physicsWorld = SharedPtr<PhysicsWorld2>( pw2 );
 
+        WorldMover * wm = node->CreateComponent<WorldMover>();
+
+        // Acquire launch site.
         Component * c = s->GetComponent( StringHash( "LaunchSite" ), true );
         LaunchSite * l = c->Cast<LaunchSite>();
         site = SharedPtr<LaunchSite>( l );

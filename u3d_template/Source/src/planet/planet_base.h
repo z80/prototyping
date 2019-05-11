@@ -57,6 +57,10 @@ public:
     void subscribeToParentChanges();
     void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
     void OnNodeAdded( StringHash eventType, VariantMap & eventData );
+    // Need to implement these and call collision objects updates here.
+    void subscribeToWorldEvents();
+    void OnWorldSwitched( StringHash eventType, VariantMap & eventData );
+    void OnWorldMoved( StringHash eventType, VariantMap & eventData );
 
     // There are at least 3 nodes.
     // 1-st translating, moving the orbit.

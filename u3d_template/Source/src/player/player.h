@@ -8,7 +8,6 @@
 #include "assembly.h"
 #include "block.h"
 #include "planet_base.h"
-#include "physics_world_2.h"
 #include "game_data.h"
 #include "launch_site.h"
 
@@ -69,10 +68,6 @@ private:
     SharedPtr<PlanetBase> planet;
     // Launch site.
     SharedPtr<LaunchSite> site;
-    // Near surface ?
-    bool nearSurface;
-    // Dyamics world for computing objects dynamics.
-    SharedPtr<PhysicsWorld2> physicsWorld;
     // Camera controller.
     SharedPtr<CameraOrb2>    cameraOrb;
     // Game data object to exchange global values.
