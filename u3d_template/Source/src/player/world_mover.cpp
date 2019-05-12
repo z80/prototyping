@@ -176,6 +176,8 @@ void WorldMover::switchTo( Assembly * assembly )
         setR( r );
 
         assembly->relativePose( assembly->planet->rotator, r2, q2 );
+        // This is not changed after setting
+        // parent and assigning "r".
         assembly->relativePose( this, r2, q2 );
         q2 = Quaterniond::IDENTITY;
     }
