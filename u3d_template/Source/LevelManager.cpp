@@ -22,6 +22,7 @@
 #include "player.h"
 
 #include "physics_world_2.h"
+#include "world_mover.h"
 
 #include "MyEvents.h"
 
@@ -91,6 +92,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::PlanetMoonTest>();
 
     context_->RegisterFactory<Osp::Player>();
+    context_->RegisterFactory<Osp::WorldMover>();
 
     RegisterPhysicsLibrary2( context_ );
 }

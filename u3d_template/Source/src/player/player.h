@@ -31,7 +31,7 @@ public:
     void startWithAssembly();
 
 
-
+    void DrawDebugGeometry( DebugRenderer * debug, bool depthTest );
 
     void Start() override;
     /// Called before the first update. At this point all other components of the node should exist. Will also be called if update events are not wanted; in that case the event is immediately unsubscribed afterward.
@@ -72,6 +72,10 @@ private:
     SharedPtr<CameraOrb2>    cameraOrb;
     // Game data object to exchange global values.
     SharedPtr<GameData>      gameData;
+
+    // For drawing debug geometry keep pointers.
+    SharedPtr<Component> physicsWorld;
+    SharedPtr<ItemBase>  worldMover;
 };
 
 }

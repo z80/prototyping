@@ -22,7 +22,7 @@ public:
     void Start() override;
     void Update( float dt ) override;
 
-    void drawDebuggeometry( DebugRenderer * debug );
+    void DrawDebugGeometry( DebugRenderer * debug, bool depthTest ) override;
 
 protected:
     void subscribeToEvents();
@@ -38,12 +38,9 @@ protected:
 
 public:
     SharedPtr<PlanetBase> planet;
-    bool                  inAtmosphere;
     SharedPtr<Assembly>   assembly;
-
-    // This is for the WorldMover to decide when to displace towards
-    // currently selected assembly.
-    static const Float distToMove;
+    // Don't need this. As "active" attribute describes that.
+    //bool                  inAtmosphere;
 };
 
 }

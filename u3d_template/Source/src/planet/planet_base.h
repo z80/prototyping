@@ -32,7 +32,7 @@ public:
 
 
     virtual void Start() override;
-    virtual void drawDebugGeometry( DebugRenderer * debug );
+    virtual void DrawDebugGeometry(DebugRenderer* debug, bool depthTest) override;
 
     /// When player is on the surface the dynamics is
     /// simulated for objects close to the center and close enough

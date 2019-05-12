@@ -34,7 +34,7 @@ public:
 
     virtual void createContent( Node * n );
 
-    void drawDebugGeometry( DebugRenderer * debug );
+    virtual void DrawDebugGeometry( DebugRenderer* debug, bool depthTest) override;
 
     void setPivotsVisible( bool en );
     void setPivotSize( float sz );

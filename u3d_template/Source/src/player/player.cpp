@@ -2,6 +2,7 @@
 #include "player.h"
 #include "physics_world_2.h"
 #include "world_mover.h"
+#include "MyEvents.h"
 
 using namespace Urho3D;
 
@@ -24,6 +25,8 @@ void Player::startWithAssembly()
     Node * playerNode = GetNode();
     playerNode->SetParent( siteNode );
 
+    planet = parentPlanet( siteNode );
+
     {
         Node * n = cameraOrb->GetNode();
         n->SetParent( siteNode );
@@ -34,6 +37,10 @@ void Player::startWithAssembly()
         return;
 
     Assembly * a = Assembly::create( siteNode, gameData->design );
+    a->planet = planet;
+    a->inAtmosphere = true;
+    a->inWorld      = false;
+
     //a->toWorld( planet, physicsWorld );
     assembly = SharedPtr<Assembly>( a );
 
@@ -43,6 +50,15 @@ void Player::startWithAssembly()
 
     // Notify physics world mover about the new assembly.
     sendEventAssemblySelected();
+}
+
+void Player::DrawDebugGeometry( DebugRenderer * debug, bool depthTest )
+{
+//    DebugRenderer * debug = s->GetComponent<DebugRenderer>();
+//    if ( debug )
+//    {
+//        physicsWorld->DrawDebugGeometry( debug, false );
+//    }
 }
 
 void Player::Start()
@@ -61,8 +77,10 @@ void Player::Start()
 
         PhysicsWorld2 * pw2 = physicsNode->CreateComponent<PhysicsWorld2>();
         pw2->SetGravity( Vector3::ZERO );
+        physicsWorld = SharedPtr<Component>( pw2 );
 
         WorldMover * wm = node->CreateComponent<WorldMover>();
+        worldMover = SharedPtr<ItemBase>( wm );
 
         // Acquire launch site.
         Component * c = s->GetComponent( StringHash( "LaunchSite" ), true );
@@ -91,6 +109,9 @@ void Player::Stop()
 void Player::Update( float timeStep )
 {
     // Check keyboard state and generate appropriate commands.
+
+    // Debug geometry.
+    Scene * s = GetScene();
 }
 
 void Player::FixedPostUpdate( float timeStep )
@@ -130,7 +151,9 @@ PlanetBase * Player::parentPlanet( Node * n )
 
 void Player::sendEventAssemblySelected()
 {
-
+    VariantMap & eData = GetEventDataMap();
+    eData[MyEvents::AssemblySelected::P_ASSEMBLY] = reinterpret_cast<void *>( assembly.Get() );
+    SendEvent(MyEvents::E_ASSEMBLY_SELECTED, eData);
 }
 
 

@@ -65,7 +65,7 @@ void PlanetBase::Start()
     subscribeToWorldEvents();
 }
 
-void PlanetBase::drawDebugGeometry( DebugRenderer * debug )
+void PlanetBase::DrawDebugGeometry( DebugRenderer * debug, bool depthTest )
 {
     /*{
         const unsigned qty = surfaceBlocks.Size();

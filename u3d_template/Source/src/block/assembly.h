@@ -30,7 +30,7 @@ public:
     ~Assembly();
 
     static Assembly * create( Node * root, const Design & d );
-    void drawDebugGeometry( DebugRenderer * debug );
+    virtual void DrawDebugGeometry(DebugRenderer* debug, bool depthTest) override;
 
 protected:
     void Start() override;

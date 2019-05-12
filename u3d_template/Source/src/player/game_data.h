@@ -41,6 +41,8 @@ public:
     static const Float DIST_WORLD_ENTER;
     /// Distance for assembly to enter dynamics world.
     static const Float DIST_WORLD_LEAVE;
+    /// World mover should displace when selected assembly is this far.
+    static const Float DIST_WHEN_NEED_MOVE;
 
 private:
     HashMap<String, SharedPtr<Node> > nodes;

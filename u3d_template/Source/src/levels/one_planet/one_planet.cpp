@@ -54,6 +54,8 @@ URHO3D_EVENT( E_CREATE_BLOCK_CLICKED, CreateBlockClicked )
 }
 
 
+static void DrawDebugGeometry( Node * n, DebugRenderer * debug, bool depthTest, bool recursive );
+
 OnePlanet::OnePlanet(Context* context)
     : BaseLevel(context),
       mouseX(0),
@@ -356,6 +358,16 @@ void OnePlanet::HandleUpdate( StringHash t, VariantMap & e )
 
 void OnePlanet::HandlePostRenderUpdate( StringHash t, VariantMap & e )
 {
+    // Drawing debug geometry.
+//    Scene * s = scene_;
+//    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
+//    const Vector<SharedPtr<Node> > & nodes = s->GetChildren();
+//    const unsigned qty = nodes.Size();
+//    for ( unsigned i=0; i<qty; i++ )
+//    {
+//        const SharedPtr<Node> & n = nodes[i];
+//        Osp::DrawDebugGeometry( n, debug, false, true );
+//    }
 }
 
 void OnePlanet::HandlePhysicsPreStep( StringHash t, VariantMap & e )
@@ -366,11 +378,11 @@ void OnePlanet::HandlePhysicsPreStep( StringHash t, VariantMap & e )
 
 void OnePlanet::HandlePostUpdate( StringHash t, VariantMap & e )
 {
-    Scene * s = scene_;
-    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
-    sun_->drawDebugGeometry( debug );
-    planet_->drawDebugGeometry( debug );
-    moon_->drawDebugGeometry( debug );
+//    Scene * s = scene_;
+//    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
+//    sun_->DrawDebugGeometry( debug, false );
+//    planet_->DrawDebugGeometry( debug, false );
+//    moon_->DrawDebugGeometry( debug, false );
 }
 
 void OnePlanet::HandleMouseDown( StringHash t, VariantMap & e )
@@ -450,7 +462,33 @@ void OnePlanet::HandleToWorkshop( StringHash t, VariantMap & e )
 
 
 
+static void DrawDebugGeometry( Node * n, DebugRenderer * debug, bool depthTest, bool recursive )
+{
+    {
+        Vector<SharedPtr<Component> > comps = n->GetComponents();
+        const unsigned qty = comps.Size();
+        for ( unsigned i=0; i<qty; i++ )
+        {
+            SharedPtr<Component> & c = comps[i];
+            if ( c )
+            {
+                c->DrawDebugGeometry( debug, depthTest );
+            }
+        }
+    }
 
+    if ( recursive )
+    {
+        const Vector<SharedPtr<Node> > nodes = n->GetChildren();
+        const unsigned qty = nodes.Size();
+        for ( unsigned i=0; i<qty; i++ )
+        {
+            SharedPtr<Node> cn = nodes[i];
+            if ( cn )
+                DrawDebugGeometry( cn, debug, depthTest, recursive );
+        }
+    }
+}
 
 }
 

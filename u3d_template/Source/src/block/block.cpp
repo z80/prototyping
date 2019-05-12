@@ -47,7 +47,7 @@ void Block::createContent( Node * n )
     placePivots();
 }
 
-void Block::drawDebugGeometry( DebugRenderer * debug )
+void Block::DrawDebugGeometry( DebugRenderer* debug, bool depthTest)
 {
     Node * n = GetNode();
     airMesh.drawDebugGeometry( n, debug );

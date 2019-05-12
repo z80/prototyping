@@ -1,16 +1,15 @@
 
 #include "world_mover.h"
+#include "physics_world_2.h"
 #include "MyEvents.h"
 
 namespace Osp
 {
 
-const Float WorldMover::distToMove      = 100.0;
-
 WorldMover::WorldMover( Context * ctx )
     : KeplerMover( ctx )
 {
-    active = false;
+    active       = false;
 }
 
 WorldMover::~WorldMover()
@@ -50,18 +49,18 @@ void WorldMover::Update( float dt )
     tryMoveTo();
 }
 
-void WorldMover::drawDebuggeometry( DebugRenderer * debug )
+void WorldMover::DrawDebugGeometry( DebugRenderer * debug, bool depthTest )
 {
     Node * n = GetNode();
     // Draw a cube showing world center position.
-    const Matrix3x4 m = n->GetWorldtransform();
+    const Matrix3x4 m = n->GetWorldTransform();
     static const float d = 1.0f;
     const Vector3 a1( -d, -d,  d );
     const Vector3 b1(  d, -d,  d );
     const Vector3 c1(  d, -d, -d );
     const Vector3 d1( -d, -d, -d );
     const Vector3 a2( -d,  d,  d );
-    const Vector3 v2(  d,  d,  d );
+    const Vector3 b2(  d,  d,  d );
     const Vector3 c2(  d,  d, -d );
     const Vector3 d2( -d,  d, -d );
 
@@ -112,13 +111,21 @@ void WorldMover::switchToEvent( Assembly * assembly )
     // Current state.
     const Vector3d curR          = relR();
     const Vector3d curV          = relV();
-    const bool     curAtm        = inAtmosphere;
+    const bool     curAtm        = !active;
     const PlanetBase * curPlanet = planet;
 
     // New state.
-    const Vector3d newR          = assembly->relR();
-    const Vector3d newV          = assembly->relV();
+    // Here again position is valid only if
+    // assembly parent is this exact planet but not an
+    // object on the surface.
     const bool     newAtm        = assembly->inAtmosphere;
+    Vector3d newR;
+    Quaterniond q;
+    if ( newAtm )
+        assembly->relativePose( assembly->planet->rotator, newR, q );
+    else
+        assembly->relativePose( assembly->planet->mover, newR, q );
+    const Vector3d newV          = assembly->relV();
     const PlanetBase * newPlanet = assembly->planet;
 
     VariantMap & d = GetEventDataMap();
@@ -134,13 +141,16 @@ void WorldMover::switchToEvent( Assembly * assembly )
     d[ P_ATM_NEW ]    = (void *)&newAtm;
     d[ P_PLANET_NEW ] = (void *)&newPlanet;
 
-    SendEvent( MyEvents::E_WORLD_MOVED, d );
+    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
 }
 
 void WorldMover::switchTo( Assembly * assembly )
 {
     // Set position to be the same.
-    const Vector3d r = assembly->relR();
+    //const Vector3d r = assembly->relR();
+    // Here need relative position with respect to planet
+    // as assemblies are creted as children of a launch site.
+
     const bool inAtmosphere = assembly->inAtmosphere;
     // Orbital movement is active
     active = !inAtmosphere;
@@ -149,12 +159,31 @@ void WorldMover::switchTo( Assembly * assembly )
     PlanetBase * planet = assembly->planet;
     if ( inAtmosphere )
     {
+        Vector3d r;
+        Quaterniond q;
+        assembly->relativePose( assembly->planet->rotator, r, q );
         Node * planetNode = planet->rotator->GetNode();
+
+        Vector3d r2;
+        Quaterniond q2;
+        assembly->relativePose( assembly->planet->rotator, r2, q2 );
+
         selfNode->SetParent( planetNode );
+
+        assembly->relativePose( assembly->planet->rotator, r2, q2 );
+        assembly->relativePose( this, r2, q2 );
+
         setR( r );
+
+        assembly->relativePose( assembly->planet->rotator, r2, q2 );
+        assembly->relativePose( this, r2, q2 );
+        q2 = Quaterniond::IDENTITY;
     }
     else
     {
+        Vector3d r;
+        Quaterniond q;
+        assembly->relativePose( assembly->planet->mover, r, q );
         Node * planetNode = planet->mover->GetNode();
         selfNode->SetParent( planetNode );
 
@@ -174,7 +203,8 @@ void WorldMover::tryMoveTo()
     const Vector3d r1 = assembly->relR();
     const Vector3d dr = r0 - r1;
     const Float d = dr.Length();
-    if ( (d < distToMove) && (inAtmosphere == assembly->inAtmosphere) )
+    const bool inAtmosphere = !active;
+    if ( (d < GameData::DIST_WHEN_NEED_MOVE) && ( inAtmosphere == assembly->inAtmosphere) )
         return;
 
     Vector3d dv;

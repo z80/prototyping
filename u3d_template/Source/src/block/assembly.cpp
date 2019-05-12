@@ -65,13 +65,13 @@ Assembly * Assembly::create( Node * root, const Design & d )
 
 
 
-void Assembly::drawDebugGeometry( DebugRenderer * debug )
+void Assembly::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
 {
     unsigned qty = blocks.Size();
     for ( unsigned i=0; i<qty; i++ )
     {
         SharedPtr<Block> b = blocks[i];
-        b->drawDebugGeometry( debug );
+        b->DrawDebugGeometry( debug, depthTest );
     }
 }
 
@@ -127,10 +127,10 @@ void Assembly::PostUpdate( float timeStep )
     }
 
     // Draw debug geometry.
-    Scene * s = GetScene();
-    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
-    if ( debug )
-        drawDebugGeometry( debug );
+//    Scene * s = GetScene();
+//    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
+//    if ( debug )
+//        DrawDebugGeometry( debug, false );
 }
 
 void Assembly::destroy()
@@ -322,7 +322,10 @@ void Assembly::toWorld()
     // Assign it's parent to be dynamics world.
     setParent( worldMover );
 
-    inWorld = true;
+    WorldMover * wm = worldMover->Cast<WorldMover>();
+
+    inWorld      = true;
+    inAtmosphere = !wm->active;
 }
 
 void Assembly::fromWorld()
@@ -365,7 +368,7 @@ void Assembly::fromWorld()
     planet = SharedPtr<PlanetBase>( planet );
 
     // If in atmosphere just change parent to planet's "dynamicsNode".
-    const bool moverInAtmosphere = wm->inAtmosphere;
+    const bool moverInAtmosphere = !wm->active;
     if ( moverInAtmosphere )
     {
         Node * n = planet->dynamicsNode;
