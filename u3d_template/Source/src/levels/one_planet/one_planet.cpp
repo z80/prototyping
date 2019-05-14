@@ -359,15 +359,9 @@ void OnePlanet::HandleUpdate( StringHash t, VariantMap & e )
 void OnePlanet::HandlePostRenderUpdate( StringHash t, VariantMap & e )
 {
     // Drawing debug geometry.
-//    Scene * s = scene_;
-//    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
-//    const Vector<SharedPtr<Node> > & nodes = s->GetChildren();
-//    const unsigned qty = nodes.Size();
-//    for ( unsigned i=0; i<qty; i++ )
-//    {
-//        const SharedPtr<Node> & n = nodes[i];
-//        Osp::DrawDebugGeometry( n, debug, false, true );
-//    }
+    Scene * s = scene_;
+    DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();
+    DrawDebugGeometry( s, debug, false, true );
 }
 
 void OnePlanet::HandlePhysicsPreStep( StringHash t, VariantMap & e )
