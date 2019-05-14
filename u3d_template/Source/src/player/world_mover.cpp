@@ -164,22 +164,22 @@ void WorldMover::switchTo( Assembly * assembly )
         assembly->relativePose( assembly->planet->rotator, r, q );
         Node * planetNode = planet->rotator->GetNode();
 
-        Vector3d r2;
-        Quaterniond q2;
-        assembly->relativePose( assembly->planet->rotator, r2, q2 );
+        //Vector3d r2;
+        //Quaterniond q2;
+        //assembly->relativePose( assembly->planet->rotator, r2, q2 );
 
         selfNode->SetParent( planetNode );
 
-        assembly->relativePose( assembly->planet->rotator, r2, q2 );
-        assembly->relativePose( this, r2, q2 );
+        //assembly->relativePose( assembly->planet->rotator, r2, q2 );
+        //assembly->relativePose( this, r2, q2 );
 
         setR( r );
 
-        assembly->relativePose( assembly->planet->rotator, r2, q2 );
+        //assembly->relativePose( assembly->planet->rotator, r2, q2 );
         // This is not changed after setting
         // parent and assigning "r".
-        assembly->relativePose( this, r2, q2 );
-        q2 = Quaterniond::IDENTITY;
+        //assembly->relativePose( this, r2, q2 );
+        //q2 = Quaterniond::IDENTITY;
     }
     else
     {
