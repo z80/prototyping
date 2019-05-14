@@ -22,6 +22,8 @@ public:
     void Start() override;
     void Update( float dt ) override;
 
+    void setR( const Vector3d & new_r ) override;
+
     void DrawDebugGeometry( DebugRenderer * debug, bool depthTest ) override;
 
 protected:

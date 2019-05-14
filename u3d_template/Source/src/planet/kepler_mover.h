@@ -33,8 +33,8 @@ public:
     // Stop using Kepler orbit.
     void stop();
     // Obtain current position and velocity.
-    Vector3d relR() const;
-    Vector3d relV() const;
+    virtual Vector3d relR() const;
+    virtual Vector3d relV() const;
 
 public:
     static const Float TIME_T;

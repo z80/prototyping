@@ -49,6 +49,12 @@ void WorldMover::Update( float dt )
     tryMoveTo();
 }
 
+void WorldMover::setR( const Vector3d & new_r )
+{
+    URHO3D_LOGINFOF( "WorldMover::SetR( %f, %f, %f )", new_r.x_, new_r.y_, new_r.z_ );
+    KeplerMover::setR( new_r );
+}
+
 void WorldMover::DrawDebugGeometry( DebugRenderer * debug, bool depthTest )
 {
     Node * n = GetNode();
@@ -161,7 +167,7 @@ void WorldMover::switchTo( Assembly * assembly )
     {
         Vector3d r;
         Quaterniond q;
-        assembly->relativePose( assembly->planet->rotator, r, q );
+        assembly->relativePose( planet->rotator, r, q );
         Node * planetNode = planet->rotator->GetNode();
 
         //Vector3d r2;
@@ -185,7 +191,7 @@ void WorldMover::switchTo( Assembly * assembly )
     {
         Vector3d r;
         Quaterniond q;
-        assembly->relativePose( assembly->planet->mover, r, q );
+        assembly->relativePose( planet->mover, r, q );
         Node * planetNode = planet->mover->GetNode();
         selfNode->SetParent( planetNode );
 
@@ -201,9 +207,9 @@ void WorldMover::tryMoveTo()
     if ( !assembly )
         return;
 
-    const Vector3d r0 = relR();
-    const Vector3d r1 = assembly->relR();
-    const Vector3d dr = r0 - r1;
+    Vector3d dr;
+    Quaterniond dq;
+    assembly->relativePose( this, dr, dq );
     const Float d = dr.Length();
     const bool inAtmosphere = !active;
     if ( (d < GameData::DIST_WHEN_NEED_MOVE) && ( inAtmosphere == assembly->inAtmosphere) )
@@ -211,6 +217,7 @@ void WorldMover::tryMoveTo()
 
     Vector3d dv;
     const Vector3d v0 = relV();
+    const Vector3d r1 = relR() + dr;
     setR( r1 );
     if ( !inAtmosphere )
     {
