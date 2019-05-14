@@ -77,12 +77,12 @@ void PlanetBase::DrawDebugGeometry( DebugRenderer * debug, bool depthTest )
     }*/
 }
 
-void PlanetBase::updateCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist )
+void PlanetBase::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
 
 }
 
-void PlanetBase::initCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist )
+void PlanetBase::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
 
 }
@@ -111,9 +111,6 @@ void PlanetBase::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
     const Variant & pn = eventData[ P_PLANET_NEW ];
     const PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
 
-    const Variant & pos = eventData[ P_POS_NEW ];
-    const Vector3d pos_new = *(Vector3d *)pos.GetVoidPtr();
-
     // Get dynamics world.
     if ( !physicsWorld )
     {
@@ -123,15 +120,24 @@ void PlanetBase::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
             return;
         physicsWorld = SharedPtr<Component>( c );
     }
+    if ( !worldMover )
+    {
+        Scene * s = GetScene();
+        Component * c = s->GetComponent( StringHash("WorldMover"), true );
+        if ( !c )
+            return;
+        worldMover = SharedPtr<Component>( c );
+    }
 
     PhysicsWorld2 * pw2 = physicsWorld->Cast<PhysicsWorld2>();
-    if ( p_old == this )
+    WorldMover    * wm  = physicsWorld->Cast<WorldMover>();
+    if ( ( p_old == this ) && ( p_new != this ) )
     {
       finitCollisions( pw2 );
     }
     else if ( p_new == this )
     {
-      initCollisions( pw2, pos_new, GameData::DIST_PLANET_COLLISIONS );
+      initCollisions( pw2, wm, GameData::DIST_PLANET_COLLISIONS );
     }
 }
 
@@ -155,10 +161,7 @@ void PlanetBase::OnWorldMoved( StringHash eventType, VariantMap & eventData )
     if ( wm->planet != this )
       return;
 
-    const Variant & pos = eventData[ MyEvents::WorldMoved::P_POS_NEW ];
-    const Vector3d pos_new = *(Vector3d *)pos.GetVoidPtr();
-
-    updateCollisions( pw2, pos_new, GameData::DIST_PLANET_COLLISIONS );
+    updateCollisions( pw2, wm, GameData::DIST_PLANET_COLLISIONS );
 }
 
 

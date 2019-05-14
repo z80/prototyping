@@ -15,6 +15,7 @@ namespace Osp
 {
 
 using namespace Urho3D;
+class WorldMover;
 
 class PlanetBase: public ItemBase
 {
@@ -37,9 +38,9 @@ public:
     /// When player is on the surface the dynamics is
     /// simulated for objects close to the center and close enough
     /// Objects in atmosphere but far away are not simulated.
-    virtual void updateCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist );
+    virtual void updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist );
     /// Initialize collision objects when player enteres this area.
-    virtual void initCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist );
+    virtual void initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist );
     /// Finalize collisions as player leaves the area.
     virtual void finitCollisions( PhysicsWorld2 * w2 );
 

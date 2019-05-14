@@ -19,9 +19,9 @@ public:
 
     void Start() override;
 
-    void updateCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist ) override;
-    void initCollisions( PhysicsWorld2 * w2, const Vector3d & center,Float dist ) override;
-    void finitCollisions( PhysicsWorld2 * w2 ) override;
+    virtual void updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist ) override;
+    virtual void initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist ) override;
+    virtual void finitCollisions( PhysicsWorld2 * w2 ) override;
 
 public:
     SharedPtr<LaunchSite> site;

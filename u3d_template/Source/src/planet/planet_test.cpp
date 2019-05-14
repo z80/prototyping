@@ -1,6 +1,10 @@
 
 #include "planet_test.h"
 #include "player.h"
+#include "world_mover.h"
+#include "physics_world_2.h"
+#include "rigid_body_2.h"
+#include "collision_shape_2.h"
 
 namespace Osp
 {
@@ -65,21 +69,51 @@ void PlanetTest::Start()
     }
 }
 
-void PlanetTest::updateCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist )
+void PlanetTest::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    rotator->relativePose( mover, rel_r, rel_q );
 
+    Component * c = dynamicsNode->GetComponent( StringHash( "RigidBody2" ), true );
+    if ( !c )
+        return;
+    RigidBody2 * rb  = c->Cast<RigidBody2>();
+    if ( !rb )
+        return;
+    rb->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    rb->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
 }
 
-void PlanetTest::initCollisions( PhysicsWorld2 * w2, const Vector3d & center, Float dist )
+void PlanetTest::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
-    {
-        Node * n = site->GetNode();
-    }
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    rotator->relativePose( mover, rel_r, rel_q );
+
+    Node * n0 = rotator->GetNode();
+    Node * n = n0->CreateChild( "PlanetSphere" );
+    RigidBody2 * rb = n->CreateComponent<RigidBody2>();
+    rb->SetMass( 0.0 );
+    rb->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    rb->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
+
+    CollisionShape2 * cs = n->CreateComponent<CollisionShape2>();
+    cs->SetSphere( 20.0,
+                   Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ),
+                   Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
 }
 
-void PlanetTest::finitCollisions( PhysicsWorld2 * w2 )
+void PlanetTest::finitCollisions( Osp::PhysicsWorld2 * w2 )
 {
-
+    Component * c = dynamicsNode->GetComponent( StringHash( "RigidBody2" ), true );
+    if ( !c )
+        return;
+    RigidBody2 * rb  = c->Cast<RigidBody2>();
+    if ( !rb )
+        return;
+    Node * n = rb->GetNode();
+    n->Remove();
 }
 
 
