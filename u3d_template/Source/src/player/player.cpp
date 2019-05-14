@@ -79,7 +79,8 @@ void Player::Start()
         pw2->SetGravity( Vector3::ZERO );
         physicsWorld = SharedPtr<Component>( pw2 );
 
-        WorldMover * wm = node->CreateComponent<WorldMover>();
+        // It is UBER important to create world mover in the same node (!!!!!!)
+        WorldMover * wm = physicsNode->CreateComponent<WorldMover>();
         worldMover = SharedPtr<ItemBase>( wm );
 
         // Acquire launch site.
