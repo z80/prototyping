@@ -95,7 +95,8 @@ void Assembly::Start()
 
 void Assembly::Update( float timeStep )
 {
-
+    // Apply forces.
+    applyPlanetForces();
 }
 
 void Assembly::PostUpdate( float timeStep )
@@ -385,6 +386,26 @@ void Assembly::fromWorld()
     const Vector3d v = wm->relV() + mv;
     setParent( planet );
     wm->launch( v, planet->GM() );
+}
+
+void Assembly::applyPlanetForces()
+{
+    if ( !inWorld )
+        return;
+
+    PlanetForces * f = planet->forces;
+    const unsigned qty = blocks.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        Block * b = blocks[i];
+        if ( !b )
+            continue;
+        if ( inAtmosphere )
+            f->applyClose( b );
+        else
+            f->applyFar( b );
+    }
+
 }
 
 void Assembly::subscribeToEvents()

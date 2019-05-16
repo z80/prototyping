@@ -57,6 +57,8 @@ public:
     void toWorld();
     void fromWorld();
 
+    void applyPlanetForces();
+
 
     Vector< SharedPtr<Block> >       blocks;
     Vector< SharedPtr<Constraint2> > joints;
