@@ -16,10 +16,6 @@
 namespace Osp
 {
 
-const Float Assembly::DIST_LEAVE_WORLD = 1500.0;
-const Float Assembly::DIST_ENTER_WORLD = 1000.0;
-
-
 Assembly::Assembly( Context * c )
     : ItemBase( c )
 {
@@ -96,6 +92,8 @@ void Assembly::Start()
 void Assembly::Update( float timeStep )
 {
     // Apply forces.
+    computePlanetForces();
+    convertPlanetForces();
     applyPlanetForces();
 }
 
@@ -253,7 +251,7 @@ bool Assembly::needLeaveWorld()
     Quaterniond rel_q;
     relativePose( worldMover, rel_r, rel_q );
     const Float d = rel_r.Length();
-    return ( d > DIST_LEAVE_WORLD );
+    return ( d > GameData::DIST_WORLD_LEAVE );
 }
 
 bool Assembly::needEnterWorld()
@@ -265,7 +263,7 @@ bool Assembly::needEnterWorld()
     Quaterniond rel_q;
     relativePose( worldMover, rel_r, rel_q );
     const Float d = rel_r.Length();
-    return ( d < DIST_ENTER_WORLD );
+    return ( d < GameData::DIST_WORLD_ENTER );
 }
 
 void Assembly::toWorld()
@@ -388,7 +386,7 @@ void Assembly::fromWorld()
     wm->launch( v, planet->GM() );
 }
 
-void Assembly::applyPlanetForces()
+void Assembly::computePlanetForces()
 {
     if ( !inWorld )
         return;
@@ -405,7 +403,57 @@ void Assembly::applyPlanetForces()
         else
             f->applyFar( b );
     }
+}
 
+void Assembly::convertPlanetForces()
+{
+    if ( !worldMover )
+        return;
+    const unsigned qty = blocks.Size();
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        Block * b = blocks[i];
+        if ( !b )
+            continue;
+        b->relativePose( worldMover, rel_r, rel_q );
+        const Vector3d f = rel_q * b->gravity.F;
+        b->gravity.fW = Vector3( f.x_, f.y_, f.z_ );
+        // And also convert all friction forces.
+        const unsigned f_qty = b->friction.Size();
+        for ( unsigned j=0; j<f_qty; j++ )
+        {
+            ForceApplied & fa = b->friction[j];
+            const Vector3d f = rel_q * fa.F;
+            const Vector3d r = rel_q * fa.at;
+            fa.fW  = Vector3( f.x_, f.y_, f.z_ );
+            fa.atW = Vector3( r.x_, r.y_, r.z_ );
+        }
+    }
+}
+
+void Assembly::applyPlanetForces()
+{
+    const unsigned qty = blocks.Size();
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        Block * b = blocks[i];
+        if ( !b )
+            continue;
+        RigidBody2 * rb = b->rigidBody();
+        if ( !rb )
+            continue;
+        rb->ApplyForce( b->gravity.fW, b->gravity.atW );
+        const unsigned f_qty = b->friction.Size();
+        for ( unsigned j=0; j<f_qty; j++ )
+        {
+            const ForceApplied & fa = b->friction[j];
+            rb->ApplyForce( fa.fW, fa.atW );
+        }
+    }
 }
 
 void Assembly::subscribeToEvents()

@@ -19,8 +19,12 @@ namespace Osp
 
 struct ForceApplied
 {
+    // First one in local object RF for debug drawing.
+    // Second one is in physics world ref frame for actual application.
     Vector3d at;
+    Vector3  atW;
     Vector3d F;
+    Vector3  fW;
 };
 
 class Block: public ItemBase
@@ -63,7 +67,6 @@ public:
     Block * tryAttachToSurface();
     /// Draw forces applied.
     void drawDebugForces( DebugRenderer * debug );
-
 
     /// Need to be able to open configuration window.
     virtual SharedPtr<UIElement> configWindow();
