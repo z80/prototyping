@@ -76,6 +76,11 @@ void Player::Start()
         Node * physicsNode = node->CreateChild( "PhysicsWorldNode" );
 
         PhysicsWorld2 * pw2 = physicsNode->CreateComponent<PhysicsWorld2>();
+        // Will manually call Update( dt ) with correct time.
+        // Sisable update.
+        pw2->SetUpdateEnabled( false );
+        // Gravity depends on position.
+        // So disable default gravity.
         pw2->SetGravity( Vector3::ZERO );
         physicsWorld = SharedPtr<Component>( pw2 );
 

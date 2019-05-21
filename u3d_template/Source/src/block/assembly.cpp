@@ -417,7 +417,7 @@ void Assembly::convertPlanetForces()
         Block * b = blocks[i];
         if ( !b )
             continue;
-        b->relativePose( worldMover, rel_r, rel_q );
+        worldMover->relativePose( b, rel_r, rel_q );
         const Vector3d f = rel_q * b->gravity.F;
         b->gravity.fW = Vector3( f.x_, f.y_, f.z_ );
         // And also convert all friction forces.
@@ -444,15 +444,16 @@ void Assembly::applyPlanetForces()
         if ( !b )
             continue;
         RigidBody2 * rb = b->rigidBody();
+//        rb->ResetForces();
         if ( !rb )
             continue;
-        rb->ApplyForce( b->gravity.fW, b->gravity.atW );
-        const unsigned f_qty = b->friction.Size();
-        for ( unsigned j=0; j<f_qty; j++ )
-        {
-            const ForceApplied & fa = b->friction[j];
-            rb->ApplyForce( fa.fW, fa.atW );
-        }
+//        rb->ApplyForce( b->gravity.fW, b->gravity.atW );
+//        const unsigned f_qty = b->friction.Size();
+//        for ( unsigned j=0; j<f_qty; j++ )
+//        {
+//            const ForceApplied & fa = b->friction[j];
+//            rb->ApplyForce( fa.fW, fa.atW );
+//        }
     }
 }
 

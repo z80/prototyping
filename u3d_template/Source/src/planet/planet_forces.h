@@ -29,7 +29,8 @@ public:
     void clearGravity(Block * b );
     virtual void applyFriction( Block * b );
 
-    bool  atmosphereParams( const Vector3d &at, Float & density, Float & viscosity, Float & temperature );
+    bool  atmosphereParams( const Vector3d &at, Float & temperature, Float & densityF, Float & viscosityF,
+                                                                     Float & densityB, Float & viscosityB );
 
     SharedPtr<ItemBase> planet;
 
@@ -42,9 +43,9 @@ public:
     // Atmosphere height.
     Float atmHeight_;
     // Ground level density.
-    Float density_;
+    Float density_, densityB_;
     // Viscosity.
-    Float viscosity_;
+    Float viscosity_, viscosityB_;
 
     // Temperature parameters.
     Float groundT_;

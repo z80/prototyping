@@ -10,10 +10,12 @@ PlanetForces::PlanetForces( Context * ctx )
     : LogicComponent( ctx )
 {
     GM_ = 100.0;
-    R_ = 10.0;
-    atmHeight_ = 7.0;
-    density_ = 1.0;
-    viscosity_ = 1.0;
+    R_  = 10.0;
+    atmHeight_  = 7.0;
+    density_    = 1.0;
+    viscosity_  = 1.0;
+    densityB_   = 0.5;
+    viscosityB_ = 0.5;
 
     // Temperature parameters.
     groundT_       =  20.0;
@@ -89,10 +91,13 @@ void PlanetForces::applyFriction( Block * b )
     Vector3d    rel_r;
     Quaterniond rel_q;
     planet->relativePose( b, rel_r, rel_q );
-    Float density, viscosity, temperature;
+    Float densityF, viscosityF,
+          densityB, viscosityB,
+          temperature;
     b->friction.Clear();
     const unsigned qty = a.triangles.Size();
-    const bool inAtmosphere = atmosphereParams( rel_r, density, viscosity, temperature );
+    const bool inAtmosphere = atmosphereParams( rel_r, temperature, densityF, viscosityF,
+                                                                    densityB, viscosityB );
     if ( !inAtmosphere )
         return;
     // Velocity in block ref. frame.
@@ -104,43 +109,47 @@ void PlanetForces::applyFriction( Block * b )
     for ( unsigned i=0; i<qty; i++ )
     {
         const Triangle & t = a.triangles[i];
-        const Float V_n = -V.DotProduct( t.n );
-        // Apply only if (V,n) is negative.
-        if ( V_n > EPS )
-        {
-            // Dynamic pressure force.
-            const Vector3d Fn = -(V_n * V_n * density * t.a / absV) * t.n;
-            const Vector3d m = (t.v[0] + t.v[1] + t.v[2]) * 0.33333;
-            ForceApplied fa;
-            fa.at = m;
-            fa.F  = Fn;
-            b->friction.Push( fa );
+        const Float V_n = V.DotProduct( t.n );
+        ForceApplied fa;
 
-            // Viscosity force.
-            const Vector3d Fp = (V - V_n*t.n)*t.a*viscosity;
-            fa.at = m;
-            fa.F  = Fp;
-            b->friction.Push( fa );
-        }
+        // Dynamic pressure force.
+        const Float density = ( V_n <= 0.0 ) ? densityF : densityB;
+        const Vector3d F_dynamic_pressure = -(V_n * V_n * density * t.a) * t.n;
+
+
+        // Viscosity force.
+        const Float viscosity = ( V_n <= 0.0 ) ? viscosityF : viscosityB;
+        const Vector3d F_viscosity = (V - V_n*t.n)*t.a*viscosity;
+
+        fa.F  = F_dynamic_pressure + F_viscosity;
+
+        const Vector3d m = (t.v[0] + t.v[1] + t.v[2]) * 0.33333;
+        fa.at = m;
+        b->friction.Push( fa );
     }
 }
 
-bool PlanetForces::atmosphereParams( const Vector3d & at, Float & density, Float & viscosity, Float & temperature )
+bool PlanetForces::atmosphereParams( const Vector3d &at, Float & temperature, Float & densityF, Float & viscosityF,
+                                                                              Float & densityB, Float & viscosityB )
 {
     const Float h = at.Length() - R_;
     const Float x = h / atmHeight_;
     if ( x > 1.0 )
     {
-        density_ = 0.0;
-        viscosity = 0.0;
+        densityF    = 0.0;
+        viscosityF  = 0.0;
+        densityB    = 0.0;
+        viscosityB  = 0.0;
         temperature = 0.0;
         return false;
     }
 
     if ( h <= 0.0 )
     {
-        density     =  density_;
-        viscosity   = viscosity_;
+        densityF    = density_;
+        viscosityF  = viscosity_;
+        densityB    = densityB_;
+        viscosityB  = viscosityB_;
         temperature = groundT_;
 
         return true;
@@ -148,8 +157,10 @@ bool PlanetForces::atmosphereParams( const Vector3d & at, Float & density, Float
 
     const Float x2 = x*x;
     const Float _1_x2 = 1.0 - x2;
-    density     = _1_x2*density_;
-    viscosity   = _1_x2*viscosity_;
+    densityF     = _1_x2*density_;
+    viscosityF   = _1_x2*viscosity_;
+    densityB     = _1_x2*densityB_;
+    viscosityB   = _1_x2*viscosityB_;
     temperature = groundT_*_1_x2 + highAltitudeT_*x2;
     return true;
 }

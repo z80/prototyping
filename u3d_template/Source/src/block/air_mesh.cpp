@@ -28,11 +28,11 @@ static void getTriangles( unsigned trianglesQty,
             t.v[j] = p;
         }
         // Compute normal
-        const Vector3d a = t.v[1] - t.v[0];
-        const Vector3d b = t.v[2] - t.v[0];
-        t.n = a.CrossProduct( b );
+        const Vector3d va = t.v[1] - t.v[0];
+        const Vector3d vb = t.v[2] - t.v[0];
+        t.n = va.CrossProduct( vb );
         t.a = t.n.Length();
-        t.n = t.n / a;
+        t.n = t.n / t.a;
         tris.Push( t );
     }
 }
