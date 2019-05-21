@@ -16,6 +16,7 @@
 #include "box.h"
 #include "kepler_mover.h"
 #include "launch_site.h"
+#include "planet_forces.h"
 #include "planet_test.h"
 #include "planet_sun_test.h"
 #include "planet_moon_test.h"
@@ -93,6 +94,8 @@ void LevelManager::RegisterAllFactories()
 
     context_->RegisterFactory<Osp::Player>();
     context_->RegisterFactory<Osp::WorldMover>();
+    context_->RegisterFactory<Osp::PlanetForces>();
+
 
     RegisterPhysicsLibrary2( context_ );
 }
