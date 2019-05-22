@@ -91,7 +91,7 @@ void PlanetTest::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Fl
     Quaterniond rel_q;
     rotator->relativePose( mover, rel_r, rel_q );
 
-    Node * n0 = rotator->GetNode();
+    Node * n0 = mover->GetNode();
     Node * n = n0->CreateChild( "PlanetSphere" );
     RigidBody2 * rb = n->CreateComponent<RigidBody2>();
     rb->SetMass( 0.0 );
