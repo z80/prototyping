@@ -407,7 +407,7 @@ void Block::drawDebugForces( DebugRenderer * debug )
         const Vector3 f( gravity.F.x_, gravity.F.y_, gravity.F.z_ );
         const Vector3 fW = (m*f) - (m*Vector3::ZERO);
 
-        debug->AddLine( atW, atW + fW, Color::RED, false );
+        debug->AddLine( atW, atW + fW, Color::CYAN, false );
     }
 
     const unsigned qty = friction.Size();
@@ -418,7 +418,7 @@ void Block::drawDebugForces( DebugRenderer * debug )
         const Vector3 atW = m * at;
         const Vector3 f( fa.F.x_, fa.F.y_, fa.F.z_ );
         const Vector3 fW = (m*f) - (m*Vector3::ZERO);
-        debug->AddLine( atW, atW + fW, Color::GREEN, false );
+        debug->AddLine( atW, atW + fW, Color::CYAN, false );
     }
 }
 
