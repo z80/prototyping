@@ -407,7 +407,7 @@ bool ItemBase::relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q
         qb = q * qb;
     }
 
-    rel_r = ra - rb;
+    rel_r = qb.Inverse()* (ra - rb);
     // This might be wrong.
     // I probably don't need quaternion at all.
     rel_q = qb.Inverse() * qa;
@@ -499,7 +499,7 @@ bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & r
         qb = q * qb;
     }
 
-    rel_r = ra - rb;
+    rel_r = qb.Inverse()* (ra - rb);
     // This might be wrong.
     // I probably don't need quaternion at all.
     rel_q = qb.Inverse() * qa;
