@@ -64,13 +64,34 @@ void PlanetForces::applyGravity( Block * b )
 {
     Vector3d    rel_r;
     Quaterniond rel_q;
-    b->relativePose( planet, rel_r, rel_q );
+    planet->relativePose( b, rel_r, rel_q, true );
     const Float d = rel_r.Length();
     const Vector3d Fblock = GM_ * rel_r / ( d * d * d );
     // Just write forces.
     // Force is in block ref. frame.
     b->gravity.at = Vector3d::ZERO;
     b->gravity.F  = Fblock;
+
+
+    // Debugging relative transformation comutation.
+    {
+        Node * blockN  = b->GetNode();
+        Node * planetN = planet->GetNode();
+        Matrix3x4 blockT  = blockN->GetWorldTransform();
+        Matrix3x4 planetT = planetN->GetWorldTransform();
+        // PlanetIn block coordinates.
+        Matrix3x4 relPlanetT = blockT.Inverse() * planetT;
+        Vector3 r, s;
+        Quaternion q;
+        relPlanetT.Decompose( r, q, s );
+        URHO3D_LOGINFOF( "Relative pose" );
+        URHO3D_LOGINFOF( "     r: (%f, %f, %f)", rel_r.x_, rel_r.y_, rel_r.z_ );
+        URHO3D_LOGINFOF( "     q: (%f, %f, %f, %f)", rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ );
+        URHO3D_LOGINFOF( "Should be" );
+        URHO3D_LOGINFOF( "     r: (%f, %f, %f)", r.x_, r.y_, r.z_ );
+        URHO3D_LOGINFOF( "     q: (%f, %f, %f, %f)", q.w_, q.x_, q.y_, q.z_ );
+
+    }
 }
 
 void PlanetForces::clearGravity( Block * b )
