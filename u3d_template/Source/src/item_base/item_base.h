@@ -64,7 +64,7 @@ public:
     bool isParentOf( ItemBase * item ) const;
     ItemBase * parentItem() const;
 
-    bool relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q );
+    bool relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q, bool debugLogging=false );
     bool relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q );
     bool relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q );
     bool relativePose( Node * other, Vector3  & rel_r, Quaternion  & rel_q );

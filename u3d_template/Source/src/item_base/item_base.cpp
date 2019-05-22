@@ -234,10 +234,10 @@ ItemBase * ItemBase::parentItem() const
     return nullptr;
 }
 
-bool ItemBase::relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q )
+bool ItemBase::relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q, bool debugLogging )
 {
     // root->a->b->c->d->e->this
-    // root->a->b->other->f->g
+    // root->a->b->f->g->other
     // The idea is to accumulate relative position and orientation.
     Vector3d    r = Vector3::ZERO;
     Quaterniond q = Quaternion::IDENTITY;
@@ -307,9 +307,15 @@ bool ItemBase::relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & r
         rb = q*rb;
         rb = r + rb;
         qb = q * qb;
+        if ( debugLogging )
+        {
+            URHO3D_LOGINFOF( "Node %s", nodeB->GetName().CString() );
+            URHO3D_LOGINFOF( "     r: (%f, %f, %f)", r.x_, r.y_, r.z_ );
+            URHO3D_LOGINFOF( "     q: (%f, %f, %f, %f)", q.w_, q.x_, q.y_, q.z_ );
+        }
     }
 
-    rel_r = ra - rb;
+    rel_r = qb.Inverse()* (ra - rb);
     // This might be wrong.
     // I probably don't need quaternion at all.
     rel_q = qb.Inverse() * qa;
