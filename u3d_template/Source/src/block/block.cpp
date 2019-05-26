@@ -397,6 +397,8 @@ Block * Block::tryAttachToSurface()
 
 void Block::drawDebugForces( DebugRenderer * debug )
 {
+    const float LEN = 5.0;
+
     Node * n = GetNode();
     const Matrix3x4 m = n->GetWorldTransform();
     {
@@ -405,7 +407,7 @@ void Block::drawDebugForces( DebugRenderer * debug )
         const Vector3 f( gravity.F.x_, gravity.F.y_, gravity.F.z_ );
         const Vector3 fW = (m*f) - (m*Vector3::ZERO);
 
-        debug->AddLine( atW, atW + fW, Color::CYAN, false );
+        debug->AddLine( atW, atW + fW*LEN, Color::CYAN, false );
     }
 
     const unsigned qty = friction.Size();
@@ -416,7 +418,7 @@ void Block::drawDebugForces( DebugRenderer * debug )
         const Vector3 atW = m * at;
         const Vector3 f( fa.F.x_, fa.F.y_, fa.F.z_ );
         const Vector3 fW = (m*f) - (m*Vector3::ZERO);
-        debug->AddLine( atW, atW + fW, Color::CYAN, false );
+        debug->AddLine( atW, atW + fW*LEN, Color::CYAN, false );
     }
 }
 
