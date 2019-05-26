@@ -450,7 +450,7 @@ void Assembly::applyPlanetForces()
 //        rb->ResetForces();
         if ( !rb )
             continue;
-        rb->ApplyForce( b->gravity.fW, b->gravity.atW );
+//        rb->ApplyForce( b->gravity.fW, b->gravity.atW );
 //        const unsigned f_qty = b->friction.Size();
 //        for ( unsigned j=0; j<f_qty; j++ )
 //        {
