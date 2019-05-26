@@ -36,7 +36,7 @@ public:
     virtual void Start() override;
 
     // Can listen to parent changes and enter/leave physics world.
-    void subscribeToParentChanges();
+    //void subscribeToParentChanges();
     virtual void fromWorld();
     virtual void toWorld();
     RigidBody2 * rigidBody();
@@ -71,8 +71,8 @@ public:
     static bool relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & rel_q );
 
 private:
-    void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
-    void OnNodeAdded( StringHash eventType, VariantMap & eventData );
+    //void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
+    //void OnNodeAdded( StringHash eventType, VariantMap & eventData );
     void OnPhysicsPostStep( StringHash t, VariantMap & e );
 
 public:

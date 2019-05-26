@@ -21,12 +21,13 @@ public:
     void Start() override;
     void Update( float dt ) override;
 
-private:
+public:
     void computeBaseRotation();
     SharedPtr<GameData>   gameData;
     Float yaw, pitch, roll;
     Timestamp period;
     Quaterniond qBase;
+    bool active;
 };
 
 }

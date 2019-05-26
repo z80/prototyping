@@ -9,9 +9,10 @@ namespace Osp
 KeplerRotator::KeplerRotator( Context * ctx )
     : ItemBase( ctx )
 {
-    yaw   = 0.0;
-    pitch = 0.0;
-    roll  = 0.0;
+    active = true;
+    yaw    = 0.0;
+    pitch  = 0.0;
+    roll   = 0.0;
     period = GameData::ONE_SECOND * 60;
 }
 
@@ -31,7 +32,7 @@ void KeplerRotator::launch( Timestamp periodSec, Float yaw, Float pitch, Float r
         URHO3D_LOGINFOF( "v: %f, %f, %f", v.x_, v.y_, v.z_ );
     }
 
-
+    active = true;
     period = GameData::ONE_SECOND * periodSec;
     this->yaw = yaw;
     this->pitch = pitch;
@@ -49,6 +50,9 @@ void KeplerRotator::Start()
 
 void KeplerRotator::Update( float dt )
 {
+    if ( !active )
+        return;
+
     if ( !gameData )
         return;
 

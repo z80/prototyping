@@ -37,8 +37,6 @@ void Block::Start()
 {
     Node * node = GetNode();
     createContent( node );
-    // React on parenting to/from node containing physics world.
-    subscribeToParentChanges();
 }
 
 void Block::createContent( Node * n )

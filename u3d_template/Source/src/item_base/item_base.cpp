@@ -38,13 +38,13 @@ void ItemBase::Start()
     this->r = Vector3d( r.x_, r.y_, r.z_ );
 }
 
-void ItemBase::subscribeToParentChanges()
+/*void ItemBase::subscribeToParentChanges()
 {
-    SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( ItemBase, OnNodeRemoved ) );
-    SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( ItemBase, OnNodeAdded ) );
+    //SubscribeToEvent( E_NODEREMOVED, URHO3D_HANDLER( ItemBase, OnNodeRemoved ) );
+    //SubscribeToEvent( E_NODEADDED,   URHO3D_HANDLER( ItemBase, OnNodeAdded ) );
 
-    toWorld();
-}
+    //toWorld();
+}*/
 
 void ItemBase::fromWorld()
 {
@@ -506,7 +506,7 @@ bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & r
     return true;
 }
 
-void ItemBase::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
+/*void ItemBase::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
 {
     Variant & n = eventData[NodeRemoved::P_NODE];
     Node * self = static_cast<Node *>( n.GetPtr() );
@@ -534,7 +534,7 @@ void ItemBase::OnNodeAdded( StringHash eventType, VariantMap & eventData )
     if ( parent != msgParent )
         return;
     toWorld();
-}
+}*/
 
 void ItemBase::OnPhysicsPostStep( StringHash t, VariantMap & e )
 {
