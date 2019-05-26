@@ -199,7 +199,7 @@ void OnePlanet::createDesign()
 
 void OnePlanet::createKepler()
 {
-    Node * rotCenter = rootNode->CreateChild( "RotationCenter" );
+    /*Node * rotCenter = rootNode->CreateChild( "RotationCenter" );
     {
         StaticModel * m = rotCenter->CreateComponent<StaticModel>();
         ResourceCache * cache = GetSubsystem<ResourceCache>();
@@ -207,7 +207,8 @@ void OnePlanet::createKepler()
         m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
         m->SetCastShadows( true );
         rotCenter->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
-    }
+    }*/
+
     /*{
         Node * body = rotCenter->CreateChild( "OrbitingBody" );
         StaticModel * m = body->CreateComponent<StaticModel>();

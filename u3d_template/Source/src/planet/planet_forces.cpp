@@ -121,7 +121,7 @@ void PlanetForces::applyFriction( Block * b )
     if ( !inAtmosphere )
         return;
     // Velocity in block ref. frame.
-    const Vector3d V = -Q.Inverse()*Vmover;
+    const Vector3d V = Q.Inverse()*Vmover;
     const Float    absV = V.Length();
 
     // Compute forces in block ref. frame.
@@ -133,13 +133,13 @@ void PlanetForces::applyFriction( Block * b )
         ForceApplied fa;
 
         // Dynamic pressure force.
-        const Float density = ( V_n <= 0.0 ) ? densityF : densityB;
+        const Float density = ( V_n >= 0.0 ) ? densityF : densityB;
         const Vector3d F_dynamic_pressure = -(V_n * V_n * density * t.a) * t.n;
 
 
         // Viscosity force.
-        const Float viscosity = ( V_n <= 0.0 ) ? viscosityF : viscosityB;
-        const Vector3d F_viscosity = (V - V_n*t.n)*t.a*viscosity;
+        const Float viscosity = ( V_n >= 0.0 ) ? viscosityF : viscosityB;
+        const Vector3d F_viscosity = (V_n*t.n - V)*t.a*viscosity;
 
         fa.F  = F_dynamic_pressure + F_viscosity;
 
