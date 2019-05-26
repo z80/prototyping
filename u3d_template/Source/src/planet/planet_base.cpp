@@ -130,14 +130,14 @@ void PlanetBase::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
     }
 
     PhysicsWorld2 * pw2 = physicsWorld->Cast<PhysicsWorld2>();
-    WorldMover    * wm  = physicsWorld->Cast<WorldMover>();
-    if ( p_new == this )
+    WorldMover    * wm  = worldMover->Cast<WorldMover>();
+    if ( (p_new == this) && (p_old != this) )
     {
-      initCollisions( pw2, wm, GameData::DIST_PLANET_COLLISIONS );
+        initCollisions( pw2, wm, GameData::DIST_PLANET_COLLISIONS );
     }
     else if ( ( p_old == this ) && ( p_new != this ) )
     {
-      finitCollisions( pw2 );
+        finitCollisions( pw2 );
     }
 }
 

@@ -92,9 +92,12 @@ void Assembly::Start()
 void Assembly::Update( float timeStep )
 {
     // Apply forces.
-    computePlanetForces();
-    convertPlanetForces();
-    applyPlanetForces();
+    if ( inWorld )
+    {
+        computePlanetForces();
+        convertPlanetForces();
+        applyPlanetForces();
+    }
 }
 
 void Assembly::PostUpdate( float timeStep )
@@ -447,7 +450,7 @@ void Assembly::applyPlanetForces()
 //        rb->ResetForces();
         if ( !rb )
             continue;
-//        rb->ApplyForce( b->gravity.fW, b->gravity.atW );
+        rb->ApplyForce( b->gravity.fW, b->gravity.atW );
 //        const unsigned f_qty = b->friction.Size();
 //        for ( unsigned j=0; j<f_qty; j++ )
 //        {

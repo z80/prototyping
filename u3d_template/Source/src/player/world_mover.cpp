@@ -140,12 +140,12 @@ void WorldMover::switchToEvent( Assembly * assembly )
     d[ P_POS_OLD ]    = (void *)&curR;
     d[ P_VEL_OLD ]    = (void *)&curV;
     d[ P_ATM_OLD ]    = (void *)&curAtm;
-    d[ P_PLANET_OLD ] = (void *)&curPlanet;
+    d[ P_PLANET_OLD ] = (void *)curPlanet;
 
     d[ P_POS_NEW ]    = (void *)&newR;
     d[ P_VEL_NEW ]    = (void *)&newV;
     d[ P_ATM_NEW ]    = (void *)&newAtm;
-    d[ P_PLANET_NEW ] = (void *)&newPlanet;
+    d[ P_PLANET_NEW ] = (void *)newPlanet;
 
     SendEvent( MyEvents::E_WORLD_SWITCHED, d );
 }

@@ -46,7 +46,9 @@ void PlanetTest::Start()
     {
         // Launch site
         Node * n = SharedPtr<Node>( dynamicsNode->CreateChild( "LaunchSite" ) );
-        const Quaternion q = Quaternion( 70.0, Vector3( 0.0, 0.0, 1.0 ) );
+        //const Quaternion q = Quaternion( 70.0, Vector3( 0.0, 0.0, 1.0 ) );
+        //const Vector3 at = q * Vector3( 0.0, 11.0, 0.0 );
+        const Quaternion q = Quaternion( 0.0, Vector3( 0.0, 0.0, 1.0 ) );
         const Vector3 at = q * Vector3( 0.0, 11.0, 0.0 );
 
         n->SetPosition( at );
