@@ -103,9 +103,7 @@ void PlanetTest::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Fl
     rb->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
 
     CollisionShape2 * cs = n->CreateComponent<CollisionShape2>();
-    cs->SetSphere( 20.0,
-                   Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ),
-                   Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
+    cs->SetSphere( 20.0 );
 }
 
 void PlanetTest::finitCollisions( Osp::PhysicsWorld2 * w2 )
