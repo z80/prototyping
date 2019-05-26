@@ -448,16 +448,15 @@ void Assembly::applyPlanetForces()
         if ( !b )
             continue;
         RigidBody2 * rb = b->rigidBody();
-//        rb->ResetForces();
         if ( !rb )
             continue;
         rb->ApplyForce( b->gravity.fW, b->gravity.atW );
-//        const unsigned f_qty = b->friction.Size();
-//        for ( unsigned j=0; j<f_qty; j++ )
-//        {
-//            const ForceApplied & fa = b->friction[j];
-//            rb->ApplyForce( fa.fW, fa.atW );
-//        }
+        const unsigned f_qty = b->friction.Size();
+        for ( unsigned j=0; j<f_qty; j++ )
+        {
+            const ForceApplied & fa = b->friction[j];
+            rb->ApplyForce( fa.fW, fa.atW );
+        }
     }
 }
 

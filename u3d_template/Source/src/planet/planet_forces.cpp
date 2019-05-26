@@ -9,11 +9,11 @@ namespace Osp
 PlanetForces::PlanetForces( Context * ctx )
     : LogicComponent( ctx )
 {
-    GM_ = 1.0;
+    GM_ = 10.0;
     R_  = 10.0;
     atmHeight_  = 7.0;
-    density_    = 1.0;
-    viscosity_  = 1.0;
+    density_    = 0.05;
+    viscosity_  = 0.01;
     densityB_   = 0.5;
     viscosityB_ = 0.5;
 
