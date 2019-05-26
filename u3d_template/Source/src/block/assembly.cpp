@@ -502,12 +502,29 @@ void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )
 
 void Assembly::adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv )
 {
-    const Vector3d r0 = relR();
-    const Vector3d v0 = relV();
-    const Vector3d r1 = r0 + dr;
-    const Vector3d v1 = v0 + dv;
-    setR( r1 );
-    setV( v1 );
+    const unsigned qty = blocks.Size();
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        Block * b = blocks[i];
+        const Vector3d r0 = b->relR();
+        const Vector3d v0 = b->relV();
+        const Vector3d r1 = r0 + dr;
+        const Vector3d v1 = v0 + dv;
+
+        b->setR( r1 );
+        b->setV( v1 );
+        RigidBody2 * rb = b->rigidBody();
+        if ( rb )
+        {
+            const Vector3 vr1( r1.x_, r1.y_, r1.z_ );
+            rb->SetPosition( vr1 );
+            const Vector3 vv1( v1.x_, v1.y_, v1.z_ );
+            rb->SetLinearVelocity( vv1 );
+        }
+    }
+    // Adjust assembly cooredinates based on block
+    // coordinates.
+    updatePoseInWorld();
 }
 
 

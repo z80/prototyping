@@ -134,7 +134,7 @@ void PlanetForces::applyFriction( Block * b )
 
         // Dynamic pressure force.
         const Float density = ( V_n >= 0.0 ) ? densityF : densityB;
-        const Vector3d F_dynamic_pressure = -(V_n * V_n * density * t.a) * t.n;
+        const Vector3d F_dynamic_pressure = (V_n * V_n * density * t.a) * t.n;
 
 
         // Viscosity force.

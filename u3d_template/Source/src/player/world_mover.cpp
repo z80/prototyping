@@ -110,6 +110,8 @@ void WorldMover::OnAssemblySelected( StringHash eventType, VariantMap & eventDat
     switchTo( assembly );
     // Fill in numbers for world moved and notify all the assemblies.
     switchToEvent( assembly );
+
+    planet = assembly->planet;
 }
 
 void WorldMover::switchToEvent( Assembly * assembly )
@@ -230,7 +232,7 @@ void WorldMover::tryMoveTo()
     else
         dv = Vector3d::ZERO;
 
-    moveToEvent( r1, dr, dv );
+    moveToEvent( r1, -dr, dv );
 }
 
 void WorldMover::moveToEvent( const Vector3d & r, const Vector3d & dr, const Vector3d & dv )
