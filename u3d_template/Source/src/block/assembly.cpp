@@ -421,7 +421,7 @@ void Assembly::convertPlanetForces()
         Block * b = blocks[i];
         if ( !b )
             continue;
-        worldMover->relativePose( b, rel_r, rel_q );
+        b->relativePose( worldMover, rel_r, rel_q );
         const Vector3d f = rel_q * b->gravity.F;
         b->gravity.fW = Vector3( f.x_, f.y_, f.z_ );
         // And also convert all friction forces.
