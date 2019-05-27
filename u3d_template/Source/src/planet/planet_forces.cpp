@@ -12,6 +12,8 @@ PlanetForces::PlanetForces( Context * ctx )
     GM_ = 10.0;
     R_  = 10.0;
     atmHeight_  = 7.0;
+    orbitR_     = 20.0;
+
     density_    = 0.05;
     viscosity_  = 0.01;
     densityB_   = 0.5;
@@ -58,6 +60,15 @@ void PlanetForces::applyFar( Block * b )
 {
     clearGravity( b );
     applyFriction( b );
+}
+
+bool PlanetForces::canOrbit( Assembly * a )
+{
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    planet->relativePose( a, rel_r, rel_q, true );
+    const Float L = rel_r.Length();
+    return ( L > orbitR_ );
 }
 
 void PlanetForces::applyGravity( Block * b )

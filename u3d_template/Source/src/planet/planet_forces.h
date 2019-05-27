@@ -10,6 +10,7 @@ namespace Osp
 {
 
 class Block;
+class Assembly;
 
 class PlanetForces: public LogicComponent
 {
@@ -23,6 +24,8 @@ public:
 
     void applyClose( Block * b );
     void applyFar( Block * b );
+
+    bool canOrbit( Assembly * a );
 
 public:
     virtual void applyGravity( Block * b );
@@ -38,6 +41,9 @@ public:
     Float GM_;
     // Gravity radius.
     Float R_;
+    // Distance from center at which can orbit.
+    // It means it is well beyond the atmosphere.
+    Float orbitR_;
 
     // Air friction parameters.
     // Atmosphere height.

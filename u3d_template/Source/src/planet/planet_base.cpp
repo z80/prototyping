@@ -19,6 +19,12 @@ PlanetBase::~PlanetBase()
 
 }
 
+bool PlanetBase::canOrbit( Assembly * a ) const
+{
+    const bool res = forces->canOrbit( a );
+    return res;
+}
+
 Float PlanetBase::GM() const
 {
     return forces->GM_;
