@@ -506,6 +506,119 @@ bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & r
     return true;
 }
 
+bool ItemBase::relativeAll( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q,
+                                              Vector3d & rel_v, Vector3d & rel_w, bool debugLogging )
+{
+    // root->a->b->c->d->e->this
+    // root->a->b->f->g->other
+    // The idea is to accumulate relative position and orientation.
+    Vector3d    r = Vector3::ZERO;
+    Quaterniond q = Quaternion::IDENTITY;
+
+    // Get all ancestors of current node.
+    // Make it static as graphics is in one thread.
+    static std::vector<ItemBase *> allAncestorsA;
+    allAncestorsA.clear();
+    ItemBase * itemA = this;
+    do {
+        allAncestorsA.push_back( itemA );
+        itemA = itemA->parentItem();
+    } while ( itemA );
+    const size_t allQtyA = allAncestorsA.size();
+
+    ItemBase * itemB;
+    static std::vector<ItemBase *> ancestorsB;
+    ancestorsB.clear();
+    size_t indA = allQtyA;
+    do {
+        ancestorsB.push_back( itemB );
+        // Check if nodeB is in allAncestorsA.
+        for ( size_t i=0; i<allQtyA; i++ )
+        {
+            itemA = allAncestorsA[i];
+            if ( itemA == itemB )
+            {
+                indA = i;
+                break;
+            }
+        }
+        if ( indA != allQtyA )
+            break;
+        // Get parent.
+        itemB = itemB->parentItem();
+    } while ( itemB );
+
+    // If reached the root and didn't meed
+    // anything common just break.
+    if ( indA == allQtyA )
+        return false;
+
+    // Here there is a closest common ancestor.
+    // First find pose of nodeA in it's ref. frame.
+    Vector3d    ra = Vector3d::ZERO;
+    Quaterniond qa = Quaterniond::IDENTITY;
+    Vector3d    va = Vector3d::ZERO;
+    Vector3d    wa = Vector3d::ZERO;
+    for ( size_t i=0; i<indA; i++ )
+    {
+        itemA = allAncestorsA[i];
+        const Quaterniond q = itemA->relQ();
+        const Vector3d    r = itemA->relR();
+        const Vector3d    v = itemA->relV();
+        const Vector3d    w = itemA->relW();
+        ra = q*ra;
+        ra = r + ra;
+
+        va = q*va;
+        va = v + va;
+
+        wa = q*wa;
+        wa = w + wa;
+
+        qa = q * qa;
+    }
+
+    Vector3d    rb = Vector3d::ZERO;
+    Quaterniond qb = Quaterniond::IDENTITY;
+    Vector3d    vb = Vector3d::ZERO;
+    Vector3d    wb = Vector3d::ZERO;
+    const size_t indB = ancestorsB.size()-1;
+    for ( size_t i=0; i<indB; i++ )
+    {
+        ItemBase * itemB = ancestorsB[i];
+        const Quaterniond q = itemB->relQ();
+        const Vector3d    r = itemB->relR();
+        const Vector3d    v = itemB->relV();
+        const Vector3d    w = itemB->relW();
+        rb = q*rb;
+        rb = r + rb;
+
+        vb = q*vb;
+        vb = v + vb;
+
+        wb = q*wb;
+        wb = w + wb;
+
+        qb = q * qb;
+        if ( debugLogging )
+        {
+            URHO3D_LOGINFOF( "Node %s", itemB->GetNode()->GetName().CString() );
+            URHO3D_LOGINFOF( "     r: (%f, %f, %f)", r.x_, r.y_, r.z_ );
+            URHO3D_LOGINFOF( "     q: (%f, %f, %f, %f)", q.w_, q.x_, q.y_, q.z_ );
+        }
+    }
+
+    const Quaterniond invQb = qb.Inverse();
+    rel_r = invQb * (ra - rb);
+    rel_v = invQb * (va - vb);
+    rel_w = invQb * (wa - wb);
+    // This might be wrong.
+    // I probably don't need quaternion at all.
+    rel_q = qb.Inverse() * qa;
+
+    return true;
+}
+
 /*void ItemBase::OnNodeRemoved( StringHash eventType, VariantMap & eventData )
 {
     Variant & n = eventData[NodeRemoved::P_NODE];

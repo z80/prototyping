@@ -70,6 +70,9 @@ public:
     bool relativePose( Node * other, Vector3  & rel_r, Quaternion  & rel_q );
     static bool relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & rel_q );
 
+    bool relativeAll( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q,
+                                        Vector3d & rel_v, Vector3d & rel_w, bool debugLogging=false );
+
 private:
     //void OnNodeRemoved( StringHash eventType, VariantMap & eventData );
     //void OnNodeAdded( StringHash eventType, VariantMap & eventData );
