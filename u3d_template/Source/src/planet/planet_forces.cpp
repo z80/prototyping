@@ -180,8 +180,8 @@ bool PlanetForces::atmosphereParams( const Vector3d &at, Float & temperature, Fl
     const Float _1_x2 = 1.0 - x2;
     densityF     = _1_x2*density_;
     viscosityF   = _1_x2*viscosity_;
-    densityB     = _1_x2*densityB_;
-    viscosityB   = _1_x2*viscosityB_;
+    densityB     = densityF*densityB_;
+    viscosityB   = viscosityF*viscosityB_;
     temperature = groundT_*_1_x2 + highAltitudeT_*x2;
     return true;
 }
