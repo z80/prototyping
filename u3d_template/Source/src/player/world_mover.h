@@ -33,6 +33,12 @@ protected:
     // to let this mover know where to displace the world.
     void OnAssemblySelected( StringHash eventType, VariantMap & eventData );
 
+    // Switches to orbit/ground.
+    bool needOrbit() const;
+    bool needGround() const;
+    void switchToOrbiting();
+    void switchToGrounding();
+
     void switchToEvent( Assembly * assembly );
     void switchTo( Assembly * assembly );
     void tryMoveTo();
