@@ -9,7 +9,7 @@ namespace Osp
 PlanetForces::PlanetForces( Context * ctx )
     : LogicComponent( ctx )
 {
-    GM_ = 10.0;
+    GM_ = 500.0;
     R_  = 10.0;
     atmHeight_  = 7.0;
     orbitR_     = 20.0;
