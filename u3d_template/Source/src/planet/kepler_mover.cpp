@@ -24,7 +24,7 @@ static void rv2elems( const Float GM, const Eigen::Vector3d & r, const Eigen::Ve
                       Eigen::Vector3d & A,
                       Eigen::Vector3d & B );
 static Float speed( Float GM, Float a, Float r, bool parabolic = false );
-static void velocity( KeplerMover * km, Float & vx, Float & vy, bool parabolic = false );
+static void velocity( const KeplerMover *km, Float & vx, Float & vy, bool parabolic = false );
 
 // This is a special one assuming (e < 1.0).
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
@@ -153,7 +153,18 @@ Vector3d KeplerMover::relR() const
 
 Vector3d KeplerMover::relV() const
 {
-    return Vector3d::ZERO;
+    bool parabolic;
+    if ( ( e > (1.0 + KeplerMover::eps) ) || ( e < (1.0 - KeplerMover::eps) ) )
+        parabolic = false;
+    else
+        parabolic = true;
+    Float c_vx, c_vy;
+    velocity( this, c_vx, c_vy, parabolic );
+    const Vector3d vx = ex * c_vx;
+    const Vector3d vy = ey * c_vy;
+    const Vector3d v = vx + vy;
+
+    return v;
 }
 
 
@@ -273,7 +284,7 @@ static Float speed( Float GM, Float a, Float r, bool parabolic )
     return v;
 }
 
-static void velocity( KeplerMover * km, Float & vx, Float & vy, bool parabolic )
+static void velocity( const KeplerMover * km, Float & vx, Float & vy, bool parabolic )
 {
     const Float f = km->f;
     const Float siF = std::sin(f);
@@ -282,15 +293,15 @@ static void velocity( KeplerMover * km, Float & vx, Float & vy, bool parabolic )
     const Float GM = km->GM;
     const Float a  = km->a;
     const Float l = km->l;
+    const Float e = km->e;
     const Float den = 1.0 + e*coF;
     const Float r  = l/den;
     const Float dr_dTheta = l*e*siF/(den*den);
     const Float v = speed( GM, a, r, parabolic );
     const Float gamma = r / dr_dTheta;
     const Float C = v / std::sqrt( 1 + gamma*gamma );
-    const Float proj_vx = (siF + coF*gamma)*C;
-    const Float proj_vy = (coF - siF*gamma)*C;
-km->
+    vx = (siF + coF*gamma)*C;
+    vy = (coF - siF*gamma)*C;
 }
 
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
@@ -321,12 +332,12 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
 
     // Also swapping Y and Z. It seems in Urho3D it is also left
     // ref .frame.
-    km->ex[0] = ex(0);
-    km->ex[1] = ex(2);
-    km->ex[2] = ex(1);
-    km->ey[0] = ey(0);
-    km->ey[1] = ey(2);
-    km->ey[2] = ey(1);
+    km->ex.x_ = ex(0);
+    km->ex.y_ = ex(2);
+    km->ex.z_ = ex(1);
+    km->ey.x_ = ey(0);
+    km->ey.y_ = ey(2);
+    km->ey.z_ = ey(1);
 }
 
 static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eigen::Vector3d & v )
@@ -350,12 +361,12 @@ static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eige
     const Eigen::Vector3d ex = ev / std::sqrt( ev.transpose() * ev );
     const Eigen::Vector3d ee = h.cross( ex );
     const Eigen::Vector3d ey = ee / std::sqrt( ee.transpose() * ee );
-    km->ex[0] = ex(0);
-    km->ex[1] = ex(1);
-    km->ex[2] = ex(2);
-    km->ey[0] = ey(0);
-    km->ey[1] = ey(1);
-    km->ey[2] = ey(2);
+    km->ex.x_ = ex(0);
+    km->ex.y_ = ex(1);
+    km->ex.z_ = ex(2);
+    km->ey.x_ = ey(0);
+    km->ey.y_ = ey(1);
+    km->ey.z_ = ey(2);
 
     if ( e > (1.0 + KeplerMover::eps) )
         hyperbolicInit( km, r, v );
@@ -430,8 +441,8 @@ static void ellipticProcess( KeplerMover * km, Float t, Eigen::Vector3d & r, Eig
     const Float b = a * std::sqrt( 1 - e*e );
     const Float Ry = b*siE;
 
-    Eigen::Vector3d ax( km->ex[0], km->ex[1], km->ex[2] );
-    Eigen::Vector3d ay( km->ey[0], km->ey[1], km->ey[2] );
+    Eigen::Vector3d ax( km->ex.x_, km->ex.y_, km->ex.z_ );
+    Eigen::Vector3d ay( km->ey.x_, km->ey.y_, km->ey.z_ );
     // Position at orbit.
     r = (ax * Rx) + (ay * Ry);
 }
@@ -527,8 +538,8 @@ static void hyperbolicProcess( KeplerMover * km, Float t, Eigen::Vector3d & r, E
     const Float Ry = r_ * siF;
 
     // Computing real 3d coordinates.
-    Eigen::Vector3d ax( km->ex[0], km->ex[1], km->ex[2] );
-    Eigen::Vector3d ay( km->ey[0], km->ey[1], km->ey[2] );
+    Eigen::Vector3d ax( km->ex.x_, km->ex.y_, km->ex.z_ );
+    Eigen::Vector3d ay( km->ey.x_, km->ey.y_, km->ey.z_ );
 
     // Position at orbit.
     r = (ax * Rx) + (ay * Ry);
@@ -620,8 +631,8 @@ static void parabolicProcess( KeplerMover * km, Float t, Eigen::Vector3d & r, Ei
     const Float Ry = r_ * siF;
 
     // Computing real 3d coordinates.
-    Eigen::Vector3d ax( km->ex[0], km->ex[1], km->ex[2] );
-    Eigen::Vector3d ay( km->ey[0], km->ey[1], km->ey[2] );
+    Eigen::Vector3d ax( km->ex.x_, km->ex.y_, km->ex.z_ );
+    Eigen::Vector3d ay( km->ey.x_, km->ey.y_, km->ey.z_ );
     // Position at orbit.
     r = (ax * Rx) + (ay * Ry);
 }

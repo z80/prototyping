@@ -7,6 +7,8 @@
 #include "block.h"
 #include "assembly.h"
 #include "data_types.h"
+
+#include "vector3d.h"
 //#include "game_data.h"
 
 using namespace Urho3D;
@@ -66,7 +68,7 @@ public:
     Float tau;
 
     // Orbit unit vectors.
-    Float ex[3], ey[3];
+    Vector3d ex, ey;
 };
 
 }
