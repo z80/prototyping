@@ -275,17 +275,22 @@ static Float speed( Float GM, Float a, Float r, bool parabolic )
 
 static void velocity( KeplerMover * km, Float & vx, Float & vy, bool parabolic )
 {
-    /*
-    const Float GM = km->GM;
-    const Float a  = km->a;
-    //const Float r  = k
-    const Float v = speed( GM, a, r, parabolic );
     const Float f = km->f;
     const Float siF = std::sin(f);
     const Float coF = std::cos(f);
-    const Float dxdf = -r*r*siF/p;
-    //const Float dydf =
-    */
+
+    const Float GM = km->GM;
+    const Float a  = km->a;
+    const Float l = km->l;
+    const Float den = 1.0 + e*coF;
+    const Float r  = l/den;
+    const Float dr_dTheta = l*e*siF/(den*den);
+    const Float v = speed( GM, a, r, parabolic );
+    const Float gamma = r / dr_dTheta;
+    const Float C = v / std::sqrt( 1 + gamma*gamma );
+    const Float proj_vx = (siF + coF*gamma)*C;
+    const Float proj_vy = (coF - siF*gamma)*C;
+km->
 }
 
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E )
