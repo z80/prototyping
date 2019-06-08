@@ -596,7 +596,9 @@ bool ItemBase::relativeAll( ItemBase * other, Vector3d & rel_r, Quaterniond & re
         rb = r + rb;
 
         vb = q*vb;
-        vb = v + vb;
+        // Due to ref. frame in Urho3D is left handed not
+        // sure if here it should be "+ w.cross(r)" or "- w.cross(r)".
+        vb = v + w.CrossProduct(r) + vb;
 
         wb = q*wb;
         wb = w + wb;
