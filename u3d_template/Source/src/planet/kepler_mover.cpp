@@ -360,7 +360,14 @@ static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eige
 
     const Eigen::Vector3d ex = ev / std::sqrt( ev.transpose() * ev );
     const Eigen::Vector3d ee = h.cross( ex );
-    const Eigen::Vector3d ey = ee / std::sqrt( ee.transpose() * ee );
+    // If angular momentum is close to zero (moving directly towards or away)
+    // second axis direction is ambiguous. Assigning it to zero in this case.
+    const Float eeAbs = std::sqrt( ee.transpose() * ee );
+    Eigen::Vector3d ey;
+    if (eeAbs > KeplerMover::eps)
+        ey = (ee / eeAbs);
+    else
+        ey = Eigen::Vector3d::Zero();
     km->ex.x_ = ex(0);
     km->ex.y_ = ex(1);
     km->ex.z_ = ex(2);
