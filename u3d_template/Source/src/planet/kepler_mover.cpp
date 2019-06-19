@@ -367,9 +367,9 @@ static bool genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eige
     // It is because if it is close to pure free radial falling equations
     // don't really work.
     {
-        const Float v_abs = std::sqrt( v.transpose() * v );
+        //const Float v_abs = std::sqrt( v.transpose() * v );
         const Float h_abs = std::sqrt( h.transpose() * h );
-        const Float h_ = h_abs / (r_abs * v_abs);
+        const Float h_ = h_abs;
         if ( h_ < GameData::GameData::MIN_ANGULAR_MOMENTUM )
             return false;
     }
