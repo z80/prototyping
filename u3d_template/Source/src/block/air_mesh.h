@@ -11,9 +11,10 @@ namespace Osp
 
 struct Triangle
 {
-    Vector3d v[13];
-    Vector3d n;
-    Float   a;
+    Vector3d v[3]; // Vertices
+    Vector3d n;    // Normal
+    Vector3d at;   // Center
+    Float   a;     // Area
 };
 
 class AirMesh

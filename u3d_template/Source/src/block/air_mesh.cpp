@@ -20,12 +20,14 @@ static void getTriangles( unsigned trianglesQty,
         Int * ind = reinterpret_cast<Int *>( &inds[at] );
 
         Triangle t;
+        Vector3d v_at = Vector3d::ZERO;
         for ( unsigned j=0; j<3; j++ )
         {
             Int vertInd = ind[j];
             float * v = reinterpret_cast<float *>( &verts[vertStride * vertInd] );
             const Vector3d p( v[0], v[1], v[2] );
             t.v[j] = p;
+            v_at += p;
         }
         // Compute normal
         const Vector3d va = t.v[1] - t.v[0];
@@ -33,6 +35,7 @@ static void getTriangles( unsigned trianglesQty,
         t.n = va.CrossProduct( vb );
         t.a = t.n.Length();
         t.n = t.n / t.a;
+        t.at = v_at * 0.3333333333333;
         tris.Push( t );
     }
 }

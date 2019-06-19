@@ -116,12 +116,10 @@ void PlanetForces::applyFriction( Block * b )
     static const Float EPS = 1.0e-6;
 
     const AirMesh & a = b->airMesh;
-    const Vector3d    Vmover = b->relV();
-    const Quaterniond Q      = b->relQ();
     // Position relative to planet center to compute atmosphere params.
-    Vector3d    rel_r;
+    Vector3d    rel_r, rel_v, rel_w;
     Quaterniond rel_q;
-    planet->relativePose( b, rel_r, rel_q );
+    planet->relativeAll( b, rel_r, rel_q, rel_v, rel_w );
     Float densityF, viscosityF,
           densityB, viscosityB,
           temperature;
@@ -132,14 +130,18 @@ void PlanetForces::applyFriction( Block * b )
     if ( !inAtmosphere )
         return;
     // Velocity in block ref. frame.
-    const Vector3d V = Q.Inverse()*Vmover;
-    const Float    absV = V.Length();
+    const Vector3d V0 = rel_q.Inverse()*rel_v;
+    // Angular velocity in block ref. frame.
+    const Vector3d W = rel_q.Inverse()*rel_w;
 
     // Compute forces in block ref. frame.
     b->friction.Reserve( qty );
     for ( unsigned i=0; i<qty; i++ )
     {
         const Triangle & t = a.triangles[i];
+        // Velocity at triangle center.
+        const Vector3d V = V0 + W.CrossProduct( t.at );
+
         const Float V_n = V.DotProduct( t.n );
         ForceApplied fa;
 
