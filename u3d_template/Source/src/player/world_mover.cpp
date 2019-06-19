@@ -399,7 +399,7 @@ void WorldMover::tryMoveTo()
 
     Vector3d dr;
     Quaterniond dq;
-    assembly->relativePose( this, dr, dq );
+    this->relativePose( assembly, dr, dq );
     const Float d = dr.Length();
     const bool inAtmosphere = !active;
     if ( (d < GameData::DIST_WHEN_NEED_MOVE) && ( inAtmosphere == assembly->inAtmosphere) )
@@ -407,7 +407,7 @@ void WorldMover::tryMoveTo()
 
     Vector3d dv;
     const Vector3d v0 = relV();
-    const Vector3d r1 = relR() + dr;
+    const Vector3d r1 = relR() - dr;
     setR( r1 );
     if ( !inAtmosphere )
     {
@@ -420,7 +420,7 @@ void WorldMover::tryMoveTo()
     else
         dv = Vector3d::ZERO;
 
-    moveToEvent( r1, -dr, dv );
+    moveToEvent( r1, dr, dv );
 }
 
 void WorldMover::moveToEvent( const Vector3d & r, const Vector3d & dr, const Vector3d & dv )
