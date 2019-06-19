@@ -19,8 +19,9 @@ WorldMover::~WorldMover()
 
 void WorldMover::Start()
 {
-    active = false;
+    KeplerMover::Start();
 
+    active = false;
     subscribeToEvents();
 }
 
@@ -146,8 +147,8 @@ bool WorldMover::needGround() const
 {
     if ( (!planet) || (!active) )
         return false;
-    const bool canOrbit = planet->canOrbit( this );
-    return canOrbit;
+    const bool canGround = !planet->canOrbit( this );
+    return canGround;
 }
 
 void WorldMover::switchToOrbiting()
@@ -249,7 +250,12 @@ void WorldMover::checkInfluence()
 PlanetBase * WorldMover::planetOfInfluence()
 {
     if ( !gameData )
-        return nullptr;
+    {
+        Scene * s = GetScene();
+        gameData = SharedPtr<GameData>( s->GetOrCreateComponent<GameData>() );
+        if ( !gameData )
+            return nullptr;
+    }
 
     const unsigned qty = gameData->planets.Size();
     Float maxF = -1.0;

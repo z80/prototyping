@@ -234,6 +234,23 @@ ItemBase * ItemBase::parentItem() const
     return nullptr;
 }
 
+ItemBase * ItemBase::headItem( const ItemBase * item )
+{
+    Node * n = item->GetNode();
+    static Vector< SharedPtr<Component> > comps;
+    comps = n->GetComponents();
+    const size_t qty = comps.Size();
+    for ( size_t i=0; i<qty; i++ )
+    {
+        ItemBase * ib = comps[i]->Cast<ItemBase>();
+        if ( !ib )
+            continue;
+        return ib;
+    }
+
+    return nullptr;
+}
+
 bool ItemBase::relativePose( const ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q, bool debugLogging )
 {
     // root->a->b->c->d->e->this
@@ -519,14 +536,14 @@ bool ItemBase::relativeAll( const ItemBase * other, Vector3d & rel_r, Quaternion
     // Make it static as graphics is in one thread.
     static std::vector<const ItemBase *> allAncestorsA;
     allAncestorsA.clear();
-    const ItemBase * itemA = this;
+    const ItemBase * itemA = headItem( this );
     do {
         allAncestorsA.push_back( itemA );
         itemA = itemA->parentItem();
     } while ( itemA );
     const size_t allQtyA = allAncestorsA.size();
 
-    const ItemBase * itemB = other;
+    const ItemBase * itemB = headItem( other );
     static std::vector<const ItemBase *> ancestorsB;
     ancestorsB.clear();
     size_t indA = allQtyA;

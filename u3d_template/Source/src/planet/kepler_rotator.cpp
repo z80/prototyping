@@ -84,6 +84,12 @@ void KeplerRotator::Update( float dt )
     // Swap Y and Z and change axis direction to the opposite.
     const Quaterniond q( qe.w_, -qe.x_, -qe.z_, -qe.y_ );
     setQ( q );
+
+    // Angular velocity
+    const Float abs_w = GameData::_ONE_SECOND * period;
+    const Vector3d w0( 0.0, abs_w, 0.0 );
+    const Vector3d w = q * w0;
+    setW( w );
 }
 
 void KeplerRotator::computeBaseRotation()

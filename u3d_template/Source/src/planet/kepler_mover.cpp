@@ -153,18 +153,22 @@ Vector3d KeplerMover::relR() const
 
 Vector3d KeplerMover::relV() const
 {
-    bool parabolic;
-    if ( ( e > (1.0 + KeplerMover::eps) ) || ( e < (1.0 - KeplerMover::eps) ) )
-        parabolic = false;
-    else
-        parabolic = true;
-    Float c_vx, c_vy;
-    velocity( this, c_vx, c_vy, parabolic );
-    const Vector3d vx = ex * c_vx;
-    const Vector3d vy = ey * c_vy;
-    const Vector3d v = vx + vy;
+    if ( active )
+    {
+        bool parabolic;
+        if ( ( e > (1.0 + KeplerMover::eps) ) || ( e < (1.0 - KeplerMover::eps) ) )
+            parabolic = false;
+        else
+            parabolic = true;
+        Float c_vx, c_vy;
+        velocity( this, c_vx, c_vy, parabolic );
+        const Vector3d vx = ex * c_vx;
+        const Vector3d vy = ey * c_vy;
+        const Vector3d v = vx + vy;
 
-    return v;
+        return v;
+    }
+    return Vector3d::ZERO;
 }
 
 

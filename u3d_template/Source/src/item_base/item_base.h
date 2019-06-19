@@ -63,6 +63,9 @@ public:
     virtual void setParent( Node * parent, bool inheritRotation = true );
     bool isParentOf( ItemBase * item ) const;
     ItemBase * parentItem() const;
+    // In case of several items per Node
+    // get the very first one.
+    static ItemBase * headItem( const ItemBase * item );
 
     bool relativePose( const ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q, bool debugLogging=false );
     bool relativePose( const ItemBase * other, Vector3 & rel_r, Quaternion & rel_q );
