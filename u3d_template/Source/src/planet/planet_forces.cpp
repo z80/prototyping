@@ -62,13 +62,13 @@ void PlanetForces::applyFar( Block * b )
     applyFriction( b );
 }
 
-bool PlanetForces::canOrbit( Assembly * a )
+bool PlanetForces::canOrbit( const ItemBase * a )
 {
     Vector3d    rel_r;
     Quaterniond rel_q;
     planet->relativePose( a, rel_r, rel_q, true );
     const Float L = rel_r.Length();
-    return ( L > orbitR_ );
+    return ( L >= orbitR_ );
 }
 
 void PlanetForces::applyGravity( Block * b )

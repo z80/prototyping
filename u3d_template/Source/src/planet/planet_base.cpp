@@ -19,7 +19,7 @@ PlanetBase::~PlanetBase()
 
 }
 
-bool PlanetBase::canOrbit( Assembly * a ) const
+bool PlanetBase::canOrbit( const ItemBase * a ) const
 {
     const bool res = forces->canOrbit( a );
     return res;

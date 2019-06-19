@@ -25,7 +25,7 @@ public:
     void applyClose( Block * b );
     void applyFar( Block * b );
 
-    bool canOrbit( Assembly * a );
+    bool canOrbit( const ItemBase * a );
 
 public:
     virtual void applyGravity( Block * b );

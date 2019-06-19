@@ -24,7 +24,7 @@ public:
     PlanetBase( Context * ctx );
     virtual ~PlanetBase();
 
-    bool canOrbit( Assembly * a ) const;
+    bool canOrbit( const ItemBase * a ) const;
     virtual Float GM() const;
 
     virtual Vector3d relR() const override;

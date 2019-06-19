@@ -114,6 +114,98 @@ void WorldMover::OnAssemblySelected( StringHash eventType, VariantMap & eventDat
     planet = assembly->planet;
 }
 
+bool WorldMover::needOrbit() const
+{
+    if ( (!planet) || (active) )
+        return false;
+    const bool canOrbit = planet->canOrbit( this );
+    return canOrbit;
+}
+
+bool WorldMover::needGround() const
+{
+    if ( (!planet) || (!active) )
+        return false;
+    const bool canOrbit = planet->canOrbit( this );
+    return canOrbit;
+}
+
+void WorldMover::switchToOrbiting()
+{
+    Vector3d r, v, w;
+    Quaterniond q;
+    this->relativeAll( planet->mover, r, q, v, w, true );
+    Node * planetNode = planet->mover->GetNode();
+    Node * selfNode = GetNode();
+    selfNode->SetParent( planetNode );
+
+    setR( r );
+    setQ( q );
+    setW( Vector3d::ZERO );
+    launch( v );
+
+    // Send notification event.
+    VariantMap & d = GetEventDataMap();
+    using namespace MyEvents::WorldSwitched;
+
+    const bool curAtm = true;
+    const bool newAtm = false;
+    PlanetBase * curPlanet = planet;
+    PlanetBase * newPlanet = planet;
+
+    d[ P_POS_OLD ]    = (void *)&r;
+    d[ P_VEL_OLD ]    = (void *)&v;
+    d[ P_ATM_OLD ]    = (void *)&curAtm;
+    d[ P_PLANET_OLD ] = (void *)curPlanet;
+
+    d[ P_POS_NEW ]    = (void *)&r;
+    d[ P_VEL_NEW ]    = (void *)&v;
+    d[ P_ATM_NEW ]    = (void *)&newAtm;
+    d[ P_PLANET_NEW ] = (void *)newPlanet;
+
+    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
+}
+
+void WorldMover::switchToGrounding()
+{
+    Vector3d r, v, w;
+    Quaterniond q;
+    this->relativeAll( planet->rotator, r, q, v, w, true );
+    Node * planetNode = planet->rotator->GetNode();
+    Node * selfNode = GetNode();
+    selfNode->SetParent( planetNode );
+
+    v = Vector3d::ZERO;
+    setR( r );
+    setQ( q );
+    setV( Vector3d::ZERO );
+    setW( Vector3d::ZERO );
+    // Don't use Kepler mover
+    active = false;
+
+
+    // Send notification event.
+    VariantMap & d = GetEventDataMap();
+    using namespace MyEvents::WorldSwitched;
+
+    const bool curAtm = false;
+    const bool newAtm = true;
+    PlanetBase * curPlanet = planet;
+    PlanetBase * newPlanet = planet;
+
+    d[ P_POS_OLD ]    = (void *)&r;
+    d[ P_VEL_OLD ]    = (void *)&v;
+    d[ P_ATM_OLD ]    = (void *)&curAtm;
+    d[ P_PLANET_OLD ] = (void *)curPlanet;
+
+    d[ P_POS_NEW ]    = (void *)&r;
+    d[ P_VEL_NEW ]    = (void *)&v;
+    d[ P_ATM_NEW ]    = (void *)&newAtm;
+    d[ P_PLANET_NEW ] = (void *)newPlanet;
+
+    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
+}
+
 void WorldMover::switchToEvent( Assembly * assembly )
 {
     // Current state.

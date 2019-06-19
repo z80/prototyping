@@ -234,7 +234,7 @@ ItemBase * ItemBase::parentItem() const
     return nullptr;
 }
 
-bool ItemBase::relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q, bool debugLogging )
+bool ItemBase::relativePose( const ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q, bool debugLogging )
 {
     // root->a->b->c->d->e->this
     // root->a->b->f->g->other
@@ -322,7 +322,7 @@ bool ItemBase::relativePose( ItemBase * other, Vector3d & rel_r, Quaterniond & r
     return true;
 }
 
-bool ItemBase::relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel_q )
+bool ItemBase::relativePose( const ItemBase * other, Vector3 & rel_r, Quaternion & rel_q )
 {
     Vector3d    r;
     Quaterniond q;
@@ -332,7 +332,7 @@ bool ItemBase::relativePose( ItemBase * other, Vector3 & rel_r, Quaternion & rel
     return res;
 }
 
-bool ItemBase::relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q )
+bool ItemBase::relativePose( const Node * other, Vector3d & rel_r, Quaterniond & rel_q )
 {
     // root->a->b->c->d->e->this
     // root->a->b->other->f->g
@@ -344,17 +344,17 @@ bool ItemBase::relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q
 
     // Get all ancestors of current node.
     // Make it static as graphics is in one thread.
-    static std::vector<Node *> allAncestorsA;
+    static std::vector<const Node *> allAncestorsA;
     allAncestorsA.clear();
-    Node * nodeA = this->GetNode();
+    const Node * nodeA = this->GetNode();
     do {
         allAncestorsA.push_back( nodeA );
         nodeA = nodeA->GetParent();
     } while ( nodeA );
     const size_t allQtyA = allAncestorsA.size();
 
-    Node * nodeB = other;
-    static std::vector<Node *> ancestorsB;
+    const Node * nodeB = other;
+    static std::vector<const Node *> ancestorsB;
     ancestorsB.clear();
     size_t indA = allQtyA;
     do {
@@ -399,7 +399,7 @@ bool ItemBase::relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q
     const size_t indB = ancestorsB.size()-1;
     for ( size_t i=0; i<indB; i++ )
     {
-        Node * nodeB = ancestorsB[i];
+        const Node * nodeB = ancestorsB[i];
         const Quaternion q = nodeB->GetRotation();
         const Vector3    r = nodeB->GetPosition();
         rb = q*rb;
@@ -414,7 +414,7 @@ bool ItemBase::relativePose( Node * other, Vector3d & rel_r, Quaterniond & rel_q
     return true;
 }
 
-bool ItemBase::relativePose( Node * other, Vector3  & rel_r, Quaternion  & rel_q )
+bool ItemBase::relativePose( const Node * other, Vector3  & rel_r, Quaternion  & rel_q )
 {
     Vector3d    r;
     Quaterniond q;
@@ -424,7 +424,7 @@ bool ItemBase::relativePose( Node * other, Vector3  & rel_r, Quaternion  & rel_q
     return res;
 }
 
-bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & rel_q )
+bool ItemBase::relativePose( const Node * n, const Node * p, Vector3 & rel_r, Quaternion & rel_q )
 {
     // root->a->b->c->d->e->this
     // root->a->b->other->f->g
@@ -436,17 +436,17 @@ bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & r
 
     // Get all ancestors of current node.
     // Make it static as graphics is in one thread.
-    static std::vector<Node *> allAncestorsA;
+    static std::vector<const Node *> allAncestorsA;
     allAncestorsA.clear();
-    Node * nodeA = n;
+    const Node * nodeA = n;
     do {
         allAncestorsA.push_back( nodeA );
         nodeA = nodeA->GetParent();
     } while ( nodeA );
     const size_t allQtyA = allAncestorsA.size();
 
-    Node * nodeB = p;
-    static std::vector<Node *> ancestorsB;
+    const Node * nodeB = p;
+    static std::vector<const Node *> ancestorsB;
     ancestorsB.clear();
     size_t indA = allQtyA;
     do {
@@ -491,7 +491,7 @@ bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & r
     const size_t indB = ancestorsB.size()-1;
     for ( size_t i=0; i<indB; i++ )
     {
-        Node * nodeB = ancestorsB[i];
+        const Node * nodeB = ancestorsB[i];
         const Quaternion q = nodeB->GetRotation();
         const Vector3    r = nodeB->GetPosition();
         rb = q*rb;
@@ -506,7 +506,7 @@ bool ItemBase::relativePose( Node * n, Node * p, Vector3 & rel_r, Quaternion & r
     return true;
 }
 
-bool ItemBase::relativeAll( ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q,
+bool ItemBase::relativeAll( const ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q,
                                               Vector3d & rel_v, Vector3d & rel_w, bool debugLogging )
 {
     // root->a->b->c->d->e->this
@@ -517,17 +517,17 @@ bool ItemBase::relativeAll( ItemBase * other, Vector3d & rel_r, Quaterniond & re
 
     // Get all ancestors of current node.
     // Make it static as graphics is in one thread.
-    static std::vector<ItemBase *> allAncestorsA;
+    static std::vector<const ItemBase *> allAncestorsA;
     allAncestorsA.clear();
-    ItemBase * itemA = this;
+    const ItemBase * itemA = this;
     do {
         allAncestorsA.push_back( itemA );
         itemA = itemA->parentItem();
     } while ( itemA );
     const size_t allQtyA = allAncestorsA.size();
 
-    ItemBase * itemB;
-    static std::vector<ItemBase *> ancestorsB;
+    const ItemBase * itemB;
+    static std::vector<const ItemBase *> ancestorsB;
     ancestorsB.clear();
     size_t indA = allQtyA;
     do {
@@ -587,7 +587,7 @@ bool ItemBase::relativeAll( ItemBase * other, Vector3d & rel_r, Quaterniond & re
     const size_t indB = ancestorsB.size()-1;
     for ( size_t i=0; i<indB; i++ )
     {
-        ItemBase * itemB = ancestorsB[i];
+        const ItemBase * itemB = ancestorsB[i];
         const Quaterniond q = itemB->relQ();
         const Vector3d    r = itemB->relR();
         const Vector3d    v = itemB->relV();
