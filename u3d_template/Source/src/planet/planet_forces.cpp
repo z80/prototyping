@@ -119,7 +119,8 @@ void PlanetForces::applyFriction( Block * b )
     // Position relative to planet center to compute atmosphere params.
     Vector3d    rel_r, rel_v, rel_w;
     Quaterniond rel_q;
-    planet->relativeAll( b, rel_r, rel_q, rel_v, rel_w );
+    PlanetBase * p = planet->Cast<PlanetBase>();
+    p->rotator->relativeAll( b, rel_r, rel_q, rel_v, rel_w );
     Float densityF, viscosityF,
           densityB, viscosityB,
           temperature;

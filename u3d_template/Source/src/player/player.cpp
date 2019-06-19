@@ -40,6 +40,7 @@ void Player::startWithAssembly()
     a->planet = planet;
     a->inAtmosphere = true;
     a->inWorld      = false;
+    a->setParent( planet );
 
     //a->toWorld( planet, physicsWorld );
     assembly = SharedPtr<Assembly>( a );

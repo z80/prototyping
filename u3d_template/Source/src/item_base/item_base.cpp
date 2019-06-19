@@ -526,7 +526,7 @@ bool ItemBase::relativeAll( const ItemBase * other, Vector3d & rel_r, Quaternion
     } while ( itemA );
     const size_t allQtyA = allAncestorsA.size();
 
-    const ItemBase * itemB;
+    const ItemBase * itemB = other;
     static std::vector<const ItemBase *> ancestorsB;
     ancestorsB.clear();
     size_t indA = allQtyA;
