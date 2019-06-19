@@ -462,28 +462,40 @@ void Assembly::applyPlanetForces()
 
 void Assembly::subscribeToEvents()
 {
-    SubscribeToEvent( MyEvents::E_WORLD_SWITCHED, URHO3D_HANDLER( Assembly, OnWorldSwitched ) );
-    SubscribeToEvent( MyEvents::E_WORLD_MOVED,    URHO3D_HANDLER( Assembly, OnWorldMoved ) );
+    SubscribeToEvent( MyEvents::E_WORLD_SWITCHED_ASSEMBLY, URHO3D_HANDLER( Assembly, OnWorldSwitchedAssembly ) );
+    SubscribeToEvent( MyEvents::E_WORLD_STATE_CHANGED,     URHO3D_HANDLER( Assembly, OnWorldStateChanged ) );
+    SubscribeToEvent( MyEvents::E_WORLD_MOVED,             URHO3D_HANDLER( Assembly, OnWorldMoved ) );
 }
 
-void Assembly::OnWorldSwitched( StringHash eventType, VariantMap & eventData )
+void Assembly::OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eventData )
 {
     // Check first if need to leave the world.
-    const bool needLeave = needLeaveWorld();
+    //const bool needLeave = needLeaveWorld();
 
-    using namespace MyEvents::WorldSwitched;
+    if ( !inWorld )
+        return;
+    using namespace MyEvents::WorldSwitchedAssembly;
     const Variant & po = eventData[ P_PLANET_OLD ];
     const PlanetBase * p_old = (PlanetBase *)po.GetVoidPtr();
     // Also need old world position and velocity to properly initialize movement.
     const Variant & pn = eventData[ P_PLANET_NEW ];
     const PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
-    if ( inWorld )
-    { 
-      if (p_new != planet)
+
+    if (p_new != planet)
         fromWorld();
-    }
     // Join the world or not decision is made in Update( dt ) method.
     // Ne need to do anything else here.
+}
+
+void Assembly::OnWorldStateChanged( StringHash eventType, VariantMap & eventData )
+{
+    if ( !inWorld )
+        return;
+
+    using namespace MyEvents::WorldStateChanged;
+    const Variant & pn = eventData[ P_PLANET_NEW ];
+    PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
+    planet = SharedPtr<PlanetBase>( p_new );
 }
 
 void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )

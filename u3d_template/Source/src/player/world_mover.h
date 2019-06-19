@@ -21,7 +21,7 @@ public:
 
     void Start() override;
     void Update( float dt ) override;
-    void PostUpdate( float dt ) override;
+    //void PostUpdate( float dt ) override;
 
     void setR( const Vector3d & new_r ) override;
 

@@ -83,7 +83,8 @@ public:
     bool onSurface;
 
     void subscribeToEvents();
-    void OnWorldSwitched( StringHash eventType, VariantMap & eventData );
+    void OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eventData );
+    void OnWorldStateChanged( StringHash eventType, VariantMap & eventData );
     void OnWorldMoved( StringHash eventType, VariantMap & eventData );
     void adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv );
 

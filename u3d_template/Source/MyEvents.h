@@ -241,7 +241,7 @@ namespace MyEvents
 
     // When a new assembly is selected Physics world needs to completely change
     // parent and velocity (if things are in orbit).
-    URHO3D_EVENT( E_WORLD_SWITCHED, WorldSwitched )
+    URHO3D_EVENT( E_WORLD_SWITCHED_ASSEMBLY, WorldSwitchedAssembly )
     {
         URHO3D_PARAM( P_POS_NEW,    PositionNew );
         URHO3D_PARAM( P_POS_OLD,    PositionOld );
@@ -264,7 +264,12 @@ namespace MyEvents
         URHO3D_PARAM( P_VEL_ADJ,    VelocityAdj );
     }
 
-
-
-
+    // When PhysicsWorld changes state orbiting/surface or parent planet
+    // without physically moving.
+    URHO3D_EVENT( E_WORLD_STATE_CHANGED, WorldStateChanged )
+    {
+        URHO3D_PARAM( P_PLANET_OLD, PlanetOld );
+        URHO3D_PARAM( P_PLANET_NEW, PlanetNew );
+        URHO3D_PARAM( P_ORBITING,   Orbiting );
+    }
 }

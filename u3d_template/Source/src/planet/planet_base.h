@@ -48,7 +48,8 @@ public:
 public:
     // Need to implement these and call collision objects updates here.
     void subscribeToWorldEvents();
-    void OnWorldSwitched( StringHash eventType, VariantMap & eventData );
+    void OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eventData );
+    void OnWorldStateChanged( StringHash eventType, VariantMap & eventData );
     void OnWorldMoved( StringHash eventType, VariantMap & eventData );
 
     // There are at least 3 nodes.

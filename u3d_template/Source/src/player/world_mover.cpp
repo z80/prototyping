@@ -50,7 +50,7 @@ void WorldMover::Update( float dt )
         // Or if need t oswitch closest planet.
         const bool need = needGround();
         if ( need )
-            switchToGrounding;
+            switchToGrounding();
         else
             checkInfluence();
     }
@@ -166,24 +166,15 @@ void WorldMover::switchToOrbiting()
 
     // Send notification event.
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldSwitched;
+    using namespace MyEvents::WorldStateChanged;
 
-    const bool curAtm = true;
-    const bool newAtm = false;
-    PlanetBase * curPlanet = planet;
-    PlanetBase * newPlanet = planet;
+    const bool orbiting = true;
 
-    d[ P_POS_OLD ]    = (void *)&r;
-    d[ P_VEL_OLD ]    = (void *)&v;
-    d[ P_ATM_OLD ]    = (void *)&curAtm;
-    d[ P_PLANET_OLD ] = (void *)curPlanet;
+    d[ P_ORBITING ]   = (void *)&orbiting;
+    d[ P_PLANET_OLD ] = (void *)planet;
+    d[ P_PLANET_NEW ] = (void *)planet;
 
-    d[ P_POS_NEW ]    = (void *)&r;
-    d[ P_VEL_NEW ]    = (void *)&v;
-    d[ P_ATM_NEW ]    = (void *)&newAtm;
-    d[ P_PLANET_NEW ] = (void *)newPlanet;
-
-    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
+    SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
 }
 
 void WorldMover::switchToGrounding()
@@ -206,24 +197,15 @@ void WorldMover::switchToGrounding()
 
     // Send notification event.
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldSwitched;
+    using namespace MyEvents::WorldStateChanged;
 
-    const bool curAtm = false;
-    const bool newAtm = true;
-    PlanetBase * curPlanet = planet;
-    PlanetBase * newPlanet = planet;
+    const bool orbiting = false;
 
-    d[ P_POS_OLD ]    = (void *)&r;
-    d[ P_VEL_OLD ]    = (void *)&v;
-    d[ P_ATM_OLD ]    = (void *)&curAtm;
-    d[ P_PLANET_OLD ] = (void *)curPlanet;
+    d[ P_ORBITING ]   = (void *)&orbiting;
+    d[ P_PLANET_OLD ] = (void *)planet;
+    d[ P_PLANET_NEW ] = (void *)planet;
 
-    d[ P_POS_NEW ]    = (void *)&r;
-    d[ P_VEL_NEW ]    = (void *)&v;
-    d[ P_ATM_NEW ]    = (void *)&newAtm;
-    d[ P_PLANET_NEW ] = (void *)newPlanet;
-
-    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
+    SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
 }
 
 void WorldMover::checkInfluence()
@@ -231,7 +213,7 @@ void WorldMover::checkInfluence()
     if ( !active )
         return;
 
-    const PlanetBase * closestP = planetOfInfluence();
+    PlanetBase * closestP = planetOfInfluence();
     if ( planet == closestP )
         return;
 
@@ -239,7 +221,7 @@ void WorldMover::checkInfluence()
     // Compute relative pose and velocity.
     Vector3d rel_r, rel_v, rel_w;
     Quaterniond rel_q;
-    const bool ok = relativeAll( closestPlanet, rel_r, rel_q, rel_v, rel_w, true );
+    const bool ok = relativeAll( closestP, rel_r, rel_q, rel_v, rel_w, true );
     if ( !ok )
         URHO3D_LOGERROR( "Failed to compute relativeAll()" );
 
@@ -251,26 +233,17 @@ void WorldMover::checkInfluence()
 
     // Send notification event.
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldSwitched;
+    using namespace MyEvents::WorldStateChanged;
 
-    const bool curAtm = false;
-    const bool newAtm = false;
-    PlanetBase * curPlanet = planet;
-    PlanetBase * newPlanet = closestP;
+    const bool orbiting = true;
 
-    d[ P_POS_OLD ]    = (void *)&rel_r;
-    d[ P_VEL_OLD ]    = (void *)&rel_v;
-    d[ P_ATM_OLD ]    = (void *)&curAtm;
-    d[ P_PLANET_OLD ] = (void *)curPlanet;
+    d[ P_ORBITING ] = (void *)&orbiting;
+    d[ P_PLANET_OLD ]   = (void *)planet;
+    d[ P_PLANET_NEW ]   = (void *)closestP;
 
-    d[ P_POS_NEW ]    = (void *)&rel_r;
-    d[ P_VEL_NEW ]    = (void *)&rel_v;
-    d[ P_ATM_NEW ]    = (void *)&newAtm;
-    d[ P_PLANET_NEW ] = (void *)newPlanet;
+    SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
 
-    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
-
-    planet = closestP;
+    planet = SharedPtr<PlanetBase>( closestP );
 }
 
 PlanetBase * WorldMover::planetOfInfluence()
@@ -325,7 +298,7 @@ void WorldMover::switchToEvent( Assembly * assembly )
     const PlanetBase * newPlanet = assembly->planet;
 
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldSwitched;
+    using namespace MyEvents::WorldSwitchedAssembly;
 
     d[ P_POS_OLD ]    = (void *)&curR;
     d[ P_VEL_OLD ]    = (void *)&curV;
@@ -337,7 +310,7 @@ void WorldMover::switchToEvent( Assembly * assembly )
     d[ P_ATM_NEW ]    = (void *)&newAtm;
     d[ P_PLANET_NEW ] = (void *)newPlanet;
 
-    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
+    SendEvent( MyEvents::E_WORLD_SWITCHED_ASSEMBLY, d );
 }
 
 void WorldMover::switchTo( Assembly * assembly )
