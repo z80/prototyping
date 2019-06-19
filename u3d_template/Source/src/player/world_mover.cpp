@@ -41,6 +41,26 @@ void WorldMover::Update( float dt )
         }
     }
 
+    // Check if need to switch to orbiting or surfacing.
+    // Check if time to leave/enter world.
+    // These happen without physical displacements.
+    if ( active )
+    {
+        // Check if need to switch to ground.
+        // Or if need t oswitch closest planet.
+        const bool need = needGround();
+        if ( need )
+            switchToGrounding;
+        else
+            checkInfluence();
+    }
+    else
+    {
+        const bool need = needOrbit();
+        if ( need )
+            switchToOrbiting();
+    }
+
 
     if ( !assembly )
         return;
@@ -204,6 +224,82 @@ void WorldMover::switchToGrounding()
     d[ P_PLANET_NEW ] = (void *)newPlanet;
 
     SendEvent( MyEvents::E_WORLD_SWITCHED, d );
+}
+
+void WorldMover::checkInfluence()
+{
+    if ( !active )
+        return;
+
+    const PlanetBase * closestP = planetOfInfluence();
+    if ( planet == closestP )
+        return;
+
+    // Need to switch parent planet.
+    // Compute relative pose and velocity.
+    Vector3d rel_r, rel_v, rel_w;
+    Quaterniond rel_q;
+    const bool ok = relativeAll( closestPlanet, rel_r, rel_q, rel_v, rel_w, true );
+    if ( !ok )
+        URHO3D_LOGERROR( "Failed to compute relativeAll()" );
+
+    Node * selfNode = GetNode();
+    Node * planetNode = closestP->mover->GetNode();
+    selfNode->SetParent( planetNode );
+    launch( rel_v );
+
+
+    // Send notification event.
+    VariantMap & d = GetEventDataMap();
+    using namespace MyEvents::WorldSwitched;
+
+    const bool curAtm = false;
+    const bool newAtm = false;
+    PlanetBase * curPlanet = planet;
+    PlanetBase * newPlanet = closestP;
+
+    d[ P_POS_OLD ]    = (void *)&rel_r;
+    d[ P_VEL_OLD ]    = (void *)&rel_v;
+    d[ P_ATM_OLD ]    = (void *)&curAtm;
+    d[ P_PLANET_OLD ] = (void *)curPlanet;
+
+    d[ P_POS_NEW ]    = (void *)&rel_r;
+    d[ P_VEL_NEW ]    = (void *)&rel_v;
+    d[ P_ATM_NEW ]    = (void *)&newAtm;
+    d[ P_PLANET_NEW ] = (void *)newPlanet;
+
+    SendEvent( MyEvents::E_WORLD_SWITCHED, d );
+
+    planet = closestP;
+}
+
+PlanetBase * WorldMover::planetOfInfluence()
+{
+    if ( !gameData )
+        return nullptr;
+
+    const unsigned qty = gameData->planets.Size();
+    Float maxF = -1.0;
+    PlanetBase * closestP = nullptr;
+    for ( unsigned i=0; i<qty; i++ )
+    {
+        Vector3d rel_r;
+        Quaterniond rel_q;
+        PlanetBase * p = gameData->planets[i];
+        const bool relOk = relativePose( p, rel_r, rel_q );
+        if ( !relOk )
+            continue;
+        const Float r = rel_r.Length();
+        const Float GM = p->GM();
+        const Float F = GM/(r*r);
+        if ( (!closestP) || (F > maxF) )
+        {
+            maxF = F;
+            closestP = p;
+        }
+    }
+
+    return closestP;
 }
 
 void WorldMover::switchToEvent( Assembly * assembly )

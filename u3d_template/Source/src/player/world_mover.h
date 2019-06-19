@@ -21,6 +21,7 @@ public:
 
     void Start() override;
     void Update( float dt ) override;
+    void PostUpdate( float dt ) override;
 
     void setR( const Vector3d & new_r ) override;
 
@@ -38,6 +39,12 @@ protected:
     bool needGround() const;
     void switchToOrbiting();
     void switchToGrounding();
+
+    // While orbiting check for planet of influence.
+    // This should be exactly the same as for assembly.
+    void checkInfluence();
+    PlanetBase * planetOfInfluence();
+
 
     void switchToEvent( Assembly * assembly );
     void switchTo( Assembly * assembly );
