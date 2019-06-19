@@ -169,6 +169,7 @@ void WorldMover::switchToOrbiting()
     setR( r );
     setQ( q );
     setW( Vector3d::ZERO );
+    const bool currentOrbiting = active;
     const bool launchedOk = launch( v );
 
 
@@ -177,18 +178,21 @@ void WorldMover::switchToOrbiting()
     using namespace MyEvents::WorldStateChanged;
 
     const bool orbiting = launchedOk;
-    Vector3d velAdj;
-    if ( orbiting )
-        velAdj = -v;
-    else
-        velAdj = Vector3d::ZERO;
+    if ( orbiting != currentOrbiting )
+    {
+        Vector3d velAdj;
+        if ( orbiting )
+            velAdj = -v;
+        else
+            velAdj = Vector3d::ZERO;
 
-    d[ P_ORBITING ]   = (void *)&orbiting;
-    d[ P_PLANET_OLD ] = (void *)planet;
-    d[ P_PLANET_NEW ] = (void *)planet;
-    d[ P_VEL_ADJ ]    = (void *)&velAdj;
+        d[ P_ORBITING ]   = (void *)&orbiting;
+        d[ P_PLANET_OLD ] = (void *)planet;
+        d[ P_PLANET_NEW ] = (void *)planet;
+        d[ P_VEL_ADJ ]    = (void *)&velAdj;
 
-    SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
+        SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
+    }
 }
 
 void WorldMover::switchToGrounding()
