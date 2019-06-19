@@ -30,7 +30,7 @@ static void velocity( const KeplerMover *km, Float & vx, Float & vy, bool parabo
 static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Omega, Float I, Float omega, Float E );
 
 // A generic one which computes "e".
-static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eigen::Vector3d & v );
+static bool genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eigen::Vector3d & v );
 static void genericProcess( KeplerMover * km, Float t, Eigen::Vector3d & r, Eigen::Vector3d & v );
 
 static void ellipticInit( KeplerMover * km, const Eigen::Vector3d & r, const Eigen::Vector3d & v );
@@ -129,10 +129,17 @@ bool KeplerMover::launch( const Vector3d & v )
     Eigen::Vector3d A, B;
     //rv2elems( GM, er, ev,
     //          a, e, E, I, omega, Omega, P, tau, A, B );
-    genericInit( this, er, ev );
+    const bool res = genericInit( this, er, ev );
+    if ( !res )
+    {
+        active = false;
+        return false;
+    }
+
     timeLow  = 0.0;
     timeHigh = tau;
     active = true;
+    return true;
 }
 
 bool KeplerMover::launch( const Vector3d & v, Float GM )
@@ -344,7 +351,7 @@ static void ellipticInit( KeplerMover * km, Float GM, Float a, Float e, Float Om
     km->ey.z_ = ey(1);
 }
 
-static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eigen::Vector3d & v )
+static bool genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eigen::Vector3d & v )
 {
     const Float GM = km->GM;
 
@@ -354,9 +361,21 @@ static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eige
     const Eigen::Vector3d r = q * _r;
     const Eigen::Vector3d v = q * _v;*/
 
-    const Eigen::Vector3d h = r.cross(v);
-    const Eigen::Vector3d ea = v.cross( h ) / km->GM;
     const Float r_abs = std::sqrt( r.transpose() * r );
+    const Eigen::Vector3d h = r.cross(v);
+    // Need to make sure that specific angular momentum is big enough.
+    // It is because if it is close to pure free radial falling equations
+    // don't really work.
+    {
+        const Float v_abs = std::sqrt( v.transpose() * v );
+        const Float h_abs = std::sqrt( h.transpose() * h );
+        const Float h_ = h_abs / (r_abs * v_abs);
+        if ( h_ < GameData::GameData::MIN_ANGULAR_MOMENTUM )
+            return false;
+    }
+
+
+    const Eigen::Vector3d ea = v.cross( h ) / km->GM;
     const Eigen::Vector3d eb = r / r_abs;
     const Eigen::Vector3d ev = ea - eb;
     const Float e = std::sqrt( ev.transpose() * ev );
@@ -385,6 +404,8 @@ static void genericInit( KeplerMover * km, const Eigen::Vector3d & r, const Eige
         ellipticInit( km, r, v );
     else
         parabolicInit( km, r, v );
+
+    return true;
 }
 
 static void genericProcess( KeplerMover * km, Float t, Eigen::Vector3d & r, Eigen::Vector3d & v )

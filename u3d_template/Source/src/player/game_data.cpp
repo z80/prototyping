@@ -11,6 +11,7 @@ const Float     GameData::DIST_PLANET_COLLISIONS = 1000.0;
 const Float     GameData::DIST_WORLD_ENTER      = 500.0;
 const Float     GameData::DIST_WORLD_LEAVE      = 700.0;
 const Float     GameData::DIST_WHEN_NEED_MOVE   = 5.0;
+const Float     GameData::MIN_ANGULAR_MOMENTUM  = 0.0001;
 
 GameData::GameData( Context * ctx )
     :LogicComponent( ctx )

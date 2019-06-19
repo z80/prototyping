@@ -43,6 +43,8 @@ public:
     static const Float DIST_WORLD_LEAVE;
     /// World mover should displace when selected assembly is this far.
     static const Float DIST_WHEN_NEED_MOVE;
+    /// Smallest angular momentum for which orbit calculated.
+    static const Float MIN_ANGULAR_MOMENTUM;
 
 private:
     HashMap<String, SharedPtr<Node> > nodes;

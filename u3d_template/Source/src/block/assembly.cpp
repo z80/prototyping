@@ -495,7 +495,11 @@ void Assembly::OnWorldStateChanged( StringHash eventType, VariantMap & eventData
     using namespace MyEvents::WorldStateChanged;
     const Variant & pn = eventData[ P_PLANET_NEW ];
     PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
-    planet = SharedPtr<PlanetBase>( p_new );
+    const Variant & pv = eventData[ P_VEL_ADJ ];
+    Vector3d * p_new_v = (Vector3d *)pv.GetVoidPtr();
+    const Vector3d dr = Vector3d::ZERO;
+    const Vector3d dv = *p_new_v;
+    adjustMovementInWorld( Vector3d::ZERO, dv );
 }
 
 void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )

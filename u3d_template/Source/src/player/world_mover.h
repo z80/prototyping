@@ -24,6 +24,7 @@ public:
     //void PostUpdate( float dt ) override;
 
     void setR( const Vector3d & new_r ) override;
+    void setV( const Vector3d & new_v ) override;
 
     void DrawDebugGeometry( DebugRenderer * debug, bool depthTest ) override;
 

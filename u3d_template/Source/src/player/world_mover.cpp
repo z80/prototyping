@@ -76,6 +76,12 @@ void WorldMover::setR( const Vector3d & new_r )
     KeplerMover::setR( new_r );
 }
 
+void WorldMover::setV( const Vector3d & new_v )
+{
+    URHO3D_LOGINFOF( "WorldMover::SetV( %f, %f, %f )", new_v.x_, new_v.y_, new_v.z_ );
+    KeplerMover::setV( new_v );
+}
+
 void WorldMover::DrawDebugGeometry( DebugRenderer * debug, bool depthTest )
 {
     Node * n = GetNode();
@@ -170,10 +176,12 @@ void WorldMover::switchToOrbiting()
     using namespace MyEvents::WorldStateChanged;
 
     const bool orbiting = true;
+    const Vector3d velAdj = -v;
 
     d[ P_ORBITING ]   = (void *)&orbiting;
     d[ P_PLANET_OLD ] = (void *)planet;
     d[ P_PLANET_NEW ] = (void *)planet;
+    d[ P_VEL_ADJ ]    = (void *)&velAdj;
 
     SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
 }
@@ -201,10 +209,12 @@ void WorldMover::switchToGrounding()
     using namespace MyEvents::WorldStateChanged;
 
     const bool orbiting = false;
+    const Vector3d velAdj = -v;
 
     d[ P_ORBITING ]   = (void *)&orbiting;
     d[ P_PLANET_OLD ] = (void *)planet;
     d[ P_PLANET_NEW ] = (void *)planet;
+    d[ P_VEL_ADJ ]    = (void *)&velAdj;
 
     SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
 }
@@ -222,7 +232,7 @@ void WorldMover::checkInfluence()
     // Compute relative pose and velocity.
     Vector3d rel_r, rel_v, rel_w;
     Quaterniond rel_q;
-    const bool ok = relativeAll( closestP, rel_r, rel_q, rel_v, rel_w, true );
+    const bool ok = this->relativeAll( closestP, rel_r, rel_q, rel_v, rel_w, true );
     if ( !ok )
         URHO3D_LOGERROR( "Failed to compute relativeAll()" );
 
@@ -237,10 +247,12 @@ void WorldMover::checkInfluence()
     using namespace MyEvents::WorldStateChanged;
 
     const bool orbiting = true;
+    const Vector3d velAdj = -rel_v;
 
-    d[ P_ORBITING ] = (void *)&orbiting;
-    d[ P_PLANET_OLD ]   = (void *)planet;
-    d[ P_PLANET_NEW ]   = (void *)closestP;
+    d[ P_ORBITING ]   = (void *)&orbiting;
+    d[ P_PLANET_OLD ] = (void *)planet;
+    d[ P_PLANET_NEW ] = (void *)closestP;
+    d[ P_VEL_ADJ ]    = (void *)&velAdj;
 
     SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
 

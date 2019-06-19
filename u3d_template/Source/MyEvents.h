@@ -271,5 +271,6 @@ namespace MyEvents
         URHO3D_PARAM( P_PLANET_OLD, PlanetOld );
         URHO3D_PARAM( P_PLANET_NEW, PlanetNew );
         URHO3D_PARAM( P_ORBITING,   Orbiting );
+        URHO3D_PARAM( P_VEL_ADJ,    VelocityAdj );
     }
 }
