@@ -169,14 +169,19 @@ void WorldMover::switchToOrbiting()
     setR( r );
     setQ( q );
     setW( Vector3d::ZERO );
-    launch( v );
+    const bool launchedOk = launch( v );
+
 
     // Send notification event.
     VariantMap & d = GetEventDataMap();
     using namespace MyEvents::WorldStateChanged;
 
-    const bool orbiting = true;
-    const Vector3d velAdj = -v;
+    const bool orbiting = launchedOk;
+    Vector3d velAdj;
+    if ( orbiting )
+        velAdj = -v;
+    else
+        velAdj = Vector3d::ZERO;
 
     d[ P_ORBITING ]   = (void *)&orbiting;
     d[ P_PLANET_OLD ] = (void *)planet;
