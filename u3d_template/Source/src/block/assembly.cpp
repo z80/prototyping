@@ -535,17 +535,5 @@ void Assembly::adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv )
 }
 
 
-
-
-PhysicsWorld2 * Assembly::getWorld( Node * node )
-{
-    Node * pn = node->GetParent();
-    if ( !pn )
-        return nullptr;
-    PhysicsWorld2 * w = pn->GetComponent<PhysicsWorld2>();
-    return w;
-}
-
-
 }
 

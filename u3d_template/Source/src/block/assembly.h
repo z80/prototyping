@@ -87,9 +87,6 @@ public:
     void OnAssemblySelected( StringHash eventType, VariantMap & eventData );
     void OnWorldAdjusted( StringHash eventType, VariantMap & eventData );
     void adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv );
-
-public:
-    static PhysicsWorld2 * getWorld( Node * node );
 };
 
 }
