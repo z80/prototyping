@@ -44,7 +44,13 @@ void Thruster::toWorld()
     rb->SetMass( 1.0 );
 
     CollisionShape2 * cs = node->CreateComponent<CollisionShape2>();
-    cs->SetCapsule( 0.3, 1.0 );
+    //cs->SetCapsule( 0.3, 1.0 );
+
+    {
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        Model * m = cache->GetResource<Model>( "Models/Thruster.mdl" );
+        cs->SetConvexHull( m, 1 );
+    }
 }
 
 void Thruster::fromWorld()

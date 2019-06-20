@@ -390,10 +390,37 @@ Design Workshop::design()
             continue;
         const size_t indA = itA->second;
         const size_t indB = itB->second;
+        // Need to figure out slots blocks are connected through.
+        const size_t pivotsQty = block->pivots.size();
+        int slotA = -1;
+        int slotB = -1;
+        for ( size_t j=0; j<pivotsQty; j++ )
+        {
+            PivotMarker * pm = block->pivots[j];
+            Block * connB = pm->blockConnectedTo();
+            if ( connB == parentBlock )
+            {
+                slotA = j;
+                const size_t parentPivotsQty = parentBlock->pivots.size();
+                for ( size_t k=0; k<parentPivotsQty; k++ )
+                {
+                    PivotMarker * ppm = parentBlock->pivots[k];
+                    Block * pconnB = ppm->blockConnectedTo();
+                    if ( pconnB == block )
+                    {
+                        slotB = k;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
 
         Design::Joint j;
         j.blockA = indA;
         j.blockB = indB;
+        j.slotA  = slotA;
+        j.slotB  = slotB;
         d.joints.push_back( j );
     }
 

@@ -101,7 +101,7 @@ bool Design::save( const String & fname, bool overwrite ) const
         e_joints->InsertEndChild( e_joint );
         {
             std::ostringstream out;
-            out << c.blockA << " " << c.blockB;
+            out << c.blockA << " " << c.blockB << " " << c.slotA << " " << c.slotB;
             e_joint->SetText( out.str().c_str() );
         }
     }
@@ -197,6 +197,8 @@ bool Design::load( const String & fname )
             std::istringstream in( text );
             in >> joint.blockA;
             in >> joint.blockB;
+            in >> joint.slotA;
+            in >> joint.slotB;
         }
         joints.push_back( joint );
     }

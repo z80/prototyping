@@ -20,8 +20,8 @@ public:
         // Additional axis for rotation is not needed.
         // It is supposed to be fixed by part design.
         // So really need only "r" and "q".
-        int blockA;
-        int blockB;
+        int blockA, slotA;
+        int blockB, slotB;
         // May describe additional parameters later.
     };
 
