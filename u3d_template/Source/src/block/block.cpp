@@ -154,6 +154,20 @@ const Vector3d Block::axisToParent()
     return Vector3d::ZERO;
 }
 
+void Block::showConfigWindow()
+{
+    if ( !cfgWnd )
+        cfgWnd = createConfigWindow();
+    cfgWnd->SetVisible( true );
+}
+
+void Block::showControlWindow()
+{
+    if ( !ctrlWnd )
+        ctrlWnd = createControlWindow();
+    ctrlWnd->SetVisible( true );
+}
+
 void Block::placePivots()
 {
     TechTree * tt = GetSubsystem( StringHash( "TechTree" ) )->Cast<TechTree>();
@@ -422,7 +436,7 @@ void Block::drawDebugForces( DebugRenderer * debug )
     }
 }
 
-SharedPtr<UIElement> Block::configWindow()
+SharedPtr<UIElement> Block::createConfigWindow()
 {
     ResourceCache * cache = GetSubsystem<ResourceCache>();
     UI * ui = GetSubsystem<UI>();
@@ -443,9 +457,36 @@ SharedPtr<UIElement> Block::configWindow()
     instructionText->SetVerticalAlignment(VA_CENTER);
     instructionText->SetPosition(0, ui->GetRoot()->GetHeight() / 4);
 
-    return SharedPtr<UIElement>( instructionText );
+    cfgWnd = SharedPtr<UIElement>( instructionText );
+
+    return cfgWnd;
 }
 
+SharedPtr<UIElement> Block::createControlWindow()
+{
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    UI * ui = GetSubsystem<UI>();
+
+    // Construct new Text object, set string to display and font to use
+    Text * instructionText = ui->GetRoot()->CreateChild<Text>();
+    instructionText->SetText(
+        "Default window for a block.\n"
+        "Need to  be overwritten \n"
+        "by implementations."
+    );
+    instructionText->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"), 15);
+    // The text has multiple rows. Center them in relation to each other
+    instructionText->SetTextAlignment(HA_CENTER);
+
+    // Position the text relative to the screen center
+    instructionText->SetHorizontalAlignment(HA_CENTER);
+    instructionText->SetVerticalAlignment(VA_CENTER);
+    instructionText->SetPosition(0, ui->GetRoot()->GetHeight() / 4);
+
+    ctrlWnd = SharedPtr<UIElement>( instructionText );
+
+    return ctrlWnd;
+}
 
 
 static Node * getRoot( Node * n )

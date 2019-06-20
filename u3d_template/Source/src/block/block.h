@@ -54,6 +54,9 @@ public:
 
     const Vector3d axisToParent();
 
+    void showConfigWindow();
+    void showControlWindow();
+
 public:
     /// Each object implementation
     /// places markers individually.
@@ -69,11 +72,16 @@ public:
     void drawDebugForces( DebugRenderer * debug );
 
     /// Need to be able to open configuration window.
-    virtual SharedPtr<UIElement> configWindow();
+    virtual SharedPtr<UIElement> createConfigWindow();
+    virtual SharedPtr<UIElement> createControlWindow();
 
     String name;
     std::vector< SharedPtr<PivotMarker> > pivots;
     AirMesh airMesh;
+
+    // UI window with settings and configuration.
+    SharedPtr<UIElement> cfgWnd,
+                         ctrlWnd;
 
     // Explicit forces to be able to draw those.
     // Forces applied.
