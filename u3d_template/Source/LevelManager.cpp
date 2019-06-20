@@ -14,6 +14,7 @@
 #include "camera_orb_2.h"
 #include "pivot_marker.h"
 #include "box.h"
+#include "thruster.h"
 #include "kepler_mover.h"
 #include "launch_site.h"
 #include "planet_forces.h"
@@ -83,6 +84,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterSubsystem( new Osp::DesignManager( context_ ) );
     context_->RegisterFactory<Osp::Assembly>();
     context_->RegisterFactory<Osp::Box>();
+    context_->RegisterFactory<Osp::Thruster>();
     context_->RegisterFactory<Osp::PivotMarker>();
     context_->RegisterFactory<Osp::CameraOrb2>();
     context_->RegisterFactory<Osp::KeplerMover>();

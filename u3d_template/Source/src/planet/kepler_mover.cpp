@@ -658,7 +658,7 @@ static void parabolicProcess( KeplerMover * km, Float t, Eigen::Vector3d & r, Ei
 
     const Float coF = std::cos(f);
     const Float siF = std::sin(f);
-    const Float r_ = p/(1.0 + std::cos(f));
+    const Float r_ = p/(1.0 + coF);
     const Float Rx = r_ * coF;
     const Float Ry = r_ * siF;
 

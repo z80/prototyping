@@ -60,7 +60,10 @@ void TechTree::debugInit()
 
     partDescs.push_back( pd );
 
-    pd.name = "Box_2";
+    pd.name = "Thruster";
+    pd.description = "Thruster block";
+    pd.category    = "test";
+    pd.icon        = "Textures/Spot.png";
     partDescs.push_back( pd );
 
     CategoryDesc cd;

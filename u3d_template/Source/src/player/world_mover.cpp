@@ -73,6 +73,10 @@ void WorldMover::Update( float dt )
 void WorldMover::setR( const Vector3d & new_r )
 {
     URHO3D_LOGINFOF( "WorldMover::SetR( %f, %f, %f )", new_r.x_, new_r.y_, new_r.z_ );
+    if ( std::isnan( new_r.x_ ) || std::isinf( new_r.x_ ) )
+    {
+        Float x = new_r.x_;
+    }
     KeplerMover::setR( new_r );
 }
 
