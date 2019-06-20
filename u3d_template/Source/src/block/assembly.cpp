@@ -71,6 +71,12 @@ void Assembly::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
     }
 }
 
+void Assembly::setR( const Vector3d & r )
+{
+    URHO3D_LOGWARNINGF( "Assembly::setR( %f, %f, %f )", r.x_, r.y_, r.z_ );
+    ItemBase::setR( r );
+}
+
 void Assembly::Start()
 {
     Node * n = GetNode();
@@ -103,10 +109,10 @@ void Assembly::Update( float timeStep )
 void Assembly::PostUpdate( float timeStep )
 {
     // Here recompute position and orientation.
-    if ( inWorld )
-        updatePoseInWorld();
-    else
+    if ( mover->active )
         updatePoseInOrbit();
+    else if ( inWorld )
+        updatePoseInWorld();
 
     // Check if time to leave/enter world.
     if ( inWorld )
@@ -206,14 +212,22 @@ void Assembly::checkInfluence()
     if ( inAtmosphere || onSurface )
         return;
 
-    const PlanetBase * closestP = planetOfInfluence();
+    PlanetBase * closestP = planetOfInfluence();
     if ( planet == closestP )
         return;
 
     // Need to switch parent planet.
     // Compute relative pose and velocity.
-    const Vector3d ownV = mover->relV();
-    const Vector3d ownPlanetV = planet->relV();
+    Vector3d rel_r, rel_v, rel_w;
+    Quaterniond rel_q;
+    relativeAll( closestP->mover, rel_r, rel_q, rel_v, rel_w );
+    setParent( closestP->mover );
+    planet = SharedPtr<PlanetBase>( closestP );
+    setR( rel_r );
+    setV( rel_v );
+    setQ( rel_q );
+    setW( rel_w );
+    mover->launch( rel_v );
 }
 
 PlanetBase * Assembly::planetOfInfluence()
@@ -247,7 +261,12 @@ PlanetBase * Assembly::planetOfInfluence()
 
 bool Assembly::needLeaveWorld()
 {
-    if ( !inWorld )
+    if ( (!inWorld) )
+        return false;
+
+    // Current selected assembly can not leave dynamics world.
+    WorldMover * wm =  worldMover->Cast<WorldMover>();
+    if ( wm->assembly == this )
         return false;
 
     Vector3d rel_r;
@@ -374,8 +393,7 @@ void Assembly::fromWorld()
     const bool moverInAtmosphere = !wm->active;
     if ( moverInAtmosphere )
     {
-        Node * n = planet->dynamicsNode;
-        setParent( n );
+        setParent( planet->dynamicsNode );
         inAtmosphere = true;
         onSurface    = true;
         return;
@@ -386,7 +404,7 @@ void Assembly::fromWorld()
 
     // Flying in orbit.
     const Vector3d v = wm->relV() + mv;
-    setParent( planet );
+    setParent( planet->mover );
     wm->launch( v, planet->GM() );
 }
 
@@ -462,52 +480,26 @@ void Assembly::applyPlanetForces()
 
 void Assembly::subscribeToEvents()
 {
-    SubscribeToEvent( MyEvents::E_WORLD_SWITCHED_ASSEMBLY, URHO3D_HANDLER( Assembly, OnWorldSwitchedAssembly ) );
-    SubscribeToEvent( MyEvents::E_WORLD_STATE_CHANGED,     URHO3D_HANDLER( Assembly, OnWorldStateChanged ) );
-    SubscribeToEvent( MyEvents::E_WORLD_MOVED,             URHO3D_HANDLER( Assembly, OnWorldMoved ) );
+    SubscribeToEvent( MyEvents::E_ASSEMBLY_SELECTED, URHO3D_HANDLER( Assembly, OnAssemblySelected ) );
+    SubscribeToEvent( MyEvents::E_WORLD_ADJUSTED,    URHO3D_HANDLER( Assembly, OnWorldAdjusted ) );
 }
 
-void Assembly::OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eventData )
+void Assembly::OnAssemblySelected( StringHash eventType, VariantMap & eventData )
 {
-    // Check first if need to leave the world.
-    //const bool needLeave = needLeaveWorld();
-
     if ( !inWorld )
         return;
-    using namespace MyEvents::WorldSwitchedAssembly;
-    const Variant & po = eventData[ P_PLANET_OLD ];
-    const PlanetBase * p_old = (PlanetBase *)po.GetVoidPtr();
-    // Also need old world position and velocity to properly initialize movement.
-    const Variant & pn = eventData[ P_PLANET_NEW ];
-    const PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
-
-    if (p_new != planet)
+    WorldMover * wm = worldMover->Cast<WorldMover>();
+    //if ( planet != wm->assembly->planet )
+    if ( this != wm->assembly )
         fromWorld();
-    // Join the world or not decision is made in Update( dt ) method.
-    // Ne need to do anything else here.
 }
 
-void Assembly::OnWorldStateChanged( StringHash eventType, VariantMap & eventData )
+void Assembly::OnWorldAdjusted( StringHash eventType, VariantMap & eventData )
 {
     if ( !inWorld )
         return;
 
-    using namespace MyEvents::WorldStateChanged;
-    const Variant & pn = eventData[ P_PLANET_NEW ];
-    PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
-    const Variant & pv = eventData[ P_VEL_ADJ ];
-    Vector3d * p_new_v = (Vector3d *)pv.GetVoidPtr();
-    const Vector3d dr = Vector3d::ZERO;
-    const Vector3d dv = *p_new_v;
-    adjustMovementInWorld( Vector3d::ZERO, dv );
-}
-
-void Assembly::OnWorldMoved( StringHash eventType, VariantMap & eventData )
-{
-    if ( !inWorld )
-        return;
-
-    using namespace MyEvents::WorldMoved;
+    using namespace MyEvents::WorldAdjusted;
     const Variant & varR = eventData[ P_POS_ADJ ];
     const Vector3d dr = *(Vector3d *)(varR.GetVoidPtr());
     const Variant & varV = eventData[ P_VEL_ADJ ];
@@ -537,7 +529,7 @@ void Assembly::adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv )
             rb->SetLinearVelocity( vv1 );
         }
     }
-    // Adjust assembly cooredinates based on block
+    // Adjust assembly coordinates based on block
     // coordinates.
     updatePoseInWorld();
 }

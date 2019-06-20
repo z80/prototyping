@@ -32,6 +32,7 @@ public:
     static Assembly * create( Node * root, const Design & d );
     virtual void DrawDebugGeometry(DebugRenderer* debug, bool depthTest) override;
 
+    void setR( const Vector3d & r ) override;
 protected:
     void Start() override;
     void Update(float timeStep) override;
@@ -83,9 +84,8 @@ public:
     bool onSurface;
 
     void subscribeToEvents();
-    void OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eventData );
-    void OnWorldStateChanged( StringHash eventType, VariantMap & eventData );
-    void OnWorldMoved( StringHash eventType, VariantMap & eventData );
+    void OnAssemblySelected( StringHash eventType, VariantMap & eventData );
+    void OnWorldAdjusted( StringHash eventType, VariantMap & eventData );
     void adjustMovementInWorld( const Vector3d & dr, const Vector3d & dv );
 
 public:

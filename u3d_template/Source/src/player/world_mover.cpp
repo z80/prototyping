@@ -67,7 +67,7 @@ void WorldMover::Update( float dt )
         return;
 
     // Check the distance to the assembly.
-    tryMoveTo();
+    adjustToTarget();
 }
 
 void WorldMover::setR( const Vector3d & new_r )
@@ -132,28 +132,23 @@ void WorldMover::OnAssemblySelected( StringHash eventType, VariantMap & eventDat
 
     // Assign the assembly.
     assembly = SharedPtr<Assembly>( a );
-
     // Physically switch to the new assembly.
     switchTo( assembly );
-    // Fill in numbers for world moved and notify all the assemblies.
-    switchToEvent( assembly );
-
-    planet = assembly->planet;
 }
 
 bool WorldMover::needOrbit() const
 {
-    if ( (!planet) || (active) )
+    if ( (!planet) || (active) || (!assembly) )
         return false;
-    const bool canOrbit = planet->canOrbit( this );
+    const bool canOrbit = planet->canOrbit( assembly );
     return canOrbit;
 }
 
 bool WorldMover::needGround() const
 {
-    if ( (!planet) || (!active) )
+    if ( (!planet) || (!active) || (!assembly) )
         return false;
-    const bool canGround = !planet->canOrbit( this );
+    const bool canGround = !planet->canOrbit( assembly );
     return canGround;
 }
 
@@ -161,10 +156,8 @@ void WorldMover::switchToOrbiting()
 {
     Vector3d r, v, w;
     Quaterniond q;
-    this->relativeAll( planet->mover, r, q, v, w, true );
-    Node * planetNode = planet->mover->GetNode();
-    Node * selfNode = GetNode();
-    selfNode->SetParent( planetNode );
+    assembly->relativeAll( planet->mover, r, q, v, w, true );
+    setParent( planet->mover );
 
     setR( r );
     setQ( q );
@@ -175,7 +168,7 @@ void WorldMover::switchToOrbiting()
 
     // Send notification event.
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldStateChanged;
+    using namespace MyEvents::WorldAdjusted;
 
     const bool orbiting = launchedOk;
     if ( orbiting != currentOrbiting )
@@ -186,12 +179,13 @@ void WorldMover::switchToOrbiting()
         else
             velAdj = Vector3d::ZERO;
 
-        d[ P_ORBITING ]   = (void *)&orbiting;
-        d[ P_PLANET_OLD ] = (void *)planet;
-        d[ P_PLANET_NEW ] = (void *)planet;
-        d[ P_VEL_ADJ ]    = (void *)&velAdj;
 
-        SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
+        const Vector3d posAdj( Vector3d::ZERO );
+        d[ P_ORBITING ] = (void *)&orbiting;
+        d[ P_VEL_ADJ ]  = (void *)&velAdj;
+        d[ P_POS_ADJ ]  = (void *)&posAdj;
+
+        SendEvent( MyEvents::E_WORLD_ADJUSTED, d );
     }
 }
 
@@ -215,17 +209,17 @@ void WorldMover::switchToGrounding()
 
     // Send notification event.
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldStateChanged;
+    using namespace MyEvents::WorldAdjusted;
 
     const bool orbiting = false;
     const Vector3d velAdj = -v;
+    const Vector3d posAdj( Vector3d::ZERO );
 
     d[ P_ORBITING ]   = (void *)&orbiting;
-    d[ P_PLANET_OLD ] = (void *)planet;
-    d[ P_PLANET_NEW ] = (void *)planet;
     d[ P_VEL_ADJ ]    = (void *)&velAdj;
+    d[ P_POS_ADJ ]    = (void *)&posAdj;
 
-    SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
+    SendEvent( MyEvents::E_WORLD_ADJUSTED, d );
 }
 
 void WorldMover::checkInfluence()
@@ -253,19 +247,12 @@ void WorldMover::checkInfluence()
 
     // Send notification event.
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldStateChanged;
+    using namespace MyEvents::WorldPlanetChanged;
 
-    const bool orbiting = true;
-    const Vector3d velAdj = -rel_v;
-
-    d[ P_ORBITING ]   = (void *)&orbiting;
-    d[ P_PLANET_OLD ] = (void *)planet;
-    d[ P_PLANET_NEW ] = (void *)closestP;
-    d[ P_VEL_ADJ ]    = (void *)&velAdj;
-
-    SendEvent( MyEvents::E_WORLD_STATE_CHANGED, d );
+    d[ P_PLANET ] = (void *)closestP;
 
     planet = SharedPtr<PlanetBase>( closestP );
+    SendEvent( MyEvents::E_WORLD_PLANET_CHANGED, d );
 }
 
 PlanetBase * WorldMover::planetOfInfluence()
@@ -289,9 +276,9 @@ PlanetBase * WorldMover::planetOfInfluence()
         const bool relOk = relativePose( p, rel_r, rel_q );
         if ( !relOk )
             continue;
-        const Float r = rel_r.Length();
+        const Float r  = rel_r.Length();
         const Float GM = p->GM();
-        const Float F = GM/(r*r);
+        const Float F  = GM/(r*r);
         if ( (!closestP) || (F > maxF) )
         {
             maxF = F;
@@ -302,50 +289,10 @@ PlanetBase * WorldMover::planetOfInfluence()
     return closestP;
 }
 
-void WorldMover::switchToEvent( Assembly * assembly )
-{
-    // Current state.
-    const Vector3d curR          = relR();
-    const Vector3d curV          = relV();
-    const bool     curAtm        = !active;
-    const PlanetBase * curPlanet = planet;
-
-    // New state.
-    // Here again position is valid only if
-    // assembly parent is this exact planet but not an
-    // object on the surface.
-    const bool     newAtm        = assembly->inAtmosphere;
-    Vector3d newR;
-    Quaterniond q;
-    if ( newAtm )
-        assembly->relativePose( assembly->planet->rotator, newR, q );
-    else
-        assembly->relativePose( assembly->planet->mover, newR, q );
-    const Vector3d newV          = assembly->relV();
-    const PlanetBase * newPlanet = assembly->planet;
-
-    VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldSwitchedAssembly;
-
-    d[ P_POS_OLD ]    = (void *)&curR;
-    d[ P_VEL_OLD ]    = (void *)&curV;
-    d[ P_ATM_OLD ]    = (void *)&curAtm;
-    d[ P_PLANET_OLD ] = (void *)curPlanet;
-
-    d[ P_POS_NEW ]    = (void *)&newR;
-    d[ P_VEL_NEW ]    = (void *)&newV;
-    d[ P_ATM_NEW ]    = (void *)&newAtm;
-    d[ P_PLANET_NEW ] = (void *)newPlanet;
-
-    SendEvent( MyEvents::E_WORLD_SWITCHED_ASSEMBLY, d );
-}
-
 void WorldMover::switchTo( Assembly * assembly )
 {
-    // Set position to be the same.
-    //const Vector3d r = assembly->relR();
-    // Here need relative position with respect to planet
-    // as assemblies are creted as children of a launch site.
+    // Assign planet.
+    planet = assembly->planet;
 
     const bool inAtmosphere = assembly->inAtmosphere;
     // Orbital movement is active
@@ -364,7 +311,7 @@ void WorldMover::switchTo( Assembly * assembly )
         //Quaterniond q2;
         //assembly->relativePose( assembly->planet->rotator, r2, q2 );
 
-        selfNode->SetParent( planetNode );
+        setParent( planet->rotator );
 
         //assembly->relativePose( assembly->planet->rotator, r2, q2 );
         //assembly->relativePose( this, r2, q2 );
@@ -382,34 +329,41 @@ void WorldMover::switchTo( Assembly * assembly )
         Vector3d r;
         Quaterniond q;
         assembly->relativePose( planet->mover, r, q );
-        Node * planetNode = planet->mover->GetNode();
-        selfNode->SetParent( planetNode );
+        setParent( planet->mover );
 
         setR( r );
         // If assembly is in orbit set orbital movement.
         const Vector3d v = assembly->relV();
         launch( v );
     }
+
+    // Send notification event.
+    // Notify that planet has been changed.
+    VariantMap & d = GetEventDataMap();
+    using namespace MyEvents::WorldPlanetChanged;
+    d[ P_PLANET ] = (void *)planet;
+    SendEvent( MyEvents::E_WORLD_PLANET_CHANGED, d );
 }
 
-void WorldMover::tryMoveTo()
+void WorldMover::adjustToTarget()
 {
     if ( !assembly )
         return;
 
     Vector3d dr;
     Quaterniond dq;
-    this->relativePose( assembly, dr, dq );
+    assembly->relativePose( this, dr, dq );
     const Float d = dr.Length();
-    const bool inAtmosphere = !active;
-    if ( (d < GameData::DIST_WHEN_NEED_MOVE) && ( inAtmosphere == assembly->inAtmosphere) )
+    const bool orbiting = active;
+    if ( d < GameData::DIST_WHEN_NEED_MOVE )
         return;
 
     Vector3d dv;
     const Vector3d v0 = relV();
-    const Vector3d r1 = relR() - dr;
+    const Vector3d r0 = relR();
+    const Vector3d r1 = r0 + dr;
     setR( r1 );
-    if ( !inAtmosphere )
+    if ( orbiting )
     {
         const Vector3d v1 = assembly->relV();
         active == true;
@@ -420,17 +374,17 @@ void WorldMover::tryMoveTo()
     else
         dv = Vector3d::ZERO;
 
-    moveToEvent( r1, dr, dv );
+    adjustEvent( -dr, dv, orbiting );
 }
 
-void WorldMover::moveToEvent( const Vector3d & r, const Vector3d & dr, const Vector3d & dv )
+void WorldMover::adjustEvent( const Vector3d & dr, const Vector3d & dv, bool orbiting )
 {
     VariantMap & d = GetEventDataMap();
-    using namespace MyEvents::WorldMoved;
-    d[P_POS_NEW] = (void *)&r;
-    d[P_POS_ADJ] = (void *)&dr;
-    d[P_VEL_ADJ] = (void *)&dv;
-    SendEvent( MyEvents::E_WORLD_MOVED, d );
+    using namespace MyEvents::WorldAdjusted;
+    d[P_ORBITING] = (void *)&orbiting;
+    d[P_POS_ADJ]  = (void *)&dr;
+    d[P_VEL_ADJ]  = (void *)&dv;
+    SendEvent( MyEvents::E_WORLD_ADJUSTED, d );
 }
 
 

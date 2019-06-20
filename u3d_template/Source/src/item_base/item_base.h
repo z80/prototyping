@@ -74,7 +74,7 @@ public:
     static bool relativePose( const Node * n, const Node * p, Vector3 & rel_r, Quaternion & rel_q );
 
     bool relativeAll( const ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q,
-                                        Vector3d & rel_v, Vector3d & rel_w, bool debugLogging=false );
+                                        Vector3d & rel_v, Vector3d & rel_w, bool debugLogging=false ) const;
 
 private:
     //void OnNodeRemoved( StringHash eventType, VariantMap & eventData );

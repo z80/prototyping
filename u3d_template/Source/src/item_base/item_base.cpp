@@ -524,7 +524,7 @@ bool ItemBase::relativePose( const Node * n, const Node * p, Vector3 & rel_r, Qu
 }
 
 bool ItemBase::relativeAll( const ItemBase * other, Vector3d & rel_r, Quaterniond & rel_q,
-                                              Vector3d & rel_v, Vector3d & rel_w, bool debugLogging )
+                                              Vector3d & rel_v, Vector3d & rel_w, bool debugLogging ) const
 {
     // root->a->b->c->d->e->this
     // root->a->b->f->g->other

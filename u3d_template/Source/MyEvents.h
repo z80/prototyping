@@ -234,43 +234,28 @@ namespace MyEvents
 
     // When player selectes an assembly world mover need to position physics world
     // close to this assembly.
+    // Sent by player.
     URHO3D_EVENT( E_ASSEMBLY_SELECTED, AssemblySelected )
     {
         URHO3D_PARAM( P_ASSEMBLY, Assembly );
     }
 
-    // When a new assembly is selected Physics world needs to completely change
-    // parent and velocity (if things are in orbit).
-    URHO3D_EVENT( E_WORLD_SWITCHED_ASSEMBLY, WorldSwitchedAssembly )
+    // When planet of influence changes WorldMover sends this event
+    // Sent by WorldMover.
+    URHO3D_EVENT( E_WORLD_PLANET_CHANGED, WorldPlanetChanged )
     {
-        URHO3D_PARAM( P_POS_NEW,    PositionNew );
-        URHO3D_PARAM( P_POS_OLD,    PositionOld );
-        URHO3D_PARAM( P_VEL_NEW,    VelocityNew );
-        URHO3D_PARAM( P_VEL_OLD,    VelocityOld );
-        URHO3D_PARAM( P_PLANET_NEW, PlanetNew );
-        URHO3D_PARAM( P_PLANET_OLD, PlanetOld );
-        URHO3D_PARAM( P_ATM_NEW,    InAtmosphereNew );
-        URHO3D_PARAM( P_ATM_OLD,    InAtmosphereOld );
+        URHO3D_PARAM( P_PLANET, Planet );
     }
 
     // When world is displaced all assemblies need to adjust their
     // positions and velocities if they are in physics world.
     // All objects in the world need to add "dr" to their positions
     // and "dv" to their velocities.
-    URHO3D_EVENT( E_WORLD_MOVED, WorldMoved )
+    // Sent by WorldMover.
+    URHO3D_EVENT( E_WORLD_ADJUSTED, WorldAdjusted )
     {
-        URHO3D_PARAM( P_POS_NEW,    PositionNew );
         URHO3D_PARAM( P_POS_ADJ,    PositionAdj );
         URHO3D_PARAM( P_VEL_ADJ,    VelocityAdj );
-    }
-
-    // When PhysicsWorld changes state orbiting/surface or parent planet
-    // without physically moving.
-    URHO3D_EVENT( E_WORLD_STATE_CHANGED, WorldStateChanged )
-    {
-        URHO3D_PARAM( P_PLANET_OLD, PlanetOld );
-        URHO3D_PARAM( P_PLANET_NEW, PlanetNew );
         URHO3D_PARAM( P_ORBITING,   Orbiting );
-        URHO3D_PARAM( P_VEL_ADJ,    VelocityAdj );
     }
 }

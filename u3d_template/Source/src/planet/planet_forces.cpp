@@ -9,7 +9,7 @@ namespace Osp
 PlanetForces::PlanetForces( Context * ctx )
     : LogicComponent( ctx )
 {
-    GM_ = 500.0;
+    GM_ = 5.0;
     R_  = 10.0;
     atmHeight_  = 7.0;
     orbitR_     = 20.0;
@@ -64,11 +64,19 @@ void PlanetForces::applyFar( Block * b )
 
 bool PlanetForces::canOrbit( const ItemBase * a )
 {
-    Vector3d    rel_r;
+    Vector3d    rel_r, rel_v, rel_w;
     Quaterniond rel_q;
-    planet->relativePose( a, rel_r, rel_q, true );
+    PlanetBase * p = this->planet->Cast<PlanetBase>();
+    a->relativeAll( p->mover, rel_r, rel_q, rel_v, rel_w, true );
     const Float L = rel_r.Length();
-    return ( L >= orbitR_ );
+    const bool highEnough = ( L >= orbitR_ );
+    if ( !highEnough )
+        return false;
+    // Compute specific angular momentum.
+    const Vector3d vh = rel_r.CrossProduct( rel_v );
+    const Float h = vh.Length();
+    const bool enoughAngularMomentum = (h > GameData::MIN_ANGULAR_MOMENTUM);
+    return enoughAngularMomentum;
 }
 
 void PlanetForces::applyGravity( Block * b )
@@ -120,7 +128,7 @@ void PlanetForces::applyFriction( Block * b )
     Vector3d    rel_r, rel_v, rel_w;
     Quaterniond rel_q;
     PlanetBase * p = planet->Cast<PlanetBase>();
-    p->rotator->relativeAll( b, rel_r, rel_q, rel_v, rel_w );
+    b->relativeAll( p->rotator, rel_r, rel_q, rel_v, rel_w );
     Float densityF, viscosityF,
           densityB, viscosityB,
           temperature;

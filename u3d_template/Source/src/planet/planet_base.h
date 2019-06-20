@@ -48,9 +48,8 @@ public:
 public:
     // Need to implement these and call collision objects updates here.
     void subscribeToWorldEvents();
-    void OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eventData );
-    void OnWorldStateChanged( StringHash eventType, VariantMap & eventData );
-    void OnWorldMoved( StringHash eventType, VariantMap & eventData );
+    void OnWorldPlanetChanged( StringHash eventType, VariantMap & eventData );
+    void OnWorldAdjusted( StringHash eventType, VariantMap & eventData );
 
     // There are at least 3 nodes.
     // 1-st translating, moving the orbit.

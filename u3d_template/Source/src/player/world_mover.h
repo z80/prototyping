@@ -47,10 +47,9 @@ protected:
     PlanetBase * planetOfInfluence();
 
 
-    void switchToEvent( Assembly * assembly );
     void switchTo( Assembly * assembly );
-    void tryMoveTo();
-    void moveToEvent( const Vector3d & r, const Vector3d & dr, const Vector3d & dv );
+    void adjustToTarget();
+    void adjustEvent( const Vector3d & dr, const Vector3d & dv, bool orbiting );
 
 public:
     SharedPtr<PlanetBase> planet;

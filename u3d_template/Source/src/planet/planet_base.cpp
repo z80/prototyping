@@ -104,18 +104,15 @@ void PlanetBase::finitCollisions( PhysicsWorld2 * w2 )
 
 void PlanetBase::subscribeToWorldEvents()
 {
-    SubscribeToEvent( MyEvents::E_WORLD_SWITCHED_ASSEMBLY, URHO3D_HANDLER( PlanetBase, OnWorldSwitchedAssembly ) );
-    SubscribeToEvent( MyEvents::E_WORLD_STATE_CHANGED,     URHO3D_HANDLER( PlanetBase, OnWorldStateChanged ) );
-    SubscribeToEvent( MyEvents::E_WORLD_MOVED,             URHO3D_HANDLER( PlanetBase, OnWorldMoved ) );
+    SubscribeToEvent( MyEvents::E_WORLD_PLANET_CHANGED, URHO3D_HANDLER( PlanetBase, OnWorldPlanetChanged ) );
+    SubscribeToEvent( MyEvents::E_WORLD_ADJUSTED,       URHO3D_HANDLER( PlanetBase, OnWorldAdjusted ) );
 }
 
-void PlanetBase::OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eventData )
+void PlanetBase::OnWorldPlanetChanged( StringHash eventType, VariantMap & eventData )
 {
-    using namespace MyEvents::WorldSwitchedAssembly;
-    const Variant & po = eventData[ P_PLANET_OLD ];
-    const PlanetBase * p_old = (PlanetBase *)po.GetVoidPtr();
+    using namespace MyEvents::WorldPlanetChanged;
     // Also need old world position and velocity to properly initialize movement.
-    const Variant & pn = eventData[ P_PLANET_NEW ];
+    const Variant & pn = eventData[ P_PLANET ];
     const PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
 
     // Get dynamics world.
@@ -138,56 +135,13 @@ void PlanetBase::OnWorldSwitchedAssembly( StringHash eventType, VariantMap & eve
 
     PhysicsWorld2 * pw2 = physicsWorld->Cast<PhysicsWorld2>();
     WorldMover    * wm  = worldMover->Cast<WorldMover>();
-    if ( (p_new == this) && (p_old != this) )
-    {
+    if (p_new == this)
         initCollisions( pw2, wm, GameData::DIST_PLANET_COLLISIONS );
-    }
-    else if ( ( p_old == this ) && ( p_new != this ) )
-    {
+    else
         finitCollisions( pw2 );
-    }
 }
 
-void PlanetBase::OnWorldStateChanged( StringHash eventType, VariantMap & eventData )
-{
-    using namespace MyEvents::WorldStateChanged;
-    const Variant & po = eventData[ P_PLANET_OLD ];
-    const PlanetBase * p_old = (PlanetBase *)po.GetVoidPtr();
-    // Also need old world position and velocity to properly initialize movement.
-    const Variant & pn = eventData[ P_PLANET_NEW ];
-    const PlanetBase * p_new = (PlanetBase *)pn.GetVoidPtr();
-
-    // Get dynamics world.
-    if ( !physicsWorld )
-    {
-        Scene * s = GetScene();
-        Component * c = s->GetComponent( StringHash("PhysicsWorld2"), true );
-        if ( !c )
-            return;
-        physicsWorld = SharedPtr<Component>( c );
-    }
-    if ( !worldMover )
-    {
-        Scene * s = GetScene();
-        Component * c = s->GetComponent( StringHash("WorldMover"), true );
-        if ( !c )
-            return;
-        worldMover = SharedPtr<Component>( c );
-    }
-
-    PhysicsWorld2 * pw2 = physicsWorld->Cast<PhysicsWorld2>();
-    WorldMover    * wm  = worldMover->Cast<WorldMover>();
-    if ( (p_new == this) && (p_old != this) )
-    {
-        initCollisions( pw2, wm, GameData::DIST_PLANET_COLLISIONS );
-    }
-    else if ( ( p_old == this ) && ( p_new != this ) )
-    {
-        finitCollisions( pw2 );
-    }
-}
-
-void PlanetBase::OnWorldMoved( StringHash eventType, VariantMap & eventData )
+void PlanetBase::OnWorldAdjusted( StringHash eventType, VariantMap & eventData )
 {
     if ( !worldMover )
     {
