@@ -322,18 +322,29 @@ void Assembly::toWorld()
             SharedPtr<Block> blockB = this->blocks[indB];
 
             // For now place joint point in the middle.
-            const Vector3d r = blockB->relR();
-            Node * node = blockB->GetNode();
+            Node * node = blockA->GetNode();
             Constraint2 * c = node->CreateComponent<Constraint2>();
             c->SetConstraintType( CONSTRAINT_HINGE_2 );
             c->SetDisableCollision( true );
-            c->SetOtherBody( blockA->rigidBody() );
-            c->SetWorldPosition( Vector3( r.x_, r.y_, r.z_ ) );
+            c->SetOtherBody( blockB->rigidBody() );
+            //c->SetWorldPosition( Vector3( r.x_, r.y_, r.z_ ) );
 
-            const Vector3 axis( 0.0, 0.0, 1.0 );
+            const Vector3 axisA( 0.0, 1.0, 0.0 );
             const Vector2 lim( 0.0, 0.0 );
-            c->SetAxis( axis );
-            c->SetOtherAxis( axis );
+
+            // Constraint position in first body's ref. frame.
+            PivotMarker * pmA = blockA->pivots[ dj.slotA ];
+            const Vector3d Ra = pmA->relR();
+            Quaterniond Qa = d.blocks[indA].q;
+            // Compute axis in other body's ref. frame.
+            PivotMarker * pmB = blockB->pivots[ dj.slotB ];
+            const Vector3d Rb = pmB->relR();
+            Quaterniond Qb = d.blocks[indB].q;
+
+            c->SetPosition( Vector3( Ra.x_, Ra.y_, Ra.z_ ) );
+            c->SetOtherPosition( Vector3( Rb.x_, Rb.y_, Rb.z_ ) );
+            c->SetRotation( Quaternion( Qa.w_, Qa.x_, Qa.y_, Qa.z_ ) );
+            c->SetOtherRotation( Quaternion( Qb.w_, Qb.x_, Qb.y_, Qb.z_ ) );
             c->SetHighLimit( lim );
             c->SetLowLimit( lim );
 
