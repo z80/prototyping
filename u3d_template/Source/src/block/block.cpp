@@ -97,15 +97,21 @@ bool    Block::detach()
     Node * root = getRoot( GetNode() );
     if ( !root )
         return false;
+    Block * pBlock = parentBlock();
+    if ( !pBlock )
+        return true;
 
     const size_t markersQty = pivots.size();
     for ( size_t i=0; i<markersQty; i++ )
     {
         PivotMarker * m = pivots[i];
-        PivotMarker * p = m->connectedTo;
-        if ( p )
+        Block * b = m->blockConnectedTo();
+        if ( b == pBlock )
+        {
+            PivotMarker * p = m->connectedTo;
+            m->connectedTo = SharedPtr< PivotMarker >( nullptr );
             p->connectedTo = SharedPtr< PivotMarker >( nullptr );
-        m->connectedTo = SharedPtr< PivotMarker >( nullptr );
+        }
     }
 
     setParent( root );
