@@ -528,6 +528,12 @@ void CollisionShape2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
             auto* convexData = static_cast<ConvexData2*>(GetGeometryData());
             auto* body = GetComponent<RigidBody2>();
             Color color = bodyActive ? Color::WHITE : Color::GREEN;
+
+            // Added next lines to compensate world local ref. frame.
+            Node * worldNode = physicsWorld_->GetNode();
+            const Matrix3x4 globTr = worldNode->GetTransform();
+            worldTransform = globTr * worldTransform;
+
             Matrix3x4 shapeTransform(worldTransform * position_, worldTransform.Rotation() * rotation_, worldTransform.Scale());
 
             if ( convexData)
