@@ -416,6 +416,9 @@ Design Workshop::design()
             }
         }
 
+        assert( slotA >= 0 );
+        assert( slotB >= 0 );
+
         Design::Joint j;
         j.blockA = indA;
         j.blockB = indB;
