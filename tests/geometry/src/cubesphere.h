@@ -4,6 +4,7 @@
 
 #include "Urho3D/Engine/Application.h"
 #include "vector3d.h"
+#include <map>
 
 using namespace Urho3D;
 using namespace Osp;
@@ -12,27 +13,106 @@ namespace Cubesphere
 {
 
 typedef double Float;
+static const int EDGE_HASH_SZ = sizeof(int)*2;
+
+class Cubesphere;
+class Face;
+
+class NeedSubdrive
+{
+public:
+    Vector3d at;
+
+    NeedSubdrive() {}
+    virtual ~NeedSubdrive() {}
+
+    void setCameraAt( const Vector3d & at )
+    {
+        this->at = at;
+    }
+
+    virtual bool subdrive( const Cubesphere * s, const Face * f ) = 0;
+};
+
+class Source
+{
+public:
+    Source() {}
+    virtual ~Source() {}
+
+    /// Delta height assuming sphere radius is 1.
+    virtual Float dh( const Vector3d & at ) const = 0;
+};
 
 struct Vertex
 {
-    Vector3d v;
-    int edgeIndA,
-        edgeIndB;
+public:
+    Vector3d at;
+    Vector3d norm;
+
+    int  a, b;
+    bool isMidPoint;
+    int  leafFacesQty;
+
+    Vertex();
+    ~Vertex();
+    Vertex( const Vector3d & at );
+    Vertex( const Vertex & inst );
+    const Vertex & operator=( const Vertex & inst );
 };
 
-struct Edge
+class Face
 {
-    int vertexIndA,
-        vertexIndB;
+public:
+    int  vertexInds[4];
+    int  childInds[4];
+    int  parentInd;
+    int  indexInParent;
+    int  level;
+    bool leaf;
+
+    Face();
+    Face( int a, int b, int c, int d );
+    Face( const Face & inst );
+    const Face & operator=( const Face & inst );
+    bool subdrive( Cubesphere * s, NeedSubdrive * needSubdrive );
 };
 
-struct Face
+class EdgeHash
 {
-    int vertexInds[4];
-    int childInds[4];
-    int parentInd;
-    int indexInParent;
-    int level;
+public:
+    unsigned char d[EDGE_HASH_SZ];
+
+    EdgeHash();
+    ~EdgeHash();
+    EdgeHash( int a, int b );
+    EdgeHash( const EdgeHash & inst );
+    const EdgeHash & operator=( const EdgeHash & inst );
+    friend bool operator<( const EdgeHash & a, const EdgeHash & b );
+    friend bool operator==( const EdgeHash & a, const EdgeHash & b );
+};
+
+class Cubesphere
+{
+public:
+    Vector<Vertex>          verts;
+    Vector<Face>            faces;
+    std::map<EdgeHash, int>  lookup;
+
+    Cubesphere();
+    ~Cubesphere();
+    Cubesphere( const Cubesphere & inst );
+    const Cubesphere & operator=( const Cubesphere & inst );
+
+    bool subdrive( NeedSubdrive * needSubdrive, Source * src );
+private:
+    void clear();
+    void applySource( Source * src );
+    void init();
+    void labelMidPoints();
+    void scaleToSphere();
+    void computeNormals();
+    void applySource( Source * src, Vertex & v );
 };
 
 
