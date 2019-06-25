@@ -421,7 +421,33 @@ void DynamicGeometry::initCustomGeometry()
     n->SetPosition( Vector3( 0.0f, 10.0f, 0.0f ) );
     CubesphereDrawer * cd = n->CreateComponent<CubesphereDrawer>();
 
-    //ResourceCache * cache = GetSubsystem<ResourceCache>();
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    //Texture2D * img = cache->GetResource<Texture2D>( "Textures/Flare.dds" );
+    //Texture2D * img = cache->GetResource<Texture2D>( "Textures/PlanetTest/texture_1024_dem.png" );
+    //Texture2D * img = cache->GetResource<Texture2D>( "Textures/PlanetTest/texture_1024.ppm" );
+    //Texture   * texture = cache->GetResource<Texture>( "Textures/PlanetTest/texture_1024.ppm" );
+    Image     * image   = cache->GetResource<Image>( "Textures/PlanetTest/texture_1024.ppm" );
+    //Image * img = new Image( context_ );
+    //const bool res = img->LoadFile( "Textures/PlanetTest/texture_1024_dem.png" );
+    //const bool res = img->LoadFile( "./bin/Data/Textures/Flare.dds" );
+    int w = image->GetWidth();
+    int h = image->GetHeight();
+    int d = image->GetDepth();
+    //Image * im = img->GetImage();
+    for ( int i=0; i<h; i++ )
+    {
+        for ( int j=0; j<w; j++ )
+        {
+            Color c = image->GetPixel( j, i );
+            if ( (c.r_ > 0.0) || (c.g_ > 0.0) || (c.b_ > 0.0) )
+                Color c2 = c;
+        }
+    }
+
+    URHO3D_LOGDEBUGF( "dasdasad" );
+    URHO3D_LOGDEBUGF( "dasdasad" );
+    //delete img;
+
     //Material * m = cache->GetResource<Material>("Materials/VertexColor.xml");
     //cd->SetMaterial( m );
 }
