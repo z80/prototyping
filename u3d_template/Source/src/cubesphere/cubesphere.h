@@ -18,22 +18,6 @@ static const int EDGE_HASH_SZ = sizeof(int)*2;
 class Cubesphere;
 class Face;
 
-class NeedSubdrive
-{
-public:
-    Vector3d at;
-
-    NeedSubdrive() {}
-    virtual ~NeedSubdrive() {}
-
-    void setCameraAt( const Vector3d & at )
-    {
-        this->at = at;
-    }
-
-    virtual bool needSubdrive( const Cubesphere * s, const Face * f ) = 0;
-};
-
 class Source
 {
 public:
@@ -106,7 +90,7 @@ class Cubesphere
 public:
     Vector<Vertex>          verts;
     Vector<Face>            faces;
-    std::map<EdgeHash, int>  lookup;
+    std::map<EdgeHash, int> lookup;
 
     Cubesphere();
     ~Cubesphere();

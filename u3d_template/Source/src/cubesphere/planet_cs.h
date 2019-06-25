@@ -17,16 +17,31 @@ public:
     PlanetCs( Context * ctx );
     ~PlanetCs();
 
+    void setup( const String & json="Planets/Test.json" );
+
+    Float dh( const Vector3d & at ) const override;
+    bool  needSubdrive( const Cubesphere * s, const Face * f ) const override;
+
     void Start() override;
-    void updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist );
-    void initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist );
-    void finitCollisions( PhysicsWorld2 * w2 );
+    void updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist ) override;
+    void initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist ) override;
+    void finitCollisions( PhysicsWorld2 * w2 ) override;
 public:
-    // Visual rrepresentation.
+    void initParameters();
+    void updateGeometry( Osp::WorldMover * mover );
+
+    String configFileName;
+    bool   initialized;
+    Cubesphere::Cubesphere cubesphere;
+    // Visual representation.
     CustomGeometry * cg;
+    Image * heightmap,
+          * colormap;
     // When dynamics is enabled
     RigidBody2      * rigidBody;
     CollisionShape2 * collisionShape;
+
+    Vector<Cubesphere::Vertex> tris;
 };
 
 
