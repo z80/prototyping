@@ -67,15 +67,16 @@ void DynamicGeometry::CreateScene()
 
     // Create the Octree component to the scene so that drawable objects can be rendered. Use default volume
     // (-1000, -1000, -1000) to (1000, 1000, 1000)
-    scene_->CreateComponent<Octree>();
+    Octree * ot = scene_->CreateComponent<Octree>();
+    ot->SetSize( BoundingBox(-1.0e6, 1.0e6), 5 );
 
     // Create a Zone for ambient light & fog control
     Node* zoneNode = scene_->CreateChild("Zone");
     auto* zone = zoneNode->CreateComponent<Zone>();
-    zone->SetBoundingBox(BoundingBox(-1000.0f, 1000.0f));
+    zone->SetBoundingBox(BoundingBox(-10000.0f, 10000.0f));
     zone->SetFogColor(Color(0.2f, 0.2f, 0.2f));
     zone->SetFogStart(200.0f);
-    zone->SetFogEnd(300.0f);
+    zone->SetFogEnd(1300.0f);
 
     // Create a directional light
     Node* lightNode = scene_->CreateChild("DirectionalLight");
