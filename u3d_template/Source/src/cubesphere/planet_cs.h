@@ -19,7 +19,7 @@ public:
 
     void Start() override;
     void updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist );
-    void initCollisions( PhysicsWorld2 * w2, Osp::WorldMover, Float dist );
+    void initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist );
     void finitCollisions( PhysicsWorld2 * w2 );
 public:
     // Visual rrepresentation.

@@ -49,7 +49,7 @@ public:
 
     /// Delta height assuming sphere radius is 1.
     virtual Float dh( const Vector3d & at ) const = 0;
-    virtual bool needSubdrive( const Cubesphere * s, const Face * f ) = 0;
+    virtual bool needSubdrive( const Cubesphere * s, const Face * f ) const = 0;
 };
 
 struct Vertex

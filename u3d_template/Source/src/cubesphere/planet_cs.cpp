@@ -24,7 +24,7 @@ void PlanetCs::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Fl
 {
 }
 
-void PlanetCs::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover, Float dist )
+void PlanetCs::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
 }
 

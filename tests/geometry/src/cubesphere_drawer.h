@@ -15,7 +15,7 @@ public:
     ~TestSource();
 
     Float dh( const Vector3d & at ) const override;
-    bool needSubdrive( const Cubesphere::Cubesphere * s, const Face * f ) override;
+    bool needSubdrive( const Cubesphere::Cubesphere * s, const Face * f ) const override;
 };
 
 class CubesphereDrawer: public Urho3D::LogicComponent
