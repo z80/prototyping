@@ -4,18 +4,23 @@
 
 using namespace Cubesphere;
 
-TestNeedSubdrive::TestNeedSubdrive()
-    : NeedSubdrive()
+TestSource::TestSource()
+    : Source()
 {
     at = Vector3d( 0.0, 0.0, -1.0 );
 }
 
-TestNeedSubdrive::~TestNeedSubdrive()
+TestSource::~TestSource()
 {
 
 }
 
-bool TestNeedSubdrive::needSubdrive( const Cubesphere::Cubesphere * s, const Face * f )
+Float TestSource::dh( const Vector3d & at ) const
+{
+    return 0.0;
+}
+
+bool TestSource::needSubdrive( const Cubesphere::Cubesphere * s, const Face * f )
 {
     const bool maxLevelNotReached = (f->level < 12);
     if ( !maxLevelNotReached )
@@ -46,7 +51,7 @@ bool TestNeedSubdrive::needSubdrive( const Cubesphere::Cubesphere * s, const Fac
         if ( d > maxSine )
             maxSine = d;
     }
-    const bool needSubdrive = ( maxSine >= 0.03 );
+    const bool needSubdrive = ( maxSine >= 0.13 );
     return needSubdrive;
 
     /*Float minD = -1.0;
@@ -60,22 +65,6 @@ bool TestNeedSubdrive::needSubdrive( const Cubesphere::Cubesphere * s, const Fac
     const bool needSubdrive = ( minD < 1.6 );
 
     return needSubdrive;*/
-}
-
-TestSource::TestSource()
-    : Source()
-{
-
-}
-
-TestSource::~TestSource()
-{
-
-}
-
-Float TestSource::dh( const Vector3d & at ) const
-{
-    return 0.0;
 }
 
 
@@ -96,7 +85,7 @@ void CubesphereDrawer::Start()
     Node * n = GetNode();
     cg = n->CreateComponent<CustomGeometry>();
 
-    cs.subdrive( &needSubdrive, &source );
+    cs.subdrive( &source );
     Vector<Cubesphere::Vertex> faces;
     cs.triangleList( faces );
 
@@ -113,7 +102,7 @@ void CubesphereDrawer::Start()
         const Vector3 at( v.at.x_, v.at.y_, v.at.z_ );
         const Vector3 n( v.norm.x_, v.norm.y_, v.norm.z_ );
 
-        cg->DefineVertex( at * 10.0 );
+        cg->DefineVertex( at * 200.0 );
         cg->DefineColor( Color( 1.0, 0.0, 0.0 ) );
         cg->DefineNormal( n );
     }

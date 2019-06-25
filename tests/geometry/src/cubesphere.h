@@ -37,11 +37,19 @@ public:
 class Source
 {
 public:
+    Vector3d at;
+
     Source() {}
     virtual ~Source() {}
 
+    void setCameraAt( const Vector3d & at )
+    {
+        this->at = at;
+    }
+
     /// Delta height assuming sphere radius is 1.
     virtual Float dh( const Vector3d & at ) const = 0;
+    virtual bool needSubdrive( const Cubesphere * s, const Face * f ) = 0;
 };
 
 struct Vertex
@@ -76,7 +84,7 @@ public:
     Face( int a, int b, int c, int d );
     Face( const Face & inst );
     const Face & operator=( const Face & inst );
-    bool subdrive( Cubesphere * s, NeedSubdrive * needSubdrive );
+    bool subdrive( Cubesphere * s, Source * src );
 };
 
 class EdgeHash
@@ -105,7 +113,7 @@ public:
     Cubesphere( const Cubesphere & inst );
     const Cubesphere & operator=( const Cubesphere & inst );
 
-    bool subdrive( NeedSubdrive * needSubdrive, Source * src );
+    bool subdrive( Source * src );
     void triangleList( Vector<Vertex> & tris );
 private:
     void clear();

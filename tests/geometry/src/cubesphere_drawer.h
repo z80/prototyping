@@ -8,15 +8,6 @@
 using namespace Urho3D;
 using namespace Cubesphere;
 
-class TestNeedSubdrive: public NeedSubdrive
-{
-public:
-    TestNeedSubdrive();
-    ~TestNeedSubdrive();
-
-    bool needSubdrive( const Cubesphere::Cubesphere * s, const Face * f ) override;
-};
-
 class TestSource: public Source
 {
 public:
@@ -24,6 +15,7 @@ public:
     ~TestSource();
 
     Float dh( const Vector3d & at ) const override;
+    bool needSubdrive( const Cubesphere::Cubesphere * s, const Face * f ) override;
 };
 
 class CubesphereDrawer: public Urho3D::LogicComponent
@@ -38,7 +30,6 @@ public:
     void SetMaterial( Material * m );
 
 public:
-    TestNeedSubdrive       needSubdrive;
     TestSource             source;
     Cubesphere::Cubesphere cs;
     CustomGeometry * cg;

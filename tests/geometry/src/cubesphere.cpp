@@ -98,7 +98,7 @@ const Face & Face::operator=( const Face & inst )
     return *this;
 }
 
-bool Face::subdrive( Cubesphere * s, NeedSubdrive * needSubdrive )
+bool Face::subdrive(Cubesphere * s, Source * src )
 {
     if ( !leaf )
     {
@@ -106,7 +106,7 @@ bool Face::subdrive( Cubesphere * s, NeedSubdrive * needSubdrive )
         {
             const int faceInd = childInds[i];
             Face f = s->faces[faceInd];
-            const bool ok = f.subdrive( s, needSubdrive );
+            const bool ok = f.subdrive( s, src );
             s->faces[faceInd] = f;
             if ( !ok )
                 return false;
@@ -115,7 +115,7 @@ bool Face::subdrive( Cubesphere * s, NeedSubdrive * needSubdrive )
     }
 
     // Check if needs subdivision.
-    const bool needProcessing = needSubdrive->needSubdrive( s, this );
+    const bool needProcessing = src->needSubdrive( s, this );
     if ( !needProcessing )
         return true;
 
@@ -209,7 +209,7 @@ bool Face::subdrive( Cubesphere * s, NeedSubdrive * needSubdrive )
     {
         const int faceInd = indBase + i;
         Face face = s->faces[faceInd];
-        const bool ok = face.subdrive( s, needSubdrive );
+        const bool ok = face.subdrive( s, src );
         s->faces[faceInd] = face;
         if ( !ok )
             return false;
@@ -329,7 +329,7 @@ const Cubesphere & Cubesphere::operator=( const Cubesphere & inst )
     return *this;
 }
 
-bool Cubesphere::subdrive( NeedSubdrive * needSubdrive, Source * src )
+bool Cubesphere::subdrive( Source * src )
 {
     clear();
     init();
@@ -340,7 +340,7 @@ bool Cubesphere::subdrive( NeedSubdrive * needSubdrive, Source * src )
         Face f = faces[i];
         if ( !f.leaf )
             continue;
-        const bool ok = f.subdrive( this, needSubdrive );
+        const bool ok = f.subdrive( this, src );
         faces[i] = f;
         if ( !ok )
             return false;
