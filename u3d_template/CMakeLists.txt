@@ -66,6 +66,7 @@ include_directories( ${URHO3D_INCLUDE_DIRS}
                      "./Source"
                      "./Source/UI"
                      "./Source/src/data_types"
+                     "./Source/src/cubesphere"
                      "./Source/src/dynamics"
                      "./Source/src/utils"
                      "./Source/src/block"

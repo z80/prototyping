@@ -20,7 +20,7 @@ Float TestSource::dh( const Vector3d & at ) const
     return 0.0;
 }
 
-bool TestSource::needSubdrive( const Cubesphere::Cubesphere * s, const Face * f )
+bool TestSource::needSubdrive( const Cubesphere::Cubesphere * s, const Face * f ) const
 {
     const bool maxLevelNotReached = (f->level < 12);
     if ( !maxLevelNotReached )
