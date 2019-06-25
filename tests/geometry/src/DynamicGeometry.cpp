@@ -250,7 +250,7 @@ void DynamicGeometry::CreateScene()
     cameraNode_ = new Node(context_);
     cameraNode_->SetPosition(Vector3(0.0f, 2.0f, -20.0f));
     auto* camera = cameraNode_->CreateComponent<Camera>();
-    camera->SetFarClip(300.0f);
+    camera->SetFarClip(5300.0f);
 
     initCustomGeometry();
 }
