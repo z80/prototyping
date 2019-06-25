@@ -1,24 +1,4 @@
-//
-// Copyright (c) 2008-2019 the Urho3D project.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-//
+
 
 #include <Urho3D/Core/CoreEvents.h>
 #include <Urho3D/Core/Profiler.h>
@@ -43,6 +23,7 @@
 #include <Urho3D/UI/UI.h>
 
 #include "DynamicGeometry.h"
+#include "cubesphere_drawer.h"
 
 #include <Urho3D/DebugNew.h>
 
@@ -78,6 +59,8 @@ void DynamicGeometry::Start()
 
 void DynamicGeometry::CreateScene()
 {
+    context_->RegisterFactory<CubesphereDrawer>();
+
     auto* cache = GetSubsystem<ResourceCache>();
 
     scene_ = new Scene(context_);
@@ -399,7 +382,7 @@ void DynamicGeometry::HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void DynamicGeometry::initCustomGeometry()
 {
-    Node * n = scene_->CreateChild( "CustomGeometryNode" );
+    /*Node * n = scene_->CreateChild( "CustomGeometryNode" );
     n->SetPosition( Vector3( 0.0f, 10.0f, 0.0f ) );
     CustomGeometry * cg = n->CreateComponent<CustomGeometry>();
     cg->Clear();
@@ -432,7 +415,15 @@ void DynamicGeometry::initCustomGeometry()
     l->SetColor( Color(1.0f, 1.0f, 1.0f) );
     l->SetSpecularIntensity( 1.5f );
     l->SetDrawDistance( 1000.0f );
-    l->SetRange( 1000.0f );
+    l->SetRange( 1000.0f );*/
+
+    Node * n = scene_->CreateChild( "CustomGeometryNode" );
+    n->SetPosition( Vector3( 0.0f, 10.0f, 0.0f ) );
+    CubesphereDrawer * cd = n->CreateComponent<CubesphereDrawer>();
+
+    //ResourceCache * cache = GetSubsystem<ResourceCache>();
+    //Material * m = cache->GetResource<Material>("Materials/VertexColor.xml");
+    //cd->SetMaterial( m );
 }
 
 void DynamicGeometry::updateCustomGeometry()

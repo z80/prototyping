@@ -31,7 +31,7 @@ public:
         this->at = at;
     }
 
-    virtual bool subdrive( const Cubesphere * s, const Face * f ) = 0;
+    virtual bool needSubdrive( const Cubesphere * s, const Face * f ) = 0;
 };
 
 class Source
@@ -72,6 +72,7 @@ public:
     bool leaf;
 
     Face();
+    ~Face();
     Face( int a, int b, int c, int d );
     Face( const Face & inst );
     const Face & operator=( const Face & inst );
@@ -105,6 +106,7 @@ public:
     const Cubesphere & operator=( const Cubesphere & inst );
 
     bool subdrive( NeedSubdrive * needSubdrive, Source * src );
+    void triangleList( Vector<Vertex> & tris );
 private:
     void clear();
     void applySource( Source * src );

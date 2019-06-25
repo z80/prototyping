@@ -14,7 +14,7 @@ public:
     TestNeedSubdrive();
     ~TestNeedSubdrive();
 
-    bool subdrive( const Cubesphere::Cubesphere * s, const Face * f ) override;
+    bool needSubdrive( const Cubesphere::Cubesphere * s, const Face * f ) override;
 };
 
 class TestSource: public Source
@@ -35,11 +35,12 @@ public:
 
     void Start() override;
     void Update(float timeStep) override;
+    void SetMaterial( Material * m );
 
 public:
-    TestNeedSubdrive * needSubdrive;
-    TestSource       * source;
-    Cubesphere::Cubesphere * cs;
+    TestNeedSubdrive       needSubdrive;
+    TestSource             source;
+    Cubesphere::Cubesphere cs;
     CustomGeometry * cg;
 };
 
