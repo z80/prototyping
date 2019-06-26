@@ -14,8 +14,8 @@ PlanetForces::PlanetForces( Context * ctx )
     atmHeight_  = 7.0;
     orbitR_     = 20.0;
 
-    density_    = 0.05;
-    viscosity_  = 0.01;
+    densityF_    = 0.05;
+    viscosityF_  = 0.01;
     densityB_   = 0.5;
     viscosityB_ = 0.5;
 
@@ -77,6 +77,67 @@ bool PlanetForces::canOrbit( const ItemBase * a )
     const Float h = vh.Length();
     const bool enoughAngularMomentum = (h > GameData::MIN_ANGULAR_MOMENTUM);
     return enoughAngularMomentum;
+}
+
+bool PlanetForces::load( const JSONValue & v )
+{
+    {
+        assert( v.Contains( "GM" ) );
+        const JSONValue & vv = v.Get( "GM" );
+        GM_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "R" ) );
+        const JSONValue & vv = v.Get( "R" );
+        R_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "orbitR" ) );
+        const JSONValue & vv = v.Get( "orbitR" );
+        orbitR_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "atmHeight" ) );
+        const JSONValue & vv = v.Get( "atmHeight" );
+        atmHeight_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "atmHeight" ) );
+        const JSONValue & vv = v.Get( "atmHeight" );
+        atmHeight_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "densityF" ) );
+        const JSONValue & vv = v.Get( "densityF" );
+        densityF_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "densityB" ) );
+        const JSONValue & vv = v.Get( "densityB" );
+        densityB_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "viscosityF" ) );
+        const JSONValue & vv = v.Get( "viscosityF" );
+        viscosityF_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "viscosityB" ) );
+        const JSONValue & vv = v.Get( "viscosityB" );
+        viscosityB_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "groundT" ) );
+        const JSONValue & vv = v.Get( "groundT" );
+        groundT_ = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "highAltitudeT" ) );
+        const JSONValue & vv = v.Get( "highAltitudeT" );
+        highAltitudeT_ = vv.GetDouble();
+    }
+
+    return true;
 }
 
 void PlanetForces::applyGravity( Block * b )
@@ -189,8 +250,8 @@ bool PlanetForces::atmosphereParams( const Vector3d &at, Float & temperature, Fl
 
     if ( h <= 0.0 )
     {
-        densityF    = density_;
-        viscosityF  = viscosity_;
+        densityF    = densityF_;
+        viscosityF  = viscosityF_;
         densityB    = densityB_;
         viscosityB  = viscosityB_;
         temperature = groundT_;
@@ -200,8 +261,8 @@ bool PlanetForces::atmosphereParams( const Vector3d &at, Float & temperature, Fl
 
     const Float x2 = x*x;
     const Float _1_x2 = 1.0 - x2;
-    densityF     = _1_x2*density_;
-    viscosityF   = _1_x2*viscosity_;
+    densityF     = _1_x2*densityF_;
+    viscosityF   = _1_x2*viscosityF_;
     densityB     = densityF*densityB_;
     viscosityB   = viscosityF*viscosityB_;
     temperature = groundT_*_1_x2 + highAltitudeT_*x2;

@@ -45,12 +45,16 @@ public:
     /// Finalize collisions as player leaves the area.
     virtual void finitCollisions( PhysicsWorld2 * w2 );
 
+    virtual bool load( const JSONValue & v );
+
 public:
     // Need to implement these and call collision objects updates here.
     void subscribeToWorldEvents();
     void OnWorldPlanetChanged( StringHash eventType, VariantMap & eventData );
     void OnWorldAdjusted( StringHash eventType, VariantMap & eventData );
 
+    // Planet name for making hierarchy in config file.
+    String name;
     // There are at least 3 nodes.
     // 1-st translating, moving the orbit.
     // 2-d  attached to the 1-st one but also rotating. Physcis world and collision bodies

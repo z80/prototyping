@@ -98,6 +98,20 @@ void PlanetBase::finitCollisions( PhysicsWorld2 * w2 )
 
 }
 
+bool PlanetBase::load( const JSONValue & v )
+{
+    {
+        assert( v.Contains( "name" ) );
+        const JSONValue & vv = v.Get( "name" );
+        name = vv.GetString();
+    }
+    {
+        assert( v.Contains( "forces" ) );
+        const JSONValue & vv = v.Get( "forces" );
+        const bool res = forces->load( vv );
+        return res;
+    }
+}
 
 
 

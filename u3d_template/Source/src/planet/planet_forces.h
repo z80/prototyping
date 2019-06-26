@@ -27,6 +27,8 @@ public:
 
     bool canOrbit( const ItemBase * a );
 
+    bool load( const JSONValue & v );
+
 public:
     virtual void applyGravity( Block * b );
     void clearGravity(Block * b );
@@ -49,9 +51,9 @@ public:
     // Atmosphere height.
     Float atmHeight_;
     // Ground level density.
-    Float density_, densityB_;
+    Float densityF_, densityB_;
     // Viscosity.
-    Float viscosity_, viscosityB_;
+    Float viscosityF_, viscosityB_;
 
     // Temperature parameters.
     Float groundT_;
