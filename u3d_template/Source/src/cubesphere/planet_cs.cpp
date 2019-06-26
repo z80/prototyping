@@ -2,6 +2,10 @@
 #include "planet_cs.h"
 #include "world_mover.h"
 
+#include "physics_world_2.h"
+#include "rigid_body_2.h"
+#include "collision_shape_2.h"
+
 namespace Osp
 {
 
@@ -57,14 +61,42 @@ void PlanetCs::Start()
 
 void PlanetCs::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
+    if ( !rigidBody )
+        return;
+
+    Node * n = rigidBody->GetNode();
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    rotator->relativePose( mover, rel_r, rel_q );
+    n->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    n->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
 }
 
 void PlanetCs::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
+    Node * worldNode = w2->GetNode();
+    Node * n = worldNode->CreateChild( "PlanetCollisionShape" );
+
+    rigidBody = n->CreateComponent<RigidBody2>();
+    rigidBody->SetMass( 0.0 );
+
+    collisionShape = n->CreateComponent<CollisionShape2>();
+    collisionShape->SetCustomGImpactMesh( cg );
+    //collisionShape->SetCustomTriangleMesh( cg );
+
+    Vector3d    rel_r;
+    Quaterniond rel_q;
+    rotator->relativePose( mover, rel_r, rel_q );
+    n->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    n->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
 }
 
 void PlanetCs::finitCollisions( PhysicsWorld2 * w2 )
 {
+    if ( collisionShape )
+        collisionShape->Remove();
+    if ( rigidBody )
+        rigidBody->Remove();
 }
 
 bool PlanetCs::load( const JSONValue & root )
