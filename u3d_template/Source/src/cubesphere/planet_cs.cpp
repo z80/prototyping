@@ -48,13 +48,29 @@ void PlanetCs::setup( const String & json )
 
 Float PlanetCs::dh( const Vector3d & at ) const
 {
-    return 0.0;
+    const Float p = Sqrt( at.x_*at.x_ + at.z_* at.z_ );
+    const Float lon = Atan2( at.y_, p );
+    const Float lat = Atan2( at.z_, at.x_ );
+    const Float w = (Float)(heightmap->GetWidth()-1);
+    const Float h = (Float)(heightmap->GetHeight()-1);
+    const Float x = (lat + 180.0) / 360.0 * w;
+    const Float y = (90.0 - lon) / 180.0 * h;
+    const int ix = (int)x;
+    const int iy = (int)y;
+    const Color c = heightmap->GetPixel( x, y );
+    const Float v = c.Average();
+    const Float v_abs = heightScale * v;
+    return v_abs;
 }
 
 bool  PlanetCs::needSubdrive( const Cubesphere::Cubesphere * s, const Cubesphere::Face * f ) const
 {
-    const bool maxLevelNotReached = (f->level < subdivMaxLevel);
-    if ( !maxLevelNotReached )
+    // Force some subdivision.
+    //if ( f->level < 8 )
+    //    return true;
+
+    const bool maxLevelReached = (f->level >= subdivMaxLevel);
+    if ( maxLevelReached )
         return false;
 
     Float maxSine = 0.0;
@@ -200,18 +216,40 @@ void PlanetCs::updateGeometry( const Vector3d & at )
     cg->SetNumGeometries( 1 );
     cg->BeginGeometry( 0, TRIANGLE_LIST );
 
+    const Float w = (Float)(heightmap->GetWidth()-1);
+    const Float h = (Float)(heightmap->GetHeight()-1);
     for ( unsigned i=0; i<qty; i++ )
     {
         const Cubesphere::Vertex & v = tris[i];
         const Vector3 at( v.at.x_, v.at.y_, v.at.z_ );
         const Vector3 n( v.norm.x_, v.norm.y_, v.norm.z_ );
 
-        cg->DefineVertex( at * 200.0 );
-        cg->DefineColor( Color( 1.0, 0.0, 0.0 ) );
+        const Float p = Sqrt( v.at.x_*v.at.x_ + v.at.z_* v.at.z_ );
+        const Float lon = Atan2( v.at.y_, p );
+        const Float lat = Atan2( v.at.z_, v.at.x_ );
+        const Float x0 = (lat + 180.0) / 360.0;
+        const Float y0 = (90.0 - lon) / 180.0;
+        const Vector2 texCoord( x0, y0 );
+        const Float x = x0 * w;
+        const Float y = y0 * h;
+        const int ix = (int)x;
+        const int iy = (int)y;
+        const Color c = colormap->GetPixel( x, y );
+
+        cg->DefineVertex( at * forces->R_ );
+        cg->DefineColor( c );
         cg->DefineNormal( n );
+        cg->DefineTexCoord( texCoord );
     }
 
     cg->Commit();
+
+
+    ResourceCache * cache = GetSubsystem<ResourceCache>();
+    Material * m = cache->GetResource<Material>("Materials/VertexColor.xml");
+    //Material * m = cache->GetResource<Material>("Materials/Stone.xml");
+    cg->SetMaterial( m );
+    cg->SetCastShadows( true );
 }
 
 bool PlanetLoader::loadGeometry( const JSONValue & v, PlanetCs * p )
