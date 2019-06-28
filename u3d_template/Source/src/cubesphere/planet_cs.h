@@ -31,6 +31,7 @@ public:
 public:
     void initParameters();
     void updateGeometry( Osp::WorldMover * mover );
+    void updateGeometry( const Vector3d & at );
 
     String configFileName;
     bool   initialized;
@@ -40,6 +41,8 @@ public:
     Image * heightmap,
           * colormap;
     Float   heightScale;
+    int     subdivMaxLevel;
+    Float   subdivMaxSine;
     // When dynamics is enabled
     RigidBody2      * rigidBody;
     CollisionShape2 * collisionShape;

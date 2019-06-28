@@ -1,0 +1,41 @@
+{
+    "name": "aaa", 
+    "forces": 
+    {
+        "GM":         500, 
+        "R":          10, 
+        "orbitR":     20, 
+        "atmHeight":  7, 
+        "densityF":   0.05, 
+        "densityB":   0.5, 
+        "viscosityF": 0.01, 
+        "viscosityB": 0.5, 
+        "groundT":    20, 
+        "highAltitudeT": -100
+    }, 
+    "kepler": 
+    {
+         "GM":    100.0, 
+         "a":     30.0, 
+         "e":     0.2, 
+         "Omega": 0.0, 
+         "I":     0.0, 
+         "omega": 0.0, 
+         "E":     0.0
+    }, 
+    "rotation": 
+    {
+        "period": 100.0, 
+        "yaw":    0.0, 
+        "pitch":  0.0, 
+        "roll":   0.0
+    },
+    "geometry": 
+    {
+        "heightmap":        "Textures/PlanetTest/texture_1024_dem.png", 
+        "colormap":         "Textures/PlanetTest/texture_1024.ppm", 
+        "height_scale":     0.1, 
+        "subdiv_max_sine":  0.1, 
+        "subdiv_max_level": 12
+    }
+}

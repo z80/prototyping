@@ -21,6 +21,7 @@
 #include "planet_test.h"
 #include "planet_sun_test.h"
 #include "planet_moon_test.h"
+#include "planet_cs.h"
 
 /*
 #include "physics_world_2.h"
@@ -290,7 +291,8 @@ void OnePlanet::createKepler()
         PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
 
         Node * moonNode = planetNode->CreateChild( "PlanetNode" );
-        PlanetMoonTest * mn = moonNode->CreateComponent<PlanetMoonTest>();
+        //PlanetMoonTest * mn = moonNode->CreateComponent<PlanetMoonTest>();
+        PlanetCs * mn = moonNode->CreateComponent<PlanetCs>();
 
         planet_ = SharedPtr<PlanetBase>( pt );
         moon_   = SharedPtr<PlanetBase>( mn );

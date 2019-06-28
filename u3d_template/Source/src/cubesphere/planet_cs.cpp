@@ -16,6 +16,8 @@ public:
     ~PlanetLoader() {}
 
     static bool loadGeometry( const JSONValue & v, PlanetCs * p );
+    static bool loadKepler( const JSONValue & v, PlanetCs * p );
+    static bool loadRotator( const JSONValue & v, PlanetCs * p );
 };
 
 PlanetCs::PlanetCs( Context * ctx )
@@ -27,6 +29,12 @@ PlanetCs::PlanetCs( Context * ctx )
     heightmap      = 0;
     colormap       = 0;
     initialized    = false;
+
+    heightScale    = 0.03 / 255.0;
+    subdivMaxLevel = 12;
+    subdivMaxSine  = 0.1;
+
+    configFileName = "Data/Planets/cubesphere.json";
 }
 
 PlanetCs::~PlanetCs()
@@ -40,12 +48,33 @@ void PlanetCs::setup( const String & json )
 
 Float PlanetCs::dh( const Vector3d & at ) const
 {
-
+    return 0.0;
 }
 
 bool  PlanetCs::needSubdrive( const Cubesphere::Cubesphere * s, const Cubesphere::Face * f ) const
 {
+    const bool maxLevelNotReached = (f->level < subdivMaxLevel);
+    if ( !maxLevelNotReached )
+        return false;
 
+    Float maxSine = 0.0;
+    for ( int i=0; i<4; i++ )
+    {
+        const int ind0 = i;
+        int ind1 = i+1;
+        if (ind1 > 3)
+            ind1 = 0;
+        Vector3d v0 = s->verts[ f->vertexInds[ind0] ].at - this->at;
+        Vector3d v1 = s->verts[ f->vertexInds[ind1] ].at - this->at;
+        v0.Normalize();
+        v1.Normalize();
+        const Vector3d cr = v0.CrossProduct( v1 );
+        const Float d = std::abs( cr.Length() );
+        if ( d > maxSine )
+            maxSine = d;
+    }
+    const bool needSubdrive = ( maxSine >= subdivMaxSine );
+    return needSubdrive;
 }
 
 void PlanetCs::Start()
@@ -57,6 +86,7 @@ void PlanetCs::Start()
     cg->SetDynamic( true );
 
     initParameters();
+    updateGeometry( Vector3d( 1.0, 0.0, 0.0 ) );
 }
 
 void PlanetCs::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
@@ -94,9 +124,15 @@ void PlanetCs::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Floa
 void PlanetCs::finitCollisions( PhysicsWorld2 * w2 )
 {
     if ( collisionShape )
+    {
         collisionShape->Remove();
+        collisionShape = 0;
+    }
     if ( rigidBody )
+    {
         rigidBody->Remove();
+        rigidBody = 0;
+    }
 }
 
 bool PlanetCs::load( const JSONValue & root )
@@ -105,11 +141,22 @@ bool PlanetCs::load( const JSONValue & root )
         return false;
 
     {
+        assert( root.Contains( "kepler" ) );
+        const JSONValue & vv = root.Get( "kepler" );
+        const bool ok = PlanetLoader::loadKepler( vv, this );
+    }
+    {
+        assert( root.Contains( "rotation" ) );
+        const JSONValue & vv = root.Get( "rotation" );
+        const bool ok = PlanetLoader::loadRotator( vv, this );
+    }
+    {
         assert( root.Contains( "geometry" ) );
         const JSONValue & vv = root.Get( "geometry" );
         const bool ok = PlanetLoader::loadGeometry( vv, this );
-        return ok;
     }
+
+    return true;
 }
 
 void PlanetCs::initParameters()
@@ -132,10 +179,18 @@ void PlanetCs::updateGeometry( Osp::WorldMover * mover )
 {
     Vector3d    rel_r;
     Quaterniond rel_q;
-    mover->relativePose( rotator, rel_r, rel_q );
-    rel_r.Normalize();
+    if ( mover )
+    {
+        mover->relativePose( rotator, rel_r, rel_q );
+        rel_r.Normalize();
+    }
 
-    setCameraAt( rel_r );
+    updateGeometry( rel_r );
+}
+
+void PlanetCs::updateGeometry( const Vector3d & at )
+{
+    setCameraAt( at );
     cubesphere.subdrive( this );
     cubesphere.triangleList( tris );
 
@@ -183,11 +238,92 @@ bool PlanetLoader::loadGeometry( const JSONValue & v, PlanetCs * p )
         if ( !v.Contains( "height_scale" ) )
             URHO3D_LOGERROR( "Planet loader error: no height scale specified" );
         const JSONValue & v_hs = v.Get( "height_scale" );
-        const Float scale = v_hs.GetDouble();
+        p->heightScale = v_hs.GetDouble();
+    }
+    {
+        if ( !v.Contains( "subdiv_max_sine" ) )
+            URHO3D_LOGERROR( "Planet loader error: no max subdiv sine specified" );
+        const JSONValue & v_hs = v.Get( "subdiv_max_sine" );
+        p->subdivMaxSine = v_hs.GetDouble();
+    }
+    {
+        if ( !v.Contains( "subdiv_max_level" ) )
+            URHO3D_LOGERROR( "Planet loader error: no max subdiv level specified" );
+        const JSONValue & v_hs = v.Get( "subdiv_max_level" );
+        p->subdivMaxLevel = v_hs.GetInt();
+    }
+    return true;
+}
+
+bool PlanetLoader::loadKepler( const JSONValue & v, PlanetCs * p )
+{
+    Float GM, a, e, Omega, I, omega, E;
+    {
+        assert( v.Contains( "GM" ) );
+        const JSONValue & vv = v.Get( "GM" );
+        GM = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "a" ) );
+        const JSONValue & vv = v.Get( "a" );
+        a = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "e" ) );
+        const JSONValue & vv = v.Get( "e" );
+        e = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "Omega" ) );
+        const JSONValue & vv = v.Get( "Omega" );
+        Omega = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "I" ) );
+        const JSONValue & vv = v.Get( "I" );
+        I = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "omega" ) );
+        const JSONValue & vv = v.Get( "omega" );
+        omega = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "E" ) );
+        const JSONValue & vv = v.Get( "E" );
+        E = vv.GetDouble();
+    }
+    p->mover->launch( GM, a, e, Omega, I, omega, E );
+}
+
+bool PlanetLoader::loadRotator( const JSONValue & v, PlanetCs * p )
+{
+    Float period, yaw, pitch, roll;
+    {
+        assert( v.Contains( "period" ) );
+        const JSONValue & vv = v.Get( "period" );
+        period = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "yaw" ) );
+        const JSONValue & vv = v.Get( "yaw" );
+        yaw = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "pitch" ) );
+        const JSONValue & vv = v.Get( "pitch" );
+        pitch = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "roll" ) );
+        const JSONValue & vv = v.Get( "roll" );
+        roll = vv.GetDouble();
     }
 
-
+    p->rotator->launch( period, yaw, pitch, roll );
+    return true;
 }
+
 
 
 

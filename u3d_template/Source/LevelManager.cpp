@@ -21,6 +21,7 @@
 #include "planet_test.h"
 #include "planet_sun_test.h"
 #include "planet_moon_test.h"
+#include "planet_cs.h"
 #include "player.h"
 
 #include "physics_world_2.h"
@@ -93,6 +94,7 @@ void LevelManager::RegisterAllFactories()
     context_->RegisterFactory<Osp::PlanetTest>();
     context_->RegisterFactory<Osp::PlanetSunTest>();
     context_->RegisterFactory<Osp::PlanetMoonTest>();
+    context_->RegisterFactory<Osp::PlanetCs>();
 
     context_->RegisterFactory<Osp::Player>();
     context_->RegisterFactory<Osp::WorldMover>();
