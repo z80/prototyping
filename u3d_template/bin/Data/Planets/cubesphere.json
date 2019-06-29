@@ -4,7 +4,7 @@
     {
         "GM":         50000, 
         "R":          1000, 
-        "orbitR":     120, 
+        "orbitR":     1200, 
         "atmHeight":  15, 
         "densityF":   0.05, 
         "densityB":   0.5, 
