@@ -2,10 +2,10 @@
     "name": "aaa", 
     "forces": 
     {
-        "GM":         500, 
-        "R":          10, 
-        "orbitR":     20, 
-        "atmHeight":  7, 
+        "GM":         50000, 
+        "R":          1000, 
+        "orbitR":     120, 
+        "atmHeight":  15, 
         "densityF":   0.05, 
         "densityB":   0.5, 
         "viscosityF": 0.01, 
@@ -34,8 +34,8 @@
     {
         "heightmap":        "Textures/PlanetTest/texture_1024_dem.png", 
         "colormap":         "Textures/PlanetTest/texture_1024.ppm", 
-        "height_scale":     1.0, 
-        "subdiv_max_sine":  0.5, 
-        "subdiv_max_level": 6
+        "height_scale":     10.0, 
+        "subdiv_max_sine":  0.3, 
+        "subdiv_max_level": 8
     }
 }

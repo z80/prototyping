@@ -38,8 +38,8 @@ public:
     Cubesphere::Cubesphere cubesphere;
     // Visual representation.
     CustomGeometry * cg;
-    Image * heightmap,
-          * colormap;
+    SharedPtr<Image> heightmap,
+                     colormap;
     Float   heightScale;
     int     subdivMaxLevel;
     Float   subdivMaxSine;

@@ -131,7 +131,7 @@ void PlanetCs::Start()
         //const Quaternion q = Quaternion( 70.0, Vector3( 0.0, 0.0, 1.0 ) );
         //const Vector3 at = q * Vector3( 0.0, 11.0, 0.0 );
         const Quaternion q = Quaternion( 0.0, Vector3( 0.0, 0.0, 1.0 ) );
-        const Vector3 at = q * Vector3( 0.0, 11.0, 0.0 );
+        const Vector3 at = q * Vector3( 0.0, 1010.0, 0.0 );
 
         n->SetPosition( at );
         n->SetRotation( q );
@@ -168,6 +168,8 @@ void PlanetCs::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Fl
     //n->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
     rigidBody->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
     rigidBody->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
+
+    collisionShape->SetCustomGImpactMesh( cg );
 }
 
 void PlanetCs::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
@@ -233,7 +235,7 @@ bool PlanetCs::load( const JSONValue & root )
     // Modify height scale.
     // Make it in percent of planet radius.
     // Color is normalized by [0.0, 1.0]. No need to divide by 255.0.
-    heightScale = heightScale * forces->R_ / 100.0;
+    heightScale = heightScale / 100.0;
 
     return true;
 }

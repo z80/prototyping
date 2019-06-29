@@ -210,7 +210,8 @@ void PlanetForces::applyFriction( Block * b )
     {
         const Triangle & t = a.triangles[i];
         // Velocity at triangle center.
-        const Vector3d V = V0 + W.CrossProduct( t.at );
+        //const Vector3d V = V0 + W.CrossProduct( t.at );
+        const Vector3d V = V0;
 
         const Float V_n = V.DotProduct( t.n );
         ForceApplied fa;
