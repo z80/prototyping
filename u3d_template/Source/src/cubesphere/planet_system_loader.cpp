@@ -285,9 +285,10 @@ bool PlanetLoader::loadAsset( const JSONValue & v, PlanetCs * planet )
     }
 
     // Compute position and orientation.
-    const Float x = Cos( lon );
-    const Float z = Sin( lon );
     const Float y = Sin( lat );
+    const Float xz = Sqrt( 1.0 - y*y );
+    const Float x = Cos( lon ) * xz;
+    const Float z = Sin( lon ) * xz;
     const Float dh = planet->dh( Vector3d( x, y, z ) );
     const Float r = (1.0 + dh) * planet->forces->R_ + h;
 
