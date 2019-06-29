@@ -370,6 +370,7 @@ void OnePlanet::HandleUpdate( StringHash t, VariantMap & e )
 
 void OnePlanet::HandlePostRenderUpdate( StringHash t, VariantMap & e )
 {
+    return;
     // Drawing debug geometry.
     Scene * s = scene_;
     DebugRenderer * debug = s->GetOrCreateComponent<DebugRenderer>();

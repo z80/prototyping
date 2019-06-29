@@ -294,11 +294,10 @@ bool PlanetLoader::loadAsset( const JSONValue & v, PlanetCs * planet )
 
     // "-" because here a quaternion rotates clockwise.
     const Quaterniond Qlon( -lon, Vector3d( 0.0, 1.0, 0.0 ) );
-    const Quaterniond Qlat( -lat, Vector3d( 0.0, 0.0, 1.0 ) );
-    const Quaterniond Qaz( -az, Vector3d( 1.0, 0.0, 0.0 ) );
-    const Quaterniond Qinit( -90.0, Vector3d( 0.0, 0.0, 1.0 ) );
+    const Quaterniond Qlat(  lat-90.0, Vector3d( 0.0, 0.0, 1.0 ) );
+    const Quaterniond Qaz(  -az, Vector3d( 0.0, 1.0, 0.0 ) );
 
-    const Quaterniond Q = Qlon * Qlat * Qaz * Qinit;
+    const Quaterniond Q = Qlon * Qlat * Qaz;
     Vector3d at( 0.0, r, 0.0 );
     at = Q * at;
     t->setR( at );

@@ -484,6 +484,17 @@ void Cubesphere::init()
     f.vertexInds[2] = 3;
     f.vertexInds[3] = 7;
     faces.Push( f );
+
+
+    // Debugging.
+    /*{
+        const unsigned qty = verts.Size();
+        for ( unsigned i=0; i<qty; i++ )
+        {
+            Vertex & v = verts[i];
+            v.at = v.at * 0.001 + Vector3d( 0.0, 1.0, 0.0 );
+        }
+    }*/
 }
 
 void Cubesphere::labelMidPoints()

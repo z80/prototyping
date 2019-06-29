@@ -304,6 +304,21 @@ void PlanetCs::updateGeometry( const Vector3d & at )
     cg->SetNumGeometries( 1 );
     cg->BeginGeometry( 0, TRIANGLE_LIST );
 
+    /*cg->DefineVertex( Vector3( 0.0, 1.0, 0.0 ) * forces->R_ );
+    cg->DefineColor( Color( 1.0, 0.0, 0.0 ) );
+    cg->DefineNormal( Vector3( 0.0, 1.0, 0.0 ) );
+    cg->DefineTexCoord( Vector2( 0.0, 0.0 ) );
+
+    cg->DefineVertex( Vector3( 1.0, 1.0, 0.0 ) * forces->R_ );
+    cg->DefineColor( Color( 0.0, 1.0, 0.0 ) );
+    cg->DefineNormal( Vector3( 0.0, 1.0, 0.0 ) );
+    cg->DefineTexCoord( Vector2( 1.0, 0.0 ) );
+
+    cg->DefineVertex( Vector3( 0.5, 1.0, 1.0 ) * forces->R_ );
+    cg->DefineColor( Color( 0.0, 0.0, 1.0 ) );
+    cg->DefineNormal( Vector3( 0.0, 1.0, 0.0 ) );
+    cg->DefineTexCoord( Vector2( 1.0, 1.0 ) );*/
+
     const Float w = (Float)(heightmap->GetWidth()-1);
     const Float h = (Float)(heightmap->GetHeight()-1);
     for ( unsigned i=0; i<qty; i++ )
