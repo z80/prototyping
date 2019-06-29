@@ -125,7 +125,7 @@ void OnePlanet::CreateScene()
     {
         Camera * c = camNode->GetComponent<Camera>();
         if ( c )
-            c->SetFarClip( 1.0e3 );
+            c->SetFarClip( 1.0e5 );
     }
 
     CameraOrb2 * camCtrl = camNode->GetOrCreateComponent<CameraOrb2>();
