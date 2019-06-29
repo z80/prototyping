@@ -7,7 +7,7 @@ namespace Osp
 {
 
 LaunchSite::LaunchSite( Context * ctx )
-    : LogicComponent( ctx )
+    : ItemBase( ctx )
 {
 
 }
@@ -36,8 +36,6 @@ void LaunchSite::Start()
     m->SetModel( cache->GetResource<Model>( "Models/Site.mdl" ) );
     m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
     m->SetCastShadows( true );
-
-
 }
 
 void LaunchSite::createPlayer()
