@@ -31,7 +31,7 @@ PlanetCs::PlanetCs( Context * ctx )
     subdivMaxSine  = 0.1;
 
     configFileName = "Data/Planets/cubesphere.json";
-    {
+    /*{
         const Float lon = 0.0;
         const Float lat = 0.0;
         const Float az  = 0.0;
@@ -44,7 +44,7 @@ PlanetCs::PlanetCs( Context * ctx )
         Vector3d at( 0.0, 1.0, 0.0 );
         at = Q * at;
         URHO3D_LOGINFOF( "at: %f, %f, %f", at.x_, at.y_, at.z_ );
-    }
+    }*/
 }
 
 PlanetCs::~PlanetCs()
@@ -238,11 +238,26 @@ bool PlanetCs::load( const JSONValue & root )
         const JSONValue & vv = root.Get( "geometry" );
         const bool ok = PlanetLoader::loadGeometry( vv, this );
     }
+    // Load assets if they exist.
+    if ( root.Contains( "assets" ) )
+    {
+        const JSONValue & vv = root.Get( "assets" );
+        const String fileName = vv.GetString();
+        const bool ok = PlanetLoader::loadAssets( fileName, this );
+    }
+    if ( root.Contains( "random_assets" ) )
+    {
+        const JSONValue & vv = root.Get( "random_assets" );
+        const String fileName = vv.GetString();
+        // Here need to implement loading random assets.
+    }
 
     // Modify height scale.
     // Make it in percent of planet radius.
     // Color is normalized by [0.0, 1.0]. No need to divide by 255.0.
-    heightScale = heightScale / 100.0;
+    // Normalize to planet radius as initially radius is 1 and multiplied
+    // by actual radius later.
+    heightScale = heightScale / forces->R_;
 
     return true;
 }
