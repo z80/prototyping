@@ -273,6 +273,8 @@ void OnePlanet::createKepler()
         Zone * z = rootNode->CreateComponent<Zone>();
         z->SetAmbientColor( Color( 0.8, 0.8, 0.8, 1.0 ) );
         const float D = 1e6;
+        z->SetFogStart(D*0.8);
+        z->SetFogEnd(D*0.95);
         z->SetBoundingBox( BoundingBox( Vector3( -D, -D, -D ), Vector3( D, D, D ) ) );
 
         /*

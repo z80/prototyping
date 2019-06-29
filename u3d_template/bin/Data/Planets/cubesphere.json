@@ -2,10 +2,10 @@
     "name": "aaa", 
     "forces": 
     {
-        "GM":         50000, 
+        "GM":         5000000, 
         "R":          1000, 
-        "orbitR":     1200, 
-        "atmHeight":  15, 
+        "orbitR":     1100, 
+        "atmHeight":  70, 
         "densityF":   0.05, 
         "densityB":   0.5, 
         "viscosityF": 0.01, 
@@ -36,7 +36,7 @@
         "colormap":         "Textures/PlanetTest/texture_1024.ppm", 
         "height_scale":     100.0, 
         "subdiv_max_sine":  0.3, 
-        "subdiv_max_level": 8
+        "subdiv_max_level": 9
     }, 
     "assets":        "Data/Planets/cubesphere_assets.json", 
     "random_assets": "Data/Planets/cubesphere_random_assets.json"
