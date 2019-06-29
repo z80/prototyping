@@ -39,5 +39,5 @@
         "subdiv_max_level": 8
     }, 
     "assets":        "Data/Planets/cubesphere_assets.json", 
-    "ransom_assets": "Data/Planets/cubesphere_random_assets.json"
+    "random_assets": "Data/Planets/cubesphere_random_assets.json"
 }
