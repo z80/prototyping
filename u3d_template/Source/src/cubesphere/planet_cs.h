@@ -32,6 +32,7 @@ public:
     void initParameters();
     void updateGeometry( Osp::WorldMover * mover );
     void updateGeometry( const Vector3d & at );
+    Vector2 sphereCoord( const Vector3d & at ) const;
 
     String configFileName;
     bool   initialized;

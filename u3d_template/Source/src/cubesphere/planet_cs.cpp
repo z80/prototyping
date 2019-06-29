@@ -58,16 +58,12 @@ void PlanetCs::setup( const String & json )
 
 Float PlanetCs::dh( const Vector3d & at ) const
 {
-    const Float p = Sqrt( at.x_*at.x_ + at.z_* at.z_ );
-    const Float lat = Atan2( at.y_, p );
-    const Float lon = Atan2( at.z_, at.x_ );
+    const Vector2 uv = sphereCoord( at );
     const Float w = (Float)(heightmap->GetWidth()-1);
     const Float h = (Float)(heightmap->GetHeight()-1);
-    const Float x = (lon + 180.0) / 360.0 * w;
-    const Float y = (90.0 - lat) / 180.0 * h;
-    const int ix = (int)x;
-    const int iy = (int)y;
-    const Color c = heightmap->GetPixel( x, y );
+    const int ix = (int)(uv.x_ * w);
+    const int iy = (int)(uv.y_ * h);
+    const Color c = heightmap->GetPixel( ix, iy );
     const Float v = c.Average();
     const Float v_abs = heightScale * v;
     return v_abs;
@@ -131,7 +127,7 @@ void PlanetCs::Start()
 
 
 
-    LaunchSite * site;
+    /*LaunchSite * site;
     {
         // Launch site
         Node * n = SharedPtr<Node>( dynamicsNode->CreateChild( "LaunchSite" ) );
@@ -157,13 +153,18 @@ void PlanetCs::Start()
         Node * n = site->GetNode();
         Node * playerNode = n->CreateChild( "PlayerNode" );
         playerNode->CreateComponent<Player>();
-    }
+    }*/
 }
 
 void PlanetCs::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
     if ( !rigidBody )
         return;
+
+    {
+        const Float h = dh( Vector3d( 0.0, 1.0, 0.0 ) );
+        int i = h;
+    }
 
     updateGeometry( mover );
 
@@ -311,22 +312,17 @@ void PlanetCs::updateGeometry( const Vector3d & at )
         const Vector3 at( v.at.x_, v.at.y_, v.at.z_ );
         const Vector3 n( v.norm.x_, v.norm.y_, v.norm.z_ );
 
-        const Float p = Sqrt( v.at.x_*v.at.x_ + v.at.z_* v.at.z_ );
-        const Float lon = Atan2( v.at.y_, p );
-        const Float lat = Atan2( v.at.z_, v.at.x_ );
-        const Float x0 = (lat + 180.0) / 360.0;
-        const Float y0 = (90.0 - lon) / 180.0;
-        const Vector2 texCoord( x0, y0 );
-        const Float x = x0 * w;
-        const Float y = y0 * h;
+        const Vector2 uv = sphereCoord( v.at );
+        const Float x = uv.x_ * w;
+        const Float y = uv.y_ * h;
         const int ix = (int)x;
         const int iy = (int)y;
-        const Color c = colormap->GetPixel( x, y );
+        const Color c = colormap->GetPixel( ix, iy );
 
         cg->DefineVertex( at * forces->R_ );
         cg->DefineColor( c );
         cg->DefineNormal( n );
-        cg->DefineTexCoord( texCoord );
+        cg->DefineTexCoord( uv );
     }
 
     cg->Commit();
@@ -337,6 +333,18 @@ void PlanetCs::updateGeometry( const Vector3d & at )
     //Material * m = cache->GetResource<Material>("Materials/Stone.xml");
     cg->SetMaterial( m );
     cg->SetCastShadows( true );
+}
+
+Vector2 PlanetCs::sphereCoord( const Vector3d & at ) const
+{
+    const Float p = Sqrt( at.x_*at.x_ + at.z_* at.z_ );
+    const Float lat = Atan2( at.y_, p );
+    const Float lon = Atan2( at.z_, at.x_ );
+    const Float x = (lon + 180.0) / 360.0;
+    const Float y = (90.0 - lat) / 180.0;
+
+    const Vector2 uv( x, y );
+    return uv;
 }
 
 
