@@ -145,6 +145,13 @@ bool WorldMover::needOrbit() const
     if ( (!planet) || (active) || (!assembly) )
         return false;
     const bool canOrbit = planet->canOrbit( assembly );
+    if ( canOrbit )
+    {
+        URHO3D_LOGINFO( "WorldMover switches to orbiting" );
+        // For debugging compute once again
+        // to understand whi it thinks it can orbit.
+        planet->canOrbit( assembly );
+    }
     return canOrbit;
 }
 
