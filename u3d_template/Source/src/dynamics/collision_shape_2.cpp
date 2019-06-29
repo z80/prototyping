@@ -531,7 +531,7 @@ void CollisionShape2::DrawDebugGeometry(DebugRenderer* debug, bool depthTest)
 
             // Added next lines to compensate world local ref. frame.
             Node * worldNode = physicsWorld_->GetNode();
-            const Matrix3x4 globTr = worldNode->GetTransform();
+            const Matrix3x4 globTr = worldNode->GetWorldTransform();
             worldTransform = globTr * worldTransform;
 
             Matrix3x4 shapeTransform(worldTransform * position_, worldTransform.Rotation() * rotation_, worldTransform.Scale());

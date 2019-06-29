@@ -226,7 +226,7 @@ void PhysicsWorld2::drawLine(const btVector3& from, const btVector3& to, const b
     if (debugRenderer_)
     {
         Node * n = GetNode();
-        const Matrix3x4 m = n->GetTransform();
+        const Matrix3x4 m = n->GetWorldTransform();
         Vector3 f = ToVector3( from );
         f = m * f;
         Vector3 t = ToVector3( to );

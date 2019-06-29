@@ -25,10 +25,17 @@ void PlanetTest::Start()
     PlanetBase::Start();
 
     // GM, a, e, Omega, I, omega, E
-    //mover->launch( 200.0, 50.0, 0.05, 0.0, 0.0 );
-    //rotator->launch( 30, 0.0 );
+    mover->launch( 200.0, 50.0, 0.05, 0.0, 0.0 );
+    rotator->launch( 3.0, 0.0 );
     mover->active = false;
     rotator->active = false;
+
+    {
+        // Testing drawing debug geometry.
+        Node * n = GetNode();
+        n->SetPosition( Vector3( 50.0, 0.0, 0.0 ) );
+    }
+
 
     // Create graphical objects.
     {
