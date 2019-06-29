@@ -6,6 +6,9 @@
 #include "rigid_body_2.h"
 #include "collision_shape_2.h"
 
+#include "player.h"
+#include "launch_site.h"
+
 namespace Osp
 {
 
@@ -89,6 +92,21 @@ bool  PlanetCs::needSubdrive( const Cubesphere::Cubesphere * s, const Cubesphere
         if ( d > maxSine )
             maxSine = d;
     }
+    for ( int i=0; i<2; i++ )
+    {
+        const int ind0 = i;
+        int ind1 = i+2;
+        if (ind1 > 3)
+            ind1 = 0;
+        Vector3d v0 = s->verts[ f->vertexInds[ind0] ].at - this->at;
+        Vector3d v1 = s->verts[ f->vertexInds[ind1] ].at - this->at;
+        v0.Normalize();
+        v1.Normalize();
+        const Vector3d cr = v0.CrossProduct( v1 );
+        const Float d = std::abs( cr.Length() );
+        if ( d > maxSine )
+            maxSine = d;
+    }
     const bool needSubdrive = ( maxSine >= subdivMaxSine );
     return needSubdrive;
 }
@@ -103,6 +121,36 @@ void PlanetCs::Start()
 
     initParameters();
     updateGeometry( Vector3d( 1.0, 0.0, 0.0 ) );
+
+
+
+    LaunchSite * site;
+    {
+        // Launch site
+        Node * n = SharedPtr<Node>( dynamicsNode->CreateChild( "LaunchSite" ) );
+        //const Quaternion q = Quaternion( 70.0, Vector3( 0.0, 0.0, 1.0 ) );
+        //const Vector3 at = q * Vector3( 0.0, 11.0, 0.0 );
+        const Quaternion q = Quaternion( 0.0, Vector3( 0.0, 0.0, 1.0 ) );
+        const Vector3 at = q * Vector3( 0.0, 11.0, 0.0 );
+
+        n->SetPosition( at );
+        n->SetRotation( q );
+        site = n->CreateComponent<LaunchSite>();
+
+        {
+            Scene * s = GetScene();
+            Camera * c = s->GetComponent( StringHash( "Camera" ), true )->Cast<Camera>();
+            Node * cn = c->GetNode();
+            cn->SetParent( n );
+        }
+    }
+
+    // Create a player.
+    {
+        Node * n = site->GetNode();
+        Node * playerNode = n->CreateChild( "PlayerNode" );
+        playerNode->CreateComponent<Player>();
+    }
 }
 
 void PlanetCs::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
@@ -110,16 +158,22 @@ void PlanetCs::updateCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Fl
     if ( !rigidBody )
         return;
 
+    updateGeometry( mover );
+
     Node * n = rigidBody->GetNode();
     Vector3d    rel_r;
     Quaterniond rel_q;
     rotator->relativePose( mover, rel_r, rel_q );
-    n->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
-    n->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
+    //n->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    //n->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
+    rigidBody->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    rigidBody->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
 }
 
 void PlanetCs::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Float dist )
 {
+    updateGeometry( mover );
+
     Node * worldNode = w2->GetNode();
     Node * n = worldNode->CreateChild( "PlanetCollisionShape" );
 
@@ -133,8 +187,10 @@ void PlanetCs::initCollisions( PhysicsWorld2 * w2, Osp::WorldMover * mover, Floa
     Vector3d    rel_r;
     Quaterniond rel_q;
     rotator->relativePose( mover, rel_r, rel_q );
-    n->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
-    n->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
+    //n->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    //n->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
+    rigidBody->SetPosition( Vector3( rel_r.x_, rel_r.y_, rel_r.z_ ) );
+    rigidBody->SetRotation( Quaternion( rel_q.w_, rel_q.x_, rel_q.y_, rel_q.z_ ) );
 }
 
 void PlanetCs::finitCollisions( PhysicsWorld2 * w2 )
@@ -160,17 +216,24 @@ bool PlanetCs::load( const JSONValue & root )
         assert( root.Contains( "kepler" ) );
         const JSONValue & vv = root.Get( "kepler" );
         const bool ok = PlanetLoader::loadKepler( vv, this );
+        mover->active = false;
     }
     {
         assert( root.Contains( "rotation" ) );
         const JSONValue & vv = root.Get( "rotation" );
         const bool ok = PlanetLoader::loadRotator( vv, this );
+        rotator->active = false;
     }
     {
         assert( root.Contains( "geometry" ) );
         const JSONValue & vv = root.Get( "geometry" );
         const bool ok = PlanetLoader::loadGeometry( vv, this );
     }
+
+    // Modify height scale.
+    // Make it in percent of planet radius.
+    // Color is normalized by [0.0, 1.0]. No need to divide by 255.0.
+    heightScale = heightScale * forces->R_ / 100.0;
 
     return true;
 }

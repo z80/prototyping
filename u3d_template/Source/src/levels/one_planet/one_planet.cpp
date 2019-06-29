@@ -288,14 +288,15 @@ void OnePlanet::createKepler()
 
 
         Node * planetNode = rootNode->CreateChild( "PlanetNode" );
-        PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
+        //PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
+        PlanetCs * pt = planetNode->CreateComponent<PlanetCs>();
 
-        Node * moonNode = planetNode->CreateChild( "PlanetNode" );
+        //Node * moonNode = planetNode->CreateChild( "PlanetNode" );
         //PlanetMoonTest * mn = moonNode->CreateComponent<PlanetMoonTest>();
-        PlanetCs * mn = moonNode->CreateComponent<PlanetCs>();
+        //PlanetCs * mn = moonNode->CreateComponent<PlanetCs>();
 
         planet_ = SharedPtr<PlanetBase>( pt );
-        moon_   = SharedPtr<PlanetBase>( mn );
+        //moon_   = SharedPtr<PlanetBase>( mn );
     }
 
     {

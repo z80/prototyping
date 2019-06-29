@@ -34,8 +34,8 @@
     {
         "heightmap":        "Textures/PlanetTest/texture_1024_dem.png", 
         "colormap":         "Textures/PlanetTest/texture_1024.ppm", 
-        "height_scale":     0.1, 
-        "subdiv_max_sine":  0.1, 
-        "subdiv_max_level": 12
+        "height_scale":     1.0, 
+        "subdiv_max_sine":  0.5, 
+        "subdiv_max_level": 6
     }
 }
