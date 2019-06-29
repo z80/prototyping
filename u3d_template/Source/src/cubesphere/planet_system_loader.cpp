@@ -83,5 +83,217 @@ bool PlanetSystemLoader::loadPlanet( const String & name, PlanetBase * parent, c
 }
 
 
+
+
+
+
+
+
+bool PlanetLoader::loadGeometry( const JSONValue & v, PlanetCs * p )
+{
+    ResourceCache * cache = p->GetSubsystem<ResourceCache>();
+
+    {
+        if ( !v.Contains( "heightmap" ) )
+            URHO3D_LOGERROR( "Planet loader error: no heightmap specified" );
+        const JSONValue & v_hm = v.Get( "heightmap" );
+        const String & heightmapResourceName = v_hm.GetString();
+        p->heightmap = cache->GetResource<Image>( heightmapResourceName );
+        assert( p->heightmap != nullptr );
+    }
+    {
+        if ( !v.Contains( "colormap" ) )
+            URHO3D_LOGERROR( "Planet loader error: no colormap specified" );
+        const JSONValue & v_cm = v.Get( "colormap" );
+        const String & colormapResourceName = v_cm.GetString();
+        p->colormap = cache->GetResource<Image>( colormapResourceName );
+        assert( p->colormap != nullptr );
+    }
+    {
+        if ( !v.Contains( "height_scale" ) )
+            URHO3D_LOGERROR( "Planet loader error: no height scale specified" );
+        const JSONValue & v_hs = v.Get( "height_scale" );
+        p->heightScale = v_hs.GetDouble();
+    }
+    {
+        if ( !v.Contains( "subdiv_max_sine" ) )
+            URHO3D_LOGERROR( "Planet loader error: no max subdiv sine specified" );
+        const JSONValue & v_hs = v.Get( "subdiv_max_sine" );
+        p->subdivMaxSine = v_hs.GetDouble();
+    }
+    {
+        if ( !v.Contains( "subdiv_max_level" ) )
+            URHO3D_LOGERROR( "Planet loader error: no max subdiv level specified" );
+        const JSONValue & v_hs = v.Get( "subdiv_max_level" );
+        p->subdivMaxLevel = v_hs.GetInt();
+    }
+    return true;
+}
+
+bool PlanetLoader::loadKepler( const JSONValue & v, PlanetCs * p )
+{
+    Float GM, a, e, Omega, I, omega, E;
+    {
+        assert( v.Contains( "GM" ) );
+        const JSONValue & vv = v.Get( "GM" );
+        GM = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "a" ) );
+        const JSONValue & vv = v.Get( "a" );
+        a = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "e" ) );
+        const JSONValue & vv = v.Get( "e" );
+        e = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "Omega" ) );
+        const JSONValue & vv = v.Get( "Omega" );
+        Omega = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "I" ) );
+        const JSONValue & vv = v.Get( "I" );
+        I = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "omega" ) );
+        const JSONValue & vv = v.Get( "omega" );
+        omega = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "E" ) );
+        const JSONValue & vv = v.Get( "E" );
+        E = vv.GetDouble();
+    }
+    p->mover->launch( GM, a, e, Omega, I, omega, E );
+}
+
+bool PlanetLoader::loadRotator( const JSONValue & v, PlanetCs * p )
+{
+    Float period, yaw, pitch, roll;
+    {
+        assert( v.Contains( "period" ) );
+        const JSONValue & vv = v.Get( "period" );
+        period = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "yaw" ) );
+        const JSONValue & vv = v.Get( "yaw" );
+        yaw = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "pitch" ) );
+        const JSONValue & vv = v.Get( "pitch" );
+        pitch = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "roll" ) );
+        const JSONValue & vv = v.Get( "roll" );
+        roll = vv.GetDouble();
+    }
+
+    p->rotator->launch( period, yaw, pitch, roll );
+    return true;
+}
+
+bool PlanetLoader::loadAssets( const String & fileName, PlanetCs * planet )
+{
+    Context * ctx = planet->GetContext();
+    URHO3D_LOGINFO( "Loading asssets from " + fileName );
+    JSONFile json( ctx );
+    FileSystem * fs = ctx->GetSubsystem<FileSystem>();
+    const String stri = fs->GetProgramDir() + fileName;
+    const bool loaded = json.LoadFile( stri );
+    if ( !loaded )
+    {
+        URHO3D_LOGINFO( "Failed to load JSON file" );
+        return false;
+    }
+    const JSONValue & root = json.GetRoot();
+    if ( !root.IsObject() )
+    {
+        URHO3D_LOGINFO( "JSON file doesn't contain proper structure" );
+        return false;
+    }
+
+    for ( ConstJSONObjectIterator it=root.Begin(); it!=root.End(); it++ )
+    {
+        const JSONValue & v = it->second_;
+        const bool ok = loadAsset( v, planet );
+        if ( !ok )
+        {
+            const String & name = it->first_;
+            URHO3D_LOGERROR( "Failed to load asset " + name );
+            // Here don't return as it might be not super critical.
+            //return false;
+        }
+    }
+
+    return true;
+}
+
+bool PlanetLoader::loadAsset( const JSONValue & v, PlanetCs * planet )
+{
+    String tpe;
+    Float lat, lon, az, h;
+    {
+        assert( v.Contains( "type" ) );
+        const JSONValue & vv = v.Get( "type" );
+        tpe = vv.GetString();
+    }
+    {
+        assert( v.Contains( "lat" ) );
+        const JSONValue & vv = v.Get( "lat" );
+        lat = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "lon" ) );
+        const JSONValue & vv = v.Get( "lon" );
+        lon = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "az" ) );
+        const JSONValue & vv = v.Get( "az" );
+        az = vv.GetDouble();
+    }
+    {
+        assert( v.Contains( "h" ) );
+        const JSONValue & vv = v.Get( "h" );
+        h = vv.GetDouble();
+    }
+
+    Node * root = planet->dynamicsNode;
+
+    Node * n = root->CreateChild( tpe + "Node" );
+    Component * c = n->CreateComponent( StringHash( tpe ) );
+    assert( c );
+    ItemBase * t = c->Cast<ItemBase>();
+    assert( t );
+
+    // Compute position and orientation.
+    const Float x = Cos( lon );
+    const Float z = Sin( lon );
+    const Float y = Sin( lat );
+    const Float dh = planet->dh( Vector3d( x, y, z ) );
+    const Float r = (1.0 + dh) * planet->forces->R_ + h;
+
+    // "-" because here a quaternion rotates clockwise.
+    const Quaterniond Qlon( -lon, Vector3d( 0.0, 1.0, 0.0 ) );
+    const Quaterniond Qlat( -lat, Vector3d( 0.0, 0.0, 1.0 ) );
+    const Quaterniond Qaz( -az, Vector3d( 1.0, 0.0, 0.0 ) );
+    const Quaterniond Qinit( -90.0, Vector3d( 0.0, 0.0, 1.0 ) );
+
+    const Quaterniond Q = Qlon * Qlat * Qaz * Qinit;
+    Vector3d at( 0.0, r, 0.0 );
+    at = Q * at;
+    t->setR( at );
+    t->setQ( Q );
+}
+
+
+
 }
 

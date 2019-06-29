@@ -9,19 +9,12 @@
 #include "player.h"
 #include "launch_site.h"
 
+#include "planet_system_loader.h"
+
 namespace Osp
 {
 
-class PlanetLoader
-{
-public:
-    PlanetLoader() {}
-    ~PlanetLoader() {}
 
-    static bool loadGeometry( const JSONValue & v, PlanetCs * p );
-    static bool loadKepler( const JSONValue & v, PlanetCs * p );
-    static bool loadRotator( const JSONValue & v, PlanetCs * p );
-};
 
 PlanetCs::PlanetCs( Context * ctx )
     : PlanetBase( ctx )
@@ -38,6 +31,20 @@ PlanetCs::PlanetCs( Context * ctx )
     subdivMaxSine  = 0.1;
 
     configFileName = "Data/Planets/cubesphere.json";
+    {
+        const Float lon = 0.0;
+        const Float lat = 0.0;
+        const Float az  = 0.0;
+        const Quaterniond Qlon( -lon, Vector3d( 0.0, 1.0, 0.0 ) );
+        const Quaterniond Qlat( -lat, Vector3d( 0.0, 0.0, 1.0 ) );
+        const Quaterniond Qaz( -az, Vector3d( 1.0, 0.0, 0.0 ) );
+        const Quaterniond Qinit( -90.0, Vector3d( 0.0, 0.0, 1.0 ) );
+
+        const Quaterniond Q = Qlon * Qlat * Qaz * Qinit;
+        Vector3d at( 0.0, 1.0, 0.0 );
+        at = Q * at;
+        URHO3D_LOGINFOF( "at: %f, %f, %f", at.x_, at.y_, at.z_ );
+    }
 }
 
 PlanetCs::~PlanetCs()
@@ -52,12 +59,12 @@ void PlanetCs::setup( const String & json )
 Float PlanetCs::dh( const Vector3d & at ) const
 {
     const Float p = Sqrt( at.x_*at.x_ + at.z_* at.z_ );
-    const Float lon = Atan2( at.y_, p );
-    const Float lat = Atan2( at.z_, at.x_ );
+    const Float lat = Atan2( at.y_, p );
+    const Float lon = Atan2( at.z_, at.x_ );
     const Float w = (Float)(heightmap->GetWidth()-1);
     const Float h = (Float)(heightmap->GetHeight()-1);
-    const Float x = (lat + 180.0) / 360.0 * w;
-    const Float y = (90.0 - lon) / 180.0 * h;
+    const Float x = (lon + 180.0) / 360.0 * w;
+    const Float y = (90.0 - lat) / 180.0 * h;
     const int ix = (int)x;
     const int iy = (int)y;
     const Color c = heightmap->GetPixel( x, y );
@@ -317,115 +324,7 @@ void PlanetCs::updateGeometry( const Vector3d & at )
     cg->SetCastShadows( true );
 }
 
-bool PlanetLoader::loadGeometry( const JSONValue & v, PlanetCs * p )
-{
-    ResourceCache * cache = p->GetSubsystem<ResourceCache>();
 
-    {
-        if ( !v.Contains( "heightmap" ) )
-            URHO3D_LOGERROR( "Planet loader error: no heightmap specified" );
-        const JSONValue & v_hm = v.Get( "heightmap" );
-        const String & heightmapResourceName = v_hm.GetString();
-        p->heightmap = cache->GetResource<Image>( heightmapResourceName );
-        assert( p->heightmap != nullptr );
-    }
-    {
-        if ( !v.Contains( "colormap" ) )
-            URHO3D_LOGERROR( "Planet loader error: no colormap specified" );
-        const JSONValue & v_cm = v.Get( "colormap" );
-        const String & colormapResourceName = v_cm.GetString();
-        p->colormap = cache->GetResource<Image>( colormapResourceName );
-        assert( p->colormap != nullptr );
-    }
-    {
-        if ( !v.Contains( "height_scale" ) )
-            URHO3D_LOGERROR( "Planet loader error: no height scale specified" );
-        const JSONValue & v_hs = v.Get( "height_scale" );
-        p->heightScale = v_hs.GetDouble();
-    }
-    {
-        if ( !v.Contains( "subdiv_max_sine" ) )
-            URHO3D_LOGERROR( "Planet loader error: no max subdiv sine specified" );
-        const JSONValue & v_hs = v.Get( "subdiv_max_sine" );
-        p->subdivMaxSine = v_hs.GetDouble();
-    }
-    {
-        if ( !v.Contains( "subdiv_max_level" ) )
-            URHO3D_LOGERROR( "Planet loader error: no max subdiv level specified" );
-        const JSONValue & v_hs = v.Get( "subdiv_max_level" );
-        p->subdivMaxLevel = v_hs.GetInt();
-    }
-    return true;
-}
-
-bool PlanetLoader::loadKepler( const JSONValue & v, PlanetCs * p )
-{
-    Float GM, a, e, Omega, I, omega, E;
-    {
-        assert( v.Contains( "GM" ) );
-        const JSONValue & vv = v.Get( "GM" );
-        GM = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "a" ) );
-        const JSONValue & vv = v.Get( "a" );
-        a = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "e" ) );
-        const JSONValue & vv = v.Get( "e" );
-        e = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "Omega" ) );
-        const JSONValue & vv = v.Get( "Omega" );
-        Omega = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "I" ) );
-        const JSONValue & vv = v.Get( "I" );
-        I = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "omega" ) );
-        const JSONValue & vv = v.Get( "omega" );
-        omega = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "E" ) );
-        const JSONValue & vv = v.Get( "E" );
-        E = vv.GetDouble();
-    }
-    p->mover->launch( GM, a, e, Omega, I, omega, E );
-}
-
-bool PlanetLoader::loadRotator( const JSONValue & v, PlanetCs * p )
-{
-    Float period, yaw, pitch, roll;
-    {
-        assert( v.Contains( "period" ) );
-        const JSONValue & vv = v.Get( "period" );
-        period = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "yaw" ) );
-        const JSONValue & vv = v.Get( "yaw" );
-        yaw = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "pitch" ) );
-        const JSONValue & vv = v.Get( "pitch" );
-        pitch = vv.GetDouble();
-    }
-    {
-        assert( v.Contains( "roll" ) );
-        const JSONValue & vv = v.Get( "roll" );
-        roll = vv.GetDouble();
-    }
-
-    p->rotator->launch( period, yaw, pitch, roll );
-    return true;
-}
 
 
 

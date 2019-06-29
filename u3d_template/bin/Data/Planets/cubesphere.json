@@ -37,5 +37,7 @@
         "height_scale":     10.0, 
         "subdiv_max_sine":  0.3, 
         "subdiv_max_level": 8
-    }
+    }, 
+    "assets":        "Data/Planets/cubesphere_assets.json", 
+    "ransom_assets": "Data/Planets/cubesphere_random_assets.json"
 }

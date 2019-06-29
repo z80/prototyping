@@ -1,0 +1,18 @@
+{
+    "launchsite": 
+    {
+        "type": "LaunchSite", 
+        "lat":   90.0, 
+        "lon":   0.0, 
+        "az":    0.0, 
+        "h":     0.0 
+    }, 
+    "player": 
+    {
+        "type": "Player", 
+        "lat":   90.0, 
+        "lon":   0.0, 
+        "az":    0.0, 
+        "h":     0.0 
+    }
+}
