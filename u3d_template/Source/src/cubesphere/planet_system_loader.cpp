@@ -269,9 +269,20 @@ bool PlanetLoader::loadAsset( const JSONValue & v, PlanetCs * planet )
 
     Node * n = root->CreateChild( tpe + "Node" );
     Component * c = n->CreateComponent( StringHash( tpe ) );
-    assert( c );
+    if ( !c )
+    {
+        URHO3D_LOGERROR( "Failed to create " + tpe );
+        n->Remove();
+        return false;
+    }
     ItemBase * t = c->Cast<ItemBase>();
-    assert( t );
+    if ( !t )
+    {
+        URHO3D_LOGERROR( "Failed to cast to ItemBase " + tpe );
+        t->Remove();
+        n->Remove();
+        return false;
+    }
 
     // Compute position and orientation.
     const Float x = Cos( lon );
@@ -291,6 +302,8 @@ bool PlanetLoader::loadAsset( const JSONValue & v, PlanetCs * planet )
     at = Q * at;
     t->setR( at );
     t->setQ( Q );
+
+    return true;
 }
 
 
