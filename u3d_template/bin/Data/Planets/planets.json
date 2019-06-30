@@ -1,6 +1,9 @@
 {
     "sun": 
     {
-        "cubesphere": {}
+        "home": 
+        {
+            "moon": {}
+        }
     }
 }

@@ -1,0 +1,42 @@
+{
+    "name": "Moon", 
+    "forces": 
+    {
+        "GM":         5000000, 
+        "R":          1000, 
+        "orbitR":     1050, 
+        "atmHeight":  7, 
+        "densityF":   0.0005, 
+        "densityB":   0.0005, 
+        "viscosityF": 0.0001, 
+        "viscosityB": 0.0005, 
+        "groundT":       -50, 
+        "highAltitudeT": -100
+    }, 
+    "kepler": 
+    {
+         "a":     10000.0, 
+         "e":     0.2, 
+         "Omega": 0.0, 
+         "I":     0.0, 
+         "omega": 0.0, 
+         "E":     0.0
+    }, 
+    "rotation": 
+    {
+        "period": 100.0, 
+        "yaw":    0.0, 
+        "pitch":  0.0, 
+        "roll":   0.0
+    },
+    "geometry": 
+    {
+        "heightmap":        "Textures/Planets/moon_height.png", 
+        "colormap":         "Textures/Planets/moon_color.png", 
+        "height_scale":     100.0, 
+        "subdiv_max_sine":  0.3, 
+        "subdiv_max_level": 9
+    }, 
+    "assets":        "Data/Planets/moon_assets.json", 
+    "random_assets": "Data/Planets/moon_random_assets.json"
+}

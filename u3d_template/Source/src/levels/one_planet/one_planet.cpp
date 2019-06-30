@@ -44,15 +44,6 @@ using namespace Urho3D;
 namespace Osp
 {
 
-URHO3D_EVENT( E_CATEGORY_CLICKED, CategoryClicked )
-{
-    URHO3D_PARAM( P_INDEX, index ); // category index
-}
-
-URHO3D_EVENT( E_CREATE_BLOCK_CLICKED, CreateBlockClicked )
-{
-    URHO3D_PARAM( P_NAME, name ); // Block type name.
-}
 
 
 static void DrawDebugGeometry( Node * n, DebugRenderer * debug, bool depthTest, bool recursive );
@@ -109,24 +100,14 @@ void OnePlanet::CreateScene()
     Vector<int> controlIndexes = controllerInput->GetControlIndexes();
     InitViewports(controlIndexes);
 
-    /*ResourceCache * cache = GetSubsystem<ResourceCache>();
-    XMLFile * f = cache->GetResource<XMLFile>( "Prefabs/OnePlanet.xml" );
-    if ( !f )
-        return;*/
-
-    //const bool loadedOk = scene_->LoadXML( f->GetRoot() );
-    //rootNode = scene_->GetChild( "Root", true );
-    rootNode = scene_->CreateChild( "Root" );
-    //const bool loadedOk = rootNode->LoadXML( f->GetRoot() );
+    GameData * gd = scene_->GetOrCreateComponent<GameData>();
+    if ( !gd )
+        URHO3D_LOGERROR( "Can\'t get GameData" );
 
     Node * camNode = _cameras[0];
-    camNode->SetParent( rootNode );
-
-    {
-        Camera * c = camNode->GetComponent<Camera>();
-        if ( c )
-            c->SetFarClip( 1.0e5 );
-    }
+    Camera * c = camNode->GetComponent<Camera>();
+    if ( c )
+        c->SetFarClip( 1.0e5 );
 
     CameraOrb2 * camCtrl = camNode->GetOrCreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
@@ -290,12 +271,7 @@ void OnePlanet::createKepler()
 
 
         Node * planetNode = rootNode->CreateChild( "PlanetNode" );
-        //PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
         PlanetCs * pt = planetNode->CreateComponent<PlanetCs>();
-
-        //Node * moonNode = planetNode->CreateChild( "PlanetNode" );
-        //PlanetMoonTest * mn = moonNode->CreateComponent<PlanetMoonTest>();
-        //PlanetCs * mn = moonNode->CreateComponent<PlanetCs>();
 
         planet_ = SharedPtr<PlanetBase>( pt );
         //moon_   = SharedPtr<PlanetBase>( mn );

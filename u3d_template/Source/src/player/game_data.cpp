@@ -1,5 +1,6 @@
 
 #include "game_data.h"
+#include "planet_system_loader.h"
 
 namespace Osp
 {
@@ -22,6 +23,12 @@ GameData::GameData( Context * ctx )
 GameData::~GameData()
 {
 
+}
+
+void GameData::Start()
+{
+    Scene * s = GetScene();
+    PlanetSystemLoader::load( this, s );
 }
 
 void GameData::Update( float dtf )

@@ -1,5 +1,5 @@
 {
-    "name": "aaa", 
+    "name": "Home", 
     "forces": 
     {
         "GM":         5000000, 
@@ -15,8 +15,7 @@
     }, 
     "kepler": 
     {
-         "GM":    100.0, 
-         "a":     30.0, 
+         "a":     30000.0, 
          "e":     0.2, 
          "Omega": 0.0, 
          "I":     0.0, 
@@ -32,12 +31,12 @@
     },
     "geometry": 
     {
-        "heightmap":        "Textures/PlanetTest/texture_1024_dem.png", 
-        "colormap":         "Textures/PlanetTest/texture_1024.ppm", 
+        "heightmap":        "Textures/Planets/home_height.png", 
+        "colormap":         "Textures/Planets/home_color.png", 
         "height_scale":     100.0, 
         "subdiv_max_sine":  0.3, 
         "subdiv_max_level": 9
     }, 
-    "assets":        "Data/Planets/cubesphere_assets.json", 
-    "random_assets": "Data/Planets/cubesphere_random_assets.json"
+    "assets":        "Data/Planets/home_assets.json", 
+    "random_assets": "Data/Planets/home_random_assets.json"
 }

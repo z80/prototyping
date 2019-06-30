@@ -22,6 +22,7 @@ public:
     GameData( Context * ctx );
     ~GameData();
 
+    void Start() override;
     void Update( float dt ) override;
 
     SharedPtr<Node> node( const String & name );

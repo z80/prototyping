@@ -1,0 +1,42 @@
+{
+    "name": "Sun", 
+    "forces": 
+    {
+        "GM":         5000000, 
+        "R":          10000, 
+        "orbitR":     10550, 
+        "atmHeight":  500, 
+        "densityF":   0.05, 
+        "densityB":   0.5, 
+        "viscosityF": 0.01, 
+        "viscosityB": 0.5, 
+        "groundT":    5000, 
+        "highAltitudeT": 3000
+    }, 
+    "kepler": 
+    {
+         "a":     30.0, 
+         "e":     0.2, 
+         "Omega": 0.0, 
+         "I":     0.0, 
+         "omega": 0.0, 
+         "E":     0.0
+    }, 
+    "rotation": 
+    {
+        "period": 100.0, 
+        "yaw":    0.0, 
+        "pitch":  0.0, 
+        "roll":   0.0
+    },
+    "geometry": 
+    {
+        "heightmap":        "Textures/Planets/sun_height.png", 
+        "colormap":         "Textures/Planets/sun_color.png", 
+        "height_scale":     100.0, 
+        "subdiv_max_sine":  0.3, 
+        "subdiv_max_level": 5
+    }, 
+    "assets":        "Data/Planets/sun_assets.json", 
+    "random_assets": "Data/Planets/sun_random_assets.json"
+}
