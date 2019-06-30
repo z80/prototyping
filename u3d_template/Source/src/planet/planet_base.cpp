@@ -58,13 +58,14 @@ void PlanetBase::Start()
     //mover = dynamicsNode->CreateComponent<KeplerMover>();
     rotator = dynamicsNode->CreateComponent<KeplerRotator>();
 
-    Scene * s = GetScene();
+    // Now GameData creates all the planets itself and puts those into this array.
+    /*Scene * s = GetScene();
     Component * c = s->GetComponent( StringHash( "GameData" ), true );
     if ( c )
     {
         GameData * gd = c->Cast<GameData>();
         gd->planets.Push( SharedPtr<PlanetBase>( this ) );
-    }
+    }*/
 
     forces = n->CreateComponent<PlanetForces>();
 

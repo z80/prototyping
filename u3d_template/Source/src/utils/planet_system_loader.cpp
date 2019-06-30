@@ -133,10 +133,28 @@ bool PlanetLoader::loadGeometry( const JSONValue & v, PlanetCs * p )
 bool PlanetLoader::loadKepler( const JSONValue & v, PlanetCs * p )
 {
     Float GM, a, e, Omega, I, omega, E;
+    const bool hasGM = v.Contains( "GM" );
+    if ( hasGM )
     {
-        assert( v.Contains( "GM" ) );
         const JSONValue & vv = v.Get( "GM" );
         GM = vv.GetDouble();
+    }
+    // Try retrieve Kepler GM from parent planet if it exists.
+    {
+        Node * n = p->GetNode();
+        Node * pn = n->GetParent();
+        const Vector<SharedPtr<Component> > & comps = pn->GetComponents();
+        const unsigned qty = comps.Size();
+        GM = -1.0;
+        for ( unsigned i=0; i<qty; i++ )
+        {
+            Component * c = comps[i];
+            PlanetBase * pb = c->Cast<PlanetBase>();
+            if ( !pb )
+                continue;
+            GM = pb->GM();
+            break;
+        }
     }
     {
         assert( v.Contains( "a" ) );
@@ -168,7 +186,10 @@ bool PlanetLoader::loadKepler( const JSONValue & v, PlanetCs * p )
         const JSONValue & vv = v.Get( "E" );
         E = vv.GetDouble();
     }
-    p->mover->launch( GM, a, e, Omega, I, omega, E );
+    if ( GM > 0.0 )
+        p->mover->launch( GM, a, e, Omega, I, omega, E );
+    else
+        p->mover->active = false;
 }
 
 bool PlanetLoader::loadRotator( const JSONValue & v, PlanetCs * p )
