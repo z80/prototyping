@@ -47,7 +47,8 @@ void Player::startWithAssembly()
 
     // Focus camera on assembly.
     Node * cameraNode = cameraOrb->GetNode();
-    cameraNode->SetParent( assembly->GetNode() );
+    Node * assemblyNode = assembly->GetNode();
+    cameraNode->SetParent( assemblyNode );
 
     // Notify physics world mover about the new assembly.
     sendEventAssemblySelected();
