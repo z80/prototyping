@@ -119,7 +119,7 @@ void Workshop::CreateScene()
     Node * camNode = _cameras[0];
     camNode->SetParent( rootNode );
 
-    CameraOrb2 * camCtrl = camNode->CreateComponent<CameraOrb2>();
+    CameraOrb2 * camCtrl = camNode->GetOrCreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
 }
 
