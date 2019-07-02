@@ -928,6 +928,7 @@ DropDownList* SettingsWindow::CreateMenu(const String& label, Vector<String>& it
 UIElement* SettingsWindow::CreateSingleLine()
 {
     SharedPtr<UIElement> container(new UIElement(context_));
+    //SharedPtr<UIElement> container(new ScrollView(context_));
     container->SetAlignment(HA_LEFT, VA_TOP);
     container->SetLayout(LM_HORIZONTAL, 20);
     container->SetPosition(10, 30 + _tabElementCount * 30);

@@ -18,6 +18,7 @@ GameData::GameData( Context * ctx )
     :LogicComponent( ctx )
 {
     time      = 0;
+    dt        = 0;
     planetDbg = nullptr;
 }
 
