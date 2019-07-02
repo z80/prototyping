@@ -171,6 +171,76 @@ Vector<IntRect> BaseLevel::InitRects(int count)
  */
 void BaseLevel::InitViewports(Vector<int> playerIndexes)
 {
+    Renderer* renderer = GetSubsystem<Renderer>();
+    const int existingViewportsQty = renderer->GetNumViewports();
+    Component * cam = scene_->GetComponent( StringHash( "Camera" ), true );
+    if ( (existingViewportsQty < 1) || (!cam) )
+    {
+        renderer->SetNumViewports( 1 );
+        // Just for compatibility.
+        SetGlobalVar( "Players", 1 );
+        Component * cam = scene_->GetComponent( StringHash( "Camera" ), true );
+        Node * cameraNode;
+        Camera * camera;
+        if ( !cam )
+        {
+            cameraNode = scene_->CreateChild( "CameraNode" );
+            camera = cameraNode->CreateComponent<Camera>( LOCAL );
+            camera->SetFarClip( 1000.0f );
+            camera->SetNearClip( 0.1f );
+            camera->SetFov( GetGlobalVar("CameraFov").GetFloat() );
+            cameraNode->CreateComponent<SoundListener>();
+            camera->SetViewMask( 1 );
+            cam = camera;
+        }
+        else
+        {
+            camera     = cam->Cast<Camera>();
+            cameraNode = cam->GetNode();
+        }
+
+        SoundListener * sl = cameraNode->GetOrCreateComponent<SoundListener>();
+        Audio * audio = GetSubsystem<Audio>();
+        audio->SetListener( sl );
+
+
+        SharedPtr<Viewport> viewport( new Viewport(context_, scene_, camera, IntRect::ZERO) );
+        SharedPtr<RenderPath> effectRenderPath = viewport->GetRenderPath()->Clone();
+        ResourceCache * cache = GetSubsystem<ResourceCache>();
+        effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/AutoExposure.xml"));
+        effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/Bloom.xml"));
+        effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/FXAA3.xml"));
+        effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/GammaCorrection.xml"));
+        effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/ColorCorrection.xml"));
+        // Make the bloom mixing parameter more pronounced
+        //effectRenderPath->SetShaderParameter("AutoExposureAdaptRate", 0.1);
+//        effectRenderPath->SetEnabled("AutoExposure", GetGlobalVar("AutoExposure").GetBool());
+//        effectRenderPath->SetEnabled("BloomHDR", GetGlobalVar("BloomHDR").GetBool());
+//        effectRenderPath->SetEnabled("FXAA3", GetGlobalVar("FXAA3").GetBool());
+        effectRenderPath->SetEnabled("AutoExposure", false);
+        effectRenderPath->SetEnabled("Bloom", false);
+        effectRenderPath->SetEnabled("FXAA3", false);
+        effectRenderPath->SetEnabled("GammaCorrection", false);
+        effectRenderPath->SetEnabled("ColorCorrection", false);
+        float gamma = Clamp(GAMMA_MAX_VALUE - GetSubsystem<ConfigManager>()->GetFloat("engine", "Gamma", 1.0f), 0.05f, GAMMA_MAX_VALUE);
+        effectRenderPath->SetShaderParameter("Gamma", gamma);
+        viewport->SetRenderPath(effectRenderPath);
+
+        renderer->SetViewport(0, viewport);
+    }
+
+    cam = scene_->GetComponent( StringHash( "Camera" ), true );
+    assert( cam );
+    Node * cameraNode = cam->GetNode();
+    _cameras[0] = cameraNode;
+
+    Viewport * viewport = renderer->GetViewport( 0 );
+    _viewports[0] = viewport;
+
+
+
+
+    /*
     auto* graphics = GetSubsystem<Graphics>();
     auto* cache = GetSubsystem<ResourceCache>();
 
@@ -234,5 +304,5 @@ void BaseLevel::InitViewports(Vector<int> playerIndexes)
         _viewports[playerIndexes[i]] = viewport;
         _cameras[playerIndexes[i]] = cameraNode;
     }
-
+    */
 }
