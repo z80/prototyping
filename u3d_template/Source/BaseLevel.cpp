@@ -205,7 +205,7 @@ void BaseLevel::InitViewports(Vector<int> playerIndexes)
 
 
         SharedPtr<Viewport> viewport( new Viewport(context_, scene_, camera, IntRect::ZERO) );
-        SharedPtr<RenderPath> effectRenderPath = viewport->GetRenderPath()->Clone();
+        /*SharedPtr<RenderPath> effectRenderPath = viewport->GetRenderPath()->Clone();
         ResourceCache * cache = GetSubsystem<ResourceCache>();
         effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/AutoExposure.xml"));
         effectRenderPath->Append(cache->GetResource<XMLFile>("PostProcess/Bloom.xml"));
@@ -224,7 +224,7 @@ void BaseLevel::InitViewports(Vector<int> playerIndexes)
         effectRenderPath->SetEnabled("ColorCorrection", false);
         float gamma = Clamp(GAMMA_MAX_VALUE - GetSubsystem<ConfigManager>()->GetFloat("engine", "Gamma", 1.0f), 0.05f, GAMMA_MAX_VALUE);
         effectRenderPath->SetShaderParameter("Gamma", gamma);
-        viewport->SetRenderPath(effectRenderPath);
+        viewport->SetRenderPath(effectRenderPath);*/
 
         renderer->SetViewport(0, viewport);
     }
