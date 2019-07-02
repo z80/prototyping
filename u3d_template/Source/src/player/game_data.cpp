@@ -17,7 +17,8 @@ const Float     GameData::MIN_ANGULAR_MOMENTUM  = 0.1;
 GameData::GameData( Context * ctx )
     :LogicComponent( ctx )
 {
-    time = 0;
+    time      = 0;
+    planetDbg = nullptr;
 }
 
 GameData::~GameData()

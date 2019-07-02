@@ -85,8 +85,6 @@ void OnePlanet::Init()
 
 void OnePlanet::Finit()
 {
-    if ( rootNode )
-        rootNode->Remove();
     if ( panel )
         panel->Remove();
 }
@@ -105,14 +103,31 @@ void OnePlanet::CreateScene()
         URHO3D_LOGERROR( "Can\'t get GameData" );
 
     Node * camNode = _cameras[0];
-    Camera * c = camNode->GetComponent<Camera>();
-    if ( c )
-        c->SetFarClip( 1.0e5 );
+    Camera * cam = camNode->GetComponent<Camera>();
+    if ( cam )
+        cam->SetFarClip( 1.0e7 );
 
     CameraOrb2 * camCtrl = camNode->GetOrCreateComponent<CameraOrb2>();
     //camCtrl->updateCamera();
 
-    createObjects();
+
+
+    // Get Player pointer.
+    Component * c = scene_->GetComponent( StringHash( "Player" ), true );
+    assert( c );
+    player = SharedPtr<Player>( c->Cast<Player>() );
+    assert( player.Get() );
+
+    Node * n = player->GetNode();
+    Zone * z = n->GetOrCreateComponent<Zone>();
+    z->SetAmbientColor( Color( 0.8, 0.8, 0.8, 1.0 ) );
+    const float D = 1e8;
+    z->SetFogStart(D*0.8);
+    z->SetFogEnd(D*0.95);
+    z->SetBoundingBox( BoundingBox( Vector3( -D, -D, -D ), Vector3( D, D, D ) ) );
+
+    // Initialize assembly.
+    player->startWithAssembly();
 }
 
 void OnePlanet::CreateUI()
@@ -156,134 +171,99 @@ void OnePlanet::SubscribeToEvents()
     SubscribeToEvent( E_KEYUP,           URHO3D_HANDLER( OnePlanet, HandleKeyUp ) );
 }
 
-void OnePlanet::createObjects()
-{
-    Node * root = rootNode.Get();
-
-    createKepler();
-    //createDesign();
-    player->startWithAssembly();
-}
-
-void OnePlanet::createDesign()
-{
-    Node * root = scene_->GetChild( "Root", true );
-    if ( !root )
-        return;
-
-    GameData * gd = scene_->GetOrCreateComponent<GameData>();
-    if ( !gd )
-        URHO3D_LOGERROR( "Can\'t get GameData" );
-
-    Design d = gd->design;
-    Assembly::create( root, d );
-}
-
+/*
 void OnePlanet::createKepler()
 {
-    /*Node * rotCenter = rootNode->CreateChild( "RotationCenter" );
-    {
-        StaticModel * m = rotCenter->CreateComponent<StaticModel>();
-        ResourceCache * cache = GetSubsystem<ResourceCache>();
-        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
-        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
-        m->SetCastShadows( true );
-        rotCenter->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
-    }*/
+//    Node * rotCenter = rootNode->CreateChild( "RotationCenter" );
+//    {
+//        StaticModel * m = rotCenter->CreateComponent<StaticModel>();
+//        ResourceCache * cache = GetSubsystem<ResourceCache>();
+//        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+//        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+//        m->SetCastShadows( true );
+//        rotCenter->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
+//    }
 
-    /*{
-        Node * body = rotCenter->CreateChild( "OrbitingBody" );
-        StaticModel * m = body->CreateComponent<StaticModel>();
-        ResourceCache * cache = GetSubsystem<ResourceCache>();
-        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
-        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
-        m->SetCastShadows( true );
-        body->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
+//    {
+//        Node * body = rotCenter->CreateChild( "OrbitingBody" );
+//        StaticModel * m = body->CreateComponent<StaticModel>();
+//        ResourceCache * cache = GetSubsystem<ResourceCache>();
+//        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+//        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+//        m->SetCastShadows( true );
+//        body->SetPosition( Vector3( 0.0, 3.0, 0.0 ) );
 
-        KeplerMover * km = body->CreateComponent<KeplerMover>();
-        km->initKepler( 100.0, 5.0, 0.8, 0.0, 0.0, 0.0, 0.0 );
-    }*/
-    /*{
-        Node * body = rotCenter->CreateChild( "OrbitingBodyInit" );
-        StaticModel * m = body->CreateComponent<StaticModel>();
-        ResourceCache * cache = GetSubsystem<ResourceCache>();
-        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
-        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
-        m->SetCastShadows( true );
-        body->SetPosition( Vector3( 0.0, 8.0, 0.0 ) );
+//        KeplerMover * km = body->CreateComponent<KeplerMover>();
+//        km->initKepler( 100.0, 5.0, 0.8, 0.0, 0.0, 0.0, 0.0 );
+//    }
+//    {
+//        Node * body = rotCenter->CreateChild( "OrbitingBodyInit" );
+//        StaticModel * m = body->CreateComponent<StaticModel>();
+//        ResourceCache * cache = GetSubsystem<ResourceCache>();
+//        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+//        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+//        m->SetCastShadows( true );
+//        body->SetPosition( Vector3( 0.0, 8.0, 0.0 ) );
 
-        KeplerMover * km = body->CreateComponent<KeplerMover>();
-        km->GM = 100.0;
-        // Hyperbolic.
-        //km->launch( Vector3d( 6.0, 0.0, 0.0 ) );
-        // This is exactly parabolic.
-        //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
-        // Elliptic
-        km->launch( Vector3( 3.0, 0.0, 0.0 ) );
-    }*/
+//        KeplerMover * km = body->CreateComponent<KeplerMover>();
+//        km->GM = 100.0;
+//        // Hyperbolic.
+//        //km->launch( Vector3d( 6.0, 0.0, 0.0 ) );
+//        // This is exactly parabolic.
+//        //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
+//        // Elliptic
+//        km->launch( Vector3( 3.0, 0.0, 0.0 ) );
+//    }
 
-    /*{
-        const Vector3 start( 10.0, 10.0, 0.0 );
+//    {
+//        const Vector3 start( 10.0, 10.0, 0.0 );
 
-        Node * body = rotCenter->CreateChild( "OrbitingBodyInit" );
-        StaticModel * m = body->CreateComponent<StaticModel>();
-        ResourceCache * cache = GetSubsystem<ResourceCache>();
-        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
-        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
-        m->SetCastShadows( true );
-        body->SetPosition( start );
+//        Node * body = rotCenter->CreateChild( "OrbitingBodyInit" );
+//        StaticModel * m = body->CreateComponent<StaticModel>();
+//        ResourceCache * cache = GetSubsystem<ResourceCache>();
+//        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+//        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+//        m->SetCastShadows( true );
+//        body->SetPosition( start );
 
-        KeplerMover * km = body->CreateComponent<KeplerMover>();
-        km->GM = 100.0;
-        // This is exactly parabolic.
-        //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
-        km->launch( Vector3d( 0.0, 0.0, -1.0 ) );
+//        KeplerMover * km = body->CreateComponent<KeplerMover>();
+//        km->GM = 100.0;
+//        // This is exactly parabolic.
+//        //km->launch( Vector3( 5.0, 0.0, 0.0 ) );
+//        km->launch( Vector3d( 0.0, 0.0, -1.0 ) );
 
-        // Reference body
-        body = rotCenter->CreateChild( "Reference" );
-        m = body->CreateComponent<StaticModel>();
-        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
-        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
-        m->SetCastShadows( true );
-        body->SetPosition( start );
+//        // Reference body
+//        body = rotCenter->CreateChild( "Reference" );
+//        m = body->CreateComponent<StaticModel>();
+//        m->SetModel( cache->GetResource<Model>( "Models/Sphere.mdl" ) );
+//        m->SetMaterial( cache->GetResource<Material>( "Materials/Stone.xml" ) );
+//        m->SetCastShadows( true );
+//        body->SetPosition( start );
 
-    }*/
+//    }
 
     // Create "PlanetTest" instance.
     {
-        Zone * z = rootNode->CreateComponent<Zone>();
-        z->SetAmbientColor( Color( 0.8, 0.8, 0.8, 1.0 ) );
-        const float D = 1e6;
-        z->SetFogStart(D*0.8);
-        z->SetFogEnd(D*0.95);
-        z->SetBoundingBox( BoundingBox( Vector3( -D, -D, -D ), Vector3( D, D, D ) ) );
+//        Node * sunNode = rootNode->CreateChild( "SunNode" );
+//        PlanetSunTest * sun = sunNode->CreateComponent<PlanetSunTest>();
 
-        /*
-        Node * sunNode = rootNode->CreateChild( "SunNode" );
-        PlanetSunTest * sun = sunNode->CreateComponent<PlanetSunTest>();
+//        Node * planetNode = sunNode->CreateChild( "PlanetNode" );
+//        PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
 
-        Node * planetNode = sunNode->CreateChild( "PlanetNode" );
-        PlanetTest * pt = planetNode->CreateComponent<PlanetTest>();
-
-        Node * moonNode = planetNode->CreateChild( "PlanetNode" );
-        PlanetMoonTest * mn = moonNode->CreateComponent<PlanetMoonTest>();
-        */
+//        Node * moonNode = planetNode->CreateChild( "PlanetNode" );
+//        PlanetMoonTest * mn = moonNode->CreateComponent<PlanetMoonTest>();
 
 
-        Node * planetNode = rootNode->CreateChild( "PlanetNode" );
-        PlanetCs * pt = planetNode->CreateComponent<PlanetCs>();
+        //Node * planetNode = rootNode->CreateChild( "PlanetNode" );
+        //PlanetCs * pt = planetNode->CreateComponent<PlanetCs>();
 
-        planet_ = SharedPtr<PlanetBase>( pt );
+        //planet_ = SharedPtr<PlanetBase>( pt );
         //moon_   = SharedPtr<PlanetBase>( mn );
     }
 
-    {
-        Component * c = scene_->GetComponent( StringHash( "Player" ), true );
-        if ( c )
-            player = SharedPtr<Player>( c->Cast<Player>() );
-    }
-}
 
+}
+*/
 
 bool OnePlanet::select()
 {

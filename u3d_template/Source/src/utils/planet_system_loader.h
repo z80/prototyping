@@ -30,8 +30,8 @@ public:
     ~PlanetLoader() {}
 
     static bool loadGeometry( const JSONValue & v, PlanetCs * p );
-    static bool loadKepler( const JSONValue & v, PlanetCs * p );
-    static bool loadRotator( const JSONValue & v, PlanetCs * p );
+    static bool loadKepler(const JSONValue & v, PlanetBase *p );
+    static bool loadRotator( const JSONValue & v, PlanetBase * p );
     static bool loadAssets( const String & fileName, PlanetCs * planet );
     static bool loadAsset( const JSONValue & v, PlanetCs * planet );
 };

@@ -3,6 +3,7 @@
 #include "world_mover.h"
 #include "physics_world_2.h"
 #include "game_data.h"
+#include "planet_system_loader.h"
 #include "MyEvents.h"
 
 namespace Osp
@@ -105,6 +106,18 @@ bool PlanetBase::load( const JSONValue & v )
         assert( v.Contains( "name" ) );
         const JSONValue & vv = v.Get( "name" );
         name = vv.GetString();
+    }
+    {
+        assert( v.Contains( "kepler" ) );
+        const JSONValue & vv = v.Get( "kepler" );
+        const bool ok = PlanetLoader::loadKepler( vv, this );
+        //mover->active = false;
+    }
+    {
+        assert( v.Contains( "rotation" ) );
+        const JSONValue & vv = v.Get( "rotation" );
+        const bool ok = PlanetLoader::loadRotator( vv, this );
+        //rotator->active = false;
     }
     {
         assert( v.Contains( "forces" ) );

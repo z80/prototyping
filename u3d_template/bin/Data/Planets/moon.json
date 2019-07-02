@@ -3,8 +3,8 @@
     "forces": 
     {
         "GM":         5000000, 
-        "R":          1000, 
-        "orbitR":     1050, 
+        "R":          300, 
+        "orbitR":     310, 
         "atmHeight":  7, 
         "densityF":   0.0005, 
         "densityB":   0.0005, 
@@ -24,7 +24,7 @@
     }, 
     "rotation": 
     {
-        "period": 100.0, 
+        "period": -10.0, 
         "yaw":    0.0, 
         "pitch":  0.0, 
         "roll":   0.0

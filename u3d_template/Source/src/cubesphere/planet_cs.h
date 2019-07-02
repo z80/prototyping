@@ -29,7 +29,7 @@ public:
 
     bool load( const JSONValue & v ) override;
 public:
-    void initParameters();
+    void initParameters( const String & fileName=String::EMPTY );
     void updateGeometry( Osp::WorldMover * mover );
     void updateGeometry( const Vector3d & at );
     Vector2 sphereCoord( const Vector3d & at ) const;

@@ -30,21 +30,7 @@ PlanetCs::PlanetCs( Context * ctx )
     subdivMaxLevel = 12;
     subdivMaxSine  = 0.1;
 
-    configFileName = "Data/Planets/cubesphere.json";
-    /*{
-        const Float lon = 0.0;
-        const Float lat = 0.0;
-        const Float az  = 0.0;
-        const Quaterniond Qlon( -lon, Vector3d( 0.0, 1.0, 0.0 ) );
-        const Quaterniond Qlat( -lat, Vector3d( 0.0, 0.0, 1.0 ) );
-        const Quaterniond Qaz( -az, Vector3d( 1.0, 0.0, 0.0 ) );
-        const Quaterniond Qinit( -90.0, Vector3d( 0.0, 0.0, 1.0 ) );
-
-        const Quaterniond Q = Qlon * Qlat * Qaz * Qinit;
-        Vector3d at( 0.0, 1.0, 0.0 );
-        at = Q * at;
-        URHO3D_LOGINFOF( "at: %f, %f, %f", at.x_, at.y_, at.z_ );
-    }*/
+    configFileName = ""; //Data/Planets/cubesphere.json";
 }
 
 PlanetCs::~PlanetCs()
@@ -123,7 +109,6 @@ void PlanetCs::Start()
     cg->SetDynamic( true );
 
     initParameters();
-    updateGeometry( Vector3d( 1.0, 0.0, 0.0 ) );
 
 
 
@@ -223,18 +208,6 @@ bool PlanetCs::load( const JSONValue & root )
         return false;
 
     {
-        assert( root.Contains( "kepler" ) );
-        const JSONValue & vv = root.Get( "kepler" );
-        const bool ok = PlanetLoader::loadKepler( vv, this );
-        mover->active = false;
-    }
-    {
-        assert( root.Contains( "rotation" ) );
-        const JSONValue & vv = root.Get( "rotation" );
-        const bool ok = PlanetLoader::loadRotator( vv, this );
-        rotator->active = false;
-    }
-    {
         assert( root.Contains( "geometry" ) );
         const JSONValue & vv = root.Get( "geometry" );
         const bool ok = PlanetLoader::loadGeometry( vv, this );
@@ -263,12 +236,25 @@ bool PlanetCs::load( const JSONValue & root )
     return true;
 }
 
-void PlanetCs::initParameters()
+void PlanetCs::initParameters( const String & fileName )
 {
-    URHO3D_LOGINFO( "Loading config file " + configFileName );
+    // ".json".Length() = 5
+    String fname;
+    if ( fileName.Length() > 5 )
+    {
+        fname = fileName;
+        configFileName = fileName;
+    }
+    else
+    {
+        if ( configFileName.Length() <= 5 )
+            return;
+        fname = configFileName;
+    }
+    URHO3D_LOGINFO( "Loading config file " + fname );
     JSONFile json( context_ );
     FileSystem * fs = GetSubsystem<FileSystem>();
-    const String stri = fs->GetProgramDir() + configFileName;
+    const String stri = fs->GetProgramDir() + fname;
     const bool loaded = json.LoadFile( stri );
     if ( !loaded )
         URHO3D_LOGINFO( "Failed to load JSON file" );
@@ -277,6 +263,7 @@ void PlanetCs::initParameters()
         URHO3D_LOGINFO( "JSON file doesn't contain proper structure" );
 
     load( root );
+    updateGeometry( Vector3d( 1.0, 0.0, 0.0 ) );
 }
 
 void PlanetCs::updateGeometry( Osp::WorldMover * mover )

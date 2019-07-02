@@ -32,7 +32,7 @@ void KeplerRotator::launch( Timestamp periodSec, Float yaw, Float pitch, Float r
         URHO3D_LOGINFOF( "v: %f, %f, %f", v.x_, v.y_, v.z_ );
     }
 
-    active = true;
+    active = (periodSec > 0.0);
     period = GameData::ONE_SECOND * periodSec;
     this->yaw = yaw;
     this->pitch = pitch;

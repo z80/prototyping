@@ -67,7 +67,10 @@ bool PlanetSystemLoader::loadPlanet( const String & name, PlanetBase * parent, c
 
     PlanetCs * cs = n->CreateComponent<PlanetCs>();
     cs->setup( "Data/Planets/" + name + ".json" );
+    cs->initParameters();
     gd->planets.Push( cs );
+    // Debug variable.
+    gd->planetDbg = cs;
 
     // Recursively parse children.
     for ( ConstJSONObjectIterator it=v.Begin(); it!=v.End(); it++ )
@@ -130,7 +133,7 @@ bool PlanetLoader::loadGeometry( const JSONValue & v, PlanetCs * p )
     return true;
 }
 
-bool PlanetLoader::loadKepler( const JSONValue & v, PlanetCs * p )
+bool PlanetLoader::loadKepler( const JSONValue & v, PlanetBase * p )
 {
     Float GM, a, e, Omega, I, omega, E;
     const bool hasGM = v.Contains( "GM" );
@@ -192,7 +195,7 @@ bool PlanetLoader::loadKepler( const JSONValue & v, PlanetCs * p )
         p->mover->active = false;
 }
 
-bool PlanetLoader::loadRotator( const JSONValue & v, PlanetCs * p )
+bool PlanetLoader::loadRotator( const JSONValue & v, PlanetBase * p )
 {
     Float period, yaw, pitch, roll;
     {

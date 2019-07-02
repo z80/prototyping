@@ -14,6 +14,7 @@ namespace Osp
 using namespace Urho3D;
 
 class PlanetBase;
+class PlanetCs;
 
 class GameData: public Urho3D::LogicComponent
 {
@@ -34,7 +35,7 @@ public:
 
     // All the planets.
     Vector< PlanetBase * > planets;
-
+    PlanetCs * planetDbg;
 
     /// Distance for collision objects to exist.
     static const Float DIST_PLANET_COLLISIONS;

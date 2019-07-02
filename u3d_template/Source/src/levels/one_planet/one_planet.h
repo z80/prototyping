@@ -36,20 +36,11 @@ private:
     void CreateUI();
     void SubscribeToEvents();
 
-
-    SharedPtr<Node>      rootNode;
     SharedPtr<UIElement> panel;
     SharedPtr<Player>    player;
     int mouseX,     mouseY,
         mousePrevX, mousePrevY;
-
-    SharedPtr<PlanetBase> sun_, planet_, moon_;
 public:
-    void createObjects();
-    void createDesign();
-    // Test object to see how it moves.
-    void createKepler();
-
     bool select();
 
     void HandleUpdate( StringHash t, VariantMap & e );
