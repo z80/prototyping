@@ -24,7 +24,7 @@
     }, 
     "rotation": 
     {
-        "period": -10.0, 
+        "period": 25.0, 
         "yaw":    0.0, 
         "pitch":  0.0, 
         "roll":   0.0
@@ -33,7 +33,7 @@
     {
         "heightmap":        "Textures/Planets/moon_height.png", 
         "colormap":         "Textures/Planets/moon_color.png", 
-        "height_scale":     100.0, 
+        "height_scale":     30.0, 
         "subdiv_max_sine":  0.3, 
         "subdiv_max_level": 9
     }, 
