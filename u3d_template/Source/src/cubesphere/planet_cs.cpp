@@ -104,7 +104,7 @@ void PlanetCs::Start()
 {
     PlanetBase::Start();
 
-    Node * n = GetNode();
+    Node * n = dynamicsNode;
     cg = n->CreateComponent<CustomGeometry>();
     cg->SetDynamic( true );
 
