@@ -13,8 +13,9 @@ namespace Osp
 
 class ItemNode:  public Urho3D::Object
 {
+    URHO3D_OBJECT( ItemNode, Object )
 public:
-    ItemNode();
+    ItemNode( Context * ctx );
     virtual ~ItemNode();
 
     void setParent( ItemNode * itemNode );
@@ -25,6 +26,11 @@ public:
     Quaterniond relQ() const;
 
     bool relativePose( ItemNode * other, Vector3d & r, Quaterniond & q );
+
+public:
+    SharedPtr<ItemNode> parent_;
+    Vector3d    r_;
+    Quaterniond q_;
 };
 
 
