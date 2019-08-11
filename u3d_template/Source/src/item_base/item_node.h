@@ -22,8 +22,14 @@ public:
 
     virtual void setR( const Vector3d & r );
     virtual void setQ( const Quaterniond & q );
-    Vector3d relR()    const;
-    Quaterniond relQ() const;
+    Vector3d     relR() const;
+    Quaterniond  relQ() const;
+
+    Vector3d     relV() const;
+    Vector3d     relW() const;
+
+    virtual void setV( const Vector3d & v );
+    virtual void setW( const Vectror3d & w );
 
     bool relativePose( ItemNode * other, Vector3d & r, Quaterniond & q );
 
