@@ -32,7 +32,9 @@ public:
     virtual void setV( const Vector3d & v );
     virtual void setW( const Vector3d & w );
 
-    bool relativePose( ItemNode * other, Vector3d & rel_r, Quaterniond & rel_q );
+    bool relativePose( ItemNode * other, Vector3d & rel_r, Quaterniond & rel_q, bool debugLogging=false );
+    bool relativeAll( const ItemNode * other, Vector3d & rel_r, Quaterniond & rel_q,
+                                              Vector3d & rel_v, Vector3d & rel_w, bool debugLogging=false ) const;
 
 public:
     SharedPtr<ItemNode> parent_;
